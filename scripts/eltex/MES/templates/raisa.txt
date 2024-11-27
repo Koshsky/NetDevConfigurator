@@ -1,0 +1,193 @@
+#Building configuration...
+#ISS config ver. 9; SW ver. 10.3.3.1 (f74b00f1) for MES2424 rev.B. Do not remove or edit this line
+! 
+hostname "<sert_name>_mes2424_raisa"
+!
+vlan 5
+  vlan active
+!
+ip ssh cipher aes256-cbc
+!
+switching-mode cut-through
+!
+no spanning-tree
+!
+vlan 5
+  name RAISA
+!
+interface vlan 5
+  ip address  10.5.0.5 255.255.0.0
+!
+interface gigabitethernet 0/1
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/2
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/3
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/4
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/5
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/6
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/7
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/8
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/9
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/10
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/11
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/12
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/13
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/14
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/15
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/16
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/17
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/18
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/19
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/20
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/21
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/22
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/23
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface gigabitethernet 0/24
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface tengigabitethernet 0/1
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface tengigabitethernet 0/2
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface tengigabitethernet 0/3
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+interface tengigabitethernet 0/4
+  switchport mode access
+  switchport forbidden default-vlan
+  switchport access vlan 5
+  no shutdown
+!
+ip route 0.0.0.0  0.0.0.0 10.5.0.254
+!
+no feature telnet
+!
+end

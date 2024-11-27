@@ -1,0 +1,112 @@
+; Product Name = XS3800-28
+; Firmware Version = V4.80(ABML.2) | 06/27/2023
+; Service Status = Not Licensed
+; SysConf Engine Version = 1.2
+; Config last updated = 00:29:58 (UTC+03:00) 2022-01-01
+no service-control snmp 
+no cloud center discovery 
+vlan 2 
+  name VIDEO 
+  normal "" 
+  fixed 1-28 
+  forbidden "" 
+  untagged 1-28 
+exit
+interface vlan 2 
+exit
+interface vlan 4 
+exit
+interface port-channel 1 
+  pvid 2 
+exit
+interface port-channel 2 
+  pvid 2 
+exit
+interface port-channel 3 
+  pvid 2 
+exit
+interface port-channel 4 
+  pvid 2 
+exit
+interface port-channel 5 
+  pvid 2 
+exit
+interface port-channel 6 
+  pvid 2 
+exit
+interface port-channel 7 
+  pvid 2 
+exit
+interface port-channel 8 
+  pvid 2 
+exit
+interface port-channel 9 
+  pvid 2 
+exit
+interface port-channel 10 
+  pvid 2 
+exit
+interface port-channel 11 
+  pvid 2 
+exit
+interface port-channel 12 
+  pvid 2 
+exit
+interface port-channel 13 
+  pvid 2 
+exit
+interface port-channel 14 
+  pvid 2 
+exit
+interface port-channel 15 
+  pvid 2 
+exit
+interface port-channel 16 
+  pvid 2 
+exit
+interface port-channel 17 
+  pvid 2 
+exit
+interface port-channel 18 
+  pvid 2 
+exit
+interface port-channel 19 
+  pvid 2 
+exit
+interface port-channel 20 
+  pvid 2 
+exit
+interface port-channel 21 
+  pvid 2 
+exit
+interface port-channel 22 
+  pvid 2 
+exit
+interface port-channel 23 
+  pvid 2 
+exit
+interface port-channel 24 
+  pvid 2 
+exit
+interface port-channel 25 
+  pvid 2 
+exit
+interface port-channel 26 
+  pvid 2 
+exit
+interface port-channel 27 
+  pvid 2 
+exit
+interface port-channel 28 
+  pvid 2 
+exit
+ip address 10.4.0.2 255.255.0.0 
+ip address default-gateway 10.4.0.254 
+hostname <sert_name>_XS3800_video 
+time timezone 300 
+timesync server 10.3.0.250 
+timesync ntp 
+snmp-server get-community mvs_public 
+snmp-server set-community mvs_public 
+snmp-server trap-community mvs_public 
+default-management out-of-band 

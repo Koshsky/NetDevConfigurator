@@ -1,0 +1,68 @@
+<network_std>
+object-group network Public_IP
+  ip address-range <pub_ip>
+exit
+object-group network INT_NET
+  ip address-range 10.2.0.0-10.4.255.255
+exit
+object-group network DMZ_NET
+  ip address-range 10.10.10.8-10.10.10.15
+exit
+object-group network CONF
+  ip address-range 10.10.10.10
+exit
+object-group network HP
+  ip address-range 10.3.0.250
+exit
+object-group network STREAM
+  <count_stream>
+  ip address-range 10.3.0.1!
+  <@count_stream>
+exit
+<@network_std>
+
+<network_ph>
+object-group network packhaus
+  <count_ph>	
+  ip address-range 10.2.0.11!
+  <@count_ph>
+exit
+<@network_ph>
+
+<network_raisa>
+object-group network RAISA_Public_IP
+  ip address-range <raisa_ip>
+exit
+object-group network RAISA_NET
+  ip address-range 10.5.0.0-10.5.255.255
+exit
+<@network_raisa>
+
+<network_tc>
+object-group network TR_CONF
+  ip address-range 10.10.10.11
+exit
+<@network_tc>
+
+<network_tcroom>
+<count_tcroom_pub>
+object-group network TCRoom!_Public_IP
+  ip address-range <tcroom_ip!>
+exit
+<@count_tcroom_pub>
+object-group network TRCONF_ROOM
+  <count_tcroom>
+  ip address-range 10.3.!.10
+  <@count_tcroom>
+exit
+<@network_tcroom>
+
+<network_VPN>
+object-group network l2tp_local
+  ip address-range 10.20.20.1
+exit
+object-group network l2tp_dns
+  ip address-range 8.8.8.8
+  ip address-range 10.3.0.250
+exit
+<@network_VPN>

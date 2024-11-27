@@ -1,0 +1,6 @@
+Host <pub_ip>\n
+  SendEnv LANG LC_*\n
+  Ciphers +aes256-cbc,3des-cbc\n
+  KexAlgorithms +diffie-hellman-group1-sha1\n
+  StrictHostKeyChecking no\n
+  User <user_name>\n
