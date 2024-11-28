@@ -32,27 +32,27 @@ CERT=${PARAMS["CERT"]}
 case $TYPE_SW in
 	
 	1)
-	  cat $DIR/templates/data.txt| col -b > $DIR/config.log
+	  cat $DIR/templates/data.txt| col -b > $DIR/config.cfg
 	;;
 	
 	2)
-	  cat $DIR/templates/video.txt| col -b > $DIR/config.log
+	  cat $DIR/templates/video.txt| col -b > $DIR/config.cfg
 	;;
 	
 	3)
-	  cat $DIR/templates/mgmt.txt| col -b > $DIR/config.log
+	  cat $DIR/templates/mgmt.txt| col -b > $DIR/config.cfg
 	;;
 	
 	4)
 	  OR_NUM=${PARAMS["OR_NUM"]}
-	  cat $DIR/templates/tsh.txt| col -b > $DIR/config.log
-	  replace "num_or" $OR_NUM "$DIR/config.log"
+	  cat $DIR/templates/tsh.txt| col -b > $DIR/config.cfg
+	  replace "num_or" $OR_NUM "$DIR/config.cfg"
 	;;
 	5)
 	  OR_NUM=${PARAMS["OR_NUM"]}
-	  cat $DIR/templates/or.txt| col -b > $DIR/config.log
-	  replace "num_or" $OR_NUM "$DIR/config.log"
+	  cat $DIR/templates/or.txt| col -b > $DIR/config.cfg
+	  replace "num_or" $OR_NUM "$DIR/config.cfg"
 	;;
 esac
 
-replace "sert_name" $CERT "$DIR/config.log"
+replace "sert_name" $CERT "$DIR/config.cfg"

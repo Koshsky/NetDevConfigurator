@@ -1,0 +1,129 @@
+; Product Name = XGS4600-32F
+; Firmware Version = V4.70(ABBI.4) | 10/13/2022
+; Service Status = Not Licensed
+; SysConf Engine Version = 1.2
+; Config last updated = 00:16:07 (UTC+03:00) 2020-01-01
+no service-control telnet 
+no remote-management 1 service telnet  
+vlan 3 
+  name DATA 
+  normal "" 
+  fixed 1-26,28-32 
+  forbidden 27 
+  untagged 13-32 
+exit
+vlan 4 
+  name MGMT 
+  normal "" 
+  fixed 1-12,27 
+  forbidden 13-26,28-32 
+  untagged 13-32 
+  ip address 10.4.0.3 255.255.0.0 
+  ip address default-gateway 10.4.0.254 
+exit
+interface route-domain 10.4.0.3/16 
+exit
+interface port-channel 1 
+  pvid 3 
+exit
+interface port-channel 2 
+  pvid 3 
+exit
+interface port-channel 3 
+  pvid 3 
+exit
+interface port-channel 4 
+  pvid 3 
+exit
+interface port-channel 5 
+  pvid 3 
+exit
+interface port-channel 6 
+  pvid 3 
+exit
+interface port-channel 7 
+  pvid 3 
+exit
+interface port-channel 8 
+  pvid 3 
+exit
+interface port-channel 9 
+  pvid 3 
+exit
+interface port-channel 10 
+  pvid 3 
+exit
+interface port-channel 11 
+  pvid 3 
+exit
+interface port-channel 12 
+  pvid 3 
+exit
+interface port-channel 13 
+  pvid 3 
+exit
+interface port-channel 14 
+  pvid 3 
+exit
+interface port-channel 15 
+  pvid 3 
+exit
+interface port-channel 16 
+  pvid 3 
+exit
+interface port-channel 17 
+  pvid 3 
+exit
+interface port-channel 18 
+  pvid 3 
+exit
+interface port-channel 19 
+  pvid 3 
+exit
+interface port-channel 20 
+  pvid 3 
+exit
+interface port-channel 21 
+  pvid 3 
+exit
+interface port-channel 22 
+  pvid 3 
+exit
+interface port-channel 23 
+  pvid 3 
+exit
+interface port-channel 24 
+  pvid 3 
+exit
+interface port-channel 25 
+  pvid 3 
+exit
+interface port-channel 26 
+  pvid 3 
+exit
+interface port-channel 27 
+  pvid 4 
+exit
+interface port-channel 28 
+  pvid 3 
+exit
+interface port-channel 29 
+  pvid 3 
+exit
+interface port-channel 30 
+  pvid 3 
+exit
+interface port-channel 31 
+  pvid 3 
+exit
+interface port-channel 32 
+  pvid 3 
+exit
+ip address 192.168.0.1 255.255.255.0 
+hostname <sert_name>_XGS4600_data 
+time timezone 300 
+timesync server 10.3.0.250 
+timesync ntp 
+snmp-server get-community mvs_public 
+snmp-server set-community mvs_public 
+snmp-server trap-community mvs_public 
