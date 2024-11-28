@@ -24,7 +24,7 @@ replace () {
 ROOT_DIR=$PWD
 DIR=$(dirname ${BASH_SOURCE})
 declare -A PARAMS
-parse_config "$ROOT_DIR/env.param" 
+parse_config "$ROOT_DIR/env.param"
 
 TYPE_SW=${PARAMS["TYPE_SW"]}
 CERT=${PARAMS["CERT"]}
