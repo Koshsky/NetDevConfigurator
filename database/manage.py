@@ -5,41 +5,42 @@ from psycopg2 import sql
 
 class DatabaseApp:
     def __init__(self, root):
+        self.init_root()
+        self.create_tabs()
+        self.connection = None
+
+    def init_root(self):
         self.root = root
         self.root.title("Admin Panel for Database")
         self.root.geometry("800x700")
 
-        # Создаем вкладки
+    def create_tabs(self):
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill='both', expand=True)
 
-        # Создаем вкладку подключения
-        self.connection_tab = ConnectionTab(self.notebook, self.on_connection_success)
+        # СОЗДАЕМ ВКЛАДКИ
+        self.connection_tab = ConnectionTab(self.notebook, self.on_connection_success, self)
         self.notebook.add(self.connection_tab.frame, text="Подключение")
 
-        # Создаем вкладку данных
         self.data_tab = DataTab(self.notebook, self)
         self.notebook.add(self.data_tab.frame, text="Данные")
-
-        # Скрываем вкладку данных до успешного подключения
+        # ....
+        # СКРЫВАЕМ ВКЛАДКИ ДО УСПЕШНОГО ПОДКЛЮЧЕНИЯ
         self.notebook.hide(self.data_tab.frame)
-
-        # Поле для хранения соединения с базой данных
-        self.connection = None
+        # ....
 
     def on_connection_success(self):
-        # Показываем вкладку данных при успешном подключении
+        # ОТОБРАЖАЕМ ВКЛАДКИ ПРИ УСПЕШНОМ ПОДЛКЮЧЕНИИ
         self.notebook.select(self.data_tab.frame)
+        # ....
 
-    def set_connection(self, connection):
-        self.connection = connection
 
 class ConnectionTab:
-    def __init__(self, parent, on_success_callback):
+    def __init__(self, parent, on_success_callback, app):
         self.frame = ttk.Frame(parent)
+        self.app = app
         self.on_success_callback = on_success_callback
 
-        # Словарь для хранения меток и значений по умолчанию
         self.fields = {
             "host": "localhost",
             "port": "5432",
@@ -52,7 +53,6 @@ class ConnectionTab:
         self.create_widgets()
 
     def create_widgets(self):
-        # Создаем метки и поля ввода
         for label_text, default_value in self.fields.items():
             label = tk.Label(self.frame, text=label_text)
             label.pack(pady=5)
@@ -62,11 +62,9 @@ class ConnectionTab:
             entry.pack(pady=5)
             self.entries.append(entry)
 
-        # Создаем кнопку
         button = tk.Button(self.frame, text="Подключиться", command=self.on_button_click)
         button.pack(pady=10)
 
-        # Создаем метку для отображения сообщений
         self.message_label = tk.Label(self.frame, text="", wraplength=200)
         self.message_label.pack(pady=5)
 
@@ -86,12 +84,9 @@ class ConnectionTab:
             )
             print("Успешное подключение к базе данных")
 
-            # Устанавливаем соединение в DatabaseApp
-            app.set_connection(connection)
-
+            self.app.connection = connection
             # Вызываем колбек при успешном подключении
             self.on_success_callback()
-
             self.message_label.config(text="Подключение успешно.", fg="green")
 
         except Exception as error:

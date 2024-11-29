@@ -109,8 +109,8 @@ if __name__ == '__main__':
     print("restore/backup? r/b ")
     ans = input()
     if ans == 'r':
-        restore_postgres_db(db_params, f'{db_params[1]}.sql')
+        restore_postgres_db(db_params, f'{db_params[2]}.sql')
     elif ans == 'b':
-        backup_postgres_db(db_params, f'{db_params[1]}.sql')
+        backup_postgres_db(db_params, f'{db_params[2]}.sql')
     else:
         print("Invalid input")  # Если пользователь ввел что-то не то, вывести
