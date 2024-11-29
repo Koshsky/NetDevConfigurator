@@ -1,81 +1,81 @@
 import tkinter as tk
 import psycopg2
 
-def on_button_click():
-    # Получаем данные из полей ввода и выводим их в консоль
-    db_params = [entry.get() for entry in entries]
-    print("Введенные данные:", db_params)
+class DatabaseApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Admin Panel for Database")
+        self.root.geometry("450x700")
 
-    # Распаковываем параметры подключения
-    host, port, database_name, user, password = db_params
+        # Словарь для хранения меток и значений по умолчанию
+        self.fields = {
+            "host": "localhost",
+            "port": "5432",
+            "database": "device_registry",
+            "username": "postgres",
+            "password": "postgres"
+        }
 
-    try:
-        # Устанавливаем соединение с базой данных
-        connection = psycopg2.connect(
-            host=host,
-            port=port,
-            database=database_name,
-            user=user,
-            password=password
-        )
-        print("Успешное подключение к базе данных")
+        self.entries = []
+        self.create_widgets()
 
-        # Создаем курсор для выполнения операций с базой данных
-        cursor = connection.cursor()
+    def create_widgets(self):
+        # Создаем метки и поля ввода
+        for label_text, default_value in self.fields.items():
+            label = tk.Label(self.root, text=label_text)
+            label.pack(pady=5)
 
-        # Выполняем запрос к таблице devices
-        cursor.execute("SELECT * FROM companies;")
-        
-        # Получаем все строки из результата запроса
-        rows = cursor.fetchall()
+            entry = tk.Entry(self.root)
+            entry.insert(0, default_value)
+            entry.pack(pady=5)
+            self.entries.append(entry)
 
-        # Выводим данные
-        print("Данные из таблицы devices:")
-        for row in rows:
-            print(row)
+        # Создаем кнопку
+        button = tk.Button(self.root, text="Отправить", command=self.on_button_click)
+        button.pack(pady=10)
 
-    except Exception as error:
-        print("Ошибка при подключении к базе данных:", error)
-        label = tk.Label(root, text='Ошибка при подключении к базе данных: ' + str(error), wraplength=200).pack()
+        # Создаем метку для отображения сообщений
+        self.message_label = tk.Label(self.root, text="", wraplength=200)
+        self.message_label.pack(pady=5)
 
-    finally:
-        # Закрываем соединение и курсор
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
-            print("Соединение с базой данных закрыто")
+    def on_button_click(self):
+        db_params = [entry.get() for entry in self.entries]
+        print("Введенные данные:", db_params)
 
-# Создаем главное окно
-root = tk.Tk()
-root.title("Admin Panel for Database")
-root.geometry("450x700")  # Устанавливаем размер окна
+        host, port, database_name, user, password = db_params
 
-# Словарь для хранения меток и значений по умолчанию
-fields = {
-    "host": "localhost",
-    "port": "5432",
-    "database": "device_registry",
-    "username": "postgres",
-    "password": "postgres"
-}
+        try:
+            connection = psycopg2.connect(
+                host=host,
+                port=port,
+                database=database_name,
+                user=user,
+                password=password
+            )
+            print("Успешное подключение к базе данных")
 
-# Список для хранения полей ввода
-entries = []
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM companies;")
+            rows = cursor.fetchall()
 
-# Создаем метки и поля ввода
-for label_text, default_value in fields.items():
-    label = tk.Label(root, text=label_text)
-    label.pack(pady=5)  # Отступ между меткой и полем ввода
+            print("Данные из таблицы companies:")
+            for row in rows:
+                print(row)
 
-    entry = tk.Entry(root)
-    entry.insert(0, default_value)  # Устанавливаем значение по умолчанию
-    entry.pack(pady=5)  # Добавляем отступ между полями
-    entries.append(entry)
+            self.message_label.config(text="Данные успешно получены.", fg="green")
 
-# Создаем кнопку
-button = tk.Button(root, text="Отправить", command=on_button_click)
-button.pack(pady=10)  # Отступ для кнопки
+        except Exception as error:
+            print("Ошибка при подключении к базе данных:", error)
+            self.message_label.config(text='Ошибка: ' + str(error), fg="red")
 
-# Запускаем главный цикл приложения
-root.mainloop()
+        finally:
+            if cursor:
+                cursor.close()
+            if connection:
+                connection.close()
+                print("Соединение с базой данных закрыто")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = DatabaseApp(root)
+    root.mainloop()
