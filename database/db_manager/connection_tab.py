@@ -4,12 +4,13 @@ import psycopg2
 
 
 class ConnectionTab:
-    def __init__(self, parent, on_success_callback, app):
+    def __init__(self, parent, on_success_callback, on_failure_callback, app):
         self.frame = ttk.Frame(parent)
         self.app = app
         self.on_success_callback = on_success_callback
+        self.on_failure_callback = on_failure_callback
 
-        self.fields = {
+        self.fields = {  # values for default
             "host": "localhost",
             "port": "5432",
             "database": "device_registry",
@@ -33,7 +34,7 @@ class ConnectionTab:
         button = tk.Button(self.frame, text="Connect", command=self.on_button_click)
         button.pack(pady=10)
 
-        self.message_label = tk.Label(self.frame, text="", wraplength=200)
+        self.message_label = tk.Label(self.frame, text="", wraplength=400)
         self.message_label.pack(pady=5)
 
     def on_button_click(self):
@@ -58,4 +59,5 @@ class ConnectionTab:
 
         except Exception as error:
             print("Error connecting to database:", error)
+            self.on_failure_callback()
             self.message_label.config(text='Error: ' + str(error), fg="red")

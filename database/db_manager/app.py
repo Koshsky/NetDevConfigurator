@@ -9,19 +9,19 @@ class DatabaseApp:
     def __init__(self, root):
         self.init_root(root)
         self.create_tabs()
+        self.hide_all_tabs()
         self.connection = None
 
     def init_root(self, root):
         self.root = root
         self.root.title("Database Manager")
-        self.root.geometry("800x700")
+        self.root.geometry("500x600")
 
     def create_tabs(self):
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill='both', expand=True)
 
-        # СОЗДАЕМ ВКЛАДКИ
-        self.connection_tab = ConnectionTab(self.notebook, self.on_connection_success, self)
+        self.connection_tab = ConnectionTab(self.notebook, self.display_all_tabs, self.hide_all_tabs, self)
         self.notebook.add(self.connection_tab.frame, text="Connection")
 
         self.data_tab = DataTab(self.notebook, self)
@@ -39,21 +39,22 @@ class DatabaseApp:
         self.delete_tub = DataTab(self.notebook, self)
         self.notebook.add(self.delete_tub.frame, text="Delete")
 
-        # СКРЫВАЕМ ВКЛАДКИ ДО УСПЕШНОГО ПОДКЛЮЧЕНИЯ
-        self.notebook.hide(self.data_tab.frame)
-        self.notebook.hide(self.info_tab.frame)
-        self.notebook.hide(self.add_tub.frame)
-        self.notebook.hide(self.update_tub.frame)
-        self.notebook.hide(self.delete_tub.frame)
 
-    def on_connection_success(self):
-        # ОТОБРАЖАЕМ ВКЛАДКИ ПРИ УСПЕШНОМ ПОДЛКЮЧЕНИИ
+    def display_all_tabs(self):
         self.notebook.select(self.data_tab.frame)
         self.notebook.select(self.info_tab.frame)
         self.notebook.select(self.add_tub.frame)
         self.notebook.select(self.update_tub.frame)
         self.notebook.select(self.delete_tub.frame)
         self.notebook.select(self.connection_tab.frame)  # чтобы не изменять активную вкладку
+
+    def hide_all_tabs(self):
+        self.notebook.hide(self.data_tab.frame)
+        self.notebook.hide(self.info_tab.frame)
+        self.notebook.hide(self.add_tub.frame)
+        self.notebook.hide(self.update_tub.frame)
+        self.notebook.hide(self.delete_tub.frame)
+
 
 if __name__ == "__main__":
     root = tk.Tk()
