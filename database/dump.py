@@ -1,16 +1,16 @@
 import subprocess
 import os
 
-db_params = ['localhost', 'device_registry', 5432, 'postgres', 'postgres']
+db_params = ['localhost', "5432", "device_registry", 'postgres', 'postgres']
 
 def backup_postgres_db(db_params, dest_file):
     """Создание дампа базы данных с помощью pg_dump."""
-    host, database_name, port, user, password = db_params
+    host, port, database_name, user, password = db_params
     
     command = [
         'pg_dump',
         '-h', host,
-        '-p', str(port),
+        '-p', port,
         '-U', user,
         '-F', 'c',  # Формат дампа: custom
         '-f', dest_file,
@@ -35,7 +35,7 @@ def backup_postgres_db(db_params, dest_file):
 
 def restore_postgres_db(db_params, dump_file):
     """Восстановление базы данных с помощью pg_restore."""
-    host, database_name, port, user, password = db_params
+    host, port, database_name, user, password = db_params
 
     # Проверка существования файла дампа
     if not os.path.isfile(dump_file):
@@ -46,7 +46,7 @@ def restore_postgres_db(db_params, dump_file):
     drop_command = [
         'psql',
         '-h', host,
-        '-p', str(port),
+        '-p', port,
         '-U', user,
         '-c', f'DROP DATABASE IF EXISTS {database_name};'
     ]
@@ -54,7 +54,7 @@ def restore_postgres_db(db_params, dump_file):
     create_command = [
         'psql',
         '-h', host,
-        '-p', str(port),
+        '-p', port,
         '-U', user,
         '-c', f'CREATE DATABASE {database_name};'
     ]
@@ -87,7 +87,7 @@ def restore_postgres_db(db_params, dump_file):
         restore_command = [
             'pg_restore',
             '-h', host,
-            '-p', str(port),
+            '-p', port,
             '-U', user,
             '-d', database_name,
             dump_file
