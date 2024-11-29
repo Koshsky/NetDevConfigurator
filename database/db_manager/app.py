@@ -12,7 +12,7 @@ class DatabaseApp:
 
     def init_root(self, root):
         self.root = root
-        self.root.title("Admin Panel for Database")
+        self.root.title("Database Manager")
         self.root.geometry("800x700")
 
     def create_tabs(self):

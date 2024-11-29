@@ -22,7 +22,7 @@ class DataTab:
     def load_data(self, table_name):
         if self.app.connection is None:
             self.data_text.delete(1.0, tk.END)
-            self.data_text.insert(tk.END, "Ошибка: Нет соединения с базой данных.")
+            self.data_text.insert(tk.END, "Error: No connection to the database.")
             return
 
         try:

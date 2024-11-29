@@ -30,7 +30,7 @@ class ConnectionTab:
             entry.pack(pady=5)
             self.entries.append(entry)
 
-        button = tk.Button(self.frame, text="Подключиться", command=self.on_button_click)
+        button = tk.Button(self.frame, text="Connect", command=self.on_button_click)
         button.pack(pady=10)
 
         self.message_label = tk.Label(self.frame, text="", wraplength=200)
@@ -38,7 +38,7 @@ class ConnectionTab:
 
     def on_button_click(self):
         db_params = [entry.get() for entry in self.entries]
-        print("Введенные данные:", db_params)
+        print("Entered data:", db_params)
 
         host, port, database_name, user, password = db_params
 
@@ -50,12 +50,12 @@ class ConnectionTab:
                 user=user,
                 password=password
             )
-            print("Успешное подключение к базе данных")
+            print("Successful connection to the database")
 
             self.app.connection = connection
             self.on_success_callback()
-            self.message_label.config(text="Подключение успешно.", fg="green")
+            self.message_label.config(text="Connection successful.", fg="green")
 
         except Exception as error:
-            print("Ошибка при подключении к базе данных:", error)
-            self.message_label.config(text='Ошибка: ' + str(error), fg="red")
+            print("Error connecting to database:", error)
+            self.message_label.config(text='Error: ' + str(error), fg="red")
