@@ -3,6 +3,7 @@ from tkinter import ttk
 
 from connection_tab import ConnectionTab
 from data_tab import DataTab
+from add_tab import AddTab
 
 class DatabaseApp:
     def __init__(self, root):
@@ -29,7 +30,7 @@ class DatabaseApp:
         self.info_tab = DataTab(self.notebook, self)
         self.notebook.add(self.info_tab.frame, text="Device info")
 
-        self.add_tub = DataTab(self.notebook, self)
+        self.add_tub = AddTab(self.notebook, self)
         self.notebook.add(self.add_tub.frame, text="Add")
 
         self.update_tub = DataTab(self.notebook, self)
