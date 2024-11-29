@@ -11,7 +11,7 @@ class AddTab:
 
     def create_widgets(self):
         # Первая строка
-        self.entity_1 = ttk.Label(self.frame, text="company")
+        self.entity_1 = ttk.Label(self.frame, text="company:")
         self.entity_1.grid(row=0, column=0, padx=5, pady=5)
 
         self.param_1_1 = ttk.Label(self.frame, text="name:")
@@ -23,7 +23,7 @@ class AddTab:
         self.button_1.grid(row=0, column=3, padx=5, pady=5)
 
         # Вторая строка
-        self.entity_2 = ttk.Label(self.frame, text="firmware")
+        self.entity_2 = ttk.Label(self.frame, text="firmware:")
         self.entity_2.grid(row=1, column=0, padx=5, pady=5)
 
         self.param_2_1 = ttk.Label(self.frame, text="name:")
@@ -35,30 +35,30 @@ class AddTab:
         self.button_2.grid(row=1, column=3, padx=5, pady=5)
 
         # третий блок
-        self.entity_3 = ttk.Label(self.frame, text="device")
+        self.entity_3 = ttk.Label(self.frame, text="device:")
         self.entity_3.grid(row=2, column=0, padx=5, pady=5)
 
-        self.param_3_1 = ttk.Label(self.frame, text="name")
+        self.param_3_1 = ttk.Label(self.frame, text="name:")
         self.param_3_1.grid(row=2, column=1, padx=5, pady=5)
         self.field_3_1 = ttk.Entry(self.frame)
         self.field_3_1.grid(row=2, column=2, padx=5, pady=5)
 
-        self.param_3_2 = ttk.Label(self.frame, text="company")
+        self.param_3_2 = ttk.Label(self.frame, text="company:")
         self.param_3_2.grid(row=3, column=1, padx=5, pady=5)
         self.field_3_2 = ttk.Entry(self.frame)
         self.field_3_2.grid(row=3, column=2, padx=5, pady=5)
 
-        self.param_3_3 = ttk.Label(self.frame, text="dev_type")
+        self.param_3_3 = ttk.Label(self.frame, text="dev_type:")
         self.param_3_3.grid(row=4, column=1, padx=5, pady=5)
         self.field_3_3 = ttk.Entry(self.frame)
         self.field_3_3.grid(row=4, column=2, padx=5, pady=5)
 
-        self.param_3_4 = ttk.Label(self.frame, text="prim_conf")
+        self.param_3_4 = ttk.Label(self.frame, text="prim_conf:")
         self.param_3_4.grid(row=5, column=1, padx=5, pady=5)
         self.field_3_4 = ttk.Entry(self.frame)
         self.field_3_4.grid(row=5, column=2, padx=5, pady=5)
 
-        self.param_3_5 = ttk.Label(self.frame, text="port_num")
+        self.param_3_5 = ttk.Label(self.frame, text="port_num:")
         self.param_3_5.grid(row=6, column=1, padx=5, pady=5)
         self.field_3_5 = ttk.Entry(self.frame)
         self.field_3_5.grid(row=6, column=2, padx=5, pady=5)
