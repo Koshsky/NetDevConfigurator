@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 
-from connection_tab import ConnectionTab
-from data_tab import DataTab
-from add_tab import AddTab
+from database.connection_tab import ConnectionTab
+from database.data_tab import DataTab
+from database.add_tab import AddTab
 
 class DatabaseApp:
     def __init__(self, root):

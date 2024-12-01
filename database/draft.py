@@ -1,88 +1,84 @@
-# demo.py
-
+import tkinter as tk
+from tkinter import messagebox
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
+from models.base import Base
 from services.company_service import CompanyService
 from services.device_service import DeviceService
 from services.firmware_service import FirmwareService
-from models.base import Base  # Предполагается, что у вас есть файл base.py
-from models.company import Company
-from models.device import Device
-from models.firmware import Firmware
+from services.device_firmware_service import DeviceFirmwareService
+from models.db import create_engine_and_session
 
-# Настройки подключения к базе данных
-DATABASE_URL = 'sqlite:///example.db'  # Замените на вашу строку подключения
+class DatabaseApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Управление базой данных")
 
-# Создание движка и сессии
-engine = create_engine(DATABASE_URL)
-Base.metadata.create_all(engine)
-Session = sessionmaker(bind=engine)
+        # Поля для ввода данных
+        tk.Label(root, text="Имя пользователя:").grid(row=0, column=0)
+        self.user_entry = tk.Entry(root)
+        self.user_entry.grid(row=0, column=1)
 
-def main():
-    # Создаем сессию
-    session = Session()
+        tk.Label(root, text="Пароль:").grid(row=1, column=0)
+        self.password_entry = tk.Entry(root, show="*")
+        self.password_entry.grid(row=1, column=1)
 
-    # Инициализируем сервисы
-    company_service = CompanyService(session)
-    device_service = DeviceService(session)
-    firmware_service = FirmwareService(session)
+        tk.Label(root, text="Хост:").grid(row=2, column=0)
+        self.host_entry = tk.Entry(root)
+        self.host_entry.grid(row=2, column=1)
 
-    # Демонстрация работы с CompanyService
-    print("Создание компании...")
-    company = company_service.create_company(name="Tech Corp", address="123 Tech Lane")
-    print(f"Создана компания: {company.id}, {company.name}, {company.address}")
+        tk.Label(root, text="Порт:").grid(row=3, column=0)
+        self.port_entry = tk.Entry(root)
+        self.port_entry.grid(row=3, column=1)
 
-    print("\nПолучение всех компаний...")
-    companies = company_service.get_all_companies()
-    for c in companies:
-        print(f"Компания: {c.id}, {c.name}, {c.address}")
+        tk.Label(root, text="Имя базы данных:").grid(row=4, column=0)
+        self.database_entry = tk.Entry(root)
+        self.database_entry.grid(row=4, column=1)
 
-    print("\nОбновление компании...")
-    updated_company = company_service.update_company(company.id, address="456 New Tech Lane")
-    print(f"Обновленная компания: {updated_company.id}, {updated_company.name}, {updated_company.address}")
+        # Кнопка для подключения
+        self.connect_button = tk.Button(root, text="Подключиться", command=self.connect_to_database)
+        self.connect_button.grid(row=5, columnspan=2)
 
-    print("\nУдаление компании...")
-    company_service.delete_company(company.id)
-    print("Компания удалена.")
+        # Поля для управления компаниями
+        tk.Label(root, text="Имя компании:").grid(row=6, column=0)
+        self.company_name_entry = tk.Entry(root)
+        self.company_name_entry.grid(row=6, column=1)
 
-    # Демонстрация работы с DeviceService
-    print("\nСоздание устройства...")
-    device = device_service.create_device(name="Device A", company_id=company.id)
-    print(f"Создано устройство: {device.id}, {device.name}")
+        self.company_service = None
 
-    print("\nПолучение всех устройств...")
-    devices = device_service.get_all_devices()
-    for d in devices:
-        print(f"Устройство: {d.id}, {d.name}")
+    def connect_to_database(self):
+        user = self.user_entry.get()
+        password = self.password_entry.get()
+        host = self.host_entry.get() or "localhost"
+        port = self.port_entry.get() or "5432"
+        database = self.database_entry.get()
 
-    print("\nОбновление устройства...")
-    updated_device = device_service.update_device(device.id, name="Device A Updated")
-    print(f"Обновленное устройство: {updated_device.id}, {updated_device.name}")
+        try:
+            DATABASE_URL = f'postgresql://{user}:{password}@{host}:{port}/{database}'
+            engine = create_engine(DATABASE_URL)
+            Base.metadata.create_all(engine)
+            Session = scoped_session(sessionmaker(bind=engine))
+            session = Session()
 
-    print("\nУдаление устройства...")
-    device_service.delete_device(device.id)
-    print("Устройство удалено.")
+            # Инициализация сервисов
+            self.company_service = CompanyService(session)
 
-    # Демонстрация работы с FirmwareService
-    print("\nСоздание прошивки...")
-    firmware = firmware_service.create_firmware(version="1.0.0")
-    print(f"Создана прошивка: {firmware.id}, {firmware.version}")
+            messagebox.showinfo("Успех", "Подключение к базе данных успешно!")
+        except Exception as e:
+            messagebox.showerror("Ошибка", f"Не удалось подключиться к базе данных:\n{e}")
 
-    print("\nПолучение всех прошивок...")
-    firmwares = firmware_service.get_all_firmwares()
-    for f in firmwares:
-        print(f"Прошивка: {f.id}, {f.version}")
-
-    print("\nОбновление прошивки...")
-    updated_firmware = firmware_service.update_firmware(firmware.id, version="1.0.1")
-    print(f"Обновленная прошивка: {updated_firmware.id}, {updated_firmware.version}")
-
-    print("\nУдаление прошивки...")
-    firmware_service.delete_firmware(firmware.id)
-    print("Прошивка удалена.")
-
-    # Закрываем сессию
-    session.close()
+    def add_company(self):
+        company_name = self.company_name_entry.get()
+        if company_name:
+            try:
+                self.company_service.create_company(company_name)
+                messagebox.showinfo("Успех", "Компания добавлена!")
+            except Exception as e:
+                messagebox.showerror("Ошибка", f"Не удалось добавить компанию:\n{e}")
+        else:
+            messagebox.showwarning("Предупреждение", "Введите имя компании.")
 
 if __name__ == "__main__":
-    main()
+    root = tk.Tk()
+    app = DatabaseApp(root)
+    root.mainloop()

@@ -1,7 +1,7 @@
 # services/company_service.py
 
 from sqlalchemy.orm import Session
-from ..models.company import Company  # Предполагается, что модели находятся в папке models
+from database.models.company import Company
 
 class CompanyService:
     def __init__(self, session: Session):
