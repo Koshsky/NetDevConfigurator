@@ -1,6 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 import psycopg2
+import os
+
+
+firmware_folder = "../../firmwares/"
 
 class AddTab:
     def __init__(self, parent, app):
@@ -73,19 +77,35 @@ class AddTab:
         self.feedback_text.config(state=tk.DISABLED)
 
     def display_feedback(self, message):
-        self.feedback_text.config(state=tk.NORMAL)  # Разрешаем редактирование текстового поля
-        self.feedback_text.delete(1.0, tk.END)  # Очищаем текстовое поле
-        self.feedback_text.insert(tk.END, message)  # Вставляем новое сообщение
-        self.feedback_text.config(state=tk.DISABLED)  # Снова делаем текстовое поле только для чтения
+        self.feedback_text.config(state=tk.NORMAL)
+        self.feedback_text.delete(1.0, tk.END)
+        self.feedback_text.insert(tk.END, message)
+        self.feedback_text.config(state=tk.DISABLED)
         print(message)
 
     def on_button_click(self, button_name):
         print(f"{button_name} clicked")
 
     def submit_company(self):
+        company_name = self.field_1_1.get().strip()  # Получаем имя и убираем лишние пробелы
+
+        if not company_name:
+            self.display_feedback("Error: Company name cannot be empty.")
+            return
+
         try:
             cursor = self.app.connection.cursor()
-            cursor.execute("INSERT INTO companies (name) VALUES (%s)", (self.field_1_1.get(),))
+
+            # Проверка на наличие company_name в таблице
+            cursor.execute("SELECT COUNT(*) FROM companies WHERE name = %s", (company_name,))
+            count = cursor.fetchone()[0]
+
+            if count > 0:
+                self.display_feedback(f"Error: company '{company_name}' already exists in the table.")
+                return
+
+            # Вставка нового company_name в таблицу
+            cursor.execute("INSERT INTO companies (name) VALUES (%s)", (company_name,))
             self.app.connection.commit()
             self.display_feedback("Successfully added to the companies table.")
         except Exception as e:
@@ -94,14 +114,34 @@ class AddTab:
             cursor.close()
 
     def submit_firmware(self):
+        firmware_name = self.field_2_1.get().strip()  # Получаем имя и убираем лишние пробелы
+
+        if not firmware_name:
+            self.display_feedback("Error: Firmware name cannot be empty.")
+            return
+
+        firmware_path = os.path.join(firmware_folder, firmware_name)
+        if not os.path.isfile(firmware_path):
+            self.display_feedback(f"Error: file '{firmware_name}' not found in firmwares folder.")
+            return
+
         try:
             cursor = self.app.connection.cursor()
-            # TODO: сделать проверку имени и наличия файла
-            cursor.execute("INSERT INTO firmwares (name) VALUES (%s)", (self.field_1_1.get(),))
+
+            # Проверка на наличие firmware_name в таблице
+            cursor.execute("SELECT COUNT(*) FROM firmwares WHERE name = %s", (firmware_name,))
+            count = cursor.fetchone()[0]
+
+            if count > 0:
+                self.display_feedback(f"Error: firmware '{firmware_name}' already exists in the table.")
+                return
+
+            # Вставка нового firmware_name в таблицу
+            cursor.execute("INSERT INTO firmwares (name) VALUES (%s)", (firmware_name,))
             self.app.connection.commit()
             self.display_feedback("Successfully added to the firmwares table.")
         except Exception as e:
-            self.display_feedback(f"Error adding to firmwares table: {e}")
+            self.display_feedback(f"Error when adding firmware to the table: {e}")
         finally:
             cursor.close()
 
