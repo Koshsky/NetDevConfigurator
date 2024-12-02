@@ -12,11 +12,10 @@ class DataTab(BaseTab):
         super().__init__(parent, app, "")
 
     def create_widgets(self):
-        cur_row = 0
-        cur_row = self.create_button_in_line(cur_row, "Companies", self.load_companies)
-        cur_row = self.create_button_in_line(cur_row, "Devices", self.load_devices)
-        cur_row = self.create_button_in_line(cur_row, "Firmwares", self.load_firmwares)
-        self.create_feedback_area(cur_row)
+        self.create_button_in_line("Companies", self.load_companies)
+        self.create_button_in_line("Devices", self.load_devices)
+        self.create_button_in_line("Firmwares", self.load_firmwares)
+        self.create_feedback_area()
 
     def load_companies(self):
         if self.app.session is None:

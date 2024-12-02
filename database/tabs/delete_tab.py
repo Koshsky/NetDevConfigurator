@@ -14,11 +14,10 @@ class DeleteTab(BaseTab):
         super().__init__(parent, app, "DELETE")
 
     def create_widgets(self):
-        cur_row = 0
-        cur_row = self.create_block(cur_row, "company", ["name"], self.delete_company)
-        cur_row = self.create_block(cur_row, "firmware", ["name"], self.delete_firmware)
-        cur_row = self.create_block(cur_row, "device", ["name"], self.delete_device)
-        cur_row = self.create_feedback_area(cur_row)
+        self.create_block("company", ["name"], self.delete_company)
+        self.create_block("firmware", ["name"], self.delete_firmware)
+        self.create_block("device", ["name"], self.delete_device)
+        self.create_feedback_area()
 
     def delete_company(self):
         name = self.fields["company"]["name"].get()

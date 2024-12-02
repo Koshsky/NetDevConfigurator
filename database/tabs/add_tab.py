@@ -15,12 +15,10 @@ class AddTab(BaseTab):
         super().__init__(parent, app, button_text="SUBMIT")
 
     def create_widgets(self):
-        cur_row = 0
-        cur_row = self.create_block(cur_row, "company", ["name"], self.submit_company)
-        cur_row = self.create_block(cur_row, "firmware", ["folder"], self.submit_firmwares_from_folder)
-        cur_row = self.create_block(cur_row, "device", ["name", "company", "dev_type", "primary_conf", "port_num"], self.submit_device)
-        cur_row = self.create_feedback_area(cur_row)
-        return cur_row + 1
+        self.create_block("company", ["name"], self.submit_company)
+        self.create_block("firmware", ["folder"], self.submit_firmwares_from_folder)
+        self.create_block("device", ["name", "company", "dev_type", "primary_conf", "port_num"], self.submit_device)
+        self.create_feedback_area()
     
     def submit_device(self):
         device_name = self.fields["device"]["name"].get().strip()

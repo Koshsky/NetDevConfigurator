@@ -1,46 +1,22 @@
 import tkinter as tk
 from tkinter import ttk
+
 from database.models.models import Companies, Devices, Firmwares
 from database.services.device_service import DeviceService  # Assuming you have a DeviceService
 from database.services.firmware_service import FirmwareService
 
-firmware_folder = "./firmwares/"
+from .base_tab import BaseTab
 
-class InfoTab:
+class InfoTab(BaseTab):
     def __init__(self, parent, app):
-        self.frame = ttk.Frame(parent)
-        self.app = app
-        self.cur_row = 0  # Use self.cur_row to keep track of rows
-        self.create_widgets()
-        self.frame.pack(padx=10, pady=10)
+        super().__init__(parent, app, "SHOW")
 
     def create_widgets(self):
-        ttk.Label(self.frame, text="Device:").grid(row=self.cur_row, column=0, padx=5, pady=5)
-
-        ttk.Label(self.frame, text="Name:").grid(row=self.cur_row, column=1, padx=5, pady=5)
-        self.field_3_1 = ttk.Entry(self.frame)
-        self.field_3_1.grid(row=self.cur_row, column=2, padx=5, pady=5)
-
-        delete_button = tk.Button(self.frame, text="SHOW", command=self.show_information)
-        delete_button.grid(row=self.cur_row, column=3, padx=5, pady=5)
-
-        self.cur_row += 1
-
-        # Feedback text area
-        self.feedback_text = tk.Text(self.frame, wrap='word', width=50, height=10)
-        self.feedback_text.grid(row=self.cur_row, column=0, columnspan=4, padx=5, pady=5)
-        self.feedback_text.insert(tk.END, "Feedback will be here...\n")
-        self.feedback_text.config(state=tk.DISABLED)
-
-    def display_feedback(self, message):
-        self.feedback_text.config(state=tk.NORMAL)
-        self.feedback_text.delete(1.0, tk.END)
-        self.feedback_text.insert(tk.END, message)
-        self.feedback_text.config(state=tk.DISABLED)
-        print(message)
+        self.create_block("device", ["name"], self.show_information)
+        self.create_feedback_area()
 
     def show_information(self):
-        name = self.field_3_1.get()
+        name = self.fields["device"]["name"].get()
         if not name:
             self.display_feedback("Please enter a device name.")
             return
