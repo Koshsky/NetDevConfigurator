@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 from sqlalchemy.orm import Session
-from .services.company_service import CompanyService
-from .services.device_service import DeviceService
-from .services.firmware_service import FirmwareService
+from database.services.company_service import CompanyService
+from database.services.device_service import DeviceService
+from database.services.firmware_service import FirmwareService
 
 class DataTab:
     def __init__(self, parent, app):

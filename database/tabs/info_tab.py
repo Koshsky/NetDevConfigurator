@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
-from .models.models import Companies, Devices, Firmwares
-from .services.device_service import DeviceService  # Assuming you have a DeviceService
-from .services.firmware_service import FirmwareService
+from database.models.models import Companies, Devices, Firmwares
+from database.services.device_service import DeviceService  # Assuming you have a DeviceService
+from database.services.firmware_service import FirmwareService
 
 firmware_folder = "./firmwares/"
 
