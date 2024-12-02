@@ -67,21 +67,21 @@ class AddTab:
 
         self.param_3_2 = ttk.Label(self.frame, text="company:")  # TODO: изменить на выпадающий список
         self.param_3_2.grid(row=cur_row, column=1, padx=5, pady=5)
-        self.field_3_2 = ttk.Entry(self.frame)
+        self.field_3_2 = ttk.Combobox(self.frame, values=["Eltex", "Zyxel"])
         self.field_3_2.grid(row=cur_row, column=2, padx=5, pady=5)
 
         cur_row += 1
 
         self.param_3_3 = ttk.Label(self.frame, text="dev_type:")  # TODO: изменить на выпадающий список
         self.param_3_3.grid(row=cur_row, column=1, padx=5, pady=5)
-        self.field_3_3 = ttk.Entry(self.frame)
+        self.field_3_3 = ttk.Combobox(self.frame, values=["router", "switch"])
         self.field_3_3.grid(row=cur_row, column=2, padx=5, pady=5)
 
         cur_row += 1
 
-        self.param_3_4 = ttk.Label(self.frame, text="prim_conf:")  # TODO: изменить на выпадающий список
+        self.param_3_4 = ttk.Label(self.frame, text="primary_conf:")  # TODO: изменить на выпадающий список
         self.param_3_4.grid(row=cur_row, column=1, padx=5, pady=5)
-        self.field_3_4 = ttk.Entry(self.frame)
+        self.field_3_4 = ttk.Combobox(self.frame, values=["COM port + SSH", "SSH", "COM port + SNMP"])
         self.field_3_4.grid(row=cur_row, column=2, padx=5, pady=5)
 
         cur_row += 1
@@ -91,7 +91,7 @@ class AddTab:
         self.field_3_5 = ttk.Entry(self.frame)
         self.field_3_5.grid(row=cur_row, column=2, padx=5, pady=5)
 
-        self.button_3 = tk.Button(self.frame, text="SUBMIT", command=lambda: self.on_button_click("SUBMIT 3"))
+        self.button_3 = tk.Button(self.frame, text="SUBMIT", command=self.submit_device)
         self.button_3.grid(row=cur_row, column=3, padx=5, pady=5)
 
         cur_row += 1
@@ -109,8 +109,76 @@ class AddTab:
         self.feedback_text.config(state=tk.DISABLED)
         print(message)
 
-    def on_button_click(self, button_name):
-        print(f"{button_name} clicked")
+    
+    def submit_device(self):
+        # Retrieve the values from the input fields
+        device_name = self.field_3_1.get().strip()
+        company_name = self.field_3_2.get().strip()  # This should be a company name
+        dev_type = self.field_3_3.get().strip()
+        primary_conf = self.field_3_4.get().strip()
+        port_num = self.field_3_5.get().strip()
+
+        # Validate input fields
+        if not device_name:
+            self.display_feedback("Error: Device name cannot be empty.")
+            return
+        if not company_name:
+            self.display_feedback("Error: Company name cannot be empty.")
+            return
+        if dev_type == "":
+            self.display_feedback("Error: Select device type")
+            return
+        else:
+            if dev_type not in ("router", "switch"):
+                self.display_feedback("Error: Invalid device type. Please select 'router' or 'switch'.")
+                return
+            dev_type = 1 if dev_type == "router" else 2
+
+        if primary_conf == "":
+            self.display_feedback("Error: select primary configuration")
+            return
+        else:
+            if primary_conf == "COM port + SSH":
+                primary_conf = 1
+            elif primary_conf == "SSH":
+                primary_conf = 2
+            elif primary_conf == "COM port + SNMP":
+                if dev_type == 1:
+                    self.display_feedback("Error: COM port + SNMP is not supported for router.")
+                primary_conf = 3
+            else:
+                self.display_feedback("Error: Invalid primary configuration.")
+                return
+
+        if not port_num.isdigit():
+            self.display_feedback("Error: Port number must be a valid integer.")
+            return
+
+        try:
+            # Assuming you have a CompanyService method to get a company by name
+            company_service = self.app.company_service
+            existing_company = company_service.get_by_name(company_name)
+
+            if not existing_company:
+                self.display_feedback(f"Error: Company '{company_name}' does not exist.")
+                return
+
+
+            # Create a new device entry
+            new_device = Devices(
+                name=device_name,
+                company_id=existing_company.id,  # Use the ID of the existing company
+                dev_type=int(dev_type),
+                primary_conf=int(primary_conf),
+                port_num=int(port_num)
+            )
+            
+            # Use the DeviceService to create the new device
+            self.app.device_service.create(new_device)
+            self.display_feedback("Successfully added to the devices table.")
+
+        except Exception as e:
+            self.display_feedback(f"Error adding to devices table: {e}")
 
     def submit_company(self):
         company_name = self.field_1_1.get().strip()  # Get the name and remove extra spaces
@@ -186,3 +254,5 @@ class AddTab:
             self.display_feedback("Successfully added to the firmwares table.")
         except Exception as e:
             self.display_feedback(f"Error when adding firmware to the table: {e}")
+
+    

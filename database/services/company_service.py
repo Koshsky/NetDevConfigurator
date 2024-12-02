@@ -1,5 +1,3 @@
-# services/company_service.py
-
 from sqlalchemy.orm import Session
 from database.models.models import Companies
 
@@ -34,3 +32,6 @@ class CompanyService:
         self.db.delete(db_company)
         self.db.commit()
         return db_company
+
+    def get_by_name(self, name: str):
+        return self.db.query(Companies).filter(Companies.name == name).first()

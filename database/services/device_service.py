@@ -26,7 +26,7 @@ class DeviceService:
         db_device.name = device_data.name
         db_device.company_id = device_data.company_id
         db_device.dev_type = device_data.dev_type
-        db_device.prim_conf = device_data.prim_conf
+        db_device.primary_conf = device_data.primary_conf
         db_device.port_num = device_data.port_num
         db_device.model = device_data.model
         self.db.commit()

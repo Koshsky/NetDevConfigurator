@@ -33,7 +33,7 @@ class Firmwares(Base):
 class Devices(Base):
     __tablename__ = 'devices'
     __table_args__ = (
-        CheckConstraint('(prim_conf >= 1) AND (prim_conf <= 3)', name='devices_primary_conf_check'),
+        CheckConstraint('(primary_conf >= 1) AND (primary_conf <= 3)', name='devices_primary_conf_check'),
         CheckConstraint('dev_type = ANY (ARRAY[1, 2])', name='devices_dev_type_check'),
         ForeignKeyConstraint(['company_id'], ['companies.id'], ondelete='CASCADE', name='devices_company_id_fkey'),
         PrimaryKeyConstraint('id', name='devices_pkey')
@@ -43,7 +43,7 @@ class Devices(Base):
     name = Column(String, nullable=False)
     company_id = Column(Integer, nullable=False)
     dev_type = Column(Integer, nullable=False)
-    prim_conf = Column(Integer, nullable=False)
+    primary_conf = Column(Integer, nullable=False)
     port_num = Column(Integer, nullable=False)
     model = Column(Integer)
 
