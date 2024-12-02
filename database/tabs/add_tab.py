@@ -14,9 +14,7 @@ class AddTab:
         self.create_widgets()
         self.frame.pack(padx=10, pady=10)
 
-    def create_widgets(self):
-        # COMPANY BLOCK
-        cur_row = 0
+    def create_company_block(self, cur_row: int) -> int:
         self.entity_1 = ttk.Label(self.frame, text="company:")
         self.entity_1.grid(row=cur_row, column=0, padx=5, pady=5)
 
@@ -28,9 +26,9 @@ class AddTab:
         self.button_1 = tk.Button(self.frame, text="SUBMIT", command=self.submit_company)
         self.button_1.grid(row=cur_row, column=3, padx=5, pady=5)
 
-        cur_row += 1
+        return cur_row + 1
 
-        # FIRMWARE BLOCK
+    def create_firmware_block(self, cur_row: int) -> int:
         self.entity_2 = ttk.Label(self.frame, text="firmware:")
         self.entity_2.grid(row=cur_row, column=0, padx=5, pady=5)
 
@@ -43,7 +41,7 @@ class AddTab:
         self.button_2_1.grid(row=cur_row, column=3, padx=5, pady=5)
 
         cur_row += 1
-
+        
         self.param_2_2 = ttk.Label(self.frame, text="folder:")
         self.param_2_2.grid(row=cur_row, column=1, padx=5, pady=5)
         self.field_2_2 = ttk.Entry(self.frame)
@@ -52,9 +50,9 @@ class AddTab:
         self.button_2_2 = tk.Button(self.frame, text="SEARCH", command=self.submit_firmwares_from_folder)
         self.button_2_2.grid(row=cur_row, column=3, padx=5, pady=5)
 
-        cur_row += 1
+        return cur_row + 1
 
-        # DEVICE BLOCK (not modified, leaving as is)
+    def create_device_block(self, cur_row: int) -> int:
         self.entity_3 = ttk.Label(self.frame, text="device:")
         self.entity_3.grid(row=cur_row, column=0, padx=5, pady=5)
 
@@ -65,21 +63,21 @@ class AddTab:
 
         cur_row += 1
 
-        self.param_3_2 = ttk.Label(self.frame, text="company:")  # TODO: изменить на выпадающий список
+        self.param_3_2 = ttk.Label(self.frame, text="company:")
         self.param_3_2.grid(row=cur_row, column=1, padx=5, pady=5)
         self.field_3_2 = ttk.Combobox(self.frame, values=["Eltex", "Zyxel"])
         self.field_3_2.grid(row=cur_row, column=2, padx=5, pady=5)
 
         cur_row += 1
 
-        self.param_3_3 = ttk.Label(self.frame, text="dev_type:")  # TODO: изменить на выпадающий список
+        self.param_3_3 = ttk.Label(self.frame, text="dev_type:")
         self.param_3_3.grid(row=cur_row, column=1, padx=5, pady=5)
         self.field_3_3 = ttk.Combobox(self.frame, values=["router", "switch"])
         self.field_3_3.grid(row=cur_row, column=2, padx=5, pady=5)
 
         cur_row += 1
 
-        self.param_3_4 = ttk.Label(self.frame, text="primary_conf:")  # TODO: изменить на выпадающий список
+        self.param_3_4 = ttk.Label(self.frame, text="primary_conf:")
         self.param_3_4.grid(row=cur_row, column=1, padx=5, pady=5)
         self.field_3_4 = ttk.Combobox(self.frame, values=["COM port + SSH", "SSH", "COM port + SNMP"])
         self.field_3_4.grid(row=cur_row, column=2, padx=5, pady=5)
@@ -94,13 +92,21 @@ class AddTab:
         self.button_3 = tk.Button(self.frame, text="SUBMIT", command=self.submit_device)
         self.button_3.grid(row=cur_row, column=3, padx=5, pady=5)
 
-        cur_row += 1
+        return cur_row + 1
 
-        # Feedback text area
+    def create_feedback_area(self, cur_row: int) -> int:
         self.feedback_text = tk.Text(self.frame, wrap='word', width=50, height=10)
         self.feedback_text.grid(row=cur_row, column=0, columnspan=4, padx=5, pady=5)
         self.feedback_text.insert(tk.END, "Feedback will be here...\n")
         self.feedback_text.config(state=tk.DISABLED)
+        return cur_row + 1
+
+    def create_widgets(self):
+        cur_row = 0
+        cur_row = self.create_company_block(cur_row)
+        cur_row = self.create_firmware_block(cur_row)
+        cur_row = self.create_device_block(cur_row)
+        cur_row = self.create_feedback_area(cur_row)
 
     def display_feedback(self, message):
         self.feedback_text.config(state=tk.NORMAL)
