@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import os
+
+
 from database.models.models import Companies, DeviceFirmwares, Devices, Firmwares
 from database.services.company_service import CompanyService
 from database.services.firmware_service import FirmwareService
@@ -11,88 +13,26 @@ class AddTab:
     def __init__(self, parent, app):
         self.frame = ttk.Frame(parent)
         self.app = app
+        self.button_text = "SUBMIT"
+        self.fields = dict()
         self.create_widgets()
         self.frame.pack(padx=10, pady=10)
 
-    def create_company_block(self, cur_row: int) -> int:
-        self.entity_1 = ttk.Label(self.frame, text="company:")
-        self.entity_1.grid(row=cur_row, column=0, padx=5, pady=5)
+    def create_block(self, cur_row: int, block_name: str, list_params: list[str], function) -> int:
+        self.fields[block_name] = dict()
+        ttk.Label(self.frame, text=f"{block_name}:").grid(row=cur_row, column=0, padx=5, pady=5)
+        for param in list_params:
+            label = ttk.Label(self.frame, text=f"{param}")
+            label.grid(row=cur_row, column=1, padx=5, pady=5)
+            field = ttk.Entry(self.frame)
+            field.grid(row=cur_row, column=2, padx=5, pady=5)
+            self.fields[block_name][param] = field
+            cur_row += 1
 
-        self.param_1_1 = ttk.Label(self.frame, text="name:")
-        self.param_1_1.grid(row=cur_row, column=1, padx=5, pady=5)
-        self.field_1_1 = ttk.Entry(self.frame)
-        self.field_1_1.grid(row=cur_row, column=2, padx=5, pady=5)
+        self.button = tk.Button(self.frame, text=self.button_text, command=function)
+        self.button.grid(row=cur_row-1, column=3, padx=5, pady=5)
 
-        self.button_1 = tk.Button(self.frame, text="SUBMIT", command=self.submit_company)
-        self.button_1.grid(row=cur_row, column=3, padx=5, pady=5)
-
-        return cur_row + 1
-
-    def create_firmware_block(self, cur_row: int) -> int:
-        self.entity_2 = ttk.Label(self.frame, text="firmware:")
-        self.entity_2.grid(row=cur_row, column=0, padx=5, pady=5)
-
-        self.param_2_1 = ttk.Label(self.frame, text="name:")
-        self.param_2_1.grid(row=cur_row, column=1, padx=5, pady=5)
-        self.field_2_1 = ttk.Entry(self.frame)
-        self.field_2_1.grid(row=cur_row, column=2, padx=5, pady=5)
-
-        self.button_2_1 = tk.Button(self.frame, text="SUBMIT", command=self.submit_firmware)
-        self.button_2_1.grid(row=cur_row, column=3, padx=5, pady=5)
-
-        cur_row += 1
-        
-        self.param_2_2 = ttk.Label(self.frame, text="folder:")
-        self.param_2_2.grid(row=cur_row, column=1, padx=5, pady=5)
-        self.field_2_2 = ttk.Entry(self.frame)
-        self.field_2_2.grid(row=cur_row, column=2, padx=5, pady=5)
-
-        self.button_2_2 = tk.Button(self.frame, text="SEARCH", command=self.submit_firmwares_from_folder)
-        self.button_2_2.grid(row=cur_row, column=3, padx=5, pady=5)
-
-        return cur_row + 1
-
-    def create_device_block(self, cur_row: int) -> int:
-        self.entity_3 = ttk.Label(self.frame, text="device:")
-        self.entity_3.grid(row=cur_row, column=0, padx=5, pady=5)
-
-        self.param_3_1 = ttk.Label(self.frame, text="name:")
-        self.param_3_1.grid(row=cur_row, column=1, padx=5, pady=5)
-        self.field_3_1 = ttk.Entry(self.frame)
-        self.field_3_1.grid(row=cur_row, column=2, padx=5, pady=5)
-
-        cur_row += 1
-
-        self.param_3_2 = ttk.Label(self.frame, text="company:")
-        self.param_3_2.grid(row=cur_row, column=1, padx=5, pady=5)
-        self.field_3_2 = ttk.Combobox(self.frame, values=["Eltex", "Zyxel"])
-        self.field_3_2.grid(row=cur_row, column=2, padx=5, pady=5)
-
-        cur_row += 1
-
-        self.param_3_3 = ttk.Label(self.frame, text="dev_type:")
-        self.param_3_3.grid(row=cur_row, column=1, padx=5, pady=5)
-        self.field_3_3 = ttk.Combobox(self.frame, values=["router", "switch"])
-        self.field_3_3.grid(row=cur_row, column=2, padx=5, pady=5)
-
-        cur_row += 1
-
-        self.param_3_4 = ttk.Label(self.frame, text="primary_conf:")
-        self.param_3_4.grid(row=cur_row, column=1, padx=5, pady=5)
-        self.field_3_4 = ttk.Combobox(self.frame, values=["COM port + SSH", "SSH", "COM port + SNMP"])
-        self.field_3_4.grid(row=cur_row, column=2, padx=5, pady=5)
-
-        cur_row += 1
-
-        self.param_3_5 = ttk.Label(self.frame, text="port_num:")
-        self.param_3_5.grid(row=cur_row, column=1, padx=5, pady=5)
-        self.field_3_5 = ttk.Entry(self.frame)
-        self.field_3_5.grid(row=cur_row, column=2, padx=5, pady=5)
-
-        self.button_3 = tk.Button(self.frame, text="SUBMIT", command=self.submit_device)
-        self.button_3.grid(row=cur_row, column=3, padx=5, pady=5)
-
-        return cur_row + 1
+        return cur_row
 
     def create_feedback_area(self, cur_row: int) -> int:
         self.feedback_text = tk.Text(self.frame, wrap='word', width=50, height=10)
@@ -103,9 +43,9 @@ class AddTab:
 
     def create_widgets(self):
         cur_row = 0
-        cur_row = self.create_company_block(cur_row)
-        cur_row = self.create_firmware_block(cur_row)
-        cur_row = self.create_device_block(cur_row)
+        cur_row = self.create_block(cur_row, "company", ["name"], self.submit_company)
+        cur_row = self.create_block(cur_row, "firmware", ["folder"], self.submit_firmwares_from_folder)
+        cur_row = self.create_block(cur_row, "device", ["name", "company", "dev_type", "primary_conf", "port_num"], self.submit_device)
         cur_row = self.create_feedback_area(cur_row)
 
     def display_feedback(self, message):
@@ -117,14 +57,12 @@ class AddTab:
 
     
     def submit_device(self):
-        # Retrieve the values from the input fields
-        device_name = self.field_3_1.get().strip()
-        company_name = self.field_3_2.get().strip()  # This should be a company name
-        dev_type = self.field_3_3.get().strip()
-        primary_conf = self.field_3_4.get().strip()
-        port_num = self.field_3_5.get().strip()
+        device_name = self.fields["device"]["name"].get().strip()
+        company_name = self.fields["device"]["company"].get().strip()
+        dev_type = self.fields["device"]["dev_type"].get().strip()
+        primary_conf = self.fields["device"]["primary_conf"].get().strip()
+        port_num = self.fields["device"]["port_num"].get().strip()
 
-        # Validate input fields
         if not device_name:
             self.display_feedback("Error: Device name cannot be empty.")
             return
@@ -187,8 +125,7 @@ class AddTab:
             self.display_feedback(f"Error adding to devices table: {e}")
 
     def submit_company(self):
-        company_name = self.field_1_1.get().strip()  # Get the name and remove extra spaces
-
+        company_name = self.fields['company']['name'].get().strip()
         if not company_name:
             self.display_feedback("Error: Company name cannot be empty.")
             return
@@ -202,20 +139,19 @@ class AddTab:
             self.display_feedback(f"Error adding to companies table: {e}")
 
     def submit_firmwares_from_folder(self):
-        folder_name = self.field_2_2.get().strip()  # Get the folder name and remove extra spaces
-
-        if not folder_name:
+        company_name = self.fields['firmware']['folder'].get().strip()
+        if not company_name:
             self.display_feedback("Error: Folder name cannot be empty.")
             return
 
         # Check if the folder exists
-        if not os.path.isdir(folder_name):
-            self.display_feedback(f"Error: Folder '{folder_name}' does not exist.")
+        if not os.path.isdir(company_name):
+            self.display_feedback(f"Error: Folder '{company_name}' does not exist.")
             return
 
         try:
             # Iterate through all files in the folder
-            for filename in os.listdir(folder_name):
+            for filename in os.listdir(company_name):
                 firmware_name = filename.strip()  # Remove extra spaces
 
                 if not firmware_name:
@@ -234,31 +170,3 @@ class AddTab:
             self.display_feedback("Successfully added new firmwares from the folder.")
         except Exception as e:
             self.display_feedback(f"Error adding firmwares from folder: {e}")
-
-    def submit_firmware(self):
-        firmware_name = self.field_2_1.get().strip()  # Get the name and remove extra spaces
-
-        if not firmware_name:
-            self.display_feedback("Error: Firmware name cannot be empty.")
-            return
-
-        # firmware_path = os.path.join(firmware_folder, firmware_name)
-        # if not os.path.isfile(firmware_path):
-        #     self.display_feedback(f"Error: file '{firmware_name}' not found in firmwares folder.")
-        #     return
-
-        try:
-            # Check if firmware_name exists in the database
-            existing_firmwares = self.app.firmware_service.get_all()
-            if any(firmware.name == firmware_name for firmware in existing_firmwares):
-                self.display_feedback(f"Error: firmware '{firmware_name}' already exists in the table.")
-                return
-
-            # Create a new firmware entry
-            new_firmware = Firmwares(name=firmware_name)  # Assuming name is the only field needed
-            self.app.firmware_service.create(new_firmware)
-            self.display_feedback("Successfully added to the firmwares table.")
-        except Exception as e:
-            self.display_feedback(f"Error when adding firmware to the table: {e}")
-
-    
