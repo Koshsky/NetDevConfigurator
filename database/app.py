@@ -12,6 +12,7 @@ from .data_tab import DataTab
 from .add_tab import AddTab
 from .delete_tab import DeleteTab
 from .update_tab import UpdateTab
+from .info_tab import InfoTab
 
 from .services.company_service import CompanyService
 from .services.device_firmwares_service import DeviceFirmwaresService
@@ -48,7 +49,7 @@ class DatabaseApp:
         self.data_tab = DataTab(self.notebook, self)
         self.notebook.add(self.data_tab.frame, text="Tables")
 
-        self.info_tab = DataTab(self.notebook, self)
+        self.info_tab = InfoTab(self.notebook, self)
         self.notebook.add(self.info_tab.frame, text="Device info")
 
         self.add_tab = AddTab(self.notebook, self)
