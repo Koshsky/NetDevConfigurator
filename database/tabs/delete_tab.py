@@ -1,81 +1,27 @@
 import tkinter as tk
 from tkinter import ttk
+
 from database.models.models import Companies, Devices, Firmwares
 from database.services.company_service import CompanyService
 from database.services.device_service import DeviceService  # Assuming you have a DeviceService
 from database.services.firmware_service import FirmwareService
 
-firmware_folder = "./firmwares/"
+from .base_tab import BaseTab
 
-class DeleteTab:
+
+class DeleteTab(BaseTab):
     def __init__(self, parent, app):
-        self.frame = ttk.Frame(parent)
-        self.app = app
-        self.cur_row = 0  # Use self.cur_row to keep track of rows
-        self.create_widgets()
-        self.frame.pack(padx=10, pady=10)
+        super().__init__(parent, app, "DELETE")
 
     def create_widgets(self):
-        # COMPANY BLOCK
-        self.add_company_widgets()
-
-        # FIRMWARE BLOCK
-        self.add_firmware_widgets()
-
-        # DEVICE BLOCK
-        self.add_device_widgets()
-
-        # Feedback text area
-        self.feedback_text = tk.Text(self.frame, wrap='word', width=50, height=10)
-        self.feedback_text.grid(row=self.cur_row, column=0, columnspan=4, padx=5, pady=5)
-        self.feedback_text.insert(tk.END, "Feedback will be here...\n")
-        self.feedback_text.config(state=tk.DISABLED)
-
-    def add_company_widgets(self):
-        ttk.Label(self.frame, text="Company:").grid(row=self.cur_row, column=0, padx=5, pady=5)
-
-        ttk.Label(self.frame, text="Name:").grid(row=self.cur_row, column=1, padx=5, pady=5)
-        self.field_1_1 = ttk.Entry(self.frame)
-        self.field_1_1.grid(row=self.cur_row, column=2, padx=5, pady=5)
-
-        delete_button = tk.Button(self.frame, text="DELETE", command=self.delete_company)
-        delete_button.grid(row=self.cur_row, column=3, padx=5, pady=5)
-
-        self.cur_row += 1
-
-    def add_firmware_widgets(self):
-        ttk.Label(self.frame, text="Firmware:").grid(row=self.cur_row, column=0, padx=5, pady=5)
-
-        ttk.Label(self.frame, text="Name:").grid(row=self.cur_row, column=1, padx=5, pady=5)
-        self.field_2_1 = ttk.Entry(self.frame)
-        self.field_2_1.grid(row=self.cur_row, column=2, padx=5, pady=5)
-
-        delete_button = tk.Button(self.frame, text="DELETE", command=self.delete_firmware)
-        delete_button.grid(row=self.cur_row, column=3, padx=5, pady=5)
-
-        self.cur_row += 1
-
-    def add_device_widgets(self):
-        ttk.Label(self.frame, text="Device:").grid(row=self.cur_row, column=0, padx=5, pady=5)
-
-        ttk.Label(self.frame, text="Name:").grid(row=self.cur_row, column=1, padx=5, pady=5)
-        self.field_3_1 = ttk.Entry(self.frame)
-        self.field_3_1.grid(row=self.cur_row, column=2, padx=5, pady=5)
-
-        delete_button = tk.Button(self.frame, text="DELETE", command=self.delete_device)
-        delete_button.grid(row=self.cur_row, column=3, padx=5, pady=5)
-
-        self.cur_row += 1
-
-    def display_feedback(self, message):
-        self.feedback_text.config(state=tk.NORMAL)
-        self.feedback_text.delete(1.0, tk.END)
-        self.feedback_text.insert(tk.END, message)
-        self.feedback_text.config(state=tk.DISABLED)
-        print(message)
+        cur_row = 0
+        cur_row = self.create_block(cur_row, "company", ["name"], self.delete_company)
+        cur_row = self.create_block(cur_row, "firmware", ["name"], self.delete_firmware)
+        cur_row = self.create_block(cur_row, "device", ["name"], self.delete_device)
+        cur_row = self.create_feedback_area(cur_row)
 
     def delete_company(self):
-        name = self.field_1_1.get()
+        name = self.fields["company"]["name"].get()
         if not name:
             self.display_feedback("Please enter a company name.")
             return
@@ -90,7 +36,7 @@ class DeleteTab:
             self.display_feedback(f"Error deleting company: {e}")
 
     def delete_firmware(self):
-        name = self.field_2_1.get()
+        name = self.fields["firmware"]["name"].get()
         if not name:
             self.display_feedback("Please enter a firmware name.")
             return
@@ -105,7 +51,7 @@ class DeleteTab:
             self.display_feedback(f"Error deleting firmware: {e}")
 
     def delete_device(self):
-        name = self.field_3_1.get()
+        name = self.fields["device"]["name"].get()
         if not name:
             self.display_feedback("Please enter a device name.")
             return

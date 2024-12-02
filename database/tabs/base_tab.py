@@ -34,7 +34,7 @@ class BaseTab:
 
     def create_button_in_line(self, cur_row: int, text: str, function) -> int:
         button = tk.Button(self.frame, text=text, command=function)
-        button.grid(row=cur_row, column=0, pady=10)
+        button.grid(row=cur_row, column=0, pady=5, columnspan=5, sticky="ew")
 
         return cur_row + 1
 
