@@ -41,7 +41,7 @@ class ConnectionTab:
         db_params = {key: entry.get() for key, entry in self.entries.items()}
         print("Entered data:", db_params)
 
-        connection_string = f"postgresql://{user}:{password}@{host}:{port}/{database_name}"
+        connection_string = f"postgresql://{db_params['username']}:{db_params['password']}@{db_params['host']}:{db_params['port']}/{db_params['database']}"
 
         try:
             # Создание движка и попытка подключения
@@ -54,7 +54,7 @@ class ConnectionTab:
             self.on_success_callback(connection_string)  # Вызываем коллбек успеха
             self.message_label.config(text="Connection successful.", fg="green")
 
-        except SQLAlchemyError as error:
+        except BaseException as error:
             print("Error connecting to database:", error)
             self.on_failure_callback(error)  # Передаем ошибку в коллбек неудачи
             self.message_label.config(text='Error: ' + str(error), fg="red")

@@ -1,0 +1,8 @@
+ERROR:root:Connection failed: invalid literal for int() with base 10: '5432s'
+ERROR:root:Connection failed: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  database "deviasce_registry" does not exist
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+ERROR:root:Connection failed: (psycopg2.OperationalError) connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+connection to server at "localhost" (127.0.0.1), port 5432 failed: FATAL:  password authentication failed for user "postgres"
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)

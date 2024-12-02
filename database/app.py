@@ -81,7 +81,7 @@ class DatabaseApp:
         self.hide_all_tabs()
         self.session = None
         logging.error(f"Connection failed: {error}")  # Логирование ошибки
-        messagebox.showerror("Connection Error", f"Connection failed: {error}")  # Уведомление пользователя
+        # messagebox.showerror("Connection Error", f"Connection failed: {error}")  # Уведомление пользователя
         self.initialize_tabs_with_session()
 
 
