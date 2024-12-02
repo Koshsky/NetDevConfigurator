@@ -40,7 +40,7 @@ class DatabaseApp:
     def init_root(self, root):
         self.root = root
         self.root.title("Database Manager")
-        self.root.geometry("550x650")
+        self.root.geometry("850x650")
 
     def create_tabs(self):
         self.notebook = ttk.Notebook(self.root)

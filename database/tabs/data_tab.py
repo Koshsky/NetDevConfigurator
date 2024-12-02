@@ -55,10 +55,22 @@ class DataTab(BaseTab):
         if not rows:
             return "No data found."
         
-        column_names = [column.name for column in rows[0].__table__.columns]
-        table = "\t".join(column_names)  # headers
+        column_names = [column.name.ljust(15) for column in rows[0].__table__.columns]
+        table = "".join(column_names)  # headers
         for row in rows:
-            row_data = [str(getattr(row, column)) for column in column_names]
-            table += "\n" + "\t".join(row_data)
+            table += '\n'
+            for column in column_names:
+                column = column.strip()
+                if column == "dev_type":
+                    val = "router" if getattr(row, column) == 1 else "switch"
+                elif column == "primary_conf":
+                    val = ['COM port + SSH', 'SSH', 'COM port + SNMP'][getattr(row, column) - 1]
+                elif column == "company_id":
+                    company = self.app.company_service.get_by_id(getattr(row, column))
+                    val = company.name if company else "Unknown Company"
+                else:
+                    val = str(getattr(row, column))
+
+                table += val.ljust(15)
         return table
             
