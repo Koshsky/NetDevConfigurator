@@ -6,40 +6,13 @@ import os
 from database.models.models import Companies, DeviceFirmwares, Devices, Firmwares
 from database.services.company_service import CompanyService
 from database.services.firmware_service import FirmwareService
+from .base_tab import BaseTab
 
 firmware_folder = "./firmwares/"
 
-class AddTab:
+class AddTab(BaseTab):
     def __init__(self, parent, app):
-        self.frame = ttk.Frame(parent)
-        self.app = app
-        self.button_text = "SUBMIT"
-        self.fields = dict()
-        self.create_widgets()
-        self.frame.pack(padx=10, pady=10)
-
-    def create_block(self, cur_row: int, block_name: str, list_params: list[str], function) -> int:
-        self.fields[block_name] = dict()
-        ttk.Label(self.frame, text=f"{block_name}:").grid(row=cur_row, column=0, padx=5, pady=5)
-        for param in list_params:
-            label = ttk.Label(self.frame, text=f"{param}")
-            label.grid(row=cur_row, column=1, padx=5, pady=5)
-            field = ttk.Entry(self.frame)
-            field.grid(row=cur_row, column=2, padx=5, pady=5)
-            self.fields[block_name][param] = field
-            cur_row += 1
-
-        self.button = tk.Button(self.frame, text=self.button_text, command=function)
-        self.button.grid(row=cur_row-1, column=3, padx=5, pady=5)
-
-        return cur_row
-
-    def create_feedback_area(self, cur_row: int) -> int:
-        self.feedback_text = tk.Text(self.frame, wrap='word', width=50, height=10)
-        self.feedback_text.grid(row=cur_row, column=0, columnspan=4, padx=5, pady=5)
-        self.feedback_text.insert(tk.END, "Feedback will be here...\n")
-        self.feedback_text.config(state=tk.DISABLED)
-        return cur_row + 1
+        super().__init__(parent, app, button_text="SUBMIT")
 
     def create_widgets(self):
         cur_row = 0
@@ -47,14 +20,7 @@ class AddTab:
         cur_row = self.create_block(cur_row, "firmware", ["folder"], self.submit_firmwares_from_folder)
         cur_row = self.create_block(cur_row, "device", ["name", "company", "dev_type", "primary_conf", "port_num"], self.submit_device)
         cur_row = self.create_feedback_area(cur_row)
-
-    def display_feedback(self, message):
-        self.feedback_text.config(state=tk.NORMAL)
-        self.feedback_text.delete(1.0, tk.END)
-        self.feedback_text.insert(tk.END, message)
-        self.feedback_text.config(state=tk.DISABLED)
-        print(message)
-
+        return cur_row + 1
     
     def submit_device(self):
         device_name = self.fields["device"]["name"].get().strip()
