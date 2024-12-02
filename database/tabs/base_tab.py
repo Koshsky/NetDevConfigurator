@@ -34,11 +34,18 @@ class BaseTab:
 
         return cur_row
 
+    def create_button_in_line(self, cur_row: int, text: str, function) -> int:
+        button = tk.Button(self.frame, text=text, command=function)
+        button.grid(row=cur_row, column=2, pady=10, padx=5)
+
+        return cur_row + 1
+
     def create_feedback_area(self, cur_row: int) -> int:
-        self.feedback_text = tk.Text(self.frame, wrap='word', width=50, height=10)
+        self.feedback_text = tk.Text(self.frame, wrap='word', width=70, height=10)
         self.feedback_text.grid(row=cur_row, column=0, columnspan=4, padx=5, pady=5)
         self.feedback_text.insert(tk.END, "Feedback will be here...\n")
         self.feedback_text.config(state=tk.DISABLED)
+
         return cur_row + 1
 
     def display_feedback(self, message):
@@ -46,7 +53,6 @@ class BaseTab:
         self.feedback_text.delete(1.0, tk.END)
         self.feedback_text.insert(tk.END, message)
         self.feedback_text.config(state=tk.DISABLED)
-        print(message)
 
     def create_widgets(self):
         raise NotImplementedError
