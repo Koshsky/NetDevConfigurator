@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
-import psycopg2
 import os
 
+from database.services.firmware_service import FirmwareService
 
 firmware_folder = "../../firmwares/"
 
@@ -191,24 +191,17 @@ class AddTab:
             return
 
         try:
-            cursor = self.app.connection.cursor()
-
             # Проверка на наличие firmware_name в таблице
-            cursor.execute("SELECT COUNT(*) FROM firmwares WHERE name = %s", (firmware_name,))
-            count = cursor.fetchone()[0]
-
-            if count > 0:
+            existing_firmware = self.firmware_service.get_all_firmwares()
+            if any(f.version == firmware_name for f in existing_firmware):
                 self.display_feedback(f"Error: firmware '{firmware_name}' already exists in the table.")
                 return
 
             # Вставка нового firmware_name в таблицу
-            cursor.execute("INSERT INTO firmwares (name) VALUES (%s)", (firmware_name,))
-            self.app.connection.commit()
+            new_firmware = self.firmware_service.create_firmware(version=firmware_name)
             self.display_feedback("Successfully added to the firmwares table.")
         except Exception as e:
             self.display_feedback(f"Error when adding firmware to the table: {e}")
-        finally:
-            cursor.close()
 
 
 

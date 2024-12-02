@@ -1,11 +1,7 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
-import psycopg2
+from tkinter import ttk
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
-
-from database.models.base import Base
-from database.services.company_service import CompanyService
+from sqlalchemy.exc import SQLAlchemyError
 
 class ConnectionTab:
     def __init__(self, parent, on_success_callback, on_failure_callback, app):
@@ -14,7 +10,7 @@ class ConnectionTab:
         self.on_success_callback = on_success_callback
         self.on_failure_callback = on_failure_callback
 
-        self.fields = {  # Default values
+        self.fields = {  # значения по умолчанию
             "host": "localhost",
             "port": "5432",
             "database": "device_registry",
@@ -45,31 +41,20 @@ class ConnectionTab:
         db_params = {key: entry.get() for key, entry in self.entries.items()}
         print("Entered data:", db_params)
 
+        connection_string = f"postgresql://{user}:{password}@{host}:{port}/{database_name}"
+
         try:
-            connection = psycopg2.connect(
-                host=db_params["host"],
-                port=db_params["port"],
-                database=db_params["database"],
-                user=db_params["username"],
-                password=db_params["password"]
-            )
+            # Создание движка и попытка подключения
+            engine = create_engine(connection_string)
+            connection = engine.connect()  # Проверка подключения
+            connection.close()  # Закрытие подключения, если оно успешно
+
             print("Successful connection to the database")
-
-            # Create SQLAlchemy engine and session
-            DATABASE_URL = f'postgresql://{db_params["username"]}:{db_params["password"]}@{db_params["host"]}:{db_params["port"]}/{db_params["database"]}'
-            engine = create_engine(DATABASE_URL)
-            Base.metadata.create_all(engine)
-            Session = scoped_session(sessionmaker(bind=engine))
-            session = Session()
-
-            # Initialize services
-            self.app.company_service = CompanyService(session)
-
-            self.app.connection = connection
-            self.on_success_callback()
+            self.app.session = connection  # Устанавливаем сессию в приложении
+            self.on_success_callback(connection_string)  # Вызываем коллбек успеха
             self.message_label.config(text="Connection successful.", fg="green")
 
-        except Exception as error:
+        except SQLAlchemyError as error:
             print("Error connecting to database:", error)
-            self.on_failure_callback()
+            self.on_failure_callback(error)  # Передаем ошибку в коллбек неудачи
             self.message_label.config(text='Error: ' + str(error), fg="red")
