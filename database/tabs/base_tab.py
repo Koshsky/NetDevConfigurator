@@ -7,8 +7,6 @@ from database.models.models import Companies, DeviceFirmwares, Devices, Firmware
 from database.services.company_service import CompanyService
 from database.services.firmware_service import FirmwareService
 
-firmware_folder = "./firmwares/"
-
 class BaseTab:
     def __init__(self, parent, app, button_text):
         self.frame = ttk.Frame(parent)

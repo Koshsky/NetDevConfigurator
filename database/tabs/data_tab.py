@@ -73,4 +73,3 @@ class DataTab(BaseTab):
 
                 table += val.ljust(15)
         return table
-            
