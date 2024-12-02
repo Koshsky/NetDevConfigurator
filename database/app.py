@@ -7,12 +7,20 @@ from sqlalchemy import create_engine
 
 import logging
 
-from .tabs import *
-
-from .services.company_service import CompanyService
-from .services.device_firmwares_service import DeviceFirmwaresService
-from .services.device_service import DeviceService
-from .services.firmware_service import FirmwareService
+from .tabs import (
+        ConnectionTab,
+        InfoTab,
+        DataTab,
+        UpdateTab,
+        AddTab,
+        DeleteTab
+)
+from .services import (
+        CompanyService, 
+        DeviceFirmwaresService, 
+        DeviceService, 
+        FirmwareService
+)
 
 # Настройка логирования
 logging.basicConfig(filename='app.log', level=logging.ERROR)
