@@ -1,48 +1,36 @@
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
-from database.models.company import Company
-import logging
+# services/company_service.py
 
-logging.basicConfig(level=logging.INFO)
+from sqlalchemy.orm import Session
+from database.models.models import Companies
 
 class CompanyService:
-    def __init__(self, session: Session):
-        self.session = session
+    def __init__(self, db: Session):
+        self.db = db
 
-    def create_company(self, name: str, address: str = None) -> Company:
-        try:
-            new_company = Company(name=name, address=address)
-            self.session.add(new_company)
-            self.session.commit()
-            logging.info(f"Company created: {new_company}")
-            return new_company
-        except SQLAlchemyError as e:
-            self.session.rollback()
-            logging.error(f"Error creating company: {e}")
-            raise
+    def get_all(self):
+        return self.db.query(Companies).all()
 
-    def get_company(self, company_id: int) -> Company:
-        return self.session.query(Company).filter_by(id=company_id).first()
+    def get_by_id(self, company_id: int):
+        return self.db.query(Companies).filter(Companies.id == company_id).first()
 
-    def get_all_companies(self):
-        return self.session.query(Company).all()
-
-    def update_company(self, company_id: int, name: str = None, address: str = None) -> Company:
-        company = self.get_company(company_id)
-        if company:
-            if name:
-                company.name = name
-            if address:
-                company.address = address
-            self.session.commit()
-            logging.info(f"Company updated: {company}")
+    def create(self, company: Companies):
+        self.db.add(company)
+        self.db.commit()
+        self.db.refresh(company)
         return company
 
-    def delete_company(self, company_id: int) -> bool:
-        company = self.get_company(company_id)
-        if company:
-            self.session.delete(company)
-            self.session.commit()
-            logging.info(f"Company deleted: {company}")
-            return True
-        return False
+    def update(self, company_id: int, company_data: Companies):
+        db_company = self.get_by_id(company_id)
+        if not db_company:
+            return None
+        db_company.name = company_data.name
+        self.db.commit()
+        return db_company
+
+    def delete(self, company_id: int):
+        db_company = self.get_by_id(company_id)
+        if not db_company:
+            return None
+        self.db.delete(db_company)
+        self.db.commit()
+        return db_company

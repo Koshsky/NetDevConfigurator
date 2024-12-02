@@ -13,6 +13,7 @@ from .add_tab import AddTab
 
 # Настройка логирования
 logging.basicConfig(filename='app.log', level=logging.ERROR)
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 class DatabaseApp:
     def __init__(self, root):
@@ -69,20 +70,12 @@ class DatabaseApp:
         Session = sessionmaker(bind=engine)
         self.session = Session()
         self.display_all_tabs()
-        self.initialize_tabs_with_session()
-
-    def initialize_tabs_with_session(self):
-        for tab in self.notebook.tabs():
-            tab_instance = self.notebook.nametowidget(tab)
-            if hasattr(tab_instance, 'set_session'):
-                tab_instance.set_session(self.session)
 
     def on_failure_callback(self, error):
         self.hide_all_tabs()
+        self.session.remove()
         self.session = None
         logging.error(f"Connection failed: {error}")  # Логирование ошибки
-        # messagebox.showerror("Connection Error", f"Connection failed: {error}")  # Уведомление пользователя
-        self.initialize_tabs_with_session()
 
 
 if __name__ == "__main__":

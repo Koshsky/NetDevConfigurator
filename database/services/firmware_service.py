@@ -1,45 +1,36 @@
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
-from ..models.firmware import Firmware
-import logging
+# services/firmware_service.py
 
-logging.basicConfig(level=logging.INFO)
+from sqlalchemy.orm import Session
+from database.models.models import Firmwares
 
 class FirmwareService:
-    def __init__(self, session: Session):
-        self.session = session
+    def __init__(self, db: Session):
+        self.db = db
 
-    def create_firmware(self, version: str) -> Firmware:
-        try:
-            new_firmware = Firmware(version=version)
-            self.session.add(new_firmware)
-            self.session.commit()
-            logging.info(f"Firmware created: {new_firmware}")
-            return new_firmware
-        except SQLAlchemyError as e:
-            self.session.rollback()
-            logging.error(f"Error creating firmware: {e}")
-            raise
+    def get_all(self):
+        return self.db.query(Firmwares).all()
 
-    def get_firmware(self, firmware_id: int) -> Firmware:
-        return self.session.query(Firmware).filter_by(id=firmware_id).first()
+    def get_by_id(self, firmware_id: int):
+        return self.db.query(Firmwares).filter(Firmwares.id == firmware_id).first()
 
-    def get_all_firmwares(self):
-        return self.session.query(Firmware).all()
-
-    def update_firmware(self, firmware_id: int, version: str) -> Firmware:
-        firmware = self.get_firmware(firmware_id)
-        if firmware:
-            firmware.version = version
-            self.session.commit()
-            logging.info(f"Firmware updated: {firmware}")
+    def create(self, firmware: Firmwares):
+        self.db.add(firmware)
+        self.db.commit()
+        self.db.refresh(firmware)
         return firmware
 
-    def delete_firmware(self, firmware_id: int) -> bool:
-        firmware = self.get_firmware(firmware_id)
-        if firmware:
-            self.session.delete(firmware)
-            self.session.commit()
-            logging.info(f"Firmware deleted: {firmware}")
-            return True
-        return False
+    def update(self, firmware_id: int, firmware_data: Firmwares):
+        db_firmware = self.get_by_id(firmware_id)
+        if not db_firmware:
+            return None
+        db_firmware.name = firmware_data.name
+        self.db.commit()
+        return db_firmware
+
+    def delete(self, firmware_id: int):
+        db_firmware = self.get_by_id(firmware_id)
+        if not db_firmware:
+            return None
+        self.db.delete(db_firmware)
+        self.db.commit()
+        return db_firmware

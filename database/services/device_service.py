@@ -1,52 +1,41 @@
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
-from ..models.device import Device
-import logging
+# services/device_service.py
 
-logging.basicConfig(level=logging.INFO)
+from sqlalchemy.orm import Session
+from database.models.models import Devices
 
 class DeviceService:
-    def __init__(self, session: Session):
-        self.session = session
+    def __init__(self, db: Session):
+        self.db = db
 
-    def create_device(self, name: str, company_id: int) -> Device:
-        try:
-            new_device = Device(name=name, company_id=company_id)
-            self.session.add(new_device)
-            self.session.commit()
-            logging.info(f"Device created: {new_device}")
-            return new_device
-        except SQLAlchemyError as e:
-            self.session.rollback()
-            logging.error(f"Error creating device: {e}")
-            raise
+    def get_all(self):
+        return self.db.query(Devices).all()
 
-    def get_device(self, device_id: int) -> Device:
-        return self.session.query(Device).filter_by(id=device_id).first()
+    def get_by_id(self, device_id: int):
+        return self.db.query(Devices).filter(Devices.id == device_id).first()
 
-    def get_all_devices(self):
-        return self.session.query(Device).all()
-
-    def update_device(self, device_id: int, name: str = None) -> Device:
-        device = self.get_device(device_id)
-        if device:
-            if name:
-                device.name = name
-            self.session.commit()
-            logging.info(f"Device updated: {device}")
+    def create(self, device: Devices):
+        self.db.add(device)
+        self.db.commit()
+        self.db.refresh(device)
         return device
 
-    def delete_device(self, device_id: int) -> bool:
-        device = self.get_device(device_id)
-        if device:
-            self.session.delete(device)
-            self.session.commit()
-            logging.info(f"Device deleted: {device}")
-            return True
-        return False
+    def update(self, device_id: int, device_data: Devices):
+        db_device = self.get_by_id(device_id)
+        if not db_device:
+            return None
+        db_device.name = device_data.name
+        db_device.company_id = device_data.company_id
+        db_device.dev_type = device_data.dev_type
+        db_device.prim_conf = device_data.prim_conf
+        db_device.port_num = device_data.port_num
+        db_device.model = device_data.model
+        self.db.commit()
+        return db_device
 
-    def get_devices_by_company(self, company_id: int):
-        return self.session.query(Device).filter_by(company_id=company_id).all()
-
-    def get_devices_by_type(self, dev_type: str):
-        return self.session.query(Device).filter_by(dev_type=dev_type).all()
+    def delete(self, device_id: int):
+        db_device = self.get_by_id(device_id)
+        if not db_device:
+            return None
+        self.db.delete(db_device)
+        self.db.commit()
+        return db_device
