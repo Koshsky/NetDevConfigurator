@@ -236,10 +236,10 @@ class AddTab:
             self.display_feedback("Error: Firmware name cannot be empty.")
             return
 
-        firmware_path = os.path.join(firmware_folder, firmware_name)
-        if not os.path.isfile(firmware_path):
-            self.display_feedback(f"Error: file '{firmware_name}' not found in firmwares folder.")
-            return
+        # firmware_path = os.path.join(firmware_folder, firmware_name)
+        # if not os.path.isfile(firmware_path):
+        #     self.display_feedback(f"Error: file '{firmware_name}' not found in firmwares folder.")
+        #     return
 
         try:
             # Check if firmware_name exists in the database

@@ -11,9 +11,10 @@ from .connection_tab import ConnectionTab
 from .data_tab import DataTab
 from .add_tab import AddTab
 from .delete_tab import DeleteTab
+from .update_tab import UpdateTab
 
 from .services.company_service import CompanyService
-from .services.device_firmwares_service import DeviceFirmwareService
+from .services.device_firmwares_service import DeviceFirmwaresService
 from .services.device_service import DeviceService
 from .services.firmware_service import FirmwareService
 
@@ -35,7 +36,7 @@ class DatabaseApp:
     def init_root(self, root):
         self.root = root
         self.root.title("Database Manager")
-        self.root.geometry("500x600")
+        self.root.geometry("550x650")
 
     def create_tabs(self):
         self.notebook = ttk.Notebook(self.root)
@@ -53,7 +54,7 @@ class DatabaseApp:
         self.add_tab = AddTab(self.notebook, self)
         self.notebook.add(self.add_tab.frame, text="Add")
 
-        self.update_tab = DataTab(self.notebook, self)
+        self.update_tab = UpdateTab(self.notebook, self)
         self.notebook.add(self.update_tab.frame, text="Update")
 
         self.delete_tab = DeleteTab(self.notebook, self)
@@ -83,7 +84,7 @@ class DatabaseApp:
         self.company_service = CompanyService(self.session)
         self.firmware_service = FirmwareService(self.session)
         self.device_service = DeviceService(self.session)
-        self.device_firmware_service = DeviceFirmwareService(self.session)
+        self.device_firmware_service = DeviceFirmwaresService(self.session)
         print("session: ", self.session)
         self.display_all_tabs()
 
