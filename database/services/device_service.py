@@ -1,3 +1,8 @@
+from sqlalchemy.orm import Session
+from database.models.models import DeviceFirmwares
+
+from ..models.models import Devices
+
 class DeviceService:
     def __init__(self, db: Session):
         self.db = db

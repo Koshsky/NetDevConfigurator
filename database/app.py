@@ -10,6 +10,7 @@ import logging
 from .connection_tab import ConnectionTab
 from .data_tab import DataTab
 from .add_tab import AddTab
+from .delete_tab import DeleteTab
 
 from .services.company_service import CompanyService
 from .services.device_firmwares_service import DeviceFirmwareService
@@ -55,7 +56,7 @@ class DatabaseApp:
         self.update_tab = DataTab(self.notebook, self)
         self.notebook.add(self.update_tab.frame, text="Update")
 
-        self.delete_tab = DataTab(self.notebook, self)
+        self.delete_tab = DeleteTab(self.notebook, self)
         self.notebook.add(self.delete_tab.frame, text="Delete")
 
         self.hide_all_tabs()
