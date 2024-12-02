@@ -35,3 +35,11 @@ class CompanyService:
 
     def get_by_name(self, name: str):
         return self.db.query(Companies).filter(Companies.name == name).first()
+
+    def delete_by_name(self, name: str):
+        db_company = self.get_by_name(name)  # Reuse the existing get_by_name method
+        if not db_company:
+            return None  # Return None if the company does not exist
+        self.db.delete(db_company)  # Delete the company
+        self.db.commit()  # Commit the changes to the database
+        return db_company  # Return the deleted company object

@@ -1,8 +1,3 @@
-# services/device_service.py
-
-from sqlalchemy.orm import Session
-from database.models.models import Devices
-
 class DeviceService:
     def __init__(self, db: Session):
         self.db = db
@@ -39,3 +34,14 @@ class DeviceService:
         self.db.delete(db_device)
         self.db.commit()
         return db_device
+
+    def get_by_name(self, name: str):
+        return self.db.query(Devices).filter(Devices.name == name).first()
+
+    def delete_by_name(self, name: str):
+        db_device = self.get_by_name(name)  # Use the get_by_name method
+        if not db_device:
+            return None  # Return None if the device does not exist
+        self.db.delete(db_device)  # Delete the device
+        self.db.commit()  # Commit the changes to the database
+        return db_device  # Return the deleted device object
