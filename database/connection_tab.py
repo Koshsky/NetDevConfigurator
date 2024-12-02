@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
-import psycopg2
-
+from sqlalchemy import create_engine
+from sqlalchemy.exc import SQLAlchemyError
 
 class ConnectionTab:
     def __init__(self, parent, on_success_callback, on_failure_callback, app):
@@ -10,7 +10,7 @@ class ConnectionTab:
         self.on_success_callback = on_success_callback
         self.on_failure_callback = on_failure_callback
 
-        self.fields = {  # values for default
+        self.fields = {  # значения по умолчанию
             "host": "localhost",
             "port": "5432",
             "database": "device_registry",
@@ -26,7 +26,7 @@ class ConnectionTab:
             label = tk.Label(self.frame, text=label_text)
             label.pack(pady=5)
 
-            entry = tk.Entry(self.frame)
+            entry = tk.Entry(self.frame, show="*" if label_text == "password" else "")
             entry.insert(0, default_value)
             entry.pack(pady=5)
             self.entries.append(entry)
@@ -43,21 +43,20 @@ class ConnectionTab:
 
         host, port, database_name, user, password = db_params
 
-        try:
-            connection = psycopg2.connect(
-                host=host,
-                port=port,
-                database=database_name,
-                user=user,
-                password=password
-            )
-            print("Successful connection to the database")
+        connection_string = f"postgresql://{user}:{password}@{host}:{port}/{database_name}"
 
-            self.app.connection = connection
-            self.on_success_callback()
+        try:
+            # Создание движка и попытка подключения
+            engine = create_engine(connection_string)
+            connection = engine.connect()  # Проверка подключения
+            connection.close()  # Закрытие подключения, если оно успешно
+
+            print("Successful connection to the database")
+            self.app.session = connection  # Устанавливаем сессию в приложении
+            self.on_success_callback(connection_string)  # Вызываем коллбек успеха
             self.message_label.config(text="Connection successful.", fg="green")
 
-        except Exception as error:
+        except SQLAlchemyError as error:
             print("Error connecting to database:", error)
-            self.on_failure_callback()
+            self.on_failure_callback(error)  # Передаем ошибку в коллбек неудачи
             self.message_label.config(text='Error: ' + str(error), fg="red")

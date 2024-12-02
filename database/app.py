@@ -1,16 +1,24 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 
-from connection_tab import ConnectionTab
-from data_tab import DataTab
-from add_tab import AddTab
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+
+import logging
+
+from .connection_tab import ConnectionTab
+from .data_tab import DataTab
+from .add_tab import AddTab
+
+# Настройка логирования
+logging.basicConfig(filename='app.log', level=logging.ERROR)
 
 class DatabaseApp:
     def __init__(self, root):
         self.init_root(root)
         self.create_tabs()
-        self.hide_all_tabs()
-        self.connection = None
+        self.session = None
 
     def init_root(self, root):
         self.root = root
@@ -21,7 +29,7 @@ class DatabaseApp:
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill='both', expand=True)
 
-        self.connection_tab = ConnectionTab(self.notebook, self.display_all_tabs, self.hide_all_tabs, self)
+        self.connection_tab = ConnectionTab(self.notebook, self.on_success_callback, self.on_failure_callback, self)
         self.notebook.add(self.connection_tab.frame, text="Connection")
 
         self.data_tab = DataTab(self.notebook, self)
@@ -30,30 +38,51 @@ class DatabaseApp:
         self.info_tab = DataTab(self.notebook, self)
         self.notebook.add(self.info_tab.frame, text="Device info")
 
-        self.add_tub = AddTab(self.notebook, self)
-        self.notebook.add(self.add_tub.frame, text="Add")
+        self.add_tab = AddTab(self.notebook, self)
+        self.notebook.add(self.add_tab.frame, text="Add")
 
-        self.update_tub = DataTab(self.notebook, self)
-        self.notebook.add(self.update_tub.frame, text="Update")
+        self.update_tab = DataTab(self.notebook, self)
+        self.notebook.add(self.update_tab.frame, text="Update")
 
-        self.delete_tub = DataTab(self.notebook, self)
-        self.notebook.add(self.delete_tub.frame, text="Delete")
+        self.delete_tab = DataTab(self.notebook, self)
+        self.notebook.add(self.delete_tab.frame, text="Delete")
 
+        self.hide_all_tabs()
 
     def display_all_tabs(self):
         self.notebook.select(self.data_tab.frame)
         self.notebook.select(self.info_tab.frame)
-        self.notebook.select(self.add_tub.frame)
-        self.notebook.select(self.update_tub.frame)
-        self.notebook.select(self.delete_tub.frame)
+        self.notebook.select(self.add_tab.frame)
+        self.notebook.select(self.update_tab.frame)
+        self.notebook.select(self.delete_tab.frame)
         self.notebook.select(self.connection_tab.frame)  # чтобы не изменять активную вкладку
 
     def hide_all_tabs(self):
         self.notebook.hide(self.data_tab.frame)
         self.notebook.hide(self.info_tab.frame)
-        self.notebook.hide(self.add_tub.frame)
-        self.notebook.hide(self.update_tub.frame)
-        self.notebook.hide(self.delete_tub.frame)
+        self.notebook.hide(self.add_tab.frame)
+        self.notebook.hide(self.update_tab.frame)
+        self.notebook.hide(self.delete_tab.frame)
+
+    def on_success_callback(self, connection_string):
+        engine = create_engine(connection_string)
+        Session = sessionmaker(bind=engine)
+        self.session = Session()
+        self.display_all_tabs()
+        self.initialize_tabs_with_session()
+
+    def initialize_tabs_with_session(self):
+        for tab in self.notebook.tabs():
+            tab_instance = self.notebook.nametowidget(tab)
+            if hasattr(tab_instance, 'set_session'):
+                tab_instance.set_session(self.session)
+
+    def on_failure_callback(self, error):
+        self.hide_all_tabs()
+        self.session = None
+        logging.error(f"Connection failed: {error}")  # Логирование ошибки
+        messagebox.showerror("Connection Error", f"Connection failed: {error}")  # Уведомление пользователя
+        self.initialize_tabs_with_session()
 
 
 if __name__ == "__main__":
