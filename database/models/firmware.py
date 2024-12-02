@@ -1,15 +1,12 @@
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship  # Импортируем relationship
+from sqlalchemy.ext.declarative import declarative_base
 from .base import Base
 
 class Firmware(Base):
     __tablename__ = 'firmwares'
 
-    id = Column(Integer, primary_key=True)
-    version = Column(String, nullable=False)
-
-    # Определяем связь с DeviceFirmware
-    device_firmwares = relationship("DeviceFirmware", back_populates="firmware")
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False)
 
     def __repr__(self):
-        return f"<Firmware(id={self.id}, version='{self.version}')>"
+        return f"<Firmware(id={self.id}, name='{self.name}')>"
