@@ -22,20 +22,16 @@ class InfoTab(BaseTab):
             return
         
         try:
-            # Get the device by name
-            device = self.app.device_service.get_by_name(name)  # Assuming you have a method to get device by name
+            device = self.app.device_service.get_by_name(name)
             if not device:
                 self.display_feedback("Device not found.")
                 return
             
-            # Fetch associated firmwares from device_firmwares
-            associated_firmwares = self.app.device_service.get_firmwares_by_device_id(device.id)  # Assuming this method exists
+            associated_firmwares = self.app.device_service.get_firmwares_by_device_id(device.id)
 
-            # Fetch the company name using the company_id
-            company = self.app.company_service.get_by_id(device.company_id)  # Assuming you have a method to get company by ID
+            company = self.app.company_service.get_by_id(device.company_id)
             company_name = company.name if company else "Unknown Company"
 
-            # Prepare the output message
             firmware_list = "\n\t".join(firmware.name for firmware in associated_firmwares) if associated_firmwares else "No associated firmwares."
             
             output_message = (

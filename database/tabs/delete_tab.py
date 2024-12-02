@@ -3,7 +3,7 @@ from tkinter import ttk
 
 from database.models.models import Companies, Devices, Firmwares
 from database.services.company_service import CompanyService
-from database.services.device_service import DeviceService  # Assuming you have a DeviceService
+from database.services.device_service import DeviceService
 from database.services.firmware_service import FirmwareService
 
 from .base_tab import BaseTab
@@ -56,7 +56,7 @@ class DeleteTab(BaseTab):
             return
         
         try:
-            deleted_device = self.app.device_service.delete_by_name(name)  # Assuming a delete_by_name method exists
+            deleted_device = self.app.device_service.delete_by_name(name)
             if deleted_device:
                 self.display_feedback(f"Deleted device: {deleted_device.name}")
             else:

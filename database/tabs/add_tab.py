@@ -2,13 +2,11 @@ import tkinter as tk
 from tkinter import ttk
 import os
 
-
 from database.models.models import Companies, DeviceFirmwares, Devices, Firmwares
 from database.services.company_service import CompanyService
 from database.services.firmware_service import FirmwareService
-from .base_tab import BaseTab
 
-firmware_folder = "./firmwares/"
+from .base_tab import BaseTab
 
 class AddTab(BaseTab):
     def __init__(self, parent, app):
@@ -63,7 +61,6 @@ class AddTab(BaseTab):
             return
 
         try:
-            # Assuming you have a CompanyService method to get a company by name
             company_service = self.app.company_service
             existing_company = company_service.get_by_name(company_name)
 
@@ -71,17 +68,14 @@ class AddTab(BaseTab):
                 self.display_feedback(f"Error: Company '{company_name}' does not exist.")
                 return
 
-
-            # Create a new device entry
             new_device = Devices(
                 name=device_name,
-                company_id=existing_company.id,  # Use the ID of the existing company
+                company_id=existing_company.id,
                 dev_type=int(dev_type),
                 primary_conf=int(primary_conf),
                 port_num=int(port_num)
             )
             
-            # Use the DeviceService to create the new device
             self.app.device_service.create(new_device)
             self.display_feedback("Successfully added to the devices table.")
 
@@ -95,7 +89,6 @@ class AddTab(BaseTab):
             return
 
         try:
-            # Use the CompanyService to create a new company
             new_company = Companies(name=company_name)
             created_company = self.app.company_service.create(new_company)
             self.display_feedback("Successfully added to the companies table.")
@@ -108,27 +101,23 @@ class AddTab(BaseTab):
             self.display_feedback("Error: Folder name cannot be empty.")
             return
 
-        # Check if the folder exists
         if not os.path.isdir(company_name):
             self.display_feedback(f"Error: Folder '{company_name}' does not exist.")
             return
 
         try:
-            # Iterate through all files in the folder
             for filename in os.listdir(company_name):
-                firmware_name = filename.strip()  # Remove extra spaces
+                firmware_name = filename.strip()
 
                 if not firmware_name:
-                    continue  # Skip empty file names
+                    continue
 
-                # Check if firmware_name exists in the database
                 existing_firmwares = self.app.firmware_service.get_all()
                 if any(firmware.name == firmware_name for firmware in existing_firmwares):
                     self.display_feedback(f"Firmware '{firmware_name}' already exists in the table. Skipping.")
-                    continue  # Skip if firmware already exists
+                    continue
 
-                # Create a new firmware entry
-                new_firmware = Firmwares(name=firmware_name)  # Assuming name is the only field needed
+                new_firmware = Firmwares(name=firmware_name)
                 self.app.firmware_service.create(new_firmware)
 
             self.display_feedback("Successfully added new firmwares from the folder.")

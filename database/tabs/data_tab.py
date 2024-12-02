@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from database.services.company_service import CompanyService
 from database.services.device_service import DeviceService
 from database.services.firmware_service import FirmwareService
+
 from .base_tab import BaseTab
 
 class DataTab(BaseTab):
@@ -55,7 +56,7 @@ class DataTab(BaseTab):
             return "No data found."
         
         column_names = [column.name.ljust(15) for column in rows[0].__table__.columns]
-        table = "".join(column_names)  # headers
+        table = "".join(column_names)
         for row in rows:
             table += '\n'
             for column in column_names:

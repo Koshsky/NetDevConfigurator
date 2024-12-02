@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 import os
 
-
 from database.models.models import Companies, DeviceFirmwares, Devices, Firmwares
 from database.services.company_service import CompanyService
 from database.services.firmware_service import FirmwareService

@@ -1,7 +1,7 @@
-# services/device_firmware_service.py
-
 from sqlalchemy.orm import Session
+
 from database.models.models import DeviceFirmwares, Devices, Firmwares
+
 
 class DeviceFirmwaresService:
     def __init__(self, db: Session):
@@ -37,7 +37,6 @@ class DeviceFirmwaresService:
         return None
         
     def link_device_firmware(self, device_id: int, firmware_id: int):
-        # Check if device and firmware exist
         device = self.db.query(Devices).filter(Devices.id == device_id).first()
         firmware = self.db.query(Firmwares).filter(Firmwares.id == firmware_id).first()
 
@@ -46,7 +45,6 @@ class DeviceFirmwaresService:
         if not firmware:
             return "Firmware not found."
 
-        # Check if the combination already exists in the device_firmwares table
         existing_link = self.db.query(DeviceFirmwares).filter(
             DeviceFirmwares.device_id == device_id,
             DeviceFirmwares.firmware_id == firmware_id
@@ -55,9 +53,7 @@ class DeviceFirmwaresService:
         if existing_link:
             return "This device and firmware combination already exists."
 
-        # Create a new DeviceFirmwares instance
         device_firmware = DeviceFirmwares(device_id=device.id, firmware_id=firmware.id)
 
-        # Add to the session and commit
         self.create(device_firmware)
         return "Successfully linked device and firmware."

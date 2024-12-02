@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from database.models.models import DeviceFirmwares
 
-from ..models.models import Devices, Firmwares
+from database.models.models import DeviceFirmwares, Devices, Firmwares
+
 
 class DeviceService:
     def __init__(self, db: Session):
@@ -44,26 +44,23 @@ class DeviceService:
         return self.db.query(Devices).filter(Devices.name == name).first()
 
     def delete_by_name(self, name: str):
-        db_device = self.get_by_name(name)  # Use the get_by_name method
+        db_device = self.get_by_name(name)
         if not db_device:
-            return None  # Return None if the device does not exist
-        self.db.delete(db_device)  # Delete the device
-        self.db.commit()  # Commit the changes to the database
-        return db_device  # Return the deleted device object
+            return None
+        self.db.delete(db_device)
+        self.db.commit()
+        return db_device
 
     def get_firmwares_by_device_id(self, device_id: int):
-        # Query the DeviceFirmwares table to get all firmware IDs associated with the given device ID
         firmware_ids = (
             self.db.query(DeviceFirmwares.firmware_id)
             .filter(DeviceFirmwares.device_id == device_id)
             .all()
         )
         
-        # Extract the firmware IDs from the result
-        firmware_ids = [fid for (fid,) in firmware_ids]  # Unpack the tuples
+        firmware_ids = [fid for (fid,) in firmware_ids]
         
-        # Query the Firmwares table to get the firmware records based on the IDs
-        if firmware_ids:  # Check if there are any firmware IDs
+        if firmware_ids:
             return self.db.query(Firmwares).filter(Firmwares.id.in_(firmware_ids)).all()
         else:
-            return []  # Return an empty list if no firmwares are associated
+            return []
