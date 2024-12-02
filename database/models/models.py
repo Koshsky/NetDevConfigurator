@@ -1,4 +1,4 @@
-from sqlalchemy import CheckConstraint, Column, ForeignKeyConstraint, Integer, PrimaryKeyConstraint, String
+from sqlalchemy import CheckConstraint, Column, ForeignKeyConstraint, Integer, PrimaryKeyConstraint, String, UniqueConstraint
 
 from sqlalchemy.orm import declarative_base, relationship
 
@@ -55,9 +55,10 @@ class Devices(Base):
 class DeviceFirmwares(Base):
     __tablename__ = 'device_firmwares'
     __table_args__ = (
-        ForeignKeyConstraint(['device_id'], ['devices.id'], name='device_firmwares_device_id_fkey'),
-        ForeignKeyConstraint(['firmware_id'], ['firmwares.id'], name='device_firmwares_firmware_id_fkey'),
-        PrimaryKeyConstraint('id', name='device_firmwares_pkey')
+        ForeignKeyConstraint(['device_id'], ['devices.id'], ondelete='CASCADE', name='device_firmwares_device_id_fkey'),
+        ForeignKeyConstraint(['firmware_id'], ['firmwares.id'], ondelete='CASCADE', name='device_firmwares_firmware_id_fkey'),
+        PrimaryKeyConstraint('id', name='device_firmwares_pkey'),
+        UniqueConstraint('device_id', 'firmware_id', name='unique_device_firmware')
     )
 
     id = Column(Integer, primary_key=True)
