@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 import os
+from .models.models import Companies, DeviceFirmwares, Devices, Firmwares
+from .services.company_service import CompanyService
+from .services.firmware_service import FirmwareService
 
-from database.services.firmware_service import FirmwareService
-
-firmware_folder = "../../firmwares/"
+firmware_folder = "./firmwares/"
 
 class AddTab:
     def __init__(self, parent, app):
@@ -26,7 +27,7 @@ class AddTab:
 
         self.button_1 = tk.Button(self.frame, text="SUBMIT", command=self.submit_company)
         self.button_1.grid(row=cur_row, column=3, padx=5, pady=5)
-        
+
         cur_row += 1
 
         # FIRMWARE BLOCK
@@ -53,7 +54,7 @@ class AddTab:
 
         cur_row += 1
 
-        # DEVICE BLOCK
+        # DEVICE BLOCK (not modified, leaving as is)
         self.entity_3 = ttk.Label(self.frame, text="device:")
         self.entity_3.grid(row=cur_row, column=0, padx=5, pady=5)
 
@@ -82,7 +83,7 @@ class AddTab:
         self.param_3_4.grid(row=cur_row, column=1, padx=5, pady=5)
         self.field_3_4 = ttk.Entry(self.frame)
         self.field_3_4.grid(row=cur_row, column=2, padx=5, pady=5)
-        
+
         cur_row += 1
 
         self.param_3_5 = ttk.Label(self.frame, text="port_num:")
@@ -94,10 +95,10 @@ class AddTab:
         self.button_3.grid(row=cur_row, column=3, padx=5, pady=5)
 
         cur_row += 1
-        
-        # Текстовое поле для обратной связи
+
+        # Feedback text area
         self.feedback_text = tk.Text(self.frame, wrap='word', width=50, height=10)
-        self.feedback_text.grid(row=cur_row, column=0, columnspan=4 , padx=5, pady=5)
+        self.feedback_text.grid(row=cur_row, column=0, columnspan=4, padx=5, pady=5)
         self.feedback_text.insert(tk.END, "Feedback will be here...\n")
         self.feedback_text.config(state=tk.DISABLED)
 
@@ -111,75 +112,57 @@ class AddTab:
     def on_button_click(self, button_name):
         print(f"{button_name} clicked")
 
-    def submit_firmwares_from_folder(self):
-        folder_name = self.field_2_2.get().strip()  # Получаем имя папки и убираем лишние пробелы
-
-        if not folder_name:
-            self.display_feedback("Error: Folder name cannot be empty.")
-            return
-
-        # Проверка на существование папки
-        if not os.path.isdir(folder_name):
-            self.display_feedback(f"Error: Folder '{folder_name}' does not exist.")
-            return
-
-        try:
-            cursor = self.app.connection.cursor()
-
-            # Перебор всех файлов в папке
-            for filename in os.listdir(folder_name):
-                firmware_name = filename.strip()  # Убираем лишние пробелы
-
-                if not firmware_name:
-                    continue  # Пропускаем пустые имена файлов
-
-                # Проверка на наличие firmware_name в таблице
-                cursor.execute("SELECT COUNT(*) FROM firmwares WHERE name = %s", (firmware_name,))
-                count = cursor.fetchone()[0]
-
-                if count > 0:
-                    self.display_feedback(f"Firmware '{firmware_name}' already exists in the table. Skipping.")
-                    continue  # Пропускаем, если прошивка уже существует
-
-                # Вставка нового firmware_name в таблицу
-                cursor.execute("INSERT INTO firmwares (name) VALUES (%s)", (firmware_name,))
-                self.app.connection.commit()
-
-            self.display_feedback("Successfully added new firmwares from the folder.")
-        except Exception as e:
-            self.display_feedback(f"Error adding firmwares from folder: {e}")
-        finally:
-            cursor.close()
-
     def submit_company(self):
-        company_name = self.field_1_1.get().strip()  # Получаем имя и убираем лишние пробелы
+        company_name = self.field_1_1.get().strip()  # Get the name and remove extra spaces
 
         if not company_name:
             self.display_feedback("Error: Company name cannot be empty.")
             return
 
         try:
-            cursor = self.app.connection.cursor()
-
-            # Проверка на наличие company_name в таблице
-            cursor.execute("SELECT COUNT(*) FROM companies WHERE name = %s", (company_name,))
-            count = cursor.fetchone()[0]
-
-            if count > 0:
-                self.display_feedback(f"Error: company '{company_name}' already exists in the table.")
-                return
-
-            # Вставка нового company_name в таблицу
-            cursor.execute("INSERT INTO companies (name) VALUES (%s)", (company_name,))
-            self.app.connection.commit()
+            # Use the CompanyService to create a new company
+            new_company = Companies(name=company_name)
+            created_company = self.app.company_service.create(new_company)
             self.display_feedback("Successfully added to the companies table.")
         except Exception as e:
             self.display_feedback(f"Error adding to companies table: {e}")
-        finally:
-            cursor.close()
+
+    def submit_firmwares_from_folder(self):
+        folder_name = self.field_2_2.get().strip()  # Get the folder name and remove extra spaces
+
+        if not folder_name:
+            self.display_feedback("Error: Folder name cannot be empty.")
+            return
+
+        # Check if the folder exists
+        if not os.path.isdir(folder_name):
+            self.display_feedback(f"Error: Folder '{folder_name}' does not exist.")
+            return
+
+        try:
+            # Iterate through all files in the folder
+            for filename in os.listdir(folder_name):
+                firmware_name = filename.strip()  # Remove extra spaces
+
+                if not firmware_name:
+                    continue  # Skip empty file names
+
+                # Check if firmware_name exists in the database
+                existing_firmwares = self.app.firmware_service.get_all()
+                if any(firmware.name == firmware_name for firmware in existing_firmwares):
+                    self.display_feedback(f"Firmware '{firmware_name}' already exists in the table. Skipping.")
+                    continue  # Skip if firmware already exists
+
+                # Create a new firmware entry
+                new_firmware = Firmwares(name=firmware_name)  # Assuming name is the only field needed
+                self.app.firmware_service.create(new_firmware)
+
+            self.display_feedback("Successfully added new firmwares from the folder.")
+        except Exception as e:
+            self.display_feedback(f"Error adding firmwares from folder: {e}")
 
     def submit_firmware(self):
-        firmware_name = self.field_2_1.get().strip()  # Получаем имя и убираем лишние пробелы
+        firmware_name = self.field_2_1.get().strip()  # Get the name and remove extra spaces
 
         if not firmware_name:
             self.display_feedback("Error: Firmware name cannot be empty.")
@@ -191,23 +174,15 @@ class AddTab:
             return
 
         try:
-            # Проверка на наличие firmware_name в таблице
-            existing_firmware = self.firmware_service.get_all_firmwares()
-            if any(f.version == firmware_name for f in existing_firmware):
+            # Check if firmware_name exists in the database
+            existing_firmwares = self.app.firmware_service.get_all()
+            if any(firmware.name == firmware_name for firmware in existing_firmwares):
                 self.display_feedback(f"Error: firmware '{firmware_name}' already exists in the table.")
                 return
 
-            # Вставка нового firmware_name в таблицу
-            new_firmware = self.firmware_service.create_firmware(version=firmware_name)
+            # Create a new firmware entry
+            new_firmware = Firmwares(name=firmware_name)  # Assuming name is the only field needed
+            self.app.firmware_service.create(new_firmware)
             self.display_feedback("Successfully added to the firmwares table.")
         except Exception as e:
             self.display_feedback(f"Error when adding firmware to the table: {e}")
-
-
-
-# Пример использования
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = None  # Замените на ваш объект приложения, если необходимо
-    data_tab = AddTab(root, app)
-    root.mainloop()

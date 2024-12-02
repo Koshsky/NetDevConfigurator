@@ -30,23 +30,10 @@ class DataTab:
             return
 
         try:
-            service = CompanyService(self.app.session)
-            rows = service.get_all()
+            rows = self.app.company_service.get_all()
             self.display_data(rows)
         except Exception as e:
-            self.display_error(f"Ошибка при загрузке данных: {e}")
-
-    def load_devices(self):
-        if self.app.session is None:
-            self.display_error("Error: No connection to the database.")
-            return
-
-        try:
-            service = DeviceService(self.app.session)
-            rows = service.get_all()
-            self.display_data(rows)
-        except Exception as e:
-            self.display_error(f"Ошибка при загрузке данных: {e}")
+            self.display_error(f"Error loading data: {e}")
 
     def load_firmwares(self):
         if self.app.session is None:
@@ -54,8 +41,18 @@ class DataTab:
             return
 
         try:
-            service = FirmwareService(self.app.session)
-            rows = service.get_all()
+            rows = self.app.firmware_service.get_all()
+            self.display_data(rows)
+        except Exception as e:
+            self.display_error(f"Error loading data: {e}")
+
+    def load_devices(self):
+        if self.app.session is None:
+            self.display_error("Error: No connection to the database.")
+            return
+
+        try:
+            rows = self.app.device_service.get_all()
             self.display_data(rows)
         except Exception as e:
             self.display_error(f"Ошибка при загрузке данных: {e}")

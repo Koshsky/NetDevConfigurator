@@ -46,15 +46,14 @@ class ConnectionTab:
         try:
             # Создание движка и попытка подключения
             engine = create_engine(connection_string)
-            connection = engine.connect()  # Проверка подключения
-            connection.close()  # Закрытие подключения, если оно успешно
+            connect = engine.connect()  # Проверка подключения
+            connect.close()
 
             print("Successful connection to the database")
-            self.app.session = connection  # Устанавливаем сессию в приложении
-            self.on_success_callback(connection_string)  # Вызываем коллбек успеха
+            self.on_success_callback(engine)  # Вызываем коллбек успеха
             self.message_label.config(text="Connection successful.", fg="green")
 
-        except BaseException as error:
+        except SQLAlchemyError as error:
             print("Error connecting to database:", error)
             self.on_failure_callback(error)  # Передаем ошибку в коллбек неудачи
             self.message_label.config(text='Error: ' + str(error), fg="red")

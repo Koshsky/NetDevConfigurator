@@ -11,6 +11,11 @@ from .connection_tab import ConnectionTab
 from .data_tab import DataTab
 from .add_tab import AddTab
 
+from .services.company_service import CompanyService
+from .services.device_firmwares_service import DeviceFirmwareService
+from .services.device_service import DeviceService
+from .services.firmware_service import FirmwareService
+
 # Настройка логирования
 logging.basicConfig(filename='app.log', level=logging.ERROR)
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
@@ -18,8 +23,13 @@ logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 class DatabaseApp:
     def __init__(self, root):
         self.init_root(root)
-        self.create_tabs()
+        self.company_service = None
+        self.firmware_service = None
+        self.device_service = None
+        self.device_firmware_service = None
         self.session = None
+        self.Session = None
+        self.create_tabs()
 
     def init_root(self, root):
         self.root = root
@@ -65,16 +75,21 @@ class DatabaseApp:
         self.notebook.hide(self.update_tab.frame)
         self.notebook.hide(self.delete_tab.frame)
 
-    def on_success_callback(self, connection_string):
-        engine = create_engine(connection_string)
-        Session = sessionmaker(bind=engine)
-        self.session = Session()
+    def on_success_callback(self, engine):
+        self.Session = sessionmaker(bind=engine)
+        self.session = self.Session()
+        # update services
+        self.company_service = CompanyService(self.session)
+        self.firmware_service = FirmwareService(self.session)
+        self.device_service = DeviceService(self.session)
+        self.device_firmware_service = DeviceFirmwareService(self.session)
+        print("session: ", self.session)
         self.display_all_tabs()
 
     def on_failure_callback(self, error):
         self.hide_all_tabs()
-        self.session.remove()
         self.session = None
+        print("session: ", self.session)
         logging.error(f"Connection failed: {error}")  # Логирование ошибки
 
 
