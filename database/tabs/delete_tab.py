@@ -33,6 +33,7 @@ class DeleteTab(BaseTab):
                 self.display_feedback("Company not found for deletion.")
         except Exception as e:
             self.display_feedback(f"Error deleting company: {e}")
+            self.app.session.rollback()
 
     def delete_firmware(self):
         name = self.fields["firmware"]["name"].get()
@@ -48,6 +49,7 @@ class DeleteTab(BaseTab):
                 self.display_feedback("Firmware not found for deletion.")
         except Exception as e:
             self.display_feedback(f"Error deleting firmware: {e}")
+            self.app.session.rollback()
 
     def delete_device(self):
         name = self.fields["device"]["name"].get()
@@ -63,3 +65,4 @@ class DeleteTab(BaseTab):
                 self.display_feedback("Device not found for deletion.")
         except Exception as e:
             self.display_feedback(f"Error deleting device: {e}")
+            self.app.session.rollback()

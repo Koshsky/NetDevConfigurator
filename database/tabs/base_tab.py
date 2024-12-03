@@ -51,6 +51,7 @@ class BaseTab:
         self.feedback_text.delete(1.0, tk.END)
         self.feedback_text.insert(tk.END, message)
         self.feedback_text.config(state=tk.DISABLED)
+        print(message)  # TODO: replace with logger
 
     def create_widgets(self):
         raise NotImplementedError

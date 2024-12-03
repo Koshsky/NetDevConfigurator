@@ -23,13 +23,8 @@ from .services import (
 
 # TODO: if SSH=1 and COM=1, SSH + COM = 1  # на будущее (другая программа)
 
-# первичная: .bl1
-# вторичная: .uboot .boot
-# сама прошивка: .firmware .iss .ros
-
 # TODO: добавить выпадающие  списки к add_tab
 # TODO: добавить UNLINK device_registry (выбор из списка)
-# TODO: сортировать data_tab
 
 # Настройка логирования
 logging.basicConfig(filename='app.log', level=logging.ERROR)

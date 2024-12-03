@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from database.models.models import Companies, Devices, Firmwares
-from database.services.device_service import DeviceService  # Assuming you have a DeviceService
+from database.services.device_service import DeviceService
 from database.services.firmware_service import FirmwareService
 
 from .base_tab import BaseTab
@@ -39,8 +39,7 @@ class InfoTab(BaseTab):
                 f"Name: {device.name}\n"
                 f"ID: {device.id}\n"
                 f"Company: {company_name}\n"
-                f"Device Type: {['', 'router', 'switch'][device.dev_type]}\n"
-                f"Primary Configuration: {['', 'COM port + SSH', 'SSH', 'COM port + SNMP'][device.primary_conf]}\n"
+                f"Device Type: {device.dev_type}\n"
                 f"Port Number: {device.port_num}\n"
                 f"Associated Firmwares:\n\t{firmware_list}\n"
             )
