@@ -13,8 +13,8 @@ class UpdateTab(BaseTab):
         super().__init__(parent, app, "")
 
     def create_widgets(self):
-        self.create_block("device", ["name"], None)
-        self.create_block("firmware", ["name"], None)
+        self.create_block("device", {"name":None}, None)
+        self.create_block("firmware", {"name":None}, None)
         self.create_button_in_line("LINK", self.link_device_with_firmware)
         self.create_feedback_area()
 

@@ -16,16 +16,22 @@ class BaseTab:
         self.create_widgets()
         self.frame.pack(padx=10, pady=10)
 
-    def create_block(self, block_name: str, list_params: list[str], function):
+    def create_block(self, block_name: str, list_params: dict, function):
         self.fields[block_name] = dict()
         ttk.Label(self.frame, text=f"{block_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
-        for param in list_params:  # TODO: реализовать list_params как словарь {"label":str, "presets":list[str]}
+        for param, presets in list_params.items():  # TODO: реализовать list_params как словарь {"label":str, "presets":list[str]}
             label = ttk.Label(self.frame, text=f"{param}")
             label.grid(row=self.cur_row, column=1, padx=5, pady=5)
-            field = ttk.Entry(self.frame)
-            field.grid(row=self.cur_row, column=2, padx=5, pady=5)
+            if presets is None:
+                field = ttk.Entry(self.frame)
+                field.grid(row=self.cur_row, column=2, padx=5, pady=5)
+            else:
+                field = ttk.Combobox(self.frame, values=presets)
+                field.grid(row=self.cur_row, column=2, padx=5, pady=5)
+
             self.fields[block_name][param] = field
             self.cur_row += 1
+
 
         if function is not None:
             self.button = tk.Button(self.frame, text=self.button_text, command=function)
