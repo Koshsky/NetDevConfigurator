@@ -11,7 +11,7 @@ class BaseTab:
         self.frame = ttk.Frame(parent)
         self.app = app
         self.cur_row = 0
-        self.button_text = button_text
+        self.button_text = button_text  # TODO: убрать этот параметр в create_block. последний аргумент - {"text": text, "func": func}
         self.fields = dict()
         self.create_widgets()
         self.frame.pack(padx=10, pady=10)
@@ -19,7 +19,7 @@ class BaseTab:
     def create_block(self, block_name: str, list_params: list[str], function):
         self.fields[block_name] = dict()
         ttk.Label(self.frame, text=f"{block_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
-        for param in list_params:
+        for param in list_params:  # TODO: реализовать list_params как словарь {"label":str, "presets":list[str]}
             label = ttk.Label(self.frame, text=f"{param}")
             label.grid(row=self.cur_row, column=1, padx=5, pady=5)
             field = ttk.Entry(self.frame)
@@ -27,8 +27,9 @@ class BaseTab:
             self.fields[block_name][param] = field
             self.cur_row += 1
 
-        self.button = tk.Button(self.frame, text=self.button_text, command=function)
-        self.button.grid(row=self.cur_row-1, column=3, padx=5, pady=5)
+        if function is not None:
+            self.button = tk.Button(self.frame, text=self.button_text, command=function)
+            self.button.grid(row=self.cur_row-1, column=3, padx=5, pady=5)
 
 
     def create_button_in_line(self, text: str, function):
