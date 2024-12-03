@@ -4,7 +4,7 @@ import os
 
 from database.models.models import Companies, DeviceFirmwares, Devices, Firmwares
 from database.services.company_service import CompanyService
-from database.services.firmware_service import FirmwareService
+from database.services.firmware_service import FirmwareService, determine_firmware_type
 
 from .base_tab import BaseTab
 
@@ -81,6 +81,7 @@ class AddTab(BaseTab):
 
         except Exception as e:
             self.display_feedback(f"Error adding to devices table: {e}")
+            self.app.session.rollback()
 
     def submit_company(self):
         company_name = self.fields['company']['name'].get().strip()
@@ -94,19 +95,23 @@ class AddTab(BaseTab):
             self.display_feedback("Successfully added to the companies table.")
         except Exception as e:
             self.display_feedback(f"Error adding to companies table: {e}")
+            self.app.session.rollback()
 
     def submit_firmwares_from_folder(self):
-        company_name = self.fields['firmware']['folder'].get().strip()
-        if not company_name:
+        folder_name = self.fields['firmware']['folder'].get().strip()
+            
+        if not folder_name:
             self.display_feedback("Error: Folder name cannot be empty.")
             return
-
-        if not os.path.isdir(company_name):
-            self.display_feedback(f"Error: Folder '{company_name}' does not exist.")
+        if not os.path.isdir(folder_name):
+            self.display_feedback(f"Error: Folder '{folder_name}' does not exist.")
             return
 
+        if not os.path.isabs(folder_name):
+            folder_name = os.path.abspath(folder_name)
+
         try:
-            for filename in os.listdir(company_name):
+            for filename in os.listdir(folder_name):
                 firmware_name = filename.strip()
 
                 if not firmware_name:
@@ -116,10 +121,13 @@ class AddTab(BaseTab):
                 if any(firmware.name == firmware_name for firmware in existing_firmwares):
                     self.display_feedback(f"Firmware '{firmware_name}' already exists in the table. Skipping.")
                     continue
-
-                new_firmware = Firmwares(name=firmware_name)
+                
+                firmware_type = determine_firmware_type(firmware_name)
+                new_firmware = Firmwares(name=firmware_name, full_path=f'{folder_name}/{firmware_name}', type=firmware_type)
                 self.app.firmware_service.create(new_firmware)
 
             self.display_feedback("Successfully added new firmwares from the folder.")
         except Exception as e:
             self.display_feedback(f"Error adding firmwares from folder: {e}")
+            self.app.session.rollback()
+

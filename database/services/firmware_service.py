@@ -48,3 +48,27 @@ class FirmwareService:
         self.db.delete(db_firmware)
         self.db.commit()
         return db_firmware
+
+def determine_firmware_type(firmware_name: str) -> str:
+    # первичная: .bl1
+    # вторичная: .uboot .boot
+    # сама прошивка: .firmware .iss .ros
+
+    primary = "primary_bootloader"
+    secondary = "secondary_bootloader"
+    firmware = "firmware"
+
+    firmware_types = {
+        '.bl1': primary,
+        '.uboot': secondary,
+        '.boot': secondary,
+        '.firmware': firmware,
+        '.iss': firmware,
+        '.ros': firmware,
+    }
+
+    for extension, description in firmware_types.items():
+        if firmware_name.endswith(extension):
+            return description
+
+    return "UKNOWN"
