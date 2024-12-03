@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
@@ -21,6 +20,19 @@ from .services import (
         DeviceService, 
         FirmwareService
 )
+
+# TODO: добавить полe full_path в  firmwares
+# TODO: delete extra table device_firmware
+# TODO: создать таблицу для типов подключения и связать много-много с девайсами (COM SSH SNMP)
+# TODO: if SSH=1 and COM=1, SSH + COM = 1  # на будущее (другая программа)
+# TODO: добабвить в таблицу firmwares поле "type" : первичный, вторичный загрузчик и сама прошивка
+# первичная: .bl1
+# вторичная: .uboot .boot
+# сама прошивка: .firmware .iss .ros
+
+# TODO: добавить выпадающие  списки к add_tab
+# TODO: добавить UNLINK device_registry (выбор из списка)
+# TODO: сортировать data_tab
 
 # Настройка логирования
 logging.basicConfig(filename='app.log', level=logging.ERROR)
