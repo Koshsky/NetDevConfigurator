@@ -1,34 +1,23 @@
 from scrapli.driver.core import IOSXEDriver
 
-def ssh_connect():
+def main():
+    try:
+        with IOSXEDriver(
+            host='127.0.0.1',
+            auth_username='koshsky',
+            auth_password='fdsjkl',
+            port=22,
+        ) as conn:
+            with open('RESPONSE.txt', 'w') as file:
+                file.write("абаюнда")
+            response = conn.send_command('uname -a')
+            # Запись результата в файл RESPONSE.txt
+            with open('RESPONSE.txt', 'w') as file:
+                file.write(response.result)
+    except Exception as e:
+        # Обработка исключений, если необходимо
+        with open('RESPONSE.txt', 'w') as file:
+            file.write(f"An error occurred: {e}")
 
-    device_driver = {
-        "host": "192.168.3.201",
-        "auth_username": "mvsadmin",
-        "auth_password": "MVS_admin20",
-        "auth_strict_key": False,
-    }
-
-    ssh = IOSXEDriver(**device_driver)
-    ssh.open()
-    ssh.get_prompt()
-    r = ssh.send_command("sh running-config")
-    r.result
-    ssh.close()
-
-    #with IOSXEDriver(**device_driver) as ssh:
-    #    print(ssh.get_prompt())
-    #    r = ssh.send_command("sh running-config")
-    #    r.result
-
-    # Открываем соединение
-    #device.open()
-
-    # Выполняем команду и получаем вывод
-    #output = device.send_command("show running-config")
-    #print(output.result)
-
-    # Закрываем соединение
-    #device.close()
-
-
+if __name__ == "__main__":
+    main()
