@@ -36,24 +36,26 @@ class DeviceFirmwaresService:
             return db_device_firmware
         return None
         
-    def link_device_firmware(self, device_id: int, firmware_id: int):
-        device = self.db.query(Devices).filter(Devices.id == device_id).first()
-        firmware = self.db.query(Firmwares).filter(Firmwares.id == firmware_id).first()
-
-        if not device:
-            return "Device not found."
-        if not firmware:
-            return "Firmware not found."
-
+    def link(self, device_id: int, firmware_id: int):
         existing_link = self.db.query(DeviceFirmwares).filter(
             DeviceFirmwares.device_id == device_id,
             DeviceFirmwares.firmware_id == firmware_id
         ).first()
 
         if existing_link:
-            return "This device and firmware combination already exists."
+            raise ValueError("Device firmware already linked")
 
-        device_firmware = DeviceFirmwares(device_id=device.id, firmware_id=firmware.id)
+        device_firmware = DeviceFirmwares(device_id=device_id, firmware_id=firmware_id)
 
         self.create(device_firmware)
-        return "Successfully linked device and firmware."
+
+    def unlink(self, device_id: int, firmware_id: int):
+        existing_link = self.db.query(DeviceFirmwares).filter(
+            DeviceFirmwares.device_id == device_id,
+            DeviceFirmwares.firmware_id == firmware_id
+        ).first()
+
+        if not existing_link:
+            raise ValueError("Device firmware not linked")
+
+        self.delete(existing_link.id)
