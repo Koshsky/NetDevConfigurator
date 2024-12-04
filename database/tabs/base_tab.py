@@ -22,12 +22,13 @@ class BaseTab:
         for param, presets in list_params.items():  # TODO: реализовать list_params как словарь {"label":str, "presets":list[str]}
             label = ttk.Label(self.frame, text=f"{param}")
             label.grid(row=self.cur_row, column=1, padx=5, pady=5)
-            if presets is None:
+            if presets is None or len(presets) == 0:
                 field = ttk.Entry(self.frame)
                 field.grid(row=self.cur_row, column=2, padx=5, pady=5)
             else:
                 field = ttk.Combobox(self.frame, values=presets)
                 field.grid(row=self.cur_row, column=2, padx=5, pady=5)
+                field.current(0)
 
             self.fields[block_name][param] = field
             self.cur_row += 1

@@ -10,6 +10,7 @@ from .base_tab import BaseTab
 
 class AddTab(BaseTab):
     def __init__(self, parent, app):
+        self.companies = ["Eltex", "Zyxel"]
         super().__init__(parent, app, button_text="SUBMIT")
 
     def create_widgets(self):
@@ -17,7 +18,7 @@ class AddTab(BaseTab):
         self.create_block("firmware", {"folder":['.firmwares']}, self.submit_firmwares_from_folder)
         # TODO: добавить УДОБНЫЕ пресеты для port_num
         # TODO: добавить пресеты для company........... 
-        self.create_block("device", {"name":None, "company":None, "dev_type":["router", "switch"], "port_num":[24, 48]}, self.submit_device)
+        self.create_block("device", {"name":None, "company":self.companies, "dev_type":["router", "switch"], "port_num":[24, 48]}, self.submit_device)
         self.create_feedback_area()
     
     def submit_device(self):
@@ -69,6 +70,7 @@ class AddTab(BaseTab):
         try:
             new_company = Companies(name=company_name)
             self.app.company_service.create(new_company)
+            self.companies.append(company_name)
             self.display_feedback("Successfully added to the companies table.")
         except Exception as e:
             self.display_feedback(f"Error adding to companies table: {e}")
