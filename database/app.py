@@ -24,7 +24,6 @@ from .services import (
 # TODO: if SSH=1 and COM=1, SSH + COM = 1  # на будущее (другая программа)
 
 # TODO: добавить выпадающие  списки к add_tab
-# TODO: добавить UNLINK device_registry (выбор из списка)
 
 # Настройка логирования
 logging.basicConfig(filename='app.log', level=logging.ERROR)

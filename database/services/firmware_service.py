@@ -27,14 +27,6 @@ class FirmwareService:
         self.db.commit()
         return db_firmware
 
-    def delete(self, firmware_id: int):
-        db_firmware = self.get_by_id(firmware_id)
-        if not db_firmware:
-            return None
-        self.db.delete(db_firmware)
-        self.db.commit()
-        return db_firmware
-
     def get_by_name(self, name: str):
         return self.db.query(Firmwares).filter(Firmwares.name == name).first()
 
@@ -48,6 +40,17 @@ class FirmwareService:
         self.db.delete(db_firmware)
         self.db.commit()
         return db_firmware
+
+    def delete(self, firmware):
+        if firmware:
+            self.db.delete(firmware)
+            self.db.commit()
+
+    def delete_by_id(self, firmware_id: int):
+        db_firmware = self.get_by_id(firmware_id)
+        self.delete(db_firmware)
+
+
 
 def determine_firmware_type(firmware_name: str) -> str:
     # первичная: .bl1

@@ -32,14 +32,6 @@ class DeviceService:
         self.db.commit()
         return db_device
 
-    def delete(self, device_id: int):
-        db_device = self.get_by_id(device_id)
-        if not db_device:
-            return None
-        self.db.delete(db_device)
-        self.db.commit()
-        return db_device
-
     def get_by_name(self, name: str):
         return self.db.query(Devices).filter(Devices.name == name).first()
 
@@ -64,3 +56,12 @@ class DeviceService:
             return self.db.query(Firmwares).filter(Firmwares.id.in_(firmware_ids)).all()
         else:
             return []
+
+    def delete(self, device):
+        if db_device:
+            self.db.delete(db_device)
+            self.db.commit()
+
+    def delete_by_id(self, device_id: int):
+        db_device = self.get_by_id(device_id)
+        self.delete(db_device)

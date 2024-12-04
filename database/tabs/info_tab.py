@@ -16,21 +16,12 @@ class InfoTab(BaseTab):
         self.create_feedback_area()
 
     def show_information(self):
-        name = self.fields["device"]["name"].get()
-        if not name:
-            self.display_feedback("Please enter a device name.")
-            return
-        
         try:
-            device = self.app.device_service.get_by_name(name)
-            if not device:
-                self.display_feedback("Device not found.")
-                return
-            
+            device = self.check_device_name(self.fields["device"]["name"].get())
             associated_firmwares = self.app.device_service.get_firmwares_by_device_id(device.id)
 
             company = self.app.company_service.get_by_id(device.company_id)
-            company_name = company.name if company else "Unknown Company"
+            company_name = company.name if company else "Unknown Company"  # UNREACHABLE по идее...
 
             firmware_list = "\n\t".join(firmware.name for firmware in associated_firmwares) if associated_firmwares else "No associated firmwares."
             
@@ -46,4 +37,4 @@ class InfoTab(BaseTab):
             
             self.display_feedback(output_message)
         except Exception as e:
-            self.display_feedback(f"Error retrieving device information: {e}")
+            self.display_feedback(f"Error retrieving device information:\n{e}")

@@ -20,49 +20,25 @@ class DeleteTab(BaseTab):
         self.create_feedback_area()
 
     def delete_company(self):
-        name = self.fields["company"]["name"].get()
-        if not name:
-            self.display_feedback("Please enter a company name.")
-            return
-        
         try:
-            deleted_company = self.app.company_service.delete_by_name(name)
-            if deleted_company:
-                self.display_feedback(f"Deleted company: {deleted_company.name}")
-            else:
-                self.display_feedback("Company not found for deletion.")
+            company = self.check_company_name(self.fields["company"]["name"].get())
+            self.app.company_service.delete(company)
         except Exception as e:
             self.display_feedback(f"Error deleting company: {e}")
             self.app.session.rollback()
 
     def delete_firmware(self):
-        name = self.fields["firmware"]["name"].get()
-        if not name:
-            self.display_feedback("Please enter a firmware name.")
-            return
-        
         try:
-            deleted_firmware = self.app.firmware_service.delete_by_name(name)
-            if deleted_firmware:
-                self.display_feedback(f"Deleted firmware: {deleted_firmware.name}")
-            else:
-                self.display_feedback("Firmware not found for deletion.")
+            firmware = self.check_firmware_name(self.fields["firmware"]["name"].get())
+            self.app.firmware_service.delete(firmware)
         except Exception as e:
             self.display_feedback(f"Error deleting firmware: {e}")
             self.app.session.rollback()
 
     def delete_device(self):
-        name = self.fields["device"]["name"].get()
-        if not name:
-            self.display_feedback("Please enter a device name.")
-            return
-        
         try:
-            deleted_device = self.app.device_service.delete_by_name(name)
-            if deleted_device:
-                self.display_feedback(f"Deleted device: {deleted_device.name}")
-            else:
-                self.display_feedback("Device not found for deletion.")
+            device = self.check_device_name(self.fields["device"]["name"].get())
+            self.app.device_service.delete(device)
         except Exception as e:
             self.display_feedback(f"Error deleting device: {e}")
             self.app.session.rollback()

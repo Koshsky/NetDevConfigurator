@@ -61,3 +61,36 @@ class BaseTab:
 
     def create_widgets(self):
         raise NotImplementedError
+
+    def check_device_name(self, device_name: str) -> int:  # TODO: изменить аннотацию, возвращаемый тип 
+        device_name = device_name.strip()
+        if not device_name:
+            raise ValueError("Device name cannot be empty")
+
+        device = self.app.device_service.get_by_name(device_name)
+        if not device:
+            raise ValueError("Device not found.")
+
+        return device
+
+    def check_firmware_name(self, firmware_name: str) -> int:  # TODO: изменить аннотацию, возвращаемый тип
+        firmware_name = firmware_name.strip()
+        if not firmware_name:
+            raise ValueError("Firmware name cannot be empty")
+
+        firmware = self.app.firmware_service.get_by_name(firmware_name)
+        if not firmware:
+            raise ValueError("firmware not found.")
+
+        return firmware
+
+    def check_company_name(self, company_name: str) -> int:  # TODO: изменить аннотацию, возвращаемый тип
+        company_name = company_name.strip()
+        if not company_name:
+            raise ValueError("Company name cannot be empty")
+
+        company = self.app.company_service.get_by_name(company_name)
+        if not company:
+            raise ValueError("company not found.")
+
+        return company

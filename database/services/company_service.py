@@ -27,21 +27,19 @@ class CompanyService:
         self.db.commit()
         return db_company
 
-    def delete(self, company_id: int):
-        db_company = self.get_by_id(company_id)
-        if not db_company:
-            return None
-        self.db.delete(db_company)
-        self.db.commit()
-        return db_company
-
     def get_by_name(self, name: str):
         return self.db.query(Companies).filter(Companies.name == name).first()
 
+    def delete(self, company):
+        if company:
+            self.db.delete(company)
+            self.db.commit()
+
     def delete_by_name(self, name: str):
         db_company = self.get_by_name(name)
-        if not db_company:
-            return None
-        self.db.delete(db_company)
-        self.db.commit()
-        return db_company
+        self.delete(db_company)
+
+    def delete_by_id(self, company_id: int):
+        db_company = self.get_by_id(company_id)
+        self.delete(db_company)
+        

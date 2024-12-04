@@ -23,47 +23,27 @@ class UpdateTab(BaseTab):
 
     def link(self):
         try:
-            device_id = self.check_device_name(self.fields["device"]["name"].get().strip())
-            firmware_id = self.check_firmware_name(self.fields["firmware"]["name"].get().strip())
+            device = self.check_device_name(self.fields["device"]["name"].get().strip())
+            firmware = self.check_firmware_name(self.fields["firmware"]["name"].get().strip())
 
-            self.app.device_firmware_service.link(device_id, firmware_id)
+            self.app.device_firmware_service.link(device.id, firmware.id)
             self.display_feedback(f"Linked device with firmware successfully.")
         except ValueError as e:
             self.display_feedback(f"Error: {e}")
         except Exception as e:
-            self.display_feedback(f"Error adding to database: {e}")
+            self.display_feedback(f"Error adding to database:\n{e}")
             self.app.session.rollback()
 
 
     def unlink(self):
         try:
-            device_id = self.check_device_name(self.fields["devicе"]["name"].get().strip())
-            firmware_id = self.check_firmware_name(self.fields["firmwarе"]["name"].get().strip())
+            device = self.check_device_name(self.fields["devicе"]["name"].get().strip())
+            firmware = self.check_firmware_name(self.fields["firmwarе"]["name"].get().strip())
 
-            self.app.device_firmware_service.unlink(device_id, firmware_id)
+            self.app.device_firmware_service.unlink(device.id, firmware.id)
             self.display_feedback(f"Unlinked device with firmware successfully.")
         except ValueError as e:
             self.display_feedback(f"Error: {e}")
         except Exception as e:
-            self.display_feedback(f"Error adding to database: {e}")
+            self.display_feedback(f"Error adding to database:\n{e}")
             self.app.session.rollback()
-
-    def check_device_name(self, device_name: str) -> int:
-        if not device_name:
-            raise ValueError("Device name cannot be empty")
-
-        device = self.app.device_service.get_by_name(device_name)
-        if not device:
-            raise ValueError("Device not found.")
-
-        return device.id
-
-    def check_firmware_name(self, firmware_name: str) -> int:
-        if not firmware_name:
-            raise ValueError("Firmware name cannot be empty")
-
-        firmware = self.app.firmware_service.get_by_name(firmware_name)
-        if not firmware:
-            raise ValueError("firmware not found.")
-
-        return firmware.id
