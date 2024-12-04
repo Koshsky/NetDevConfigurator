@@ -49,21 +49,11 @@ class DataTab(BaseTab):
 
         rows = sorted(rows, key=lambda x: x.name)
         
-        column_names = [column.name.ljust(15) for column in rows[0].__table__.columns]
-        table = "".join(column_names)
+        column_names = [column.name.ljust(5) for column in rows[0].__table__.columns]
+        table = "".join(column_names[:2])  # id and name
         for row in rows:
             table += '\n'
-            for column in column_names:
-                column = column.strip()
-                if column == "dev_type":
-                    val = "router" if getattr(row, column) == 1 else "switch"
-                elif column == "primary_conf":
-                    val = ['COM port + SSH', 'SSH', 'COM port + SNMP'][getattr(row, column) - 1]
-                elif column == "company_id":
-                    company = self.app.company_service.get_by_id(getattr(row, column))
-                    val = company.name if company else "Unknown Company"
-                else:
-                    val = str(getattr(row, column))
-
-                table += val.ljust(15)
+            id_ = str(getattr(row, "id"))
+            name = str(getattr(row, "name"))
+            table += id_.ljust(5) + name
         return table
