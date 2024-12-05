@@ -26,16 +26,6 @@ from .services import (
         DeviceProtocolService
 )
 
-# TODO: if SSH=1 and COM=1, SSH + COM = 1  # на будущее (другая программа)
-
-# TODO: добавить выпадающие  списки к add_tab
-
-# TODO: ДОБАВИТЬ ВКЛАДКУ ДЛЯ ОТОБРАЖЕНИЯ ИНФОРМАЦИИ О КОМПАНИИ
-# TODO: ДОБАВИТЬ ВКЛАДКУ ДЛЯ ОТОБРАЖЕНИЯ ИНФОРМАЦИИ О ПРОШИВКЕ
-
-# TODO: ДОБАВИТЬ СВЯЗКУ УСТРОЙСТВ С ПРОТОКОЛАМИ. КАК ЭТО СДЕЛАТЬ?
-
-# Настройка логирования
 logging.basicConfig(filename='app.log', level=logging.ERROR)
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
@@ -44,14 +34,14 @@ class DatabaseApp:
         self.init_root(root)
         self.tabs = []
         
-        self.company_service = None
+        self.company_service = None   # TODO: может быть это не ЛУЧШЕЕ РЕШЕНИЕ?? выглядит как говно-перечисление
         self.firmware_service = None
         self.device_service = None
         self.device_firmware_service = None
         self.protocol_service = None
         self.device_protocol_service = None
         
-        self.session = None
+        self.session = None  # TODO: почему я сделал две переменные для сессии... действительно нужно ДВЕ или нет?
         self.Session = None
         
         self.create_tabs()
@@ -60,14 +50,17 @@ class DatabaseApp:
         self.root = root
         self.root.title("Database Manager")
         self.root.geometry("850x650")
-
-    def create_tabs(self):
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill='both', expand=True)
 
+    def create_tabs(self):
         self.connection_tab = ConnectionTab(self.notebook, self.on_success_callback, self.on_failure_callback, self)
         self.notebook.add(self.connection_tab.frame, text="Connection")
         
+        self.create_tabs()
+        self.hide_all_tabs()
+        
+    def create_tabs(self):
         self.create_tab(TablesTab, "Tables")
         self.create_tab(CompanyInfoTab, "Company_info")
         self.create_tab(DeviceInfoTab, "Device info")
@@ -76,8 +69,6 @@ class DatabaseApp:
         self.create_tab(UpdateTab, "Update")
         self.create_tab(DeleteTab, "Delete")
 
-        self.hide_all_tabs()
-        
     def create_tab(self, ClassTab: type, tab_name: str):
         tab = ClassTab(self.notebook, self)
         self.notebook.add(tab.frame, text=tab_name)

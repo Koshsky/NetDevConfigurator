@@ -29,9 +29,9 @@ class AddTab(BaseTab):
             "device", 
             {
                 "name": None,
-                "protocols": ('ssh', 'http', 'COM', 'SNMP'),
-                "company": self.companies,                    # TODO: добавить пресеты для company........... 
-                "dev_type": ["switch", "router"],
+                "protocols": ('ssh', 'http', 'COM', 'SNMP'),  # TODO: make it dynamic
+                "company": self.companies,                    # TODO: make it dynamic
+                "dev_type": ["switch", "router"],             # TODO: make it dynamic
                 "port_num": [24, 48]                          # TODO: добавить УДОБНЫЕ пресеты для port_num
             }, 
             self.submit_device
