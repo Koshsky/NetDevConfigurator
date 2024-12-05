@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database.models.models import DeviceFirmwares, Devices, Firmwares
 
 
-class DeviceFirmwaresService:
+class DeviceFirmwareService:
     def __init__(self, db: Session):
         self.db = db
 

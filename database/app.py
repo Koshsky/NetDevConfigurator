@@ -16,7 +16,7 @@ from .tabs import (
 )
 from .services import (
         CompanyService, 
-        DeviceFirmwaresService, 
+        DeviceFirmwareService, 
         DeviceService, 
         FirmwareService
 )
@@ -96,7 +96,7 @@ class DatabaseApp:
         self.company_service = CompanyService(self.session)
         self.firmware_service = FirmwareService(self.session)
         self.device_service = DeviceService(self.session)
-        self.device_firmware_service = DeviceFirmwaresService(self.session)
+        self.device_firmware_service = DeviceFirmwareService(self.session)
         print("session: ", self.session)
         self.display_all_tabs()
 

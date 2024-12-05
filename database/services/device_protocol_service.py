@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database.models.models import DeviceProtocols, Devices, Protocols
 
 
-class DeviceProtocolsService:
+class DeviceProtocolService:
     def __init__(self, db: Session):
         self.db = db
 
