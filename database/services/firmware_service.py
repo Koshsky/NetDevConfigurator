@@ -13,12 +13,6 @@ class FirmwareService:
     def get_by_id(self, firmware_id: int):
         return self.db.query(Firmwares).filter(Firmwares.id == firmware_id).first()
 
-    def create(self, firmware: Firmwares):
-        self.db.add(firmware)
-        self.db.commit()
-        self.db.refresh(firmware)
-        return firmware
-
     def update(self, firmware_id: int, firmware_data: Firmwares):
         db_firmware = self.get_by_id(firmware_id)
         if not db_firmware:
