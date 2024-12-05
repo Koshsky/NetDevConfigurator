@@ -8,8 +8,8 @@ import logging
 
 from .tabs import (
         ConnectionTab,
+        TablesTab,
         DeviceInfoTab,
-        DataTab,
         UpdateTab,
         AddTab,
         DeleteTab
@@ -57,7 +57,7 @@ class DatabaseApp:
         self.connection_tab = ConnectionTab(self.notebook, self.on_success_callback, self.on_failure_callback, self)
         self.notebook.add(self.connection_tab.frame, text="Connection")
 
-        self.data_tab = DataTab(self.notebook, self)
+        self.data_tab = TablesTab(self.notebook, self)
         self.notebook.add(self.data_tab.frame, text="Tables")
 
         self.info_tab = DeviceInfoTab(self.notebook, self)

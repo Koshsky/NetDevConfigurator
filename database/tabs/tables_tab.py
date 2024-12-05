@@ -8,7 +8,7 @@ from database.services.firmware_service import FirmwareService
 
 from .base_tab import BaseTab
 
-class DataTab(BaseTab):
+class TablesTab(BaseTab):
     def __init__(self, parent, app):
         super().__init__(parent, app, "")
 
