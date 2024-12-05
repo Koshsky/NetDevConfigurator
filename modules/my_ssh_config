@@ -1,0 +1,8 @@
+Host 10.3.1.13
+    HostName 10.3.1.13
+    User mvsadmin
+    IdentityFile ~/.ssh/id_rsa  # Укажите путь к вашему приватному ключу, если он используется
+    HostKeyAlgorithms +ssh-rsa
+    PubkeyAcceptedAlgorithms +ssh-rsa
+    Ciphers aes256-cbc,aes128-ctr,aes192-ctr,aes256-ctr,aes128-cbc,3des-cbc
+    KexAlgorithms +diffie-hellman-group1-sha1

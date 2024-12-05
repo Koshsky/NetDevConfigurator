@@ -1,23 +1,36 @@
-from scrapli.driver.core import IOSXEDriver
+from scrapli.driver import GenericDriver
+import time
 
-def main():
-    try:
-        with IOSXEDriver(
-            host='127.0.0.1',
-            auth_username='koshsky',
-            auth_password='fdsjkl',
-            port=22,
-        ) as conn:
-            with open('RESPONSE.txt', 'w') as file:
-                file.write("абаюнда")
-            response = conn.send_command('uname -a')
-            # Запись результата в файл RESPONSE.txt
-            with open('RESPONSE.txt', 'w') as file:
-                file.write(response.result)
-    except Exception as e:
-        # Обработка исключений, если необходимо
-        with open('RESPONSE.txt', 'w') as file:
-            file.write(f"An error occurred: {e}")
+
+def mes_on_open(cls):
+
+    time.sleep(0.25)
+    cls.channel.write(cls.auth_password)
+    cls.channel.send_return()
+    time.sleep(0.25)
+    print(cls.channel.read().decode('utf-8'))
+    print("mes_on_open finished")
+
+
+mes_config = {
+    "host": "10.3.1.13",
+    "auth_username": "mvsadmin",
+    "auth_password": "MVS_admin",
+    "on_open": mes_on_open,
+    "comms_prompt_pattern": r"^console(\(.+\))?[#>]\s*$",
+    "ssh_config_file": "~/NetDevConfigurator/modules/my_ssh_config",
+}
+
+def send_command(ssh, command):
+    ssh.channel.write(command)
+    ssh.channel.send_return()
+    time.sleep(1)
+
+    response = ssh.channel.read().decode('utf-8')
+
+    return response
 
 if __name__ == "__main__":
-    main()
+    with GenericDriver(**mes_config) as ssh:
+        output = send_command(ssh, "?")
+        print(output)
