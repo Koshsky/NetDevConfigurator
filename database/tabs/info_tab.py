@@ -18,7 +18,7 @@ class InfoTab(BaseTab):
     def show_information(self):
         try:
             device = self.check_device_name(self.fields["device"]["name"].get())
-            associated_firmwares = self.app.device_service.get_firmwares_by_device_id(device.id)
+            associated_firmwares = self.app.device_firmware_service.get_firmwares_by_device_id(device.id)
 
             company = self.app.company_service.get_by_id(device.company_id)
             company_name = company.name if company else "Unknown Company"  # UNREACHABLE по идее...

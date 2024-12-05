@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from database.models.models import Firmwares, DeviceFirmwares
+from database.models import Firmwares, DeviceFirmwares
 
 
 class FirmwareService:

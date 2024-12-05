@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from database.models.models import DeviceProtocols, Devices, Protocols
+from database.models import DeviceProtocols, Devices, Protocols
 
 
 class DeviceProtocolService:

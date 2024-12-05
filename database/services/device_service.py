@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from database.models.models import DeviceFirmwares, Devices, Firmwares
+from database.models import DeviceFirmwares, Devices, Firmwares
 
 
 class DeviceService:
@@ -36,17 +36,3 @@ class DeviceService:
     def delete_by_name(self, name: str):
         db_device = self.get_by_name(name)
         self.delete(db_device)
-
-    def get_firmwares_by_device_id(self, device_id: int):
-        firmware_ids = (
-            self.db.query(DeviceFirmwares.firmware_id)
-            .filter(DeviceFirmwares.device_id == device_id)
-            .all()
-        )
-        
-        firmware_ids = [fid for (fid,) in firmware_ids]
-        
-        if firmware_ids:
-            return self.db.query(Firmwares).filter(Firmwares.id.in_(firmware_ids)).all()
-        else:
-            return []

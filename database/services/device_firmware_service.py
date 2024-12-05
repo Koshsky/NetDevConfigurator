@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from database.models.models import DeviceFirmwares, Devices, Firmwares
+from database.models import DeviceFirmwares, Devices, Firmwares
 
 
 class DeviceFirmwareService:
@@ -12,6 +12,20 @@ class DeviceFirmwareService:
 
     def get_by_id(self, device_firmware_id: int):
         return self.db.query(DeviceFirmwares).filter(DeviceFirmwares.id == device_firmware_id).first()
+
+    def get_firmwares_by_device_id(self, device_id: int):
+        firmware_ids = (
+            self.db.query(DeviceFirmwares.firmware_id)
+            .filter(DeviceFirmwares.device_id == device_id)
+            .all()
+        )
+        
+        firmware_ids = [fid for (fid,) in firmware_ids]
+        
+        if firmware_ids:
+            return self.db.query(Firmwares).filter(Firmwares.id.in_(firmware_ids)).all()
+        else:
+            return []
 
     def create(self, device_firmware: dict):
         device_firmware = DeviceFirmwares(**device_firmware)

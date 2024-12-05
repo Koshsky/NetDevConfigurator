@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from database.models.models import Companies
+from database.models import Companies
 
 
 class CompanyService:
