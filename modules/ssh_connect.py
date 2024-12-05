@@ -23,7 +23,6 @@ mes_config = {
 
 def send_command(ssh, command):
     ssh.channel.write(command)
-    ssh.channel.send_return()
     time.sleep(1)
 
     response = ssh.channel.read().decode('utf-8')
@@ -33,4 +32,6 @@ def send_command(ssh, command):
 if __name__ == "__main__":
     with GenericDriver(**mes_config) as ssh:
         output = send_command(ssh, "?")
+        print(output)
+        output = send_command(ssh, " ")
         print(output)
