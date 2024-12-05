@@ -52,7 +52,7 @@ class ConnectionTab:
             self.on_success_callback(engine)
             self.message_label.config(text="Connection successful.", fg="green")
 
-        except SQLAlchemyError as error:
+        except Exception as error:
             print("Error connecting to database:", error)
             self.on_failure_callback(error)
             self.message_label.config(text='Error: ' + str(error), fg="red")
