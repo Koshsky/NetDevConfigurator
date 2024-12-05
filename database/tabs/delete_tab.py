@@ -9,8 +9,18 @@ class DeleteTab(BaseTab):
         self.create_block("company", {"name":None}, self.delete_company)
         self.create_block("firmware", {"name":None}, self.delete_firmware)
         self.create_block("device", {"name":None}, self.delete_device)
+        self.create_block("protocol", {"name":None}, self.delete_protocol)
         self.create_feedback_area()
 
+    def delete_protocol(self):
+        try:
+            protocol = self.check_protocol_name(self.fields["protocol"]["name"].get())
+            self.app.protocol_service.delete(protocol)
+            self.display_feedback(f"Successfully deleted from the protocols table.")
+        except Exception as e:
+            self.display_feedback(f"Error deleting protocol: {e}")
+            self.app.session.rollback()
+            
     def delete_company(self):
         try:
             company = self.check_company_name(self.fields["company"]["name"].get())

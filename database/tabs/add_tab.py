@@ -15,26 +15,42 @@ class AddTab(BaseTab):
             {"name": None}, 
             self.submit_company
         )
-
+        self.create_block(
+            "protocol",
+            {"name": None},
+            self.submit_protocol
+        )
         self.create_block(
             "firmware", 
             {"folder": ['./firmwares']}, 
             self.submit_firmwares_from_folder
         )
-        # TODO: добавить УДОБНЫЕ пресеты для port_num
-        # TODO: добавить пресеты для company........... 
         self.create_block(
             "device", 
             {
                 "name": None,
                 "protocols": ('ssh', 'http', 'COM', 'SNMP'),
-                "company": self.companies,
+                "company": self.companies,                    # TODO: добавить пресеты для company........... 
                 "dev_type": ["switch", "router"],
-                "port_num": [24, 48]
+                "port_num": [24, 48]                          # TODO: добавить УДОБНЫЕ пресеты для port_num
             }, 
             self.submit_device
         )
         self.create_feedback_area()
+        
+    def submit_protocol(self):
+        protocol_name = self.fields['protocol']['name'].get().strip()
+        if not protocol_name:
+            self.display_feedback("Error: Protocol name cannot be empty.")
+            return
+
+        try:
+            self.app.protocol_service.create({"name": protocol_name})
+            self.display_feedback("Successfully added to the protocols table.")
+        except Exception as e:
+            self.display_feedback(f"Error adding to protocols table: {e}")
+            self.app.session.rollback()
+        
     
     def submit_device(self):
         device_name = self.fields["device"]["name"].get().strip()

@@ -69,6 +69,17 @@ class BaseTab:
     def create_widgets(self):
         raise NotImplementedError
 
+    def check_protocol_name(self, protocol_name: str) -> int:  # TODO: изменить аннотацию, возвращаемый тип 
+        protocol_name = protocol_name.strip()
+        if not protocol_name:
+            raise ValueError("Device name cannot be empty")
+
+        protocol = self.app.protocol_service.get_by_name(protocol_name)
+        if not protocol:
+            raise ValueError("Protocol not found.")
+
+        return protocol
+
     def check_device_name(self, device_name: str) -> int:  # TODO: изменить аннотацию, возвращаемый тип 
         device_name = device_name.strip()
         if not device_name:
