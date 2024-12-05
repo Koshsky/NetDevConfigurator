@@ -13,7 +13,8 @@ class DeviceFirmwaresService:
     def get_by_id(self, device_firmware_id: int):
         return self.db.query(DeviceFirmwares).filter(DeviceFirmwares.id == device_firmware_id).first()
 
-    def create(self, device_firmware: DeviceFirmwares):
+    def create(self, device_firmware: dict):
+        device_firmware = DeviceFirmwares(**device_firmware)
         self.db.add(device_firmware)
         self.db.commit()
         self.db.refresh(device_firmware)
@@ -37,9 +38,10 @@ class DeviceFirmwaresService:
         if existing_link:
             raise ValueError("Device firmware already linked")
 
-        device_firmware = DeviceFirmwares(device_id=device_id, firmware_id=firmware_id)
-
-        self.create(device_firmware)
+        self.create({
+            "device_id": device_id,
+            "firmware_id": firmware_id
+        })
 
     def unlink(self, device_id: int, firmware_id: int):
         existing_link = self.db.query(DeviceFirmwares).filter(

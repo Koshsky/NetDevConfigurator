@@ -23,6 +23,7 @@ class DeleteTab(BaseTab):
         try:
             company = self.check_company_name(self.fields["company"]["name"].get())
             self.app.company_service.delete(company)
+            self.display_feedback(f"Successfully deleted from the companies table.")
         except Exception as e:
             self.display_feedback(f"Error deleting company: {e}")
             self.app.session.rollback()
@@ -31,6 +32,7 @@ class DeleteTab(BaseTab):
         try:
             firmware = self.check_firmware_name(self.fields["firmware"]["name"].get())
             self.app.firmware_service.delete(firmware)
+            self.display_feedback(f"Successfully deleted from the firmwares table.")
         except Exception as e:
             self.display_feedback(f"Error deleting firmware: {e}")
             self.app.session.rollback()
@@ -39,6 +41,7 @@ class DeleteTab(BaseTab):
         try:
             device = self.check_device_name(self.fields["device"]["name"].get())
             self.app.device_service.delete(device)
+            self.display_feedback(f"Successfully deleted from the devices table.")
         except Exception as e:
             self.display_feedback(f"Error deleting device: {e}")
             self.app.session.rollback()

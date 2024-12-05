@@ -12,15 +12,16 @@ class CompanyService:
 
     def get_by_id(self, company_id: int):
         return self.db.query(Companies).filter(Companies.id == company_id).first()
+        
+    def get_by_name(self, name: str):
+        return self.db.query(Companies).filter(Companies.name == name).first()
 
-    def create(self, company: Companies):
+    def create(self, company: dict):
+        company = Companies(**company)
         self.db.add(company)
         self.db.commit()
         self.db.refresh(company)
         return company
-        
-    def get_by_name(self, name: str):
-        return self.db.query(Companies).filter(Companies.name == name).first()
 
     def delete(self, company):
         if company:

@@ -13,7 +13,8 @@ class DeviceProtocolsService:
     def get_by_id(self, device_protocol_id: int):
         return self.db.query(DeviceProtocols).filter(DeviceProtocols.id == device_protocol_id).first()
 
-    def create(self, device_protocol: DeviceProtocols):
+    def create(self, device_protocol: dict):
+        device_protocol = DeviceProtocols(**device_protocol)
         self.db.add(device_protocol)
         self.db.commit()
         self.db.refresh(device_protocol)
@@ -37,9 +38,10 @@ class DeviceProtocolsService:
         if existing_link:
             raise ValueError("Device is already linked with protocol")
 
-        device_protocol = DeviceProtocols(device_id=device_id, protocol_id=protocol_id)
-
-        self.create(device_protocol)
+        self.create({
+            "device_id": device_id,
+            "protocol_id": protocol_id
+        })
 
     def unlink(self, device_id: int, protocol_id: int):
         existing_link = self.db.query(DeviceProtocols).filter(
