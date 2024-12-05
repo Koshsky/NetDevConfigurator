@@ -19,19 +19,30 @@ class BaseTab:
     def create_block(self, block_name: str, list_params: dict, function):
         self.fields[block_name] = dict()
         ttk.Label(self.frame, text=f"{block_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
-        for param, presets in list_params.items():  # TODO: реализовать list_params как словарь {"label":str, "presets":list[str]}
+        for param, presets in list_params.items():
             label = ttk.Label(self.frame, text=f"{param}")
             label.grid(row=self.cur_row, column=1, padx=5, pady=5)
             if presets is None or len(presets) == 0:
                 field = ttk.Entry(self.frame)
                 field.grid(row=self.cur_row, column=2, padx=5, pady=5)
-            else:
+
+                self.fields[block_name][param] = field
+                self.cur_row += 1
+            elif isinstance(presets, list):
                 field = ttk.Combobox(self.frame, values=presets)
                 field.grid(row=self.cur_row, column=2, padx=5, pady=5)
                 field.current(0)
 
-            self.fields[block_name][param] = field
-            self.cur_row += 1
+                self.fields[block_name][param] = field
+                self.cur_row += 1
+            elif isinstance(presets, tuple):
+                self.fields[block_name][param] = dict()
+                for box in presets:
+                    checkbox = tk.Checkbutton(self.frame, text=box)
+                    checkbox.grid(row=self.cur_row, column=2, padx=5, pady=5)
+
+                    self.fields[block_name][param][box] = checkbox
+                    self.cur_row += 1
 
 
         if function is not None:

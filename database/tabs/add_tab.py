@@ -18,7 +18,13 @@ class AddTab(BaseTab):
         self.create_block("firmware", {"folder":['./firmwares']}, self.submit_firmwares_from_folder)
         # TODO: добавить УДОБНЫЕ пресеты для port_num
         # TODO: добавить пресеты для company........... 
-        self.create_block("device", {"name":None, "company":self.companies, "dev_type":["router", "switch"], "port_num":[24, 48]}, self.submit_device)
+        self.create_block("device", {
+                "name":None,
+                "protocols":('ssh', 'http', 'COM', 'SNMP'),
+                "company":self.companies,
+                "dev_type":["router", "switch"],
+                "port_num":[24, 48]
+        }, self.submit_device)
         self.create_feedback_area()
     
     def submit_device(self):
