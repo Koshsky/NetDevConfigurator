@@ -12,20 +12,12 @@ class DeviceFirmwareService:
 
     def get_by_id(self, device_firmware_id: int):
         return self.db.query(DeviceFirmwares).filter(DeviceFirmwares.id == device_firmware_id).first()
+    
+    def get_devices_by_firmware_id(self, firmware_id: int):
+        return self.db.query(Devices).join(DeviceFirmwares).filter(DeviceFirmwares.firmware_id == firmware_id).all()
 
     def get_firmwares_by_device_id(self, device_id: int):
-        firmware_ids = (
-            self.db.query(DeviceFirmwares.firmware_id)
-            .filter(DeviceFirmwares.device_id == device_id)
-            .all()
-        )
-        
-        firmware_ids = [fid for (fid,) in firmware_ids]
-        
-        if firmware_ids:
-            return self.db.query(Firmwares).filter(Firmwares.id.in_(firmware_ids)).all()
-        else:
-            return []
+        return self.db.query(Firmwares).join(DeviceFirmwares).filter(DeviceFirmwares.device_id == device_id).all()
 
     def create(self, device_firmware: dict):
         device_firmware = DeviceFirmwares(**device_firmware)
