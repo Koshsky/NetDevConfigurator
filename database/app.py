@@ -14,7 +14,8 @@ from .tabs import (
         DeleteTab,
         
         DeviceInfoTab,
-        CompanyInfoTab
+        CompanyInfoTab,
+        FirmwareInfoTab
 )
 from .services import (
         CompanyService, 
@@ -75,6 +76,9 @@ class DatabaseApp:
         self.device_info_tab = DeviceInfoTab(self.notebook, self)
         self.notebook.add(self.device_info_tab.frame, text="Device info")
 
+        self.firmware_info_tab = FirmwareInfoTab(self.notebook, self)
+        self.notebook.add(self.firmware_info_tab.frame, text="Firmware info")
+
         self.add_tab = AddTab(self.notebook, self)
         self.notebook.add(self.add_tab.frame, text="Add")
 
@@ -88,8 +92,9 @@ class DatabaseApp:
 
     def display_all_tabs(self):
         self.notebook.select(self.tables_tab.frame)
-        self.notebook.select(self.device_info_tab.frame)
         self.notebook.select(self.company_info_tab.frame)
+        self.notebook.select(self.device_info_tab.frame)
+        self.notebook.select(self.firmware_info_tab.frame)
         self.notebook.select(self.add_tab.frame)
         self.notebook.select(self.update_tab.frame)
         self.notebook.select(self.delete_tab.frame)
@@ -97,8 +102,9 @@ class DatabaseApp:
 
     def hide_all_tabs(self):
         self.notebook.hide(self.tables_tab.frame)
-        self.notebook.hide(self.device_info_tab.frame)
         self.notebook.hide(self.company_info_tab.frame)
+        self.notebook.hide(self.device_info_tab.frame)
+        self.notebook.hide(self.firmware_info_tab.frame)
         self.notebook.hide(self.add_tab.frame)
         self.notebook.hide(self.update_tab.frame)
         self.notebook.hide(self.delete_tab.frame)
