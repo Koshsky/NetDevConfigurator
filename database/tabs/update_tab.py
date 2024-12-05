@@ -1,13 +1,3 @@
-import tkinter as tk
-from tkinter import ttk
-
-from database.models.models import Companies, Devices, Firmwares
-from database.services import (
-    DeviceService,
-    FirmwareService,
-    DeviceFirmwareService
-)
-
 from .base_tab import BaseTab
 
 class UpdateTab(BaseTab):

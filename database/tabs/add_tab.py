@@ -1,10 +1,6 @@
-import tkinter as tk
-from tkinter import ttk
 import os
 
-from database.models.models import Companies, DeviceFirmwares, Devices, Firmwares
-from database.services.company_service import CompanyService
-from database.services.firmware_service import FirmwareService, determine_firmware_type
+from database.services import determine_firmware_type
 
 from .base_tab import BaseTab
 
@@ -105,11 +101,11 @@ class AddTab(BaseTab):
                     print(f"Firmware '{firmware_name}' already exists in the table. Skipping.")  # TODO: replace with logger
                     continue
                 
-                new_firmware = Firmwares(
-                        name=firmware_name,
-                        full_path=f'{folder_name}/{firmware_name}',
-                        type=determine_firmware_type(firmware_name)
-                )
+                new_firmware = {
+                        "name": firmware_name,
+                        "full_path": f'{folder_name}/{firmware_name}',
+                        "type": determine_firmware_type(firmware_name)
+                }
                 self.app.firmware_service.create(new_firmware)
 
             self.display_feedback("Successfully added new firmwares from the folder.")

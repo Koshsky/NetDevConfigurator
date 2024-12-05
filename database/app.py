@@ -9,16 +9,20 @@ import logging
 from .tabs import (
         ConnectionTab,
         TablesTab,
-        DeviceInfoTab,
         UpdateTab,
         AddTab,
-        DeleteTab
+        DeleteTab,
+        
+        DeviceInfoTab,
+        CompanyInfoTab
 )
 from .services import (
         CompanyService, 
-        DeviceFirmwareService, 
         DeviceService, 
-        FirmwareService
+        FirmwareService,
+        ProtocolService,
+        DeviceFirmwareService, 
+        DeviceProtocolService
 )
 
 # TODO: if SSH=1 and COM=1, SSH + COM = 1  # на будущее (другая программа)
@@ -37,12 +41,17 @@ logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 class DatabaseApp:
     def __init__(self, root):
         self.init_root(root)
+        
         self.company_service = None
         self.firmware_service = None
         self.device_service = None
         self.device_firmware_service = None
+        self.protocol_service = None
+        self.device_protocol_service = None
+        
         self.session = None
         self.Session = None
+        
         self.create_tabs()
 
     def init_root(self, root):
@@ -57,11 +66,14 @@ class DatabaseApp:
         self.connection_tab = ConnectionTab(self.notebook, self.on_success_callback, self.on_failure_callback, self)
         self.notebook.add(self.connection_tab.frame, text="Connection")
 
-        self.data_tab = TablesTab(self.notebook, self)
-        self.notebook.add(self.data_tab.frame, text="Tables")
+        self.tables_tab = TablesTab(self.notebook, self)
+        self.notebook.add(self.tables_tab.frame, text="Tables")
 
-        self.info_tab = DeviceInfoTab(self.notebook, self)
-        self.notebook.add(self.info_tab.frame, text="Device info")
+        self.company_info_tab = CompanyInfoTab(self.notebook, self)
+        self.notebook.add(self.company_info_tab.frame, text="Company info")
+
+        self.device_info_tab = DeviceInfoTab(self.notebook, self)
+        self.notebook.add(self.device_info_tab.frame, text="Device info")
 
         self.add_tab = AddTab(self.notebook, self)
         self.notebook.add(self.add_tab.frame, text="Add")
@@ -75,16 +87,18 @@ class DatabaseApp:
         self.hide_all_tabs()
 
     def display_all_tabs(self):
-        self.notebook.select(self.data_tab.frame)
-        self.notebook.select(self.info_tab.frame)
+        self.notebook.select(self.tables_tab.frame)
+        self.notebook.select(self.device_info_tab.frame)
+        self.notebook.select(self.company_info_tab.frame)
         self.notebook.select(self.add_tab.frame)
         self.notebook.select(self.update_tab.frame)
         self.notebook.select(self.delete_tab.frame)
         self.notebook.select(self.connection_tab.frame)  # чтобы не изменять активную вкладку
 
     def hide_all_tabs(self):
-        self.notebook.hide(self.data_tab.frame)
-        self.notebook.hide(self.info_tab.frame)
+        self.notebook.hide(self.tables_tab.frame)
+        self.notebook.hide(self.device_info_tab.frame)
+        self.notebook.hide(self.company_info_tab.frame)
         self.notebook.hide(self.add_tab.frame)
         self.notebook.hide(self.update_tab.frame)
         self.notebook.hide(self.delete_tab.frame)
@@ -97,6 +111,9 @@ class DatabaseApp:
         self.firmware_service = FirmwareService(self.session)
         self.device_service = DeviceService(self.session)
         self.device_firmware_service = DeviceFirmwareService(self.session)
+        self.protocol_service = ProtocolService(self.session)
+        self.device_protocol_service = DeviceProtocolService(self.session)
+        
         print("session: ", self.session)
         self.display_all_tabs()
 

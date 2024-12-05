@@ -15,6 +15,13 @@ class FirmwareService:
 
     def get_by_name(self, name: str):
         return self.db.query(Firmwares).filter(Firmwares.name == name).first()
+    
+    def create(self, firmware: dict):
+        new_firmware = Firmwares(**firmware)
+        self.db.add(new_firmware)
+        self.db.commit()
+        self.db.refresh(new_firmware)
+        return new_firmware
 
     def delete(self, firmware):
         if firmware:

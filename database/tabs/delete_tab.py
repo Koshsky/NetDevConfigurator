@@ -1,11 +1,3 @@
-import tkinter as tk
-from tkinter import ttk
-
-from database.models.models import Companies, Devices, Firmwares
-from database.services.company_service import CompanyService
-from database.services.device_service import DeviceService
-from database.services.firmware_service import FirmwareService
-
 from .base_tab import BaseTab
 
 

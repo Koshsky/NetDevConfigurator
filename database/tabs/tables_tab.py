@@ -1,11 +1,3 @@
-import tkinter as tk
-from tkinter import ttk
-from sqlalchemy.orm import Session
-
-from database.services.company_service import CompanyService
-from database.services.device_service import DeviceService
-from database.services.firmware_service import FirmwareService
-
 from .base_tab import BaseTab
 
 class TablesTab(BaseTab):
@@ -16,7 +8,16 @@ class TablesTab(BaseTab):
         self.create_button_in_line("Companies", self.load_companies)
         self.create_button_in_line("Devices", self.load_devices)
         self.create_button_in_line("Firmwares", self.load_firmwares)
+        self.create_button_in_line("Protocols", self.load_protocols)
         self.create_feedback_area()
+
+    def load_protocols(self):
+        try:
+            rows = self.app.protocol_service.get_all()
+            self.display_feedback(self.format_table(rows))
+        except Exception as e:
+            self.display_feedback(f"Error loading data: {e}")
+            self.app.session.rollback()
 
     def load_companies(self):
         try:
