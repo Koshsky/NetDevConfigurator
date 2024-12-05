@@ -15,7 +15,7 @@ class AddTab(BaseTab):
 
     def create_widgets(self):
         self.create_block("company", {"name":None}, self.submit_company)
-        self.create_block("firmware", {"folder":['.firmwares']}, self.submit_firmwares_from_folder)
+        self.create_block("firmware", {"folder":['./firmwares']}, self.submit_firmwares_from_folder)
         # TODO: добавить УДОБНЫЕ пресеты для port_num
         # TODO: добавить пресеты для company........... 
         self.create_block("device", {"name":None, "company":self.companies, "dev_type":["router", "switch"], "port_num":[24, 48]}, self.submit_device)
@@ -84,7 +84,7 @@ class AddTab(BaseTab):
             
         if not os.path.isdir(folder_name):
             self.display_feedback(f"Error: Folder '{folder_name}' does not exist.")
-            return
+            return  
 
         folder_name = os.path.abspath(folder_name) if not os.path.isabs(folder_name) else folder_name
 
