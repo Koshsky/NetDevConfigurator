@@ -1,13 +1,17 @@
 import serial
+import time
 
-ser = serial.Serial('COM1', 115200)
+with serial.Serial('/dev/ttyUSB0', 115200, timeout=2) as ser:
+    time.sleep(1)
+    login = "mvsadmin\n"
+    password = "MVS_admin\n"
+    
+    ser.write(login.encode())
+    ser.write(password.encode())
+    ser.write("set cli pagination off\n".encode())
 
-with open("input.txt", "r") as file:
-    for line in file:
-        command = line.strip().encode()
-        ser.write(command)
+    ser.write("show run\n".encode())
+    ser.write("exit\n".encode())
 
-response = ser.read(10)
-print(response)
-
-ser.close()
+    for line in ser.readlines():
+        print(line.decode('utf-8'), end='')
