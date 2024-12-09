@@ -45,6 +45,7 @@ class DatabaseApp:
         self.Session = None
         
         self.create_tabs()
+        self.hide_all_tabs()
 
     def init_root(self, root):
         self.root = root
@@ -52,15 +53,10 @@ class DatabaseApp:
         self.root.geometry("850x650")
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill='both', expand=True)
-
+        
     def create_tabs(self):
         self.connection_tab = ConnectionTab(self.notebook, self.on_success_callback, self.on_failure_callback, self)
         self.notebook.add(self.connection_tab.frame, text="Connection")
-        
-        self.create_tabs()
-        self.hide_all_tabs()
-        
-    def create_tabs(self):
         self.create_tab(TablesTab, "Tables")
         self.create_tab(CompanyInfoTab, "Company_info")
         self.create_tab(DeviceInfoTab, "Device info")
