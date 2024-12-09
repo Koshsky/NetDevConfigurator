@@ -21,7 +21,7 @@ mes_config = {
     "auth_password": "MVS_admin",
     "on_open": mes_on_open,
     "on_close": mes_on_close,
-    "comms_prompt_pattern": r"^console(\(.+\))?[#>]\s*$",
+    "comms_prompt_pattern": r"^(\\n)?console(\(.+\))?[#>]\s*$",
     "ssh_config_file": "~/NetDevConfigurator/modules/my_ssh_config",
 }
 
