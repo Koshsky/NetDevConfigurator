@@ -35,9 +35,8 @@ def send_command(ssh, command):
 
 if __name__ == "__main__":
     with GenericDriver(**mes_config) as ssh:
-        output = send_command(ssh, "?")
-        print(output)
-        output = send_command(ssh, " ")
-        print(output)
-        output = send_command(ssh, "q")
-        print(output)
+        while True:
+            cmd = input()
+            output = send_command(ssh, cmd)
+            print(output)
+
