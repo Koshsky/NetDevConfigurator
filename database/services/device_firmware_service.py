@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 
-from database.models.models import DeviceFirmwares, Devices, Firmwares
+from database.models import DeviceFirmwares, Devices, Firmwares
 
 
-class DeviceFirmwaresService:
+class DeviceFirmwareService:
     def __init__(self, db: Session):
         self.db = db
 
@@ -12,29 +12,28 @@ class DeviceFirmwaresService:
 
     def get_by_id(self, device_firmware_id: int):
         return self.db.query(DeviceFirmwares).filter(DeviceFirmwares.id == device_firmware_id).first()
+    
+    def get_devices_by_firmware_id(self, firmware_id: int):
+        return self.db.query(Devices).join(DeviceFirmwares).filter(DeviceFirmwares.firmware_id == firmware_id).all()
 
-    def create(self, device_firmware: DeviceFirmwares):
+    def get_firmwares_by_device_id(self, device_id: int):
+        return self.db.query(Firmwares).join(DeviceFirmwares).filter(DeviceFirmwares.device_id == device_id).all()
+
+    def create(self, device_firmware: dict):
+        device_firmware = DeviceFirmwares(**device_firmware)
         self.db.add(device_firmware)
         self.db.commit()
         self.db.refresh(device_firmware)
         return device_firmware
 
-    def update(self, device_firmware_id: int, device_firmware_data: DeviceFirmwares):
-        db_device_firmware = self.get_by_id(device_firmware_id)
-        if not db_device_firmware:
-            return None
-        db_device_firmware.device_id = device_firmware_data.device_id
-        db_device_firmware.firmware_id = device_firmware_data.firmware_id
-        self.db.commit()
-        return db_device_firmware
-
-    def delete(self, device_firmware_id: int):
-        db_device_firmware = self.get_by_id(device_firmware_id)
-        if db_device_firmware:
-            self.db.delete(db_device_firmware)
+    def delete(self, device_firmware: DeviceFirmwares):
+        if device_firmware:
+            self.db.delete(device_firmware)
             self.db.commit()
-            return db_device_firmware
-        return None
+
+    def delete_by_id(self, device_firmware_id: int):
+        db_device_firmware = self.get_by_id(device_firmware_id)
+        self.delete(db_device_firmware)
         
     def link(self, device_id: int, firmware_id: int):
         existing_link = self.db.query(DeviceFirmwares).filter(
@@ -45,9 +44,10 @@ class DeviceFirmwaresService:
         if existing_link:
             raise ValueError("Device firmware already linked")
 
-        device_firmware = DeviceFirmwares(device_id=device_id, firmware_id=firmware_id)
-
-        self.create(device_firmware)
+        self.create({
+            "device_id": device_id,
+            "firmware_id": firmware_id
+        })
 
     def unlink(self, device_id: int, firmware_id: int):
         existing_link = self.db.query(DeviceFirmwares).filter(

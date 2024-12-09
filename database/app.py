@@ -8,86 +8,80 @@ import logging
 
 from .tabs import (
         ConnectionTab,
-        InfoTab,
-        DataTab,
+        TablesTab,
         UpdateTab,
         AddTab,
-        DeleteTab
+        DeleteTab,
+        
+        DeviceInfoTab,
+        CompanyInfoTab,
+        FirmwareInfoTab
 )
 from .services import (
         CompanyService, 
-        DeviceFirmwaresService, 
         DeviceService, 
-        FirmwareService
+        FirmwareService,
+        ProtocolService,
+        DeviceFirmwareService, 
+        DeviceProtocolService
 )
 
-# TODO: if SSH=1 and COM=1, SSH + COM = 1  # на будущее (другая программа)
-
-# TODO: добавить выпадающие  списки к add_tab
-
-# TODO: ДОБАВИТЬ ВКЛАДКУ ДЛЯ ОТОБРАЖЕНИЯ ИНФОРМАЦИИ О КОМПАНИИ
-# TODO: ДОБАВИТЬ ВКЛАДКУ ДЛЯ ОТОБРАЖЕНИЯ ИНФОРМАЦИИ О ПРОШИВКЕ
-
-# TODO: ДОБАВИТЬ СВЯЗКУ УСТРОЙСТВ С ПРОТОКОЛАМИ. КАК ЭТО СДЕЛАТЬ?
-
-# Настройка логирования
 logging.basicConfig(filename='app.log', level=logging.ERROR)
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 class DatabaseApp:
     def __init__(self, root):
         self.init_root(root)
-        self.company_service = None
+        self.tabs = []
+        
+        self.company_service = None   # TODO: может быть это не ЛУЧШЕЕ РЕШЕНИЕ?? выглядит как говно-перечисление
         self.firmware_service = None
         self.device_service = None
         self.device_firmware_service = None
-        self.session = None
+        self.protocol_service = None
+        self.device_protocol_service = None
+        
+        self.session = None  # TODO: почему я сделал две переменные для сессии... действительно нужно ДВЕ или нет?
         self.Session = None
+        
         self.create_tabs()
 
     def init_root(self, root):
         self.root = root
         self.root.title("Database Manager")
         self.root.geometry("850x650")
-
-    def create_tabs(self):
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill='both', expand=True)
 
+    def create_tabs(self):
         self.connection_tab = ConnectionTab(self.notebook, self.on_success_callback, self.on_failure_callback, self)
         self.notebook.add(self.connection_tab.frame, text="Connection")
-
-        self.data_tab = DataTab(self.notebook, self)
-        self.notebook.add(self.data_tab.frame, text="Tables")
-
-        self.info_tab = InfoTab(self.notebook, self)
-        self.notebook.add(self.info_tab.frame, text="Device info")
-
-        self.add_tab = AddTab(self.notebook, self)
-        self.notebook.add(self.add_tab.frame, text="Add")
-
-        self.update_tab = UpdateTab(self.notebook, self)
-        self.notebook.add(self.update_tab.frame, text="Update")
-
-        self.delete_tab = DeleteTab(self.notebook, self)
-        self.notebook.add(self.delete_tab.frame, text="Delete")
-
+        
+        self.create_tabs()
         self.hide_all_tabs()
+        
+    def create_tabs(self):
+        self.create_tab(TablesTab, "Tables")
+        self.create_tab(CompanyInfoTab, "Company_info")
+        self.create_tab(DeviceInfoTab, "Device info")
+        self.create_tab(FirmwareInfoTab, "Firmware info")
+        self.create_tab(AddTab, "Add")
+        self.create_tab(UpdateTab, "Update")
+        self.create_tab(DeleteTab, "Delete")
+
+    def create_tab(self, ClassTab: type, tab_name: str):
+        tab = ClassTab(self.notebook, self)
+        self.notebook.add(tab.frame, text=tab_name)
+        self.tabs.append(tab)
 
     def display_all_tabs(self):
-        self.notebook.select(self.data_tab.frame)
-        self.notebook.select(self.info_tab.frame)
-        self.notebook.select(self.add_tab.frame)
-        self.notebook.select(self.update_tab.frame)
-        self.notebook.select(self.delete_tab.frame)
+        for tab in self.tabs:
+            self.notebook.select(tab.frame)
         self.notebook.select(self.connection_tab.frame)  # чтобы не изменять активную вкладку
 
     def hide_all_tabs(self):
-        self.notebook.hide(self.data_tab.frame)
-        self.notebook.hide(self.info_tab.frame)
-        self.notebook.hide(self.add_tab.frame)
-        self.notebook.hide(self.update_tab.frame)
-        self.notebook.hide(self.delete_tab.frame)
+        for tab in self.tabs:
+            self.notebook.hide(tab.frame)
 
     def on_success_callback(self, engine):
         self.Session = sessionmaker(bind=engine)
@@ -96,7 +90,10 @@ class DatabaseApp:
         self.company_service = CompanyService(self.session)
         self.firmware_service = FirmwareService(self.session)
         self.device_service = DeviceService(self.session)
-        self.device_firmware_service = DeviceFirmwaresService(self.session)
+        self.device_firmware_service = DeviceFirmwareService(self.session)
+        self.protocol_service = ProtocolService(self.session)
+        self.device_protocol_service = DeviceProtocolService(self.session)
+        
         print("session: ", self.session)
         self.display_all_tabs()
 

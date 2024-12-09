@@ -1,14 +1,6 @@
-import tkinter as tk
-from tkinter import ttk
-
-from database.models.models import Companies, Devices, Firmwares
-from database.services.device_service import DeviceService
-from database.services.firmware_service import FirmwareService
-from database.services.device_firmwares_service import DeviceFirmwaresService
-
 from .base_tab import BaseTab
 
-class UpdateTab(BaseTab):
+class UpdateTab(BaseTab):                          # TODO: ДОБАВИТЬ СВЯЗКУ УСТРОЙСТВ С ПРОТОКОЛАМИ. КАК ЭТО СДЕЛАТЬ?
     def __init__(self, parent, app):
         super().__init__(parent, app, "")
 
@@ -16,7 +8,7 @@ class UpdateTab(BaseTab):
         self.create_block("device", {"name":None}, None)
         self.create_block("firmware", {"name":None}, None)
         self.create_button_in_line("LINK", self.link)
-        self.create_block("devicе", {"name":None}, None)     # not ASKII symbol to avoid conflict
+        self.create_block("devicе", {"name":None}, None)     # not ASCII symbol to avoid conflicts
         self.create_block("firmwarе", {"name":None}, None)
         self.create_button_in_line("UNLINK", self.unlink)
         self.create_feedback_area()

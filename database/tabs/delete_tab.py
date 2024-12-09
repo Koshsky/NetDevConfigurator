@@ -1,11 +1,3 @@
-import tkinter as tk
-from tkinter import ttk
-
-from database.models.models import Companies, Devices, Firmwares
-from database.services.company_service import CompanyService
-from database.services.device_service import DeviceService
-from database.services.firmware_service import FirmwareService
-
 from .base_tab import BaseTab
 
 
@@ -17,12 +9,23 @@ class DeleteTab(BaseTab):
         self.create_block("company", {"name":None}, self.delete_company)
         self.create_block("firmware", {"name":None}, self.delete_firmware)
         self.create_block("device", {"name":None}, self.delete_device)
+        self.create_block("protocol", {"name":None}, self.delete_protocol)
         self.create_feedback_area()
 
+    def delete_protocol(self):
+        try:
+            protocol = self.check_protocol_name(self.fields["protocol"]["name"].get())
+            self.app.protocol_service.delete(protocol)
+            self.display_feedback(f"Successfully deleted from the protocols table.")
+        except Exception as e:
+            self.display_feedback(f"Error deleting protocol: {e}")
+            self.app.session.rollback()
+            
     def delete_company(self):
         try:
             company = self.check_company_name(self.fields["company"]["name"].get())
             self.app.company_service.delete(company)
+            self.display_feedback(f"Successfully deleted from the companies table.")
         except Exception as e:
             self.display_feedback(f"Error deleting company: {e}")
             self.app.session.rollback()
@@ -31,6 +34,7 @@ class DeleteTab(BaseTab):
         try:
             firmware = self.check_firmware_name(self.fields["firmware"]["name"].get())
             self.app.firmware_service.delete(firmware)
+            self.display_feedback(f"Successfully deleted from the firmwares table.")
         except Exception as e:
             self.display_feedback(f"Error deleting firmware: {e}")
             self.app.session.rollback()
@@ -39,6 +43,7 @@ class DeleteTab(BaseTab):
         try:
             device = self.check_device_name(self.fields["device"]["name"].get())
             self.app.device_service.delete(device)
+            self.display_feedback(f"Successfully deleted from the devices table.")
         except Exception as e:
             self.display_feedback(f"Error deleting device: {e}")
             self.app.session.rollback()

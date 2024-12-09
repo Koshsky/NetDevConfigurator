@@ -9,6 +9,7 @@ class Companies(Base):
     __tablename__ = 'companies'
     __table_args__ = (
         PrimaryKeyConstraint('id', name='companies_pkey'),
+        UniqueConstraint('name', name='unique_company_name')
     )
 
     id = Column(Integer, primary_key=True)
@@ -23,7 +24,7 @@ class Firmwares(Base):
         CheckConstraint("(type)::text = ANY ((ARRAY['primary_bootloader'::character varying, 'secondary_bootloader'::character varying, 'firmware'::character varying])::text[])", name='firmwares_firmware_type_check'),
         PrimaryKeyConstraint('id', name='firmwares_pkey'),
         UniqueConstraint('full_path', name='firmwares_full_path_key'),
-        UniqueConstraint('name', name='unique_name')
+        UniqueConstraint('name', name='unique_firmware_name')
     )
 
     id = Column(Integer, primary_key=True)
@@ -43,7 +44,7 @@ class Protocols(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
 
-    device_protocols = relationship('DeviceProtocols', back_populates='protocols')
+    device_protocols = relationship('DeviceProtocols', back_populates='protocol')
 
 
 class Devices(Base):
@@ -51,7 +52,8 @@ class Devices(Base):
     __table_args__ = (
         CheckConstraint("(dev_type)::text = ANY ((ARRAY['router'::character varying, 'switch'::character varying])::text[])", name='check_dev_type'),
         ForeignKeyConstraint(['company_id'], ['companies.id'], ondelete='CASCADE', name='devices_company_id_fkey'),
-        PrimaryKeyConstraint('id', name='devices_pkey')
+        PrimaryKeyConstraint('id', name='devices_pkey'),
+        UniqueConstraint('name', name='unique_device_name')
     )
 
     id = Column(Integer, primary_key=True)
@@ -85,14 +87,15 @@ class DeviceFirmwares(Base):
 class DeviceProtocols(Base):
     __tablename__ = 'device_protocols'
     __table_args__ = (
-        ForeignKeyConstraint(['device_id'], ['devices.id'], name='device_protocols_device_id_fkey'),
-        ForeignKeyConstraint(['protocols_id'], ['protocols.id'], name='device_protocols_protocols_id_fkey'),
+        ForeignKeyConstraint(['device_id'], ['devices.id'], ondelete='CASCADE', name='device_protocols_device_id_fkey'),
+        ForeignKeyConstraint(['protocol_id'], ['protocols.id'], ondelete='CASCADE', name='device_protocols_protocol_id_fkey'),
         PrimaryKeyConstraint('id', name='device_protocols_pkey')
     )
 
     id = Column(Integer, primary_key=True)
     device_id = Column(Integer, nullable=False)
-    protocols_id = Column(Integer, nullable=False)
+    protocol_id = Column(Integer, nullable=False)
 
     device = relationship('Devices', back_populates='device_protocols')
-    protocols = relationship('Protocols', back_populates='device_protocols')
+    protocol = relationship('Protocols', back_populates='device_protocols')
+    

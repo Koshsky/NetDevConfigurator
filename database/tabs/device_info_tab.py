@@ -1,13 +1,6 @@
-import tkinter as tk
-from tkinter import ttk
-
-from database.models.models import Companies, Devices, Firmwares
-from database.services.device_service import DeviceService
-from database.services.firmware_service import FirmwareService
-
 from .base_tab import BaseTab
 
-class InfoTab(BaseTab):
+class DeviceInfoTab(BaseTab):
     def __init__(self, parent, app):
         super().__init__(parent, app, "SHOW")
 
@@ -18,7 +11,7 @@ class InfoTab(BaseTab):
     def show_information(self):
         try:
             device = self.check_device_name(self.fields["device"]["name"].get())
-            associated_firmwares = self.app.device_service.get_firmwares_by_device_id(device.id)
+            associated_firmwares = self.app.device_firmware_service.get_firmwares_by_device_id(device.id)
 
             company = self.app.company_service.get_by_id(device.company_id)
             company_name = company.name if company else "Unknown Company"  # UNREACHABLE по идее...
