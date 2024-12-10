@@ -38,19 +38,19 @@ interface vlan 4
 !
 *****
 *****Интерфейсы*****
-interface gigabitethernet 0/1
+interface gigabitethernet 0/{i}
   switchport general allowed vlan add 2
   switchport general allowed vlan add 3 untagged
   switchport forbidden default-vlan
   switchport general pvid 3
 !
 ***
-interface gigabitethernet 0/10
+interface gigabitethernet 0/{i}
   switchport mode access
   switchport access vlan 3
 !
 ***
-interface gigabitethernet 0/11
+interface gigabitethernet 0/{i}
   flowcontrol on
   switchport mode access
   switchport forbidden default-vlan
@@ -58,7 +58,7 @@ interface gigabitethernet 0/11
   qos trust cos-dscp
 !
 ***
-interface gigabitethernet 0/12
+interface gigabitethernet 0/{i}
   flowcontrol on
   switchport general allowed vlan add 30
   switchport general allowed vlan add 3 untagged
@@ -67,12 +67,12 @@ interface gigabitethernet 0/12
   qos trust cos-dscp
 !
 ***
-interface tengigabitethernet 0/1
+interface tengigabitethernet 0/{i}
   switchport general allowed vlan add 2
   switchport forbidden default-vlan
 !
 ***
-interface tengigabitethernet 0/3
+interface tengigabitethernet 0/{i}
   switchport general allowed vlan add 3-4
   switchport forbidden default-vlan
 !
