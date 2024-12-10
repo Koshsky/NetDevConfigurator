@@ -7,10 +7,10 @@ class UpdateTab(BaseTab):                          # TODO: ДОБАВИТЬ СВ
     def create_widgets(self):
         self.create_block("device", {"name":None}, None)
         self.create_block("firmware", {"name":None}, None)
-        self.create_button_in_line(["LINK", self.link])
+        self.create_button_in_line(("LINK", self.link))
         self.create_block("devicе", {"name":None}, None)     # not ASCII symbol to avoid conflicts
         self.create_block("firmwarе", {"name":None}, None)
-        self.create_button_in_line(["UNLINK", self.unlink])
+        self.create_button_in_line(("UNLINK", self.unlink))
         self.create_feedback_area()
 
     def link(self):

@@ -13,17 +13,17 @@ class AddTab(BaseTab):
         self.create_block(
             "company", 
             {"name": None}, 
-            ["SUBMIT", self.submit_company]
+            ("SUBMIT", self.submit_company)
         )
         self.create_block(
             "protocol",
             {"name": None},
-            ["SUBMIT", self.submit_protocol]
+            ("SUBMIT", self.submit_protocol)
         )
         self.create_block(
             "firmware", 
             {"folder": ['./firmwares']}, 
-            ["SUBMIT", self.submit_firmwares_from_folder]
+            ("SUBMIT", self.submit_firmwares_from_folder)
         )
         self.create_block(
             "device", 
@@ -34,7 +34,7 @@ class AddTab(BaseTab):
                 "dev_type": ["switch", "router"],             # TODO: make it dynamic
                 "port_num": [24, 48]                          # TODO: добавить УДОБНЫЕ пресеты для port_num
             }, 
-            ["SUBMIT", self.submit_device]
+            ("SUBMIT", self.submit_device)
         )
         self.create_feedback_area()
         

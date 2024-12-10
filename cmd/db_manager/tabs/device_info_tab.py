@@ -5,7 +5,7 @@ class DeviceInfoTab(BaseTab):
         super().__init__(parent, app)
 
     def create_widgets(self):
-        self.create_block("device", {"name":None}, ["SHOW", self.show_information])  # TODO: тут должен быть нормальный список девайсов...
+        self.create_block("device", {"name":None}, ("SHOW", self.show_information))  # TODO: тут должен быть нормальный список девайсов...
         self.create_feedback_area()
 
     def show_information(self):

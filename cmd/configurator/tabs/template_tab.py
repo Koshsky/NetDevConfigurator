@@ -11,8 +11,8 @@ class TemplateTab(BaseTab):
     def create_widgets(self):
         self.create_block("header", {"type": ["header1", "header2", "header3"]})
         self.create_block("footer", {"type": ["footer1", "footer2", "footer3"]})
-        self.list_too_many_checkbox(10, "PORTS", get_port_map(num_of_gigabit=16, num_of_10gigabit=4))
-        self.create_button_in_line(["GENERATE", self.mock_method])
+        self.create_grid_combobox(10, "PORTS", get_port_map(num_of_gigabit=16, num_of_10gigabit=4))
+        self.create_button_in_line(("GENERATE", self.mock_method))
         self.create_feedback_area()
         
     def mock_method(self):
