@@ -3,13 +3,13 @@ from internal.db_app.base_tab import BaseTab
 
 class DeleteTab(BaseTab):
     def __init__(self, parent, app):
-        super().__init__(parent, app, "DELETE")
+        super().__init__(parent, app)
 
     def create_widgets(self):
-        self.create_block("company", {"name":None}, self.delete_company)
-        self.create_block("firmware", {"name":None}, self.delete_firmware)
-        self.create_block("device", {"name":None}, self.delete_device)
-        self.create_block("protocol", {"name":None}, self.delete_protocol)
+        self.create_block("company", {"name":None}, ["delete", self.delete_company])
+        self.create_block("firmware", {"name":None}, ["delete", self.delete_firmware])
+        self.create_block("device", {"name":None}, ["delete", self.delete_device])
+        self.create_block("protocol", {"name":None}, ["delete", self.delete_protocol])
         self.create_feedback_area()
 
     def delete_protocol(self):

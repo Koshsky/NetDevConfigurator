@@ -2,10 +2,10 @@ from internal.db_app.base_tab import BaseTab
 
 class CompanyInfoTab(BaseTab):
     def __init__(self, parent, app):
-        super().__init__(parent, app, "SHOW")
+        super().__init__(parent, app)
 
     def create_widgets(self):
-        self.create_block("company", {"name":None}, self.show_information)  # TODO: тут должен быть нормальный список компаний...
+        self.create_block("company", {"name":None}, ["SHOW", self.show_information])  # TODO: тут должен быть нормальный список компаний...
         self.create_feedback_area()
 
     def show_information(self):

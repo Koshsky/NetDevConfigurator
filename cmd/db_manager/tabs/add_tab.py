@@ -7,23 +7,23 @@ from internal.db_app.base_tab import BaseTab
 class AddTab(BaseTab):
     def __init__(self, parent, app):
         self.companies = ["Eltex", "Zyxel"]
-        super().__init__(parent, app, button_text="SUBMIT")
+        super().__init__(parent, app)
 
     def create_widgets(self):
         self.create_block(
             "company", 
             {"name": None}, 
-            self.submit_company
+            ["SUBMIT", self.submit_company]
         )
         self.create_block(
             "protocol",
             {"name": None},
-            self.submit_protocol
+            ["SUBMIT", self.submit_protocol]
         )
         self.create_block(
             "firmware", 
             {"folder": ['./firmwares']}, 
-            self.submit_firmwares_from_folder
+            ["SUBMIT", self.submit_firmwares_from_folder]
         )
         self.create_block(
             "device", 
@@ -34,7 +34,7 @@ class AddTab(BaseTab):
                 "dev_type": ["switch", "router"],             # TODO: make it dynamic
                 "port_num": [24, 48]                          # TODO: добавить УДОБНЫЕ пресеты для port_num
             }, 
-            self.submit_device
+            ["SUBMIT", self.submit_device]
         )
         self.create_feedback_area()
         

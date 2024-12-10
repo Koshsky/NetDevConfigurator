@@ -2,15 +2,15 @@ from internal.db_app.base_tab import BaseTab
 
 class UpdateTab(BaseTab):                          # TODO: ДОБАВИТЬ СВЯЗКУ УСТРОЙСТВ С ПРОТОКОЛАМИ. КАК ЭТО СДЕЛАТЬ?
     def __init__(self, parent, app):
-        super().__init__(parent, app, "")
+        super().__init__(parent, app)
 
     def create_widgets(self):
         self.create_block("device", {"name":None}, None)
         self.create_block("firmware", {"name":None}, None)
-        self.create_button_in_line("LINK", self.link)
+        self.create_button_in_line(["LINK", self.link])
         self.create_block("devicе", {"name":None}, None)     # not ASCII symbol to avoid conflicts
         self.create_block("firmwarе", {"name":None}, None)
-        self.create_button_in_line("UNLINK", self.unlink)
+        self.create_button_in_line(["UNLINK", self.unlink])
         self.create_feedback_area()
 
     def link(self):

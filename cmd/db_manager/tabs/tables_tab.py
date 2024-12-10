@@ -2,13 +2,13 @@ from internal.db_app.base_tab import BaseTab
 
 class TablesTab(BaseTab):
     def __init__(self, parent, app):
-        super().__init__(parent, app, "")
+        super().__init__(parent, app)
 
     def create_widgets(self):
-        self.create_button_in_line("Companies", self.load_companies)
-        self.create_button_in_line("Devices", self.load_devices)
-        self.create_button_in_line("Firmwares", self.load_firmwares)
-        self.create_button_in_line("Protocols", self.load_protocols)
+        self.create_button_in_line(["Companies", self.load_companies])
+        self.create_button_in_line(["Devices", self.load_devices])
+        self.create_button_in_line(["Firmwares", self.load_firmwares])
+        self.create_button_in_line(["Protocols", self.load_protocols])
         self.create_feedback_area()
 
     def load_protocols(self):

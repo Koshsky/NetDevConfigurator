@@ -2,10 +2,10 @@ from internal.db_app.base_tab import BaseTab
 
 class FirmwareInfoTab(BaseTab):
     def __init__(self, parent, app):
-        super().__init__(parent, app, "SHOW")
+        super().__init__(parent, app)
 
     def create_widgets(self):
-        self.create_block("firmware", {"name":None}, self.show_information)  # TODO: тут должен быть нормальный список прошивок...
+        self.create_block("firmware", {"name":None}, ["SHOW", self.show_information])  # TODO: тут должен быть нормальный список прошивок...
         self.create_feedback_area()
 
     def show_information(self):
