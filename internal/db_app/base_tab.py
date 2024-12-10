@@ -2,16 +2,15 @@ import tkinter as tk
 from tkinter import ttk
 
 class BaseTab:
-    def __init__(self, parent, app, button_text):
+    def __init__(self, parent, app):
         self.frame = ttk.Frame(parent)
         self.app = app
         self.cur_row = 0
-        self.button_text = button_text  # TODO: убрать этот параметр в create_block. последний аргумент - {"text": text, "func": func}
         self.fields = dict()
         self.create_widgets()
         self.frame.pack(padx=10, pady=10)
 
-    def create_block(self, block_name: str, list_params: dict, function=None):
+    def create_block(self, block_name: str, list_params: dict, button=None):
         self.fields[block_name] = dict()
         ttk.Label(self.frame, text=f"{block_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
         for param, presets in list_params.items():
@@ -39,7 +38,11 @@ class BaseTab:
                     self.fields[block_name][param][box] = checkbox
                     self.cur_row += 1
         
-    def list_too_many_checkbox(self,  width: int, block_name: str, list_params: dict, function=None,):
+        if button is not None:
+            self.button = tk.Button(self.frame, text=button[0], command=button[1])
+            self.button.grid(row=self.cur_row-1, column=3, padx=5, pady=5)
+        
+    def list_too_many_checkbox(self,  width: int, block_name: str, list_params: dict, button=None):
         self.fields[block_name] = dict()
         ttk.Label(self.frame, text=f"{block_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
         cur_col = 1
@@ -63,14 +66,10 @@ class BaseTab:
         if len(list_params) > width:
             self.cur_row = first_row + width
 
+        self.create_button_in_line(button)
 
-        if function is not None:
-            self.button = tk.Button(self.frame, text=self.button_text, command=function)
-            self.button.grid(row=self.cur_row-1, column=3, padx=5, pady=5)
-
-
-    def create_button_in_line(self, text: str, function):
-        button = tk.Button(self.frame, text=text, command=function)
+    def create_button_in_line(self, button):
+        button = tk.Button(self.frame, text=button[0], command=button[1])
         button.grid(row=self.cur_row, column=0, pady=5, columnspan=5, sticky="ew")
 
         self.cur_row += 1
