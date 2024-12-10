@@ -12,12 +12,17 @@ from .tabs import (
         FirmwareInfoTab
 )
 
-class DBManagerApp(DatabaseApp):        
+class DBManagerApp(DatabaseApp):
+    def init_root(self, root):
+        super().init_root(root)
+        self.root.title("Database Manager")
+        self.root.geometry("850x650")
+        
     def create_tabs(self):
         super().create_tabs()
         self.create_tab(TablesTab, "Tables")
         self.create_tab(CompanyInfoTab, "Company_info")
-        self.create_tab(DeviceInfoTab, "Device info")
+        self.create_tab(DeviceInfoTab, "Device info")   
         self.create_tab(FirmwareInfoTab, "Firmware info")
         self.create_tab(AddTab, "Add")
         self.create_tab(UpdateTab, "Update")
