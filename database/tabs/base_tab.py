@@ -34,7 +34,7 @@ class BaseTab:
                 self.fields[block_name][param] = dict()
                 for box in presets:
                     checkbox = tk.Checkbutton(self.frame, text=box)
-                    checkbox.grid(row=self.cur_row, column=2, padx=5, pady=5)
+                    checkbox.grid(row=self.cur_row, column=2, padx=5)
 
                     self.fields[block_name][param][box] = checkbox
                     self.cur_row += 1
