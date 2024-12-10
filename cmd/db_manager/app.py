@@ -1,12 +1,7 @@
 import tkinter as tk
-from tkinter import ttk
-
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
 
 from internal.db_app.database_app import DatabaseApp
 from .tabs import (
-        ConnectionTab,
         TablesTab,
         UpdateTab,
         AddTab,
@@ -15,14 +10,6 @@ from .tabs import (
         DeviceInfoTab,
         CompanyInfoTab,
         FirmwareInfoTab
-)
-from internal.database.services import (
-        CompanyService, 
-        DeviceService, 
-        FirmwareService,
-        ProtocolService,
-        DeviceFirmwareService, 
-        DeviceProtocolService
 )
 
 class DBManagerApp(DatabaseApp):        
