@@ -34,8 +34,6 @@ class DatabaseApp:
 
     def init_root(self, root):
         self.root = root
-        self.root.title("Database Manager")
-        self.root.geometry("850x650")
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill='both', expand=True)
         

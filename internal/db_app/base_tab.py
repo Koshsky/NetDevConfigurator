@@ -11,7 +11,7 @@ class BaseTab:
         self.create_widgets()
         self.frame.pack(padx=10, pady=10)
 
-    def create_block(self, block_name: str, list_params: dict, function):
+    def create_block(self, block_name: str, list_params: dict, function=None):
         self.fields[block_name] = dict()
         ttk.Label(self.frame, text=f"{block_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
         for param, presets in list_params.items():
@@ -38,6 +38,30 @@ class BaseTab:
 
                     self.fields[block_name][param][box] = checkbox
                     self.cur_row += 1
+        
+    def list_too_many_checkbox(self,  width: int, block_name: str, list_params: dict, function=None,):
+        self.fields[block_name] = dict()
+        ttk.Label(self.frame, text=f"{block_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
+        cur_col = 1
+        space = width
+        first_row = self.cur_row
+        for param, presets in list_params.items():
+            label = ttk.Label(self.frame, text=f"{param}")
+            label.grid(row=self.cur_row, column=cur_col, padx=5, pady=5)
+            field = ttk.Combobox(self.frame, values=presets)
+            field.grid(row=self.cur_row, column=cur_col+1, padx=5, pady=5)
+            field.current(0)
+
+            self.fields[block_name][param] = field
+            self.cur_row += 1
+            space -= 1
+            if not space:
+                self.cur_row = first_row
+                cur_col += 2
+                space = width
+                
+        if len(list_params) > width:
+            self.cur_row = first_row + width
 
 
         if function is not None:
@@ -64,8 +88,7 @@ class BaseTab:
         self.feedback_text.delete(1.0, tk.END)
         self.feedback_text.insert(tk.END, message)
         self.feedback_text.config(state=tk.DISABLED)
-        print(message)  # TODO: replace with logger
-
+        
     def create_widgets(self):
         raise NotImplementedError
 
