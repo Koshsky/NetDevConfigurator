@@ -17,7 +17,7 @@ from .tabs import (
         CompanyInfoTab,
         FirmwareInfoTab
 )
-from .services import (
+from database.services import (
         CompanyService, 
         DeviceService, 
         FirmwareService,
