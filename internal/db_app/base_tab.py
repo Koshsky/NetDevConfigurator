@@ -66,7 +66,8 @@ class BaseTab:
         if len(list_params) > width:
             self.cur_row = first_row + width
 
-        self.create_button_in_line(button)
+        if button is not None:
+            self.create_button_in_line(button)
 
     def create_button_in_line(self, button):
         button = tk.Button(self.frame, text=button[0], command=button[1])
@@ -76,7 +77,7 @@ class BaseTab:
 
     def create_feedback_area(self):
         self.feedback_text = tk.Text(self.frame, wrap='word', width=100, height=20)
-        self.feedback_text.grid(row=self.cur_row, column=0, columnspan=4, padx=5, pady=5)
+        self.feedback_text.grid(row=self.cur_row, column=0, columnspan=5, padx=5, pady=5)
         self.feedback_text.insert(tk.END, "Feedback will be here...\n")
         self.feedback_text.config(state=tk.DISABLED)
 
