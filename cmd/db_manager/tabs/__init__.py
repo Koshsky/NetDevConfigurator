@@ -1,4 +1,4 @@
-from .connection_tab import ConnectionTab
+from internal.db_app.connection_tab import ConnectionTab
 from .tables_tab import TablesTab
 from .add_tab import AddTab
 from .delete_tab import DeleteTab

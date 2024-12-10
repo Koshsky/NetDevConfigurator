@@ -4,20 +4,8 @@ from tkinter import ttk
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
-import logging
-
-from .tabs import (
-        ConnectionTab,
-        TablesTab,
-        UpdateTab,
-        AddTab,
-        DeleteTab,
-        
-        DeviceInfoTab,
-        CompanyInfoTab,
-        FirmwareInfoTab
-)
-from database.services import (
+from .connection_tab import ConnectionTab
+from internal.database.services import (
         CompanyService, 
         DeviceService, 
         FirmwareService,
@@ -25,9 +13,6 @@ from database.services import (
         DeviceFirmwareService, 
         DeviceProtocolService
 )
-
-logging.basicConfig(filename='app.log', level=logging.ERROR)
-logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 class DatabaseApp:
     def __init__(self, root):
@@ -57,14 +42,7 @@ class DatabaseApp:
     def create_tabs(self):
         self.connection_tab = ConnectionTab(self.notebook, self.on_success_callback, self.on_failure_callback, self)
         self.notebook.add(self.connection_tab.frame, text="Connection")
-        self.create_tab(TablesTab, "Tables")
-        self.create_tab(CompanyInfoTab, "Company_info")
-        self.create_tab(DeviceInfoTab, "Device info")
-        self.create_tab(FirmwareInfoTab, "Firmware info")
-        self.create_tab(AddTab, "Add")
-        self.create_tab(UpdateTab, "Update")
-        self.create_tab(DeleteTab, "Delete")
-
+        
     def create_tab(self, ClassTab: type, tab_name: str):
         tab = ClassTab(self.notebook, self)
         self.notebook.add(tab.frame, text=tab_name)
@@ -98,9 +76,3 @@ class DatabaseApp:
         self.session = None
         print("session: ", self.session)
         logging.error(f"Connection failed: {error}")  # Логирование ошибки
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = DatabaseApp(root)
-    root.mainloop()

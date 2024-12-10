@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from database.models import Protocols
+from internal.database.models import Protocols
 
 class ProtocolService:
     def __init__(self, db: Session):

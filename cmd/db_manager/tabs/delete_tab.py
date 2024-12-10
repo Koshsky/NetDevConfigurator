@@ -1,4 +1,4 @@
-from .base_tab import BaseTab
+from internal.db_app.base_tab import BaseTab
 
 
 class DeleteTab(BaseTab):

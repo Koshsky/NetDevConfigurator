@@ -1,4 +1,4 @@
-from .base_tab import BaseTab
+from internal.db_app.base_tab import BaseTab
 
 class UpdateTab(BaseTab):                          # TODO: ДОБАВИТЬ СВЯЗКУ УСТРОЙСТВ С ПРОТОКОЛАМИ. КАК ЭТО СДЕЛАТЬ?
     def __init__(self, parent, app):
