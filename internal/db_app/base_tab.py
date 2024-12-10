@@ -1,17 +1,22 @@
 import tkinter as tk
 from tkinter import ttk
+from typing import Optional, Tuple, Callable
 
 class BaseTab:
     def __init__(self, parent, app):
         self.frame = ttk.Frame(parent)
         self.app = app
         self.cur_row = 0
-        self.fields = dict()
+        self.fields = {}
         self.create_widgets()
         self.frame.pack(padx=10, pady=10)
 
-    def create_block(self, block_name: str, list_params: dict, button=None):
-        self.fields[block_name] = dict()
+    def create_block(self, block_name: str, list_params: dict, button: Optional[Tuple[str, Callable]] = None):
+        if button is not None and not (isinstance(button, tuple) and len(button) == 2 
+                                     and isinstance(button[0], str) and callable(button[1])):
+            raise TypeError("button parameter must be a tuple of (str, callable) or None")
+        
+        self.fields[block_name] = {}
         ttk.Label(self.frame, text=f"{block_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
         for param, presets in list_params.items():
             label = ttk.Label(self.frame, text=f"{param}")
@@ -30,7 +35,7 @@ class BaseTab:
                 self.fields[block_name][param] = field
                 self.cur_row += 1
             elif isinstance(presets, tuple):
-                self.fields[block_name][param] = dict()
+                self.fields[block_name][param] = {}
                 for box in presets:
                     checkbox = tk.Checkbutton(self.frame, text=box)
                     checkbox.grid(row=self.cur_row, column=2, padx=5)
@@ -42,8 +47,12 @@ class BaseTab:
             self.button = tk.Button(self.frame, text=button[0], command=button[1])
             self.button.grid(row=self.cur_row-1, column=3, padx=5, pady=5)
         
-    def list_too_many_checkbox(self,  width: int, block_name: str, list_params: dict, button=None):
-        self.fields[block_name] = dict()
+    def create_grid_combobox(self,  width: int, block_name: str, list_params: dict, button: Optional[Tuple[str, Callable]] = None):
+        if button is not None and not (isinstance(button, tuple) and len(button) == 2 
+                                     and isinstance(button[0], str) and callable(button[1])):
+            raise TypeError("button parameter must be a tuple of (str, callable) or None")
+        
+        self.fields[block_name] = {}
         ttk.Label(self.frame, text=f"{block_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
         cur_col = 1
         space = width
@@ -69,14 +78,17 @@ class BaseTab:
         if button is not None:
             self.create_button_in_line(button)
 
-    def create_button_in_line(self, button):
+    def create_button_in_line(self, button: Tuple[str, Callable]):
+        if not (isinstance(button, tuple) and len(button) == 2 
+                                     and isinstance(button[0], str) and callable(button[1])):
+            raise TypeError("button parameter must be a tuple of (str, callable)")
         button = tk.Button(self.frame, text=button[0], command=button[1])
         button.grid(row=self.cur_row, column=0, pady=5, columnspan=5, sticky="ew")
 
         self.cur_row += 1
 
-    def create_feedback_area(self):
-        self.feedback_text = tk.Text(self.frame, wrap='word', width=100, height=20)
+    def create_feedback_area(self, width=100, height=20):
+        self.feedback_text = tk.Text(self.frame, wrap='word', width=width, height=height)
         self.feedback_text.grid(row=self.cur_row, column=0, columnspan=5, padx=5, pady=5)
         self.feedback_text.insert(tk.END, "Feedback will be here...\n")
         self.feedback_text.config(state=tk.DISABLED)
@@ -93,44 +105,41 @@ class BaseTab:
         raise NotImplementedError
 
     def check_protocol_name(self, protocol_name: str) -> int:  # TODO: изменить аннотацию, возвращаемый тип 
-        protocol_name = protocol_name.strip()
-        if not protocol_name:
+        if protocol_name := protocol_name.strip():
+            protocol = self.app.protocol_service.get_by_name(protocol_name)
+        else:
             raise ValueError("Device name cannot be empty")
 
-        protocol = self.app.protocol_service.get_by_name(protocol_name)
         if not protocol:
             raise ValueError("Protocol not found.")
 
         return protocol
 
     def check_device_name(self, device_name: str) -> int:  # TODO: изменить аннотацию, возвращаемый тип 
-        device_name = device_name.strip()
-        if not device_name:
+        if device_name := device_name.strip():
+            device = self.app.device_service.get_by_name(device_name)
+        else:
             raise ValueError("Device name cannot be empty")
-
-        device = self.app.device_service.get_by_name(device_name)
         if not device:
             raise ValueError("Device not found.")
 
         return device
 
     def check_firmware_name(self, firmware_name: str) -> int:  # TODO: изменить аннотацию, возвращаемый тип
-        firmware_name = firmware_name.strip()
-        if not firmware_name:
+        if firmware_name := firmware_name.strip():
+            firmware = self.app.firmware_service.get_by_name(firmware_name)
+        else:
             raise ValueError("Firmware name cannot be empty")
-
-        firmware = self.app.firmware_service.get_by_name(firmware_name)
         if not firmware:
             raise ValueError("firmware not found.")
 
         return firmware
 
     def check_company_name(self, company_name: str) -> int:  # TODO: изменить аннотацию, возвращаемый тип
-        company_name = company_name.strip()
-        if not company_name:
+        if company_name := company_name.strip():
+            company = self.app.company_service.get_by_name(company_name)
+        else:
             raise ValueError("Company name cannot be empty")
-
-        company = self.app.company_service.get_by_name(company_name)
         if not company:
             raise ValueError("company not found.")
 
