@@ -1,4 +1,4 @@
-from sqlalchemy import CheckConstraint, Column, ForeignKeyConstraint, Integer, PrimaryKeyConstraint, String, UniqueConstraint
+from sqlalchemy import CheckConstraint, Column, ForeignKeyConstraint, Integer, PrimaryKeyConstraint, String, Text, UniqueConstraint
 
 from sqlalchemy.orm import declarative_base, relationship
 
@@ -29,6 +29,7 @@ class Families(Base):
     name = Column(String(255), nullable=False)
 
     devices = relationship('Devices', back_populates='family')
+    template_pieces = relationship('TemplatePieces', back_populates='family')
 
 
 class Firmwares(Base):
@@ -46,6 +47,20 @@ class Firmwares(Base):
     type = Column(String, nullable=False)
 
     device_firmwares = relationship('DeviceFirmwares', back_populates='firmware')
+
+
+class Ports(Base):
+    __tablename__ = 'ports'
+    __table_args__ = (
+        PrimaryKeyConstraint('id', name='ports_pkey'),
+    )
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255), nullable=False)
+    material = Column(String(255))
+    speed = Column(Integer)
+
+    device_ports = relationship('DevicePorts', back_populates='port')
 
 
 class Protocols(Base):
@@ -73,15 +88,31 @@ class Devices(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     company_id = Column(Integer, nullable=False)
-    num_gigabit_ports = Column(Integer, nullable=False)
     dev_type = Column(String, nullable=False)
-    num_10gigabit_ports = Column(Integer, nullable=False)
     family_id = Column(Integer, nullable=False)
 
     company = relationship('Companies', back_populates='devices')
     family = relationship('Families', back_populates='devices')
     device_firmwares = relationship('DeviceFirmwares', back_populates='device')
+    device_ports = relationship('DevicePorts', back_populates='device')
     device_protocols = relationship('DeviceProtocols', back_populates='device')
+
+
+class TemplatePieces(Base):
+    __tablename__ = 'template_pieces'
+    __table_args__ = (
+        ForeignKeyConstraint(['family_id'], ['families.id'], ondelete='CASCADE', name='template_pieces_family_id_fkey'),
+        PrimaryKeyConstraint('id', name='template_pieces_pkey')
+    )
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    type = Column(String, nullable=False)
+    role = Column(String, nullable=False)
+    text = Column(Text)
+    family_id = Column(Integer)
+
+    family = relationship('Families', back_populates='template_pieces')
 
 
 class DeviceFirmwares(Base):
@@ -99,6 +130,23 @@ class DeviceFirmwares(Base):
 
     device = relationship('Devices', back_populates='device_firmwares')
     firmware = relationship('Firmwares', back_populates='device_firmwares')
+
+
+class DevicePorts(Base):
+    __tablename__ = 'device_ports'
+    __table_args__ = (
+        ForeignKeyConstraint(['device_id'], ['devices.id'], ondelete='CASCADE', name='device_ports_device_id_fkey'),
+        ForeignKeyConstraint(['port_id'], ['ports.id'], ondelete='CASCADE', name='device_ports_port_id_fkey'),
+        PrimaryKeyConstraint('id', name='device_ports_pkey')
+    )
+
+    id = Column(Integer, primary_key=True)
+    device_id = Column(Integer, nullable=False)
+    port_id = Column(Integer, nullable=False)
+    number = Column(Integer, nullable=False)
+
+    device = relationship('Devices', back_populates='device_ports')
+    port = relationship('Ports', back_populates='device_ports')
 
 
 class DeviceProtocols(Base):
