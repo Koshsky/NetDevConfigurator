@@ -19,8 +19,8 @@ class DBManagerApp(DatabaseApp):
         self.root.title("Database Manager")
         self.root.geometry("850x650")
         
-    def create_tabs(self):
-        super().create_tabs()
+    def on_success_callback(self, engine):
+        super().on_success_callback(engine)
         self.create_tab(TablesTab, "Tables")
         self.create_tab(AddTab, "Add")
         self.create_tab(UpdateTab, "Update")

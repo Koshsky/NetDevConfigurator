@@ -30,7 +30,6 @@ class DatabaseApp:
         self.Session = None
         
         self.create_tabs()
-        self.hide_all_tabs()
 
     def init_root(self, root):
         self.root = root
@@ -59,6 +58,13 @@ class DatabaseApp:
         self.Session = sessionmaker(bind=engine)
         self.session = self.Session()
         # update services
+
+        self.init_db_services()
+        self.get_tuples_of_entities()
+        
+        print("session: ", self.session)
+
+    def init_db_services(self):
         self.company_service = CompanyService(self.session)
         self.firmware_service = FirmwareService(self.session)
         self.device_service = DeviceService(self.session)
@@ -67,8 +73,10 @@ class DatabaseApp:
         self.device_protocol_service = DeviceProtocolService(self.session)
         self.family_service = FamilyService(self.session)
         
-        print("session: ", self.session)
-        self.display_all_tabs()
+    def get_tuples_of_entities(self):
+        self.companies = tuple(company.name for company in self.company_service.get_all())
+        self.protocols = tuple(protocol.name for protocol in self.protocol_service.get_all())
+        self.families = tuple(family.name for family in self.family_service.get_all())
 
     def on_failure_callback(self, error):
         self.hide_all_tabs()

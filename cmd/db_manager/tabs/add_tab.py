@@ -8,9 +8,6 @@ from internal.db_app.base_tab import BaseTab
 class AddTab(BaseTab):
     def __init__(self, parent, app):
         # TODO: или убрать вовсе в поля self.app чтобы можно было получить доступ из любой вкладки.
-        self.companies = ["Eltex", "Zyxel"]              # TODO: make it dynamic
-        self.families = ["mes24xx", ]                    # TODO: make it dynamic
-        self.protocols = ('ssh', 'http', 'COM', 'SNMP')  # TODO: make it dynamic
         super().__init__(parent, app)
 
     def create_widgets(self):
@@ -38,9 +35,9 @@ class AddTab(BaseTab):
             "device", 
             {
                 "name": None,
-                "protocols": self.protocols,                 
-                "company": self.companies,
-                "family": self.families,
+                "protocols": self.app.protocols,                 
+                "company": list(self.app.companies),
+                "family": list(self.app.families),
                 "dev_type": ["switch", "router"],
                 "num_gigabit_ports": [24, 48],
                 "num_10gigabit_ports": [4, 6]
