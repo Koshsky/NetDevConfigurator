@@ -1,15 +1,21 @@
 from internal.db_app.base_tab import BaseTab
 
 class TablesTab(BaseTab):
-    def __init__(self, parent, app):
-        super().__init__(parent, app)
-
     def create_widgets(self):
         self.create_button_in_line(("Companies", self.load_companies))
+        self.create_button_in_line(("Families", self.load_families))
         self.create_button_in_line(("Devices", self.load_devices))
         self.create_button_in_line(("Firmwares", self.load_firmwares))
         self.create_button_in_line(("Protocols", self.load_protocols))
         self.create_feedback_area()
+
+    def load_families(self):
+        try:
+            rows = self.app.family_service.get_all()
+            self.display_feedback(self.format_table(rows))
+        except Exception as e:
+            self.display_feedback(f"Error loading data: {e}")
+            self.app.session.rollback()
 
     def load_protocols(self):
         try:

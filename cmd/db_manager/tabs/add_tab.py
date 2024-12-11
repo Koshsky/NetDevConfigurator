@@ -6,10 +6,18 @@ from internal.db_app.base_tab import BaseTab
 
 class AddTab(BaseTab):
     def __init__(self, parent, app):
-        self.companies = ["Eltex", "Zyxel"]
+        # TODO: или убрать вовсе в поля self.app чтобы можно было получить доступ из любой вкладки.
+        self.companies = ["Eltex", "Zyxel"]              # TODO: make it dynamic
+        self.families = ["mes24xx", ]                    # TODO: make it dynamic
+        self.protocols = ('ssh', 'http', 'COM', 'SNMP')  # TODO: make it dynamic
         super().__init__(parent, app)
 
     def create_widgets(self):
+        self.create_block(
+            "family", 
+            {"name": None}, 
+            ("SUBMIT", self.submit_family)
+        )
         self.create_block(
             "company", 
             {"name": None}, 
@@ -29,10 +37,12 @@ class AddTab(BaseTab):
             "device", 
             {
                 "name": None,
-                "protocols": ('ssh', 'http', 'COM', 'SNMP'),  # TODO: make it dynamic
-                "company": self.companies,                    # TODO: make it dynamic
-                "dev_type": ["switch", "router"],             # TODO: make it dynamic
-                "port_num": [24, 48]                          # TODO: добавить УДОБНЫЕ пресеты для port_num
+                "protocols": self.protocols,                 
+                "company": self.companies,
+                "family": self.families,
+                "dev_type": ["switch", "router"],
+                "num_gigabit_ports": [24, 48],
+                "num_10gigabit_ports": [4, 6]
             }, 
             ("SUBMIT", self.submit_device)
         )
@@ -51,11 +61,25 @@ class AddTab(BaseTab):
             self.display_feedback(f"Error adding to protocols table: {e}")
             self.app.session.rollback()
         
+    def submit_family(self):
+        family_name = self.fields['family']['name'].get().strip()
+        if not family_name:
+            self.display_feedback("Error: Family name cannot be empty.")
+            return
+
+        try:
+            self.app.family_service.create({"name": family_name})
+            self.display_feedback("Successfully added to the families table.")
+        except Exception as e:
+            self.display_feedback(f"Error adding to families table: {e}")
+            self.app.session.rollback()
+        
     
     def submit_device(self):
         device_name = self.fields["device"]["name"].get().strip()
         dev_type = self.fields["device"]["dev_type"].get().strip()
-        port_num = self.fields["device"]["port_num"].get().strip()
+        num_gigabit_ports = self.fields["device"]["num_gigabit_ports"].get().strip()
+        num_10gigabit_ports = self.fields["device"]["num_10gigabit_ports"].get().strip()
 
         if not device_name:
             self.display_feedback("Error: Device name cannot be empty.")
@@ -63,18 +87,20 @@ class AddTab(BaseTab):
         if not dev_type:
             self.display_feedback("Error: Select device type")
             return
-        if not port_num.isdigit():
+        if not (num_gigabit_ports.isdigit() and num_10gigabit_ports.isdigit()):
             self.display_feedback("Error: Port number must be a valid integer.")
             return
 
         try:
             company = self.check_company_name(self.fields["device"]["company"].get())
-
+            family = self.check_family_name(self.fields["device"]["family"].get())
             new_device = {
                 "name": device_name,
                 "company_id": company.id,
+                "family_id": family.id,
                 "dev_type": dev_type,
-                "port_num": int(port_num)
+                "num_gigabit_ports": int(num_gigabit_ports),
+                "num_10gigabit_ports": int(num_10gigabit_ports),
             }
             
             self.app.device_service.create(new_device)
@@ -107,14 +133,14 @@ class AddTab(BaseTab):
             self.display_feedback(f"Error: Folder '{folder_name}' does not exist.")
             return  
 
-        folder_name = os.path.abspath(folder_name) if not os.path.isabs(folder_name) else folder_name
+        folder_name = folder_name if os.path.isabs(folder_name) else os.path.abspath(folder_name)
 
         try:
             existing_firmwares = [firmware.name for firmware in self.app.firmware_service.get_all()]
             for filename in os.listdir(folder_name):
                 firmware_name = filename
                 if firmware_name in existing_firmwares:
-                    print(f"Firmware '{firmware_name}' already exists in the table. Skipping.")  # TODO: replace with logger
+                    print(f"Firmware '{firmware_name}' already exists in the table. Skipping.")
                     continue
                 
                 new_firmware = {

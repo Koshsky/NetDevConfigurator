@@ -7,3 +7,4 @@ from .update_tab import UpdateTab
 from .device_info_tab import DeviceInfoTab
 from .company_info_tab import CompanyInfoTab
 from .firmware_info_tab import FirmwareInfoTab
+from .family_info_tab import FamilyInfoTab

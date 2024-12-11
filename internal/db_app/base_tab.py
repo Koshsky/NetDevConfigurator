@@ -117,7 +117,7 @@ class BaseTab:
 
     def check_family_name(self, family_name: str) -> int:
         if family_name := family_name.strip():
-            family = self.app.family_serivce.get_by_name(family_name)
+            family = self.app.family_service.get_by_name(family_name)
         else:
             raise ValueError("Family name cannot be empty")
 

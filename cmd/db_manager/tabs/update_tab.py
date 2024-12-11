@@ -1,9 +1,6 @@
 from internal.db_app.base_tab import BaseTab
 
 class UpdateTab(BaseTab):                          # TODO: ДОБАВИТЬ СВЯЗКУ УСТРОЙСТВ С ПРОТОКОЛАМИ. КАК ЭТО СДЕЛАТЬ?
-    def __init__(self, parent, app):
-        super().__init__(parent, app)
-
     def create_widgets(self):
         self.create_block("device", {"name":None}, None)
         self.create_block("firmware", {"name":None}, None)
@@ -19,7 +16,7 @@ class UpdateTab(BaseTab):                          # TODO: ДОБАВИТЬ СВ
             firmware = self.check_firmware_name(self.fields["firmware"]["name"].get().strip())
 
             self.app.device_firmware_service.link(device.id, firmware.id)
-            self.display_feedback(f"Linked device with firmware successfully.")
+            self.display_feedback("Linked device with firmware successfully.")
         except ValueError as e:
             self.display_feedback(f"Error: {e}")
         except Exception as e:
@@ -33,7 +30,7 @@ class UpdateTab(BaseTab):                          # TODO: ДОБАВИТЬ СВ
             firmware = self.check_firmware_name(self.fields["firmwarе"]["name"].get().strip())
 
             self.app.device_firmware_service.unlink(device.id, firmware.id)
-            self.display_feedback(f"Unlinked device with firmware successfully.")
+            self.display_feedback("Unlinked device with firmware successfully.")
         except ValueError as e:
             self.display_feedback(f"Error: {e}")
         except Exception as e:

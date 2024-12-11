@@ -9,7 +9,8 @@ from .tabs import (
         
         DeviceInfoTab,
         CompanyInfoTab,
-        FirmwareInfoTab
+        FirmwareInfoTab,
+        FamilyInfoTab
 )
 
 class DBManagerApp(DatabaseApp):
@@ -21,12 +22,13 @@ class DBManagerApp(DatabaseApp):
     def create_tabs(self):
         super().create_tabs()
         self.create_tab(TablesTab, "Tables")
-        self.create_tab(CompanyInfoTab, "Company_info")
-        self.create_tab(DeviceInfoTab, "Device info")   
-        self.create_tab(FirmwareInfoTab, "Firmware info")
         self.create_tab(AddTab, "Add")
         self.create_tab(UpdateTab, "Update")
         self.create_tab(DeleteTab, "Delete")
+        self.create_tab(CompanyInfoTab, "Company")
+        self.create_tab(FamilyInfoTab, "Family")
+        self.create_tab(DeviceInfoTab, "Device")
+        self.create_tab(FirmwareInfoTab, "Firmware")
 
 if __name__ == "__main__":
     root = tk.Tk()
