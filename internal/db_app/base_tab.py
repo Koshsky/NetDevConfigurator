@@ -47,7 +47,11 @@ class BaseTab:
         if button is not None:
             self.button = tk.Button(self.frame, text=button[0], command=button[1])
             self.button.grid(row=self.cur_row-1, column=3, padx=5, pady=5)
-        
+    
+    def clear_frame(self):
+        for widget in self.frame.winfo_children():
+            widget.destroy()
+
     def create_grid_combobox(self,  width: int, block_name: str, list_params: dict, button: Optional[Tuple[str, Callable]] = None):
         if button is not None and not (isinstance(button, tuple) and len(button) == 2 
                                      and isinstance(button[0], str) and callable(button[1])):

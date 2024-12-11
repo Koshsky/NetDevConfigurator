@@ -77,6 +77,7 @@ class DatabaseApp:
         self.companies = tuple(company.name for company in self.company_service.get_all())
         self.protocols = tuple(protocol.name for protocol in self.protocol_service.get_all())
         self.families = tuple(family.name for family in self.family_service.get_all())
+        self.devices = tuple(device.name for device in self.device_service.get_all())
 
     def on_failure_callback(self, error):
         self.hide_all_tabs()

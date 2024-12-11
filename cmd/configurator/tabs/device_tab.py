@@ -1,21 +1,28 @@
 from internal.db_app.base_tab import BaseTab
 from typing import Dict, List
 
-from tkinter import ttk
-
 
 class DeviceTab(BaseTab):
     def __init__(self, parent, app):
         super().__init__(parent, app)
         
     def create_widgets(self):
-        self.create_block("Device", {"name": ["header1", "header2", "header3"]})
-        self.create_grid_combobox(10, "PORTS", get_port_map(num_of_gigabit=16, num_of_10gigabit=4))  # откуда брать количество портов?
-        self.create_button_in_line(("UPDATE TABS", self.generate_template))
+        self.create_block("device", {"name": list(self.app.devices)})
+        self.create_button_in_line(("UPDATE TABS", self.update_tabs))
         self.create_feedback_area()
+
+    def update_tabs(self):
+        try:
+            self.app.device = self.check_device_name(self.fields["device"]["name"].get())
+            for tab in self.app.tabs[1:]:
+                tab.clear_frame()
+                tab.create_widgets()
+            self.display_feedback(f'device {self.app.device.name} registered.\n')
+        except Exception as e:
+            self.display_feedback(f"An error: {e}")
         
     def generate_template(self):
-        self.app.num_of_gigabit = 
+        self.app.num_of_gigabit = 1
         header_name = self.fields["header"]["name"].get().strip()  # TODO: обновить базу данных, а тут получать ее объект а не просто имя.
         footer_name = self.fields["header"]["name"].get().strip()  # если объекта не существует в базе данных, обрабатывать этот случай с выводом ошибки в дисплей
         for port_name, combobox in self.fields["PORTS"].items():

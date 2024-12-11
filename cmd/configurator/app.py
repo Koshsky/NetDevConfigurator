@@ -2,17 +2,21 @@ import tkinter as tk
 
 from internal.db_app.database_app import DatabaseApp
 from .tabs import (
-    TemplateTab
+    TemplateTab,
+    DeviceTab
 )
 
 class ConfiguratorApp(DatabaseApp):        
     def init_root(self, root):
+        self.device = None
         super().init_root(root)
         self.root.title("Configurator")
         self.root.geometry("1200x900")
               
-    def create_tabs(self):
-        super().create_tabs()
+    def on_success_callback(self, engine):
+        super().on_success_callback(engine)
+        self.create_tab(DeviceTab, "Device")
+        self.notebook.select(self.tabs[0].frame)
         self.create_tab(TemplateTab, "TEMPLATE")
         
 
