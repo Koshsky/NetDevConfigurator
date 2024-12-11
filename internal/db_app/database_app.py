@@ -1,8 +1,6 @@
-import tkinter as tk
 from tkinter import ttk
 
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
 
 from .connection_tab import ConnectionTab
 from internal.database.services import (

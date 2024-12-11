@@ -37,7 +37,7 @@ class ConnectionTab:
         self.message_label = tk.Label(self.frame, text="", wraplength=400)
         self.message_label.pack(pady=5)
 
-    def on_button_click(self):
+    def on_button_click(self):  # sourcery skip: extract-method
         db_params = {key: entry.get() for key, entry in self.entries.items()}
         print("Entered data:", db_params)
 
