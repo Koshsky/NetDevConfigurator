@@ -1,6 +1,8 @@
 import subprocess
 import os
 
+#TODO: сделать так чтобы он работал с папкой .backups
+#TODO: добавить к имени бэкапов метку даты и времени
 db_params = ['localhost', "5432", "device_registry", 'postgres', 'postgres']
 
 def backup_postgres_db(db_params, dest_file):
