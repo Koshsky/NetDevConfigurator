@@ -5,7 +5,9 @@ from .models import (
     Devices,
     DeviceFirmwares,
     DeviceProtocols,
-    Families
+    DevicePorts,
+    Families,
+    Ports
 )
 
 # sqlacodegen --outfile ./internal/database/models/models.py postgresql://postgres:postgres@localhost:5432/device_registry
