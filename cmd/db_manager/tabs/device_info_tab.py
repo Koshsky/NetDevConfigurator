@@ -8,11 +8,11 @@ class DeviceInfoTab(BaseTab):
     def show_information(self):
         try:
             device = self.check_device_name(self.fields["device"]["name"].get())
-            associated_firmwares = self.app.device_firmware_service.get_firmwares_by_device_id(device.id)
-            associated_protocols = self.app.device_protocol_service.get_protocols_by_device_id(device.id)
+            associated_firmwares = self.app.entity_services["device_firmware"].get_firmwares_by_device_id(device.id)
+            associated_protocols = self.app.entity_services["device_protocol"].get_protocols_by_device_id(device.id)
 
-            company = self.app.company_service.get_by_id(device.company_id)
-            family = self.app.family_service.get_by_id(device.family_id)
+            company = self.app.entity_services["company"].get_by_id(device.company_id)
+            family = self.app.entity_services["family"].get_by_id(device.family_id)
             company_name = company.name if company else "Unknown Company"  # UNREACHABLE по идее...
             family_name = family.name if family else "Unknown Family"  # UNREACHABLE по идее...
 

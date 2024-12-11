@@ -15,7 +15,7 @@ class UpdateTab(BaseTab):                          # TODO: ДОБАВИТЬ СВ
             device = self.check_device_name(self.fields["device"]["name"].get().strip())
             firmware = self.check_firmware_name(self.fields["firmware"]["name"].get().strip())
 
-            self.app.device_firmware_service.link(device.id, firmware.id)
+            self.app.entity_services["device_firmware"].link(device.id, firmware.id)
             self.display_feedback("Linked device with firmware successfully.")
         except ValueError as e:
             self.display_feedback(f"Error: {e}")
@@ -29,7 +29,7 @@ class UpdateTab(BaseTab):                          # TODO: ДОБАВИТЬ СВ
             device = self.check_device_name(self.fields["devicе"]["name"].get().strip())
             firmware = self.check_firmware_name(self.fields["firmwarе"]["name"].get().strip())
 
-            self.app.device_firmware_service.unlink(device.id, firmware.id)
+            self.app.entity_services["device_firmware"].unlink(device.id, firmware.id)
             self.display_feedback("Unlinked device with firmware successfully.")
         except ValueError as e:
             self.display_feedback(f"Error: {e}")

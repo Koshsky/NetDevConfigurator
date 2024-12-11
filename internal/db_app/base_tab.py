@@ -10,8 +10,9 @@ class BaseTab:
         self.fields = {}
         self.create_widgets()
         self.frame.pack(padx=10, pady=10)
-
+        
     def create_block(self, block_name: str, list_params: dict, button: Optional[Tuple[str, Callable]] = None):
+        # sourcery skip: class-extract-method
         if button is not None and not (isinstance(button, tuple) and len(button) == 2 
                                      and isinstance(button[0], str) and callable(button[1])):
             raise TypeError("button parameter must be a tuple of (str, callable) or None")
@@ -109,54 +110,45 @@ class BaseTab:
     def create_widgets(self):
         raise NotImplementedError
 
-    def check_protocol_name(self, protocol_name: str) -> int:
-        if protocol_name := protocol_name.strip():
-            protocol = self.app.protocol_service.get_by_name(protocol_name)
+    def validate_entity(self, entity_type: str, entity_name: str) -> int:
+        """
+        Generic method to validate and retrieve an entity by name.
+
+        Args:
+            entity_type (str): Type of entity to validate (e.g., 'protocol', 'device')
+            entity_name (str): Name of the entity to validate
+
+        Returns:
+            int: ID of the validated entity
+
+        Raises:
+            ValueError: If entity name is empty or entity is not found
+        """
+        if not (entity_name := entity_name.strip()):
+            raise ValueError(f"{entity_type.capitalize()} name cannot be empty")
+
+        service = self.app.entity_services.get(entity_type)
+        if not service:
+            raise ValueError(f"Invalid entity type: {entity_type}")
+
+        if entity := service.get_by_name(entity_name):
+            return entity
         else:
-            raise ValueError("Device name cannot be empty")
+            raise ValueError(f"{entity_type.capitalize()} not found")
 
-        if not protocol:
-            raise ValueError("Protocol not found.")
-
-        return protocol
+    # Replace individual check methods with this generic method
+    def check_protocol_name(self, protocol_name: str) -> int:
+        return self.validate_entity('protocol', protocol_name)
 
     def check_family_name(self, family_name: str) -> int:
-        if family_name := family_name.strip():
-            family = self.app.family_service.get_by_name(family_name)
-        else:
-            raise ValueError("Family name cannot be empty")
-
-        if not family:
-            raise ValueError("Family not found.")
-
-        return family
+        return self.validate_entity('family', family_name)
 
     def check_device_name(self, device_name: str) -> int:
-        if device_name := device_name.strip():
-            device = self.app.device_service.get_by_name(device_name)
-        else:
-            raise ValueError("Device name cannot be empty")
-        if not device:
-            raise ValueError("Device not found.")
-
-        return device
+        return self.validate_entity('device', device_name)
 
     def check_firmware_name(self, firmware_name: str) -> int:
-        if firmware_name := firmware_name.strip():
-            firmware = self.app.firmware_service.get_by_name(firmware_name)
-        else:
-            raise ValueError("Firmware name cannot be empty")
-        if not firmware:
-            raise ValueError("firmware not found.")
-
-        return firmware
+        return self.validate_entity('firmware', firmware_name)
 
     def check_company_name(self, company_name: str) -> int:
-        if company_name := company_name.strip():
-            company = self.app.company_service.get_by_name(company_name)
-        else:
-            raise ValueError("Company name cannot be empty")
-        if not company:
-            raise ValueError("company not found.")
-
-        return company
+        return self.validate_entity('company', company_name)
+    

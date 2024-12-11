@@ -31,7 +31,7 @@ class DeleteTab(BaseTab):
     def delete_company(self):
         try:
             company = self.check_company_name(self.fields["company"]["name"].get())
-            self.app.company_service.delete(company)
+            self.app.entity_services["company"].delete(company)
             self.display_feedback("Successfully deleted from the companies table.")
         except Exception as e:
             self.display_feedback(f"Error deleting company: {e}")
@@ -40,7 +40,7 @@ class DeleteTab(BaseTab):
     def delete_firmware(self):
         try:
             firmware = self.check_firmware_name(self.fields["firmware"]["name"].get())
-            self.app.firmware_service.delete(firmware)
+            self.app.entity_services["firmware"].delete(firmware)
             self.display_feedback("Successfully deleted from the firmwares table.")
         except Exception as e:
             self.display_feedback(f"Error deleting firmware: {e}")
@@ -49,7 +49,7 @@ class DeleteTab(BaseTab):
     def delete_device(self):
         try:
             device = self.check_device_name(self.fields["device"]["name"].get())
-            self.app.device_service.delete(device)
+            self.app.entity_services["device"].delete(device)
             self.display_feedback("Successfully deleted from the devices table.")
         except Exception as e:
             self.display_feedback(f"Error deleting device: {e}")

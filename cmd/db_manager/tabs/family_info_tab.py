@@ -8,7 +8,7 @@ class FamilyInfoTab(BaseTab):
     def show_information(self):
         try:
             family = self.check_family_name(self.fields["family"]["name"].get())
-            associated_devices = self.app.device_service.get_devices_by_family_id(family.id)
+            associated_devices = self.app.entity_services["device"].get_devices_by_family_id(family.id)
 
             device_list = "\n\t".join(device.name for device in associated_devices) if associated_devices else "No associated devices."
             

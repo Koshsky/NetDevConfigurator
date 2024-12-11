@@ -8,7 +8,7 @@ class FirmwareInfoTab(BaseTab):
     def show_information(self):
         try:
             firmware = self.check_firmware_name(self.fields["firmware"]["name"].get())
-            associated_devices = self.app.device_firmware_service.get_devices_by_firmware_id(firmware.id)\
+            associated_devices = self.app.entity_services["device_firmware"].get_devices_by_firmware_id(firmware.id)\
 
             device_list = "\n\t".join(device.name for device in associated_devices) if associated_devices else "No associated device."
             

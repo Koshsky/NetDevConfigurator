@@ -53,7 +53,7 @@ class AddTab(BaseTab):
             return
 
         try:
-            self.app.protocol_service.create({"name": protocol_name})
+            self.app.entity_services["protocol"].create({"name": protocol_name})
             self.display_feedback("Successfully added to the protocols table.")
         except Exception as e:
             self.display_feedback(f"Error adding to protocols table: {e}")
@@ -66,14 +66,15 @@ class AddTab(BaseTab):
             return
 
         try:
-            self.app.family_service.create({"name": family_name})
+            self.app.entity_services["family"].create({"name": family_name})
             self.display_feedback("Successfully added to the families table.")
         except Exception as e:
             self.display_feedback(f"Error adding to families table: {e}")
             self.app.session.rollback()
         
     
-    def submit_device(self):  # sourcery skip: extract-method
+    def submit_device(self):  # TODO: ИЗМЕНИТЬ В СООТВЕСТВИИ С НОВОЙ МОДЕЛЬЮ БАЗЫ ДАННЫХ!!!!!!
+        # sourcery skip: extract-method
         device_name = self.fields["device"]["name"].get().strip()
         dev_type = self.fields["device"]["dev_type"].get().strip()
         num_gigabit_ports = self.fields["device"]["num_gigabit_ports"].get().strip()
@@ -101,11 +102,11 @@ class AddTab(BaseTab):
                 "num_10gigabit_ports": int(num_10gigabit_ports),
             }
             
-            device = self.app.device_service.create(new_device)
+            device = self.app.entity_services["device"].create(new_device)
             for protocol_name, checkbox in self.fields["device"]["protocols"].items():
                 if checkbox.get() == 1:
                     protocol = self.check_protocol_name(protocol_name)
-                    self.app.device_protocol_service.link(device.id, protocol.id)
+                    self.app.entity_services["device_protocol"].link(device.id, protocol.id)
 
             self.display_feedback("Successfully added to the devices table.")
 
@@ -118,7 +119,7 @@ class AddTab(BaseTab):
             device = self.check_device_name(self.fields["device"]["name"].get().strip())
             firmware = self.check_firmware_name(self.fields["firmware"]["name"].get().strip())
 
-            self.app.device_firmware_service.link(device.id, firmware.id)
+            self.app.entity_services["device_firmware"].link(device.id, firmware.id)
             self.display_feedback("Linked device with firmware successfully.")
         except ValueError as e:
             self.display_feedback(f"Error: {e}")
@@ -133,7 +134,7 @@ class AddTab(BaseTab):
             return
 
         try:
-            self.app.company_service.create({"name": company_name})
+            self.app.entity_services["company"].create({"name": company_name})
             self.display_feedback("Successfully added to the companies table.")
         except Exception as e:
             self.display_feedback(f"Error adding to companies table: {e}")
@@ -152,7 +153,7 @@ class AddTab(BaseTab):
         folder_name = folder_name if os.path.isabs(folder_name) else os.path.abspath(folder_name)
 
         try:
-            existing_firmwares = [firmware.name for firmware in self.app.firmware_service.get_all()]
+            existing_firmwares = [firmware.name for firmware in self.app.entity_services["firmware"].get_all()]
             for filename in os.listdir(folder_name):
                 firmware_name = filename
                 if firmware_name in existing_firmwares:
@@ -164,7 +165,7 @@ class AddTab(BaseTab):
                         "full_path": f'{folder_name}/{firmware_name}',
                         "type": determine_firmware_type(firmware_name)
                 }
-                self.app.firmware_service.create(new_firmware)
+                self.app.entity_services["firmware"].create(new_firmware)
 
             self.display_feedback("Successfully added new firmwares from the folder.")
         except Exception as e:

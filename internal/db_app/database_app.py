@@ -10,6 +10,7 @@ from internal.database.services import (
         ProtocolService,
         DeviceFirmwareService, 
         DeviceProtocolService,
+        DevicePortService,
         FamilyService
 )
 
@@ -18,13 +19,16 @@ class DatabaseApp:
         self.init_root(root)
         self.tabs = []
         
-        self.company_service = None   # TODO: может быть это не ЛУЧШЕЕ РЕШЕНИЕ?? выглядит как говно-перечисление
-        self.firmware_service = None
-        self.device_service = None
-        self.device_firmware_service = None
-        self.protocol_service = None
-        self.device_protocol_service = None
-        self.family_service = None
+        self.entity_services = {
+            'company': None,
+            'family': None,
+            'device': None,
+            'firmware': None,
+            'protocol': None,
+            'device_firmware': None,
+            'device_protocol': None,
+            'device_port': None,
+        }
         
         self.session = None  # TODO: почему я сделал две переменные для сессии... действительно нужно ДВЕ или нет?
         self.Session = None
@@ -65,19 +69,22 @@ class DatabaseApp:
         print("session: ", self.session)
 
     def init_db_services(self):
-        self.company_service = CompanyService(self.session)
-        self.firmware_service = FirmwareService(self.session)
-        self.device_service = DeviceService(self.session)
-        self.device_firmware_service = DeviceFirmwareService(self.session)
-        self.protocol_service = ProtocolService(self.session)
-        self.device_protocol_service = DeviceProtocolService(self.session)
-        self.family_service = FamilyService(self.session)
+        self.entity_services = {
+            'company': CompanyService(self.session),
+            'family': FamilyService(self.session),
+            'device': DeviceService(self.session),
+            'firmware': FirmwareService(self.session),
+            'protocol': ProtocolService(self.session),
+            'device_firmware': DeviceFirmwareService(self.session),
+            'device_protocol': DeviceProtocolService(self.session),
+            'device_port': DevicePortService(self.session),
+        }
         
     def get_tuples_of_entities(self):
-        self.companies = tuple(company.name for company in self.company_service.get_all())
-        self.protocols = tuple(protocol.name for protocol in self.protocol_service.get_all())
-        self.families = tuple(family.name for family in self.family_service.get_all())
-        self.devices = tuple(device.name for device in self.device_service.get_all())
+        self.companies = tuple(company.name for company in self.entity_services["company"].get_all())
+        self.protocols = tuple(protocol.name for protocol in self.entity_services["protocol"].get_all())
+        self.families = tuple(family.name for family in self.entity_services["family"].get_all())
+        self.devices = tuple(device.name for device in self.entity_services["device"].get_all())
 
     def on_failure_callback(self, error):
         self.hide_all_tabs()
