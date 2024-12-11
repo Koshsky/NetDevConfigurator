@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import IntVar, ttk
 from typing import Optional, Tuple, Callable
 
 class BaseTab:
@@ -37,10 +37,11 @@ class BaseTab:
             elif isinstance(presets, tuple):
                 self.fields[block_name][param] = {}
                 for box in presets:
-                    checkbox = tk.Checkbutton(self.frame, text=box)
+                    checkbox_var = IntVar()
+                    checkbox = tk.Checkbutton(self.frame, text=box, variable=checkbox_var)
                     checkbox.grid(row=self.cur_row, column=2, padx=5)
 
-                    self.fields[block_name][param][box] = checkbox
+                    self.fields[block_name][param][box] = checkbox_var
                     self.cur_row += 1
         
         if button is not None:
