@@ -1,16 +1,30 @@
 import subprocess
+import contextlib
 import os
 import argparse
 from datetime import datetime
 
 db_params = ['localhost', "5432", "device_registry", 'postgres', 'postgres']
 
-def backup_postgres_db(db_params):
-    now = datetime.now()
-    timestamp = now.strftime("%Y-%m-%d_%H-%M")
-    path = f"./.backups/dev{timestamp}.sql"
-    host, port, database_name, user, password = db_params
+def run_postgres_command(command, env, error_context):
+    try:
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
+        _, error = process.communicate()
+        
+        if process.returncode != 0:
+            print(f'Error {error_context}: {error.decode()}')
+            return False
+        return True
+    except Exception as e:
+        print(f'Error {error_context}: {e}')
+        return False
     
+
+def backup_postgres_db(db_params):
+    host, port, database_name, user, password = db_params
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
+    path = f"./.backups/dev{timestamp}.sql"
+
     command = [
         'pg_dump',
         '-h', host,
@@ -21,84 +35,32 @@ def backup_postgres_db(db_params):
         database_name
     ]
 
-    env = {'PGPASSWORD': password}
-
-    try:
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
-        output, error = process.communicate()
-
-        if process.returncode != 0:
-            print(f'Error creating dump: {error.decode()}')
-        else:
-            print(f'Database dump successfully created: {path}')
-
-    except Exception as e:
-        print(f'Error: {e}')
-
+    with contextlib.suppress(Exception):
+        env = {'PGPASSWORD': password}
+        run_postgres_command(command, env, path)
 
 def restore_postgres_db(db_params, path):
     host, port, database_name, user, password = db_params
+    env = {'PGPASSWORD': password}
 
     if not os.path.isfile(path):
         print(f'Error: {path} doesn\'t exist.')
         return
 
-    drop_command = [
-        'psql',
-        '-h', host,
-        '-p', port,
-        '-U', user,
-        '-c', f'DROP DATABASE IF EXISTS {database_name};'
+    base_command = lambda cmd: [
+        'psql', '-h', host, '-p', port, '-U', user, '-c', cmd
     ]
 
-    create_command = [
-        'psql',
-        '-h', host,
-        '-p', port,
-        '-U', user,
-        '-c', f'CREATE DATABASE {database_name};'
+    drop_command = base_command(f'DROP DATABASE IF EXISTS {database_name};')
+    create_command = base_command(f'CREATE DATABASE {database_name};')
+    restore_command = [
+        'pg_restore', '-h', host, '-p', port, '-U', user, '-d', database_name, path
     ]
 
-    env = {'PGPASSWORD': password}
-
-    try:
-        drop_process = subprocess.Popen(drop_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
-        _, drop_error = drop_process.communicate()
-
-        if drop_process.returncode != 0:
-            print(f'Error when deleting database: {drop_error.decode()}')
-            return
-        
-        print(f'Database {database_name} successfully deleted.')
-
-        create_process = subprocess.Popen(create_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
-        create_output, create_error = create_process.communicate()
-
-        if create_process.returncode != 0:
-            print(f'Error when creating database: {create_error.decode()}')
-            return
-        
-        print(f'Database {database_name} successfully created')
-
-        restore_command = [
-            'pg_restore',
-            '-h', host,
-            '-p', port,
-            '-U', user,
-            '-d', database_name,
-            path
-        ]
-
-        restore_process = subprocess.Popen(restore_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
-        restore_output, restore_error = restore_process.communicate()
-
-        if restore_process.returncode != 0:
-            print(f': {restore_error.decode()}')
-        else:
-            print('Database restored successfully')
-
-    except Exception as e:
-        print(f'Error: {e}')
+    if (run_postgres_command(drop_command, env, 'when deleting database') and
+        run_postgres_command(create_command, env, 'when creating database') and
+        run_postgres_command(restore_command, env, 'when restoring db')):
+        print('Database restored successfully')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Backup or restore PostgreSQL database.')
