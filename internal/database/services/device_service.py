@@ -12,6 +12,10 @@ class DeviceService:
     
     def get_devices_by_company_id(self, company_id: int):
         return self.db.query(Devices).filter(Devices.company_id == company_id).all()
+    
+    def get_devices_by_family_id(self, family_id: int):
+        return self.db.query(Devices).filter(Devices.family_id == family_id).all()
+
 
     def get_by_id(self, device_id: int):
         return self.db.query(Devices).filter(Devices.id == device_id).first()
