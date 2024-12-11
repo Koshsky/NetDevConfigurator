@@ -23,6 +23,8 @@ vlan 4
 exit
 interface route-domain 10.4.0.3/16 
 exit
+
+
 interface port-channel 1 
   pvid 3 
 exit

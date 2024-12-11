@@ -21,6 +21,8 @@ class DBManagerApp(DatabaseApp):
         
     def on_success_callback(self, engine):
         super().on_success_callback(engine)
+        if self.tabs:
+            return
         self.create_tab(TablesTab, "Tables")
         self.create_tab(AddTab, "Add")
         self.create_tab(UpdateTab, "Update")
