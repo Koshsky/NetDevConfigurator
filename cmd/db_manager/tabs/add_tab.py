@@ -1,4 +1,5 @@
 import os
+import pprint
 
 from internal.database.services import determine_firmware_type
 
@@ -75,7 +76,7 @@ class AddTab(BaseTab):
             self.app.session.rollback()
         
     
-    def submit_device(self):
+    def submit_device(self):  # sourcery skip: extract-method
         device_name = self.fields["device"]["name"].get().strip()
         dev_type = self.fields["device"]["dev_type"].get().strip()
         num_gigabit_ports = self.fields["device"]["num_gigabit_ports"].get().strip()
@@ -87,7 +88,7 @@ class AddTab(BaseTab):
         if not dev_type:
             self.display_feedback("Error: Select device type")
             return
-        if not (num_gigabit_ports.isdigit() and num_10gigabit_ports.isdigit()):
+        if not num_gigabit_ports.isdigit() or not num_10gigabit_ports.isdigit():
             self.display_feedback("Error: Port number must be a valid integer.")
             return
 
@@ -103,11 +104,29 @@ class AddTab(BaseTab):
                 "num_10gigabit_ports": int(num_10gigabit_ports),
             }
             
-            self.app.device_service.create(new_device)
+            device = self.app.device_service.create(new_device)
+            for protocol_name, checkbox in self.fields["device"]["protocols"].items():
+                if checkbox.get() == 1:
+                    protocol = self.check_protocol_name(protocol_name)
+                    self.app.device_protocol_service.link(device.id, protocol.id)
+
             self.display_feedback("Successfully added to the devices table.")
 
         except Exception as e:
             self.display_feedback(f"Error adding to devices table: {e}")
+            self.app.session.rollback()
+
+    def link(self):
+        try:
+            device = self.check_device_name(self.fields["device"]["name"].get().strip())
+            firmware = self.check_firmware_name(self.fields["firmware"]["name"].get().strip())
+
+            self.app.device_firmware_service.link(device.id, firmware.id)
+            self.display_feedback("Linked device with firmware successfully.")
+        except ValueError as e:
+            self.display_feedback(f"Error: {e}")
+        except Exception as e:
+            self.display_feedback(f"Error adding to database:\n{e}")
             self.app.session.rollback()
 
     def submit_company(self):
