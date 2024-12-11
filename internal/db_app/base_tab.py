@@ -104,7 +104,7 @@ class BaseTab:
     def create_widgets(self):
         raise NotImplementedError
 
-    def check_protocol_name(self, protocol_name: str) -> int:  # TODO: изменить аннотацию, возвращаемый тип 
+    def check_protocol_name(self, protocol_name: str) -> int:
         if protocol_name := protocol_name.strip():
             protocol = self.app.protocol_service.get_by_name(protocol_name)
         else:
@@ -115,7 +115,18 @@ class BaseTab:
 
         return protocol
 
-    def check_device_name(self, device_name: str) -> int:  # TODO: изменить аннотацию, возвращаемый тип 
+    def check_family_name(self, family_name: str) -> int:
+        if family_name := family_name.strip():
+            family = self.app.family_serivce.get_by_name(family_name)
+        else:
+            raise ValueError("Family name cannot be empty")
+
+        if not family:
+            raise ValueError("Family not found.")
+
+        return family
+
+    def check_device_name(self, device_name: str) -> int:
         if device_name := device_name.strip():
             device = self.app.device_service.get_by_name(device_name)
         else:
@@ -125,7 +136,7 @@ class BaseTab:
 
         return device
 
-    def check_firmware_name(self, firmware_name: str) -> int:  # TODO: изменить аннотацию, возвращаемый тип
+    def check_firmware_name(self, firmware_name: str) -> int:
         if firmware_name := firmware_name.strip():
             firmware = self.app.firmware_service.get_by_name(firmware_name)
         else:
@@ -135,7 +146,7 @@ class BaseTab:
 
         return firmware
 
-    def check_company_name(self, company_name: str) -> int:  # TODO: изменить аннотацию, возвращаемый тип
+    def check_company_name(self, company_name: str) -> int:
         if company_name := company_name.strip():
             company = self.app.company_service.get_by_name(company_name)
         else:

@@ -55,4 +55,4 @@ class ConnectionTab:
         except Exception as error:
             print("Error connecting to database:", error)
             self.on_failure_callback(error)
-            self.message_label.config(text='Error: ' + str(error), fg="red")
+            self.message_label.config(text=f'Error: {str(error)}', fg="red")

@@ -11,7 +11,8 @@ from internal.database.services import (
         FirmwareService,
         ProtocolService,
         DeviceFirmwareService, 
-        DeviceProtocolService
+        DeviceProtocolService,
+        FamilyService
 )
 
 class DatabaseApp:
@@ -25,6 +26,7 @@ class DatabaseApp:
         self.device_firmware_service = None
         self.protocol_service = None
         self.device_protocol_service = None
+        self.family_service = None
         
         self.session = None  # TODO: почему я сделал две переменные для сессии... действительно нужно ДВЕ или нет?
         self.Session = None
@@ -65,6 +67,7 @@ class DatabaseApp:
         self.device_firmware_service = DeviceFirmwareService(self.session)
         self.protocol_service = ProtocolService(self.session)
         self.device_protocol_service = DeviceProtocolService(self.session)
+        self.family_service = FamilyService(self.session)
         
         print("session: ", self.session)
         self.display_all_tabs()
@@ -72,5 +75,4 @@ class DatabaseApp:
     def on_failure_callback(self, error):
         self.hide_all_tabs()
         self.session = None
-        print("session: ", self.session)
-        logging.error(f"Connection failed: {error}")  # Логирование ошибки
+        print(f"Connection failed: {error}")
