@@ -56,8 +56,11 @@ def determine_firmware_type(firmware_name: str) -> str:
         '.ros': firmware,
     }
 
-    for extension, description in firmware_types.items():
-        if firmware_name.endswith(extension):
-            return description
-
-    return "UKNOWN"
+    return next(
+        (
+            description
+            for extension, description in firmware_types.items()
+            if firmware_name.endswith(extension)
+        ),
+        "UKNOWN",
+    )

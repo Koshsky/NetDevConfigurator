@@ -28,8 +28,8 @@ class DeviceService:
         return device
 
     def delete(self, device):
-        if db_device:
-            self.db.delete(db_device)
+        if device:
+            self.db.delete(device)
             self.db.commit()
 
     def delete_by_id(self, device_id: int):
