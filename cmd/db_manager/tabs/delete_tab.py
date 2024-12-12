@@ -13,7 +13,7 @@ class DeleteTab(BaseTab):
     def delete_protocol(self):
         try:
             protocol = self.check_protocol_name(self.fields["protocol"]["name"].get())
-            self.app.protocol_service.delete(protocol)
+            self.app.entity_services['protocol'].delete(protocol)
             self.display_feedback("Successfully deleted from the protocols table.")
         except Exception as e:
             self.display_feedback(f"Error deleting protocol: {e}")
@@ -22,7 +22,7 @@ class DeleteTab(BaseTab):
     def delete_family(self):
         try:
             family = self.check_family_name(self.fields["family"]["name"].get())
-            self.app.family_service.delete(family)
+            self.app.entity_services['family'].delete(family)
             self.display_feedback("Successfully deleted from the families table.")
         except Exception as e:
             self.display_feedback(f"Error deleting family: {e}")
