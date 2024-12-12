@@ -64,7 +64,6 @@ class BaseTab:
                     self.fields[entity_name][param_name] = field
                     self.cur_row += 1
                     space -= 1
-                    print(space)
                     if not space:
                         self.cur_row = first_row
                         cur_col += 2
