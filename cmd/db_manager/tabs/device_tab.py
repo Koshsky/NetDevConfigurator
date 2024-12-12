@@ -16,16 +16,16 @@ class DeviceTab(BaseTab):
         try:
             device = self.check_device_name(self.fields["device"]["name"].get())
             self._clear_device(device)
-            ports = self._get_port_input()
+            ports = self._get_port_input(device.company_id)
             self.display_feedback(pprint.pformat(ports))
-            # self._write_ports(device)
+            self._write_ports(device.id, ports)
             self._write_protocols(device)
 
         except Exception as e:
             self.display_feedback(str(e))
             print(f"Error writing device configuration to db:\n{e}")
             
-    def _get_port_input(self):
+    def _get_port_input(self, company_id: int):
         def check_none_in_the_middle(fields):
             res = False
             for _, combo in fields.items():
@@ -44,7 +44,10 @@ class DeviceTab(BaseTab):
         
         check_none_in_the_middle(self.fields['device']['ports'])
         check_mixed_speeds(self.fields['device']['ports'])
-        return self._get_eltex_mes_ports(self.fields['device']['ports'])
+        if self.app.entity_services['company'].get_by_id(company_id).name == 'Eltex':  #  TODO: ПОКА ТОЛЬКО ЕЛТЕКС. НАД ЭТИМ НУЖНО ДУМАТЬ
+            return self._get_eltex_mes_ports(self.fields['device']['ports'])
+        else:
+            return {}
     
     def _get_eltex_mes_ports(self, ports_input):
         ports = {}
@@ -69,14 +72,9 @@ class DeviceTab(BaseTab):
             
         return ports
         
-
-            
-    def _write_ports(self, device):
-        for port_num, combo in self.fields["device"]["ports"].items():
-            if combo.get() == 'None':
-                break
-            port = self.check_port_name(combo.get())
-            self.app.entity_services['device_port'].create({"device_id": device.id, "port_id": port.id})
+    def _write_ports(self, device_id, ports):
+        for name, port_id in ports.items():
+            self.app.entity_services['device_port'].create({"device_id": device_id, "port_id": port_id, 'name': name})
             
     def _write_protocols(self, device):
         for protocol_name, checkbox in self.fields["device"]["protocols"].items():
