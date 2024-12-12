@@ -77,7 +77,7 @@ class DatabaseApp:
             'device': DeviceService(self.session),
             'firmware': FirmwareService(self.session),
             'protocol': ProtocolService(self.session),
-            'port': PortService,
+            'port': PortService(self.session),
             'device_firmware': DeviceFirmwareService(self.session),
             'device_protocol': DeviceProtocolService(self.session),
             'device_port': DevicePortService(self.session),
