@@ -10,59 +10,69 @@ class BaseTab:
         self.create_widgets()
         self.frame.pack(padx=10, pady=10)
         
-    def create_block(self, block_name, list_params, button = None, width=None, button_in_line=False):
-        # sourcery skip: class-extract-method
-        if button is not None and not (isinstance(button, tuple) and len(button) == 2 
-                                     and isinstance(button[0], str) and callable(button[1])):
-            raise TypeError("button parameter must be a tuple of (str, callable) or None")
-        
-        self.fields[block_name] = {}
-        ttk.Label(self.frame, text=f"{block_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
+    def create_block(self, entity_name, PARAMETERS, button = None, width=None):
+        self.fields[entity_name] = {}
+        ttk.Label(self.frame, text=f"{entity_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
         cur_col = 1
-        space = width
-        first_row = self.cur_row
-        for param, presets in list_params.items():
-            label = ttk.Label(self.frame, text=f"{param}")
+        for param_name, param_presets in PARAMETERS.items():
+            space = width
+            first_row = self.cur_row
+            label = ttk.Label(self.frame, text=f"{param_name}")
             label.grid(row=self.cur_row, column=cur_col, padx=5, pady=5)
-            if presets is None or len(presets) == 0:
+            if param_presets is None or len(param_presets) == 0:  # single field
                 field = ttk.Entry(self.frame)
                 field.grid(row=self.cur_row, column=cur_col+1, padx=5, pady=5)
 
-                self.fields[block_name][param] = field
+                self.fields[entity_name][param_name] = field
                 self.cur_row += 1
-            elif isinstance(presets, list):
-                field = ttk.Combobox(self.frame, values=presets)
+            elif isinstance(param_presets, list):
+                field = ttk.Combobox(self.frame, values=param_presets)  # dropdown list
                 field.grid(row=self.cur_row, column=cur_col+1, padx=5, pady=5)
                 field.current(0)
 
-                self.fields[block_name][param] = field
+                self.fields[entity_name][param_name] = field
                 self.cur_row += 1
-            elif isinstance(presets, tuple):
-                if space is not None:
-                    raise ValueError(f"cannot create checkbutton group: space is not None (space={space})")
-                self.fields[block_name][param] = {}
-                for box in presets:
+            elif isinstance(param_presets, tuple):  # checkbuttons group
+                self.fields[entity_name][param_name] = {}
+                for box in param_presets:
                     checkbox_var = IntVar()
                     checkbox = tk.Checkbutton(self.frame, text=box, variable=checkbox_var)
                     checkbox.grid(row=self.cur_row, column=cur_col+1, padx=5)
 
-                    self.fields[block_name][param][box] = checkbox_var
+                    self.fields[entity_name][param_name][box] = checkbox_var
                     self.cur_row += 1
-            if space is not None:
-                if space:
+                if space is not None:
+                    if space:
+                        space -= 1
+                    else:
+                        self.cur_row = first_row
+                        cur_col += 2
+                        space = width
+                            
+                if width is not None and len(param_presets) > width:
+                    self.cur_row = first_row + width
+            elif isinstance(param_presets, dict):  # combobox group
+                self.fields[entity_name][param_name] = {}
+                for param_name, preset in param_presets.items():
+                    label = ttk.Label(self.frame, text=f"{param_name}")
+                    label.grid(row=self.cur_row, column=cur_col, padx=5, pady=5)
+                    field = ttk.Combobox(self.frame, values=preset)
+                    field.grid(row=self.cur_row, column=cur_col+1, padx=5, pady=5)
+                    field.current(0)
+
+                    self.fields[entity_name][param_name] = field
+                    self.cur_row += 1
                     space -= 1
-                else:
-                    self.cur_row = first_row
-                    cur_col += 2
-                    space = width
-                
-        if width is not None and len(list_params) > width:
-            self.cur_row = first_row + width
+                    print(space)
+                    if not space:
+                        self.cur_row = first_row
+                        cur_col += 2
+                        space = width
+                            
+                if width is not None and len(param_presets) > width:
+                    self.cur_row = first_row + width
 
         if button is not None:
-            if button_in_line:
-                self.create_button_in_line(button)
-            else:
                 self.button = tk.Button(self.frame, text=button[0], command=button[1])
                 self.button.grid(row=self.cur_row-1, column=3, padx=5, pady=5)
     
