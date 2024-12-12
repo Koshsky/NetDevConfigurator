@@ -56,9 +56,9 @@ class BaseTab:
                 self.fields[entity_name][param_name] = {}
                 for param_name, preset in param_presets.items():
                     label = ttk.Label(self.frame, text=f"{param_name}")
-                    label.grid(row=self.cur_row, column=cur_col, padx=5, pady=5)
+                    label.grid(row=self.cur_row, column=cur_col+1, padx=5, pady=5)
                     field = ttk.Combobox(self.frame, values=preset)
-                    field.grid(row=self.cur_row, column=cur_col+1, padx=5, pady=5)
+                    field.grid(row=self.cur_row, column=cur_col+2, padx=5, pady=5)
                     field.current(0)
 
                     self.fields[entity_name][param_name] = field

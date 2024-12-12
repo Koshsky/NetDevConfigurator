@@ -6,8 +6,8 @@ from .tabs import (
         UpdateTab,
         AddTab,
         DeleteTab,
-        
         InfoTab,
+        DeviceTab
 )
 
 class DBManagerApp(DatabaseApp):
@@ -25,6 +25,7 @@ class DBManagerApp(DatabaseApp):
         self.create_tab(AddTab, "ADD")
         self.create_tab(UpdateTab, "UPDATE")
         self.create_tab(DeleteTab, "DELETE")
+        self.create_tab(DeviceTab, "DEVICE")
 
 if __name__ == "__main__":
     root = tk.Tk()

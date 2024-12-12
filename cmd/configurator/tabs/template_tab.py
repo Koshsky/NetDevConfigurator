@@ -17,7 +17,7 @@ class TemplateTab(BaseTab):
                 "header": ["header1", "header2", "header3"],
                 "footer": ["footer1", "footer2", "footer3"],
                 "interfaces": get_port_map()
-        }, width=10)
+        }, width=15)
         self.create_button_in_line(("GENERATE", self.generate_template))
         self.create_feedback_area()
         
