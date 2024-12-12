@@ -12,24 +12,14 @@ class AddTab(BaseTab):
 
     def create_widgets(self):
         self.create_block(
-            "family", 
-            {"name": None}, 
-            ("SUBMIT", self.submit_family)
-        )
-        self.create_block(
             "company", 
             {"name": None}, 
             ("SUBMIT", self.submit_company)
         )
         self.create_block(
-            "protocol",
-            {"name": None},
-            ("SUBMIT", self.submit_protocol)
-        )
-        self.create_block(
-            "firmware", 
-            {"folder": ['./firmwares']}, 
-            ("SUBMIT", self.submit_firmwares_from_folder)
+            "family", 
+            {"name": None}, 
+            ("SUBMIT", self.submit_family)
         )
         self.create_block(
             "device", 
@@ -43,6 +33,16 @@ class AddTab(BaseTab):
                 "num_10gigabit_ports": [4, 6]
             }, 
             ("SUBMIT", self.submit_device)
+        )
+        self.create_block(
+            "firmware", 
+            {"folder": ['./firmwares']}, 
+            ("SUBMIT", self.submit_firmwares_from_folder)
+        )
+        self.create_block(
+            "protocol",
+            {"name": None},
+            ("SUBMIT", self.submit_protocol)
         )
         self.create_feedback_area()
         

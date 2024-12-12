@@ -5,8 +5,8 @@ class DeleteTab(BaseTab):
     def create_widgets(self):
         self.create_block("company", {"name":None}, ("delete", self.delete_company))
         self.create_block("family", {"name":None}, ("delete", self.delete_family))
-        self.create_block("firmware", {"name":None}, ("delete", self.delete_firmware))
         self.create_block("device", {"name":None}, ("delete", self.delete_device))
+        self.create_block("firmware", {"name":None}, ("delete", self.delete_firmware))
         self.create_block("protocol", {"name":None}, ("delete", self.delete_protocol))
         self.create_feedback_area()
 

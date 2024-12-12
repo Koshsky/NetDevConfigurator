@@ -7,10 +7,7 @@ from .tabs import (
         AddTab,
         DeleteTab,
         
-        DeviceInfoTab,
-        CompanyInfoTab,
-        FirmwareInfoTab,
-        FamilyInfoTab
+        InfoTab,
 )
 
 class DBManagerApp(DatabaseApp):
@@ -23,14 +20,11 @@ class DBManagerApp(DatabaseApp):
         super().on_success_callback(engine)
         if self.tabs:
             return
-        self.create_tab(TablesTab, "Tables")
-        self.create_tab(AddTab, "Add")
-        self.create_tab(UpdateTab, "Update")
-        self.create_tab(DeleteTab, "Delete")
-        self.create_tab(CompanyInfoTab, "Company")
-        self.create_tab(FamilyInfoTab, "Family")
-        self.create_tab(DeviceInfoTab, "Device")
-        self.create_tab(FirmwareInfoTab, "Firmware")
+        self.create_tab(TablesTab, "TABLES")
+        self.create_tab(InfoTab, "INFO")
+        self.create_tab(AddTab, "ADD")
+        self.create_tab(UpdateTab, "UPDATE")
+        self.create_tab(DeleteTab, "DELETE")
 
 if __name__ == "__main__":
     root = tk.Tk()

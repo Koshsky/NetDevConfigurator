@@ -42,7 +42,7 @@ class DatabaseApp:
         
     def create_tabs(self):
         self.connection_tab = ConnectionTab(self.notebook, self.on_success_callback, self.on_failure_callback, self)
-        self.notebook.add(self.connection_tab.frame, text="Connection")
+        self.notebook.add(self.connection_tab.frame, text="CONNECTION")
         
     def create_tab(self, ClassTab: type, tab_name: str):
         tab = ClassTab(self.notebook, self)
