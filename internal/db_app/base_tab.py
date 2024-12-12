@@ -11,7 +11,8 @@ class BaseTab:
         self.frame.pack(padx=10, pady=10)
         
     def create_block(self, entity_name, PARAMETERS, button = None, width=None):
-        self.fields[entity_name] = {}
+        if not self.fields[entity_name]:
+            self.fields[entity_name] = {}
         ttk.Label(self.frame, text=f"{entity_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
         cur_col = 1
         for param_name, param_presets in PARAMETERS.items():
