@@ -56,7 +56,7 @@ class BaseTab:
             field = ttk.Combobox(self.frame, values=preset)
             field.grid(row=self.cur_row, column=self.cur_col+2, padx=5, pady=5)
             field.current(0)
-            self.fields[entity_name][param_name] = field
+            self.fields[entity_name][param_name][sub_param] = field
             self.cur_row += 1
             if space is not None:
                 space -= 1
@@ -125,19 +125,6 @@ class BaseTab:
         raise NotImplementedError
 
     def validate_entity(self, entity_type: str, entity_name: str) -> int:
-        """
-        Generic method to validate and retrieve an entity by name.
-
-        Args:
-            entity_type (str): Type of entity to validate (e.g., 'protocol', 'device')
-            entity_name (str): Name of the entity to validate
-
-        Returns:
-            int: ID of the validated entity
-
-        Raises:
-            ValueError: If entity name is empty or entity is not found
-        """
         if not (entity_name := entity_name.strip()):
             raise ValueError(f"{entity_type.capitalize()} name cannot be empty")
 
@@ -150,7 +137,6 @@ class BaseTab:
         else:
             raise ValueError(f"{entity_type.capitalize()} not found")
 
-    # Replace individual check methods with this generic method
     def check_protocol_name(self, protocol_name: str) -> int:
         return self.validate_entity('protocol', protocol_name)
 

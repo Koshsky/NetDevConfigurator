@@ -32,8 +32,32 @@ class DevicePortService:
         device_port = self.get_by_id(device_port_id)
         self.delete(device_port)
         
-    def link(self, device_id: int, protocol_id: int, port_num: int):
-        pass
+    def link(self, device_id: int, port_id: int):
+        if (
+            existing_link := self.db.query(DevicePorts)
+            .filter(
+                DevicePorts.device_id == device_id,
+                DevicePorts.port_id == port_id,
+            )
+            .first()
+        ):
+            raise ValueError("Device is already linked with port")
 
-    def unlink(self, device_id: int, port_num: int):
-        pass
+        self.create({
+            "device_id": device_id,
+            "port_id": port_id
+        })
+
+    def unlink(self, device_id: int, port_id: int):
+        if (
+            existing_link := self.db.query(DevicePorts)
+            .filter(
+                DevicePorts.device_id == device_id,
+                DevicePorts.port_id == port_id,
+            )
+            .first()
+        ):
+            self.delete(existing_link.id)
+        else:
+            raise ValueError("Device is not linked with protocol")
+
