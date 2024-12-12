@@ -143,7 +143,7 @@ class DevicePorts(Base):
     id = Column(Integer, primary_key=True)
     device_id = Column(Integer, nullable=False)
     port_id = Column(Integer, nullable=False)
-    number = Column(Integer, nullable=False)
+    name = Column(String(255))
 
     device = relationship('Devices', back_populates='device_ports')
     port = relationship('Ports', back_populates='device_ports')
