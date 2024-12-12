@@ -9,6 +9,10 @@ from .tabs import (
 class ConfiguratorApp(DatabaseApp):        
     def init_root(self, root):
         self.device = None
+        self.ports = None
+        self.interface_templates = None
+        self.header_templates = None
+        self.footer_templates = None
         super().init_root(root)
               
     def on_success_callback(self, engine):
@@ -16,6 +20,14 @@ class ConfiguratorApp(DatabaseApp):
         self.create_tab(DeviceTab, "Device")
         self.notebook.select(self.tabs[0].frame)
         self.create_tab(TemplateTab, "TEMPLATE")
+
+
+    def _get_port_map(self):
+        ports = self.entity_services['device_port'].get_device_ports(self.device.id)
+        return {        
+            f'{port.Ports.speed}Mbps {port.Ports.material}': self.interface_templates
+            for port in self.ports
+        }
         
 
 if __name__ == "__main__":

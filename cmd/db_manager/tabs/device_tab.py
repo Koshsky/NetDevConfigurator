@@ -89,7 +89,7 @@ class DeviceTab(BaseTab):
             
         device_ports = self.app.entity_services['device_port'].get_device_ports(device.id)
         for device_port in device_ports:
-            self.app.entity_services['device_port'].delete_by_id(device_port.id)
+            self.app.entity_services['device_port'].delete_by_id(device_port.DevicePorts.id)
 
     def get_port_list(self):
         return {        

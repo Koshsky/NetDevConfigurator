@@ -14,9 +14,9 @@ class TemplateTab(BaseTab):
             self.display_feedback("Please, choose a device in DeviceTab.")
             return
         self.create_block("template", {
-                "header": ["header1", "header2", "header3"],
-                "footer": ["footer1", "footer2", "footer3"],
-                "interfaces": get_port_map()
+                "header": self.app.header_templates,
+                "footer": self.app.footer_templates,
+                "interfaces": self.app._get_port_map()
         }, width=15)
         self.create_button_in_line(("GENERATE", self.generate_template))
         self.create_feedback_area()
@@ -30,10 +30,3 @@ class TemplateTab(BaseTab):
         # TODO: реализовать сборку шаблона в байтовом или строковом виде
         # TODO: записать шаблон в файл в паппке /tmp/...
         # TODO: напечатать шаблон в feedback_area: self.display_feedback(template)
-
-
-def get_port_map():
-    return {        
-        f"gigabitethernet 0/{i}": ["role1", "role2", "role3"]
-        for i in range(25)
-    }

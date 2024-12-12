@@ -14,7 +14,11 @@ class DevicePortService:
         return self.db.query(Ports).join(DevicePorts).filter(DevicePorts.device_id == device_id).all()
 
     def get_device_ports(self, device_id: int):
-        return self.db.query(DevicePorts).filter(DevicePorts.device_id == device_id).all()
+        return (self.db.query(DevicePorts, Ports)
+                .join(Ports, DevicePorts.port_id == Ports.id)
+                .filter(DevicePorts.device_id == device_id)
+                .all())
+
 
     def get_by_id(self, device_port_id: int):
         return self.db.query(DevicePorts).filter(DevicePorts.id == device_port_id).first()
