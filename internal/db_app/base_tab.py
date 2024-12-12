@@ -6,75 +6,93 @@ class BaseTab:
         self.frame = ttk.Frame(parent)
         self.app = app
         self.cur_row = 0
+        self.cur_col = 0
         self.fields = {}
         self.create_widgets()
         self.frame.pack(padx=10, pady=10)
         
-    def create_block(self, entity_name, PARAMETERS, button = None, width=None):
+    def _create_entry_field(self, entity_name, param_name):
+        field = ttk.Entry(self.frame)
+        field.grid(row=self.cur_row, column=self.cur_col+1, padx=5, pady=5)
+        self.fields[entity_name][param_name] = field
+        self.cur_row += 1
+
+    def _create_combobox_field(self, entity_name, param_name, param_presets):
+        field = ttk.Combobox(self.frame, values=param_presets)
+        field.grid(row=self.cur_row, column=self.cur_col+1, padx=5, pady=5)
+        field.current(0)
+        self.fields[entity_name][param_name] = field
+        self.cur_row += 1
+
+    def _create_checkbox_group(self, entity_name, param_name, param_presets, width=None):
+        self.fields[entity_name][param_name] = {}
+        space = width
+        first_row = self.cur_row
+        first_col = self.cur_col
+        for box in param_presets:
+            checkbox_var = IntVar()
+            checkbox = tk.Checkbutton(self.frame, text=box, variable=checkbox_var)
+            checkbox.grid(row=self.cur_row, column=self.cur_col+1, padx=5)
+            self.fields[entity_name][param_name][box] = checkbox_var
+            self.cur_row += 1
+            if space is not None:
+                space -= 1
+                if not space:
+                    self.cur_row = first_row
+                    self.cur_col += 1
+                    space = width
+        if width is not None and len(param_presets) > width:
+                self.cur_row = first_row + width
+                self.cur_col = first_col
+
+    def _create_combobox_group(self, entity_name, param_name, param_presets, width=None):
+        self.fields[entity_name][param_name] = {}
+        space = width
+        first_row = self.cur_row
+        first_col = self.cur_col
+        for sub_param, preset in param_presets.items():
+            label = ttk.Label(self.frame, text=f"{sub_param}")
+            label.grid(row=self.cur_row, column=self.cur_col+1, padx=5, pady=5)
+            field = ttk.Combobox(self.frame, values=preset)
+            field.grid(row=self.cur_row, column=self.cur_col+2, padx=5, pady=5)
+            field.current(0)
+            self.fields[entity_name][param_name] = field
+            self.cur_row += 1
+            if space is not None:
+                space -= 1
+                if not space:
+                    self.cur_row = first_row
+                    self.cur_col += 2
+                    space = width
+        if width is not None and len(param_presets) > width:
+                self.cur_row = first_row + width
+                self.cur_col = first_col
+            
+
+    def create_block(self, entity_name, parameters, button=None, width=None):
         if entity_name not in self.fields:
             self.fields[entity_name] = {}
+
         ttk.Label(self.frame, text=f"{entity_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
-        cur_col = 1
-        for param_name, param_presets in PARAMETERS.items():
-            space = width
-            first_row = self.cur_row
-            label = ttk.Label(self.frame, text=f"{param_name}")
-            label.grid(row=self.cur_row, column=cur_col, padx=5, pady=5)
-            if param_presets is None or len(param_presets) == 0:  # single field
-                field = ttk.Entry(self.frame)
-                field.grid(row=self.cur_row, column=cur_col+1, padx=5, pady=5)
+        self.cur_col = 1
 
-                self.fields[entity_name][param_name] = field
-                self.cur_row += 1
+        for param_name, param_presets in parameters.items():
+            ttk.Label(self.frame, text=f"{param_name}").grid(row=self.cur_row, column=self.cur_col, padx=5, pady=5)
+            
+            if param_presets is None or len(param_presets) == 0:
+                self._create_entry_field(entity_name, param_name)
             elif isinstance(param_presets, list):
-                field = ttk.Combobox(self.frame, values=param_presets)  # dropdown list
-                field.grid(row=self.cur_row, column=cur_col+1, padx=5, pady=5)
-                field.current(0)
-
-                self.fields[entity_name][param_name] = field
-                self.cur_row += 1
-            elif isinstance(param_presets, tuple):  # checkbuttons group
-                self.fields[entity_name][param_name] = {}
-                for box in param_presets:
-                    checkbox_var = IntVar()
-                    checkbox = tk.Checkbutton(self.frame, text=box, variable=checkbox_var)
-                    checkbox.grid(row=self.cur_row, column=cur_col+1, padx=5)
-
-                    self.fields[entity_name][param_name][box] = checkbox_var
-                    self.cur_row += 1
-                if space is not None:
-                    if space:
-                        space -= 1
-                    else:
-                        self.cur_row = first_row
-                        cur_col += 2
-                        space = width
-                            
-                if width is not None and len(param_presets) > width:
-                    self.cur_row = first_row + width
-            elif isinstance(param_presets, dict):  # combobox group
-                self.fields[entity_name][param_name] = {}
-                for param_name, preset in param_presets.items():
-                    label = ttk.Label(self.frame, text=f"{param_name}")
-                    label.grid(row=self.cur_row, column=cur_col+1, padx=5, pady=5)
-                    field = ttk.Combobox(self.frame, values=preset)
-                    field.grid(row=self.cur_row, column=cur_col+2, padx=5, pady=5)
-                    field.current(0)
-
-                    self.fields[entity_name][param_name] = field
-                    self.cur_row += 1
-                    space -= 1
-                    if not space:
-                        self.cur_row = first_row
-                        cur_col += 2
-                        space = width
-                            
-                if width is not None and len(param_presets) > width:
-                    self.cur_row = first_row + width
+                self._create_combobox_field(entity_name, param_name, param_presets)
+            elif isinstance(param_presets, tuple):
+                self._create_checkbox_group(entity_name, param_name, param_presets, width)
+            elif isinstance(param_presets, dict):
+                self._create_combobox_group(entity_name, param_name, param_presets, width)
 
         if button is not None:
-                self.button = tk.Button(self.frame, text=button[0], command=button[1])
-                self.button.grid(row=self.cur_row-1, column=3, padx=5, pady=5)
+            self.button = tk.Button(self.frame, text=button[0], command=button[1])
+            self.button.grid(row=self.cur_row-1, column=3, padx=5, pady=5)
+
+        
     
     def clear_frame(self):
         for widget in self.frame.winfo_children():

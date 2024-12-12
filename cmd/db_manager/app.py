@@ -10,12 +10,7 @@ from .tabs import (
         DeviceTab
 )
 
-class DBManagerApp(DatabaseApp):
-    def init_root(self, root):
-        super().init_root(root)
-        self.root.title("Database Manager")
-        self.root.geometry("850x650")
-        
+class DBManagerApp(DatabaseApp):        
     def on_success_callback(self, engine):
         super().on_success_callback(engine)
         if self.tabs:
@@ -29,5 +24,5 @@ class DBManagerApp(DatabaseApp):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = DBManagerApp(root)
+    app = DBManagerApp(root, "Database manager")
     root.mainloop()

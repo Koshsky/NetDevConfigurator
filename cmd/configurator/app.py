@@ -10,8 +10,6 @@ class ConfiguratorApp(DatabaseApp):
     def init_root(self, root):
         self.device = None
         super().init_root(root)
-        self.root.title("Configurator")
-        self.root.geometry("1200x900")
               
     def on_success_callback(self, engine):
         super().on_success_callback(engine)
@@ -22,5 +20,5 @@ class ConfiguratorApp(DatabaseApp):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = ConfiguratorApp(root)
+    app = ConfiguratorApp(root, "Configurator")
     root.mainloop()

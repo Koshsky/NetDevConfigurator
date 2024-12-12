@@ -16,7 +16,7 @@ from internal.database.services import (
 )
 
 class DatabaseApp:
-    def __init__(self, root):
+    def __init__(self, root, title):
         self.init_root(root)
         self.tabs = []
         
@@ -34,15 +34,20 @@ class DatabaseApp:
         
         self.session = None  # TODO: почему я сделал две переменные для сессии... действительно нужно ДВЕ или нет?
         self.Session = None
+        self.create_connection_tab()
         
-        self.create_tabs()
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        self.root.geometry(f"{screen_width}x{screen_height-40}")
+        self.root.title(title)
+
 
     def init_root(self, root):
         self.root = root
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill='both', expand=True)
         
-    def create_tabs(self):
+    def create_connection_tab(self):
         self.connection_tab = ConnectionTab(self.notebook, self.on_success_callback, self.on_failure_callback, self)
         self.notebook.add(self.connection_tab.frame, text="CONNECTION")
         
@@ -87,7 +92,7 @@ class DatabaseApp:
         self.families = tuple(family.name for family in self.entity_services["family"].get_all())
         self.devices = tuple(device.name for device in self.entity_services["device"].get_all())
         self.protocols = tuple(protocol.name for protocol in self.entity_services["protocol"].get_all())
-        self.ports = tuple(port.name for port in self.entity_services["port"].get_all())
+        self.ports = (None, ) + tuple(port.name for port in self.entity_services["port"].get_all())
 
     def on_failure_callback(self, error):
         self.hide_all_tabs()
