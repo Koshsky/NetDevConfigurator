@@ -16,7 +16,7 @@ class DeviceTab(BaseTab):
         try:
             device = self.check_device_name(self.fields["device"]["name"].get())
             self._clear_device(device)
-            ports = self._check_port_input()
+            ports = self._get_port_input()
             self.display_feedback(pprint.pformat(ports))
             # self._write_ports(device)
             self._write_protocols(device)
@@ -25,35 +25,32 @@ class DeviceTab(BaseTab):
             self.display_feedback(str(e))
             print(f"Error writing device configuration to db:\n{e}")
             
-    def _check_port_input(self):
-        def none_in_the_middle(fields):
+    def _get_port_input(self):
+        def check_none_in_the_middle(fields):
             res = False
             for _, combo in fields.items():
                 if combo.get() == 'None':
                     res = True
                 elif res:  # res == true if None was previously encountered and not now
-                    return True
-            return False
-        
-        def mixed_speeds(fields):
+                    raise ValueError('[NONE] encountered in the middle of port enumeration')
+        def check_mixed_speeds(fields):
             is1000mpbs = True
             for _, combo in fields.items():
                 if '1000Mbps' not in combo.get():
                     is1000mpbs = False
                 elif not is1000mpbs and '1000Mbps' in combo.get():
-                    return True
-            return False
+                    raise ValueError('Mixed speeds in port enumeration')
                 
         
-        if none_in_the_middle(self.fields['device']['ports']):
-            raise ValueError('[NONE] encountered in the middle of port enumeration')
-        elif mixed_speeds(self.fields['device']['ports']):
-            raise ValueError('Mixed speeds in port enumeration')
-        
+        check_none_in_the_middle(self.fields['device']['ports'])
+        check_mixed_speeds(self.fields['device']['ports'])
+        return self._get_eltex_mes_ports(self.fields['device']['ports'])
+    
+    def _get_eltex_mes_ports(self, ports_input):
         ports = {}
         cnt = 0
         is1000mpbs = True
-        for _, combo in self.fields["device"]["ports"].items():  # for eltex-mes
+        for _, combo in ports_input.items():  # for eltex-mes
             if combo.get() == 'None':
                 break
                 
@@ -71,6 +68,7 @@ class DeviceTab(BaseTab):
             cnt += 1
             
         return ports
+        
 
             
     def _write_ports(self, device):

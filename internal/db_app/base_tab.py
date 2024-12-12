@@ -52,7 +52,7 @@ class BaseTab:
         first_col = self.cur_col
         for sub_param, preset in param_presets.items():
             label = ttk.Label(self.frame, text=f"{sub_param}")
-            label.grid(row=self.cur_row, column=self.cur_col+1, padx=5, pady=5)
+            label.grid(row=self.cur_row, column=self.cur_col+1, padx=5, pady=5, sticky='e')
             field = ttk.Combobox(self.frame, values=preset)
             field.grid(row=self.cur_row, column=self.cur_col+2, padx=5, pady=5)
             field.current(0)
@@ -103,13 +103,13 @@ class BaseTab:
                                      and isinstance(button[0], str) and callable(button[1])):
             raise TypeError("button parameter must be a tuple of (str, callable)")
         button = tk.Button(self.frame, text=button[0], command=button[1])
-        button.grid(row=self.cur_row, column=0, pady=5, columnspan=5, sticky="ew")
+        button.grid(row=self.cur_row, column=0, pady=5, columnspan=12, sticky="ew")
 
         self.cur_row += 1
 
     def create_feedback_area(self, width=100, height=20):
         self.feedback_text = tk.Text(self.frame, wrap='word', width=width, height=height)
-        self.feedback_text.grid(row=self.cur_row, column=0, columnspan=5, padx=5, pady=5)
+        self.feedback_text.grid(row=self.cur_row, column=0, columnspan=12, padx=5, pady=5)
         self.feedback_text.insert(tk.END, "Feedback will be here...\n")
         self.feedback_text.config(state=tk.DISABLED)
 
