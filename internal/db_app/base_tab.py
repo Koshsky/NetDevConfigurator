@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import IntVar, ttk
-from typing import Optional, Tuple, Callable
 
 class BaseTab:
     def __init__(self, parent, app):
@@ -11,49 +10,8 @@ class BaseTab:
         self.create_widgets()
         self.frame.pack(padx=10, pady=10)
         
-    def create_block(self, block_name: str, list_params: dict, button: Optional[Tuple[str, Callable]] = None):
+    def create_block(self, block_name, list_params, button = None, width=None, button_in_line=False):
         # sourcery skip: class-extract-method
-        if button is not None and not (isinstance(button, tuple) and len(button) == 2 
-                                     and isinstance(button[0], str) and callable(button[1])):
-            raise TypeError("button parameter must be a tuple of (str, callable) or None")
-        
-        self.fields[block_name] = {}
-        ttk.Label(self.frame, text=f"{block_name}:").grid(row=self.cur_row, column=0, padx=5, pady=5)
-        for param, presets in list_params.items():
-            label = ttk.Label(self.frame, text=f"{param}")
-            label.grid(row=self.cur_row, column=1, padx=5, pady=5)
-            if presets is None or len(presets) == 0:
-                field = ttk.Entry(self.frame)
-                field.grid(row=self.cur_row, column=2, padx=5, pady=5)
-
-                self.fields[block_name][param] = field
-                self.cur_row += 1
-            elif isinstance(presets, list):
-                field = ttk.Combobox(self.frame, values=presets)
-                field.grid(row=self.cur_row, column=2, padx=5, pady=5)
-                field.current(0)
-
-                self.fields[block_name][param] = field
-                self.cur_row += 1
-            elif isinstance(presets, tuple):
-                self.fields[block_name][param] = {}
-                for box in presets:
-                    checkbox_var = IntVar()
-                    checkbox = tk.Checkbutton(self.frame, text=box, variable=checkbox_var)
-                    checkbox.grid(row=self.cur_row, column=2, padx=5)
-
-                    self.fields[block_name][param][box] = checkbox_var
-                    self.cur_row += 1
-        
-        if button is not None:
-            self.button = tk.Button(self.frame, text=button[0], command=button[1])
-            self.button.grid(row=self.cur_row-1, column=3, padx=5, pady=5)
-    
-    def clear_frame(self):
-        for widget in self.frame.winfo_children():
-            widget.destroy()
-
-    def create_grid_combobox(self,  width: int, block_name: str, list_params: dict, button: Optional[Tuple[str, Callable]] = None):
         if button is not None and not (isinstance(button, tuple) and len(button) == 2 
                                      and isinstance(button[0], str) and callable(button[1])):
             raise TypeError("button parameter must be a tuple of (str, callable) or None")
@@ -66,25 +24,53 @@ class BaseTab:
         for param, presets in list_params.items():
             label = ttk.Label(self.frame, text=f"{param}")
             label.grid(row=self.cur_row, column=cur_col, padx=5, pady=5)
-            field = ttk.Combobox(self.frame, values=presets)
-            field.grid(row=self.cur_row, column=cur_col+1, padx=5, pady=5)
-            field.current(0)
+            if presets is None or len(presets) == 0:
+                field = ttk.Entry(self.frame)
+                field.grid(row=self.cur_row, column=cur_col+1, padx=5, pady=5)
 
-            self.fields[block_name][param] = field
-            self.cur_row += 1
-            space -= 1
-            if not space:
-                self.cur_row = first_row
-                cur_col += 2
-                space = width
+                self.fields[block_name][param] = field
+                self.cur_row += 1
+            elif isinstance(presets, list):
+                field = ttk.Combobox(self.frame, values=presets)
+                field.grid(row=self.cur_row, column=cur_col+1, padx=5, pady=5)
+                field.current(0)
+
+                self.fields[block_name][param] = field
+                self.cur_row += 1
+            elif isinstance(presets, tuple):
+                if space is not None:
+                    raise ValueError(f"cannot create checkbutton group: space is not None (space={space})")
+                self.fields[block_name][param] = {}
+                for box in presets:
+                    checkbox_var = IntVar()
+                    checkbox = tk.Checkbutton(self.frame, text=box, variable=checkbox_var)
+                    checkbox.grid(row=self.cur_row, column=cur_col+1, padx=5)
+
+                    self.fields[block_name][param][box] = checkbox_var
+                    self.cur_row += 1
+            if space is not None:
+                if space:
+                    space -= 1
+                else:
+                    self.cur_row = first_row
+                    cur_col += 2
+                    space = width
                 
-        if len(list_params) > width:
+        if width is not None and len(list_params) > width:
             self.cur_row = first_row + width
 
         if button is not None:
-            self.create_button_in_line(button)
-
-    def create_button_in_line(self, button: Tuple[str, Callable]):
+            if button_in_line:
+                self.create_button_in_line(button)
+            else:
+                self.button = tk.Button(self.frame, text=button[0], command=button[1])
+                self.button.grid(row=self.cur_row-1, column=3, padx=5, pady=5)
+    
+    def clear_frame(self):
+        for widget in self.frame.winfo_children():
+            widget.destroy()
+            
+    def create_button_in_line(self, button):
         if not (isinstance(button, tuple) and len(button) == 2 
                                      and isinstance(button[0], str) and callable(button[1])):
             raise TypeError("button parameter must be a tuple of (str, callable)")

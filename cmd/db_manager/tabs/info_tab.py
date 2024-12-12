@@ -23,15 +23,10 @@ class InfoTab(BaseTab):
             protocol_list = "\n\t".join(protocol.name for protocol in associated_protocols) if associated_protocols else "No associated firmwares."
             
             output_message = (
-                f"Device Information:\n"
-                f"Name: {device.name}\n"
-                f"ID: {device.id}\n"
+                f"{device.name}(id={device.id}) Information:\n"
                 f"Company: {company_name}\n"
                 f"Family: {family_name}\n"
                 f"Device Type: {device.dev_type}\n"
-                f"Number of ports\n"
-                f"\tgigabit: {device.num_gigabit_ports}\n"
-                f"\t10gigabit: {device.num_10gigabit_ports}\n"
                 f"Associated Protocols:\n\t{protocol_list}\n"
                 f"Associated Firmwares:\n\t{firmware_list}\n"
             )

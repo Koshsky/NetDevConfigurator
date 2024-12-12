@@ -25,12 +25,10 @@ class AddTab(BaseTab):
             "device", 
             {
                 "name": None,
-                "protocols": self.app.protocols,                 
+                # "protocols": self.app.protocols,                 
                 "company": list(self.app.companies),
                 "family": list(self.app.families),
                 "dev_type": ["switch", "router"],
-                "num_gigabit_ports": [24, 48],
-                "num_10gigabit_ports": [4, 6]
             }, 
             ("SUBMIT", self.submit_device)
         )
@@ -77,17 +75,12 @@ class AddTab(BaseTab):
         # sourcery skip: extract-method
         device_name = self.fields["device"]["name"].get().strip()
         dev_type = self.fields["device"]["dev_type"].get().strip()
-        num_gigabit_ports = self.fields["device"]["num_gigabit_ports"].get().strip()
-        num_10gigabit_ports = self.fields["device"]["num_10gigabit_ports"].get().strip()
 
         if not device_name:
             self.display_feedback("Error: Device name cannot be empty.")
             return
         if not dev_type:
             self.display_feedback("Error: Select device type")
-            return
-        if not num_gigabit_ports.isdigit() or not num_10gigabit_ports.isdigit():
-            self.display_feedback("Error: Port number must be a valid integer.")
             return
 
         try:
@@ -98,15 +91,13 @@ class AddTab(BaseTab):
                 "company_id": company.id,
                 "family_id": family.id,
                 "dev_type": dev_type,
-                "num_gigabit_ports": int(num_gigabit_ports),
-                "num_10gigabit_ports": int(num_10gigabit_ports),
             }
             
             device = self.app.entity_services["device"].create(new_device)
-            for protocol_name, checkbox in self.fields["device"]["protocols"].items():
-                if checkbox.get() == 1:
-                    protocol = self.check_protocol_name(protocol_name)
-                    self.app.entity_services["device_protocol"].link(device.id, protocol.id)
+            # for protocol_name, checkbox in self.fields["device"]["protocols"].items():
+            #     if checkbox.get() == 1:
+            #         protocol = self.check_protocol_name(protocol_name)
+            #         self.app.entity_services["device_protocol"].link(device.id, protocol.id)
 
             self.display_feedback("Successfully added to the devices table.")
 
@@ -114,18 +105,18 @@ class AddTab(BaseTab):
             self.display_feedback(f"Error adding to devices table: {e}")
             self.app.session.rollback()
 
-    def link(self):
-        try:
-            device = self.check_device_name(self.fields["device"]["name"].get().strip())
-            firmware = self.check_firmware_name(self.fields["firmware"]["name"].get().strip())
+    # def link(self):
+    #     try:
+    #         device = self.check_device_name(self.fields["device"]["name"].get().strip())
+    #         firmware = self.check_firmware_name(self.fields["firmware"]["name"].get().strip())
 
-            self.app.entity_services["device_firmware"].link(device.id, firmware.id)
-            self.display_feedback("Linked device with firmware successfully.")
-        except ValueError as e:
-            self.display_feedback(f"Error: {e}")
-        except Exception as e:
-            self.display_feedback(f"Error adding to database:\n{e}")
-            self.app.session.rollback()
+    #         self.app.entity_services["device_firmware"].link(device.id, firmware.id)
+    #         self.display_feedback("Linked device with firmware successfully.")
+    #     except ValueError as e:
+    #         self.display_feedback(f"Error: {e}")
+    #     except Exception as e:
+    #         self.display_feedback(f"Error adding to database:\n{e}")
+    #         self.app.session.rollback()
 
     def submit_company(self):
         company_name = self.fields['company']['name'].get().strip()
