@@ -11,7 +11,8 @@ from internal.database.services import (
         DeviceFirmwareService, 
         DeviceProtocolService,
         DevicePortService,
-        FamilyService
+        FamilyService,
+        PortService
 )
 
 class DatabaseApp:
@@ -25,6 +26,7 @@ class DatabaseApp:
             'device': None,
             'firmware': None,
             'protocol': None,
+            'port': None,
             'device_firmware': None,
             'device_protocol': None,
             'device_port': None,
@@ -75,6 +77,7 @@ class DatabaseApp:
             'device': DeviceService(self.session),
             'firmware': FirmwareService(self.session),
             'protocol': ProtocolService(self.session),
+            'port': PortService,
             'device_firmware': DeviceFirmwareService(self.session),
             'device_protocol': DeviceProtocolService(self.session),
             'device_port': DevicePortService(self.session),
@@ -82,9 +85,10 @@ class DatabaseApp:
         
     def get_tuples_of_entities(self):
         self.companies = tuple(company.name for company in self.entity_services["company"].get_all())
-        self.protocols = tuple(protocol.name for protocol in self.entity_services["protocol"].get_all())
         self.families = tuple(family.name for family in self.entity_services["family"].get_all())
         self.devices = tuple(device.name for device in self.entity_services["device"].get_all())
+        self.protocols = tuple(protocol.name for protocol in self.entity_services["protocol"].get_all())
+        self.ports = tuple(port.name for port in self.entity_services["port"].get_all())
 
     def on_failure_callback(self, error):
         self.hide_all_tabs()
