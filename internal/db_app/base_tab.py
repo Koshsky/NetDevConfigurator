@@ -140,6 +140,9 @@ class BaseTab:
     def check_protocol_name(self, protocol_name: str) -> int:
         return self.validate_entity('protocol', protocol_name)
 
+    def check_port_name(self, port_name: str) -> int:
+        return self.validate_entity('port', port_name)
+
     def check_family_name(self, family_name: str) -> int:
         return self.validate_entity('family', family_name)
 

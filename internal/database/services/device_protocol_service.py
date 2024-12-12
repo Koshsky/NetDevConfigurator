@@ -13,6 +13,9 @@ class DeviceProtocolService:
     def get_protocols_by_device_id(self, device_id: int):
         return self.db.query(Protocols).join(DeviceProtocols).filter(DeviceProtocols.device_id == device_id).all()
 
+    def get_device_protocols(self, device_id: int):
+        return self.db.query(DeviceProtocols).filter(DeviceProtocols.device_id == device_id).all()
+
     def get_by_id(self, device_protocol_id: int):
         return self.db.query(DeviceProtocols).filter(DeviceProtocols.id == device_protocol_id).first()
 
@@ -32,31 +35,3 @@ class DeviceProtocolService:
         device_protocol = self.get_by_id(device_protocol_id)
         self.delete(device_protocol)
         
-    def link(self, device_id: int, protocol_id: int):
-        if (
-            existing_link := self.db.query(DeviceProtocols)
-            .filter(
-                DeviceProtocols.device_id == device_id,
-                DeviceProtocols.protocol_id == protocol_id,
-            )
-            .first()
-        ):
-            raise ValueError("Device is already linked with protocol")
-
-        self.create({
-            "device_id": device_id,
-            "protocol_id": protocol_id
-        })
-
-    def unlink(self, device_id: int, protocol_id: int):
-        if (
-            existing_link := self.db.query(DeviceProtocols)
-            .filter(
-                DeviceProtocols.device_id == device_id,
-                DeviceProtocols.protocol_id == protocol_id,
-            )
-            .first()
-        ):
-            self.delete(existing_link.id)
-        else:
-            raise ValueError("Device is not linked with protocol")

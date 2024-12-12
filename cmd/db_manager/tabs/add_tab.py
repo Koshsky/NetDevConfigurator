@@ -71,7 +71,7 @@ class AddTab(BaseTab):
             self.app.session.rollback()
         
     
-    def submit_device(self):  # TODO: ИЗМЕНИТЬ В СООТВЕСТВИИ С НОВОЙ МОДЕЛЬЮ БАЗЫ ДАННЫХ!!!!!!
+    def submit_device(self):
         # sourcery skip: extract-method
         device_name = self.fields["device"]["name"].get().strip()
         dev_type = self.fields["device"]["dev_type"].get().strip()
@@ -94,29 +94,12 @@ class AddTab(BaseTab):
             }
             
             device = self.app.entity_services["device"].create(new_device)
-            # for protocol_name, checkbox in self.fields["device"]["protocols"].items():
-            #     if checkbox.get() == 1:
-            #         protocol = self.check_protocol_name(protocol_name)
-            #         self.app.entity_services["device_protocol"].link(device.id, protocol.id)
 
             self.display_feedback("Successfully added to the devices table.")
 
         except Exception as e:
             self.display_feedback(f"Error adding to devices table: {e}")
             self.app.session.rollback()
-
-    # def link(self):
-    #     try:
-    #         device = self.check_device_name(self.fields["device"]["name"].get().strip())
-    #         firmware = self.check_firmware_name(self.fields["firmware"]["name"].get().strip())
-
-    #         self.app.entity_services["device_firmware"].link(device.id, firmware.id)
-    #         self.display_feedback("Linked device with firmware successfully.")
-    #     except ValueError as e:
-    #         self.display_feedback(f"Error: {e}")
-    #     except Exception as e:
-    #         self.display_feedback(f"Error adding to database:\n{e}")
-    #         self.app.session.rollback()
 
     def submit_company(self):
         company_name = self.fields['company']['name'].get().strip()

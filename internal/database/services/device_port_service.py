@@ -13,6 +13,9 @@ class DevicePortService:
     def get_ports_by_device_id(self, device_id: int):
         return self.db.query(Ports).join(DevicePorts).filter(DevicePorts.device_id == device_id).all()
 
+    def get_device_ports(self, device_id: int):
+        return self.db.query(DevicePorts).filter(DevicePorts.device_id == device_id).all()
+
     def get_by_id(self, device_port_id: int):
         return self.db.query(DevicePorts).filter(DevicePorts.id == device_port_id).first()
 
@@ -32,32 +35,3 @@ class DevicePortService:
         device_port = self.get_by_id(device_port_id)
         self.delete(device_port)
         
-    def link(self, device_id: int, port_id: int):
-        if (
-            existing_link := self.db.query(DevicePorts)
-            .filter(
-                DevicePorts.device_id == device_id,
-                DevicePorts.port_id == port_id,
-            )
-            .first()
-        ):
-            raise ValueError("Device is already linked with port")
-
-        self.create({
-            "device_id": device_id,
-            "port_id": port_id
-        })
-
-    def unlink(self, device_id: int, port_id: int):
-        if (
-            existing_link := self.db.query(DevicePorts)
-            .filter(
-                DevicePorts.device_id == device_id,
-                DevicePorts.port_id == port_id,
-            )
-            .first()
-        ):
-            self.delete(existing_link.id)
-        else:
-            raise ValueError("Device is not linked with protocol")
-
