@@ -51,7 +51,6 @@ class ConnectionTab:
             print("Successful connection to the database")
             self.on_success_callback(engine)
             self.message_label.config(text="Connection successful.", fg="green")
-
         except Exception as error:
             print("Error connecting to database:", error)
             self.on_failure_callback(error)

@@ -67,7 +67,6 @@ class DatabaseApp:
 
         self.init_db_services()
         self.get_tuples_of_entities()
-        
         print("session: ", self.session)
 
     def init_db_services(self):
