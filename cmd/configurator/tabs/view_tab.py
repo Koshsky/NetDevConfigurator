@@ -5,10 +5,7 @@ from tkinter import ttk
 # TODO: сделать просмотр содержимого template_pieces из базы данных по их имени
 # TODO: сделать возможным просмотр СПИСКА template_pieces из базы данных
 
-class ViewTab(BaseTab):
-    def __init__(self, parent, app):
-        super().__init__(parent, app)
-        
+class ViewTab(BaseTab):        
     def create_widgets(self):
         if self.app.device is None:
             self.create_feedback_area()

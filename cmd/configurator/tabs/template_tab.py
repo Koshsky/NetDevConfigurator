@@ -5,9 +5,6 @@ from tkinter import ttk
 
 
 class TemplateTab(BaseTab):
-    def __init__(self, parent, app):
-        super().__init__(parent, app)
-        
     def create_widgets(self):
         if self.app.device is None:
             self.create_feedback_area()
