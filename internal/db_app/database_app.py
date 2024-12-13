@@ -12,25 +12,14 @@ from internal.database.services import (
         DeviceProtocolService,
         DevicePortService,
         FamilyService,
-        PortService
+        PortService,
+        TemplatePieceService
 )
 
 class DatabaseApp:
     def __init__(self, root, title):
         self.init_root(root)
         self.tabs = []
-        
-        self.entity_services = {
-            'company': None,
-            'family': None,
-            'device': None,
-            'firmware': None,
-            'protocol': None,
-            'port': None,
-            'device_firmware': None,
-            'device_protocol': None,
-            'device_port': None,
-        }
         
         self.session = None  # TODO: почему я сделал две переменные для сессии... действительно нужно ДВЕ или нет?
         self.Session = None
@@ -68,8 +57,6 @@ class DatabaseApp:
     def on_success_callback(self, engine):
         self.Session = sessionmaker(bind=engine)
         self.session = self.Session()
-        # update services
-
         self.init_db_services()
         self.get_tuples_of_entities()
         print("session: ", self.session)
@@ -85,7 +72,10 @@ class DatabaseApp:
             'device_firmware': DeviceFirmwareService(self.session),
             'device_protocol': DeviceProtocolService(self.session),
             'device_port': DevicePortService(self.session),
+            'template_piece': TemplatePieceService(self.session),
         }
+        if None in self.entity_services.values():
+            raise ValueError("One or more database services failed to initialize")
         
     def get_tuples_of_entities(self):
         self.companies = tuple(company.name for company in self.entity_services["company"].get_all())
