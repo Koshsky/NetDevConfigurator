@@ -8,7 +8,7 @@ class FamilyService:
         self.db = db
 
     def get_all(self):
-        return self.db.query(Families).all()
+        return self.db.query(Families).order_by(Families.name).all()
 
     def get_by_id(self, family_id: int):
         return self.db.query(Families).filter(Families.id == family_id).first()

@@ -8,7 +8,7 @@ class FirmwareService:
         self.db = db
 
     def get_all(self):
-        return self.db.query(Firmwares).all()
+        return self.db.query(Firmwares).order_by(Firmwares.name).all()
 
     def get_by_id(self, firmware_id: int):
         return self.db.query(Firmwares).filter(Firmwares.id == firmware_id).first()

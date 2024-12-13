@@ -7,7 +7,7 @@ class ProtocolService:
         self.db = db
     
     def get_all(self):
-        return self.db.query(Protocols).all()
+        return self.db.query(Protocols).order_by(Protocols.name).all()
 
     def get_by_id(self, id: int):
         return self.db.query(Protocols).filter(Protocols.id == id).first()

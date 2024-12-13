@@ -8,7 +8,7 @@ class CompanyService:
         self.db = db
 
     def get_all(self):
-        return self.db.query(Companies).all()
+        return self.db.query(Companies).order_by(Companies.name).all()
 
     def get_by_id(self, company_id: int):
         return self.db.query(Companies).filter(Companies.id == company_id).first()

@@ -7,13 +7,13 @@ class TemplatePieceService:
         self.db = db
     
     def get_all(self):
-        return self.db.query(TemplatePieces).all()
+        return self.db.query(TemplatePieces).order_by(TemplatePieces.name).all()
 
     def get_by_id(self, id: int):
         return self.db.query(TemplatePieces).filter(TemplatePieces.id == id).first()
 
     def get_by_name(self, name: str):
-        return self.db.query(TemplatePieces).filter(v.name == name).first()
+        return self.db.query(TemplatePieces).filter(TemplatePieces.name == name).first()
 
     def create(self, data: dict):
         template_piece = TemplatePieces(**data)
@@ -33,5 +33,4 @@ class TemplatePieceService:
     def delete_by_name(self, name: str):
         template_piece = self.get_by_name(name)
         self.delete(template_piece)
-
     

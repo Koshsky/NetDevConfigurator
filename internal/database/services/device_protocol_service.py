@@ -11,7 +11,12 @@ class DeviceProtocolService:
         return self.db.query(DeviceProtocols).all()
     
     def get_protocols_by_device_id(self, device_id: int):
-        return self.db.query(Protocols).join(DeviceProtocols).filter(DeviceProtocols.device_id == device_id).all()
+        return (
+            self.db.query(Protocols)
+                .join(DeviceProtocols)
+                .filter(DeviceProtocols.device_id == device_id)
+                .all()
+        )
 
     def get_device_protocols(self, device_id: int):
         return self.db.query(DeviceProtocols).filter(DeviceProtocols.device_id == device_id).all()

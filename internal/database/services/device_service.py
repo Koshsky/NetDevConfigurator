@@ -8,13 +8,23 @@ class DeviceService:
         self.db = db
 
     def get_all(self):
-        return self.db.query(Devices).all()
+        return self.db.query(Devices).order_by(Devices.name).all()
     
     def get_devices_by_company_id(self, company_id: int):
-        return self.db.query(Devices).filter(Devices.company_id == company_id).all()
+        return (
+            self.db.query(Devices)
+                .filter(Devices.company_id == company_id)
+                .order_by(Devices.name)
+                .all()
+        )
     
     def get_devices_by_family_id(self, family_id: int):
-        return self.db.query(Devices).filter(Devices.family_id == family_id).all()
+        return (
+            self.db.query(Devices)
+                .filter(Devices.family_id == family_id)
+                .order_by(Devices.name)
+                .all()
+        )
 
 
     def get_by_id(self, device_id: int):
