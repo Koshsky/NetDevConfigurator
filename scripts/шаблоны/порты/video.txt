@@ -1,0 +1,10 @@
+***Порт подключения клиентов видео сети***
+interface tengigabitethernet 0/{x}
+  switchport mode access
+  switchport access vlan 2
+!
+***Транковый порт видео сети***
+interface tengigabitethernet 0/{x}
+  switchport general allowed vlan add 2
+  switchport forbidden default-vlan
+!

@@ -1,0 +1,33 @@
+***Система цифрового звука отсутствует***
+vlan 3-4
+  vlan active
+!
+
+
+vlan 3
+  name "DATA"
+!
+vlan 4
+  name "MGMT"
+!
+***
+***Система цифрового звука присутствует***
+vlan 3-4,30
+  vlan active
+!
+
+
+vlan 3
+  name "DATA"
+!
+vlan 4
+  name "MGMT"
+!
+vlan 30
+  name "SOUND"
+!
+***
+
+interface vlan 4
+  ip address 10.4.X.12 255.255.0.0
+!

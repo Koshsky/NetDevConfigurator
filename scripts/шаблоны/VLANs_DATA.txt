@@ -1,0 +1,15 @@
+vlan 3-4
+  vlan active
+!
+
+
+vlan 3
+  name "DATA"
+!
+vlan 4
+  name "MGMT"
+!
+
+interface vlan 4
+  ip address 10.4.0.3 255.255.0.0
+!

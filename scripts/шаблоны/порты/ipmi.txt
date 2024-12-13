@@ -1,0 +1,10 @@
+***Порт подключения клиентов сети управления***
+interface gigabitethernet 0/{i}
+  switchport mode access
+  switchport access vlan 4
+!
+***Аплинк сети управления до маршрутизатора***
+interface gigabitethernet 0/{i}
+  switchport general allowed vlan add 4
+  switchport forbidden default-vlan
+!

@@ -1,0 +1,28 @@
+***Отсутствует порт OOB***
+vlan 2-4
+  vlan active
+!
+
+vlan 2
+  name "VIDEO"
+!
+vlan 4
+  name "MGMT"
+!
+
+interface vlan 4
+  ip address 10.4.0.2 255.255.0.0
+!
+***Присутствует порт OOB***
+vlan 2
+  vlan active
+!
+
+vlan 2
+  name "VIDEO"
+!
+
+interface oob
+ ip address 10.4.0.2 255.255.0.0
+ no ip address dhcp
+exit
