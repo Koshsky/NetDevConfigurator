@@ -29,7 +29,6 @@ class Families(Base):
     name = Column(String(255), nullable=False)
 
     devices = relationship('Devices', back_populates='family')
-    template_pieces = relationship('TemplatePieces', back_populates='family')
 
 
 class Firmwares(Base):
@@ -75,6 +74,19 @@ class Protocols(Base):
     device_protocols = relationship('DeviceProtocols', back_populates='protocol')
 
 
+class TemplatePieces(Base):
+    __tablename__ = 'template_pieces'
+    __table_args__ = (
+        PrimaryKeyConstraint('id', name='template_pieces_pkey'),
+    )
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    type = Column(String, nullable=False)
+    role = Column(String, nullable=False)
+    text = Column(Text)
+
+
 class Devices(Base):
     __tablename__ = 'devices'
     __table_args__ = (
@@ -96,23 +108,6 @@ class Devices(Base):
     device_firmwares = relationship('DeviceFirmwares', back_populates='device')
     device_ports = relationship('DevicePorts', back_populates='device')
     device_protocols = relationship('DeviceProtocols', back_populates='device')
-
-
-class TemplatePieces(Base):
-    __tablename__ = 'template_pieces'
-    __table_args__ = (
-        ForeignKeyConstraint(['family_id'], ['families.id'], ondelete='CASCADE', name='template_pieces_family_id_fkey'),
-        PrimaryKeyConstraint('id', name='template_pieces_pkey')
-    )
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    type = Column(String, nullable=False)
-    role = Column(String, nullable=False)
-    text = Column(Text)
-    family_id = Column(Integer)
-
-    family = relationship('Families', back_populates='template_pieces')
 
 
 class DeviceFirmwares(Base):
