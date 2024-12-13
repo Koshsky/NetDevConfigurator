@@ -25,9 +25,10 @@ class ConfiguratorApp(DatabaseApp):
     def _get_port_map(self):
         ports = self.entity_services['device_port'].get_device_ports(self.device.id)
         return {        
-            f'{port.Ports.speed}Mbps {port.Ports.material}': self.interface_templates
-            for port in self.ports
+            f'{idx+1}. {port.Ports.speed}Mbps {port.Ports.material}': self.interface_templates
+            for idx, port in enumerate(ports)
         }
+
         
 
 if __name__ == "__main__":

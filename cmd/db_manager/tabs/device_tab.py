@@ -87,7 +87,7 @@ class DeviceTab(BaseTab):
         for device_protocol in device_protocols:
             self.app.entity_services['device_protocol'].delete_by_id(device_protocol.id)
             
-        device_ports = self.app.entity_services['device_port'].get_device_ports(device.id)
+        device_ports = self.app.entity_services['device_port'].get_device_ports(device.id)  # TODO: подумать о необходимости такого подхода. нужен ли он?
         for device_port in device_ports:
             self.app.entity_services['device_port'].delete_by_id(device_port.DevicePorts.id)
 
