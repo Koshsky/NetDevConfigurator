@@ -74,8 +74,6 @@ class DatabaseApp:
             'device_port': DevicePortService(self.session),
             'template_piece': TemplatePieceService(self.session),
         }
-        if None in self.entity_services.values():
-            raise ValueError("One or more database services failed to initialize")
         
     def get_tuples_of_entities(self):
         self.companies = tuple(company.name for company in self.entity_services["company"].get_all())
