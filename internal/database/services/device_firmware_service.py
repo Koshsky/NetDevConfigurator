@@ -10,6 +10,9 @@ class DeviceFirmwareService:
     def get_all(self):
         return self.db.query(DeviceFirmwares).order_by(DeviceFirmwares.device_id).all()
 
+    def get_device_firmwares(self, device_id: int):
+        return self.db.query(DeviceFirmwares).filter(DeviceFirmwares.device_id == device_id).all()
+
     def get_by_id(self, device_firmware_id: int):
         return self.db.query(DeviceFirmwares).filter(DeviceFirmwares.id == device_firmware_id).first()
     

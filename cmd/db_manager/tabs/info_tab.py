@@ -1,4 +1,5 @@
 from internal.db_app import BaseTab, error_handler
+from pprint import pformat
 
 class InfoTab(BaseTab):
     def create_widgets(self):
@@ -30,12 +31,13 @@ class InfoTab(BaseTab):
         firmware_list = self._stringify_list(self.app.entity_services["device_firmware"].get_firmwares_by_device_id(device.id))
                 
         self.display_feedback(
-            f"{device.name}(id={device.id}) Information:\n"
-            f"Company: {company_name}\n"
-            f"Family: {family_name}\n"
-            f"Device Type: {device.dev_type}\n"
-            f"Associated Protocols:\n\t{protocol_list}\n"
-            f"Associated Firmwares:\n\t{firmware_list}\n"
+            # f"{device.name}(id={device.id}) Information:\n"
+            # f"Company: {company_name}\n"
+            # f"Family: {family_name}\n"
+            # f"Device Type: {device.dev_type}\n"
+            # f"Associated Protocols:\n\t{protocol_list}\n"
+            # f"Associated Firmwares:\n\t{firmware_list}\n"
+            pformat(self.app.entity_services['device'].get_info(device))
         )
 
         
