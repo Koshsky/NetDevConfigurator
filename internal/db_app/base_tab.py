@@ -2,6 +2,10 @@ import tkinter as tk
 import tkinter.messagebox as messagebox
 from tkinter import IntVar, ttk
 
+class RetrievalError(Exception):
+    """Exception raised for errors in the retrieval process."""
+    pass
+
 class BaseTab:
     def __init__(self, parent, app):
         self.frame = ttk.Frame(parent)
@@ -140,10 +144,10 @@ class BaseTab:
 
         service = self.app.entity_services.get(entity_type)
         if not service:
-            raise ValueError(f"Invalid entity type: {entity_type}")
+            raise RetrievalError(f"Invalid entity type: {entity_type}")
 
         if entity := service.get_by_name(entity_name):
             return entity
         else:
-            raise ValueError(f'{entity_type.capitalize()} "{entity_name}" not found in databases')
+            raise RetrievalError(f'{entity_type.capitalize()} "{entity_name}" not found in databases')
     

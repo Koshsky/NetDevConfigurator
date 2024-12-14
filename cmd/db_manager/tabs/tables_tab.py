@@ -1,4 +1,4 @@
-from internal.db_app.base_tab import BaseTab
+from internal.db_app import BaseTab, error_handler
 
 class TablesTab(BaseTab):
     def create_widgets(self):
@@ -10,16 +10,11 @@ class TablesTab(BaseTab):
         self.create_button_in_line(("Template pieces", lambda : self.load_table('template_piece')))
         self.create_feedback_area()
 
+    @error_handler
     def load_table(self, service_name: str):
-        try:
-            rows = self.app.entity_services[service_name].get_all()
-            self.display_feedback(self.format_table(rows))
-        except ValueError as e:  # TODO: НАПИСАТЬ ДЕКОРАТОРА В БАЗОВОМ КЛАССЕ И ИСПОЛЬЗОВАТЬ НА МЕТОДАХ РАБОТАЮЩИХ С БД!!!
-            self.show_error("Retrieval Error", e)
-        except IntegrityError as e:
-            self.show_error("Integrity Error", e)
-            self.app.session.rollback()
-
+        rows = self.app.entity_services[service_name].get_all()
+        self.display_feedback(self.format_table(rows))
+        
     def format_table(self, rows):
         if not rows:
             return "No data found."

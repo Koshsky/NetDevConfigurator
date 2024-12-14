@@ -1,4 +1,4 @@
-from internal.db_app.base_tab import BaseTab
+from internal.db_app import BaseTab, error_handler
 import pprint
 
 
@@ -11,19 +11,15 @@ class DeviceTab(BaseTab):
         }, width=12)
         self.create_button_in_line(("WRITE", self.write_device))
         self.create_feedback_area()
-        
-    def write_device(self):
-        try:
-            device = self.check_device_name(self.fields["device"]["name"].get())
-            self._clear_device(device)
-            ports = self._get_port_input(device.company_id)
-            self.display_feedback(pprint.pformat(ports))
-            self._write_ports(device.id, ports)
-            self._write_protocols(device)
 
-        except Exception as e:
-            self.display_feedback(str(e))
-            print(f"Error writing device configuration to db:\n{e}")
+    @error_handler
+    def write_device(self):
+        device = self.check_device_name(self.fields["device"]["name"].get())
+        self._clear_device(device)
+        ports = self._get_port_input(device.company_id)
+        self.display_feedback(pprint.pformat(ports))
+        self._write_ports(device.id, ports)
+        self._write_protocols(device)
             
     def _get_port_input(self, company_id: int):
         def check_none_in_the_middle(fields):

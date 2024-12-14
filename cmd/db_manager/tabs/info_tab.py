@@ -1,4 +1,4 @@
-from internal.db_app.base_tab import BaseTab
+from internal.db_app import BaseTab, error_handler
 
 class InfoTab(BaseTab):
     def create_widgets(self):
@@ -7,12 +7,9 @@ class InfoTab(BaseTab):
             self.create_block(entity, {"name":None}, ("SHOW", getattr(self, f'show_{entity}_info')))
         self.create_feedback_area()
         
+    @error_handler
     def show_template_piece_info(self):
-        try:
-            template_piece = self.check_template_piece_name(self.fields['template_piece']['name'].get())
-        except Exception as e:
-            self.show_error("Retrieval Error", e)
-            return
+        template_piece = self.check_template_piece_name(self.fields['template_piece']['name'].get())
         
         self.display_feedback(
             f"Template Piece Information:\n"
@@ -22,14 +19,10 @@ class InfoTab(BaseTab):
             f"role: {template_piece.role}\n"
             f"text:\n{template_piece.text}\n"
         )
-
-            
+        
+    @error_handler
     def show_device_info(self):
-        try:
-            device = self.check_device_name(self.fields["device"]["name"].get())
-        except Exception as e:
-            self.show_error("Retrieval Error", e)
-            return
+        device = self.check_device_name(self.fields["device"]["name"].get())
         
         company_name = self.app.entity_services["company"].get_by_id(device.company_id).name
         family_name = self.app.entity_services["family"].get_by_id(device.family_id).name
@@ -45,12 +38,10 @@ class InfoTab(BaseTab):
             f"Associated Firmwares:\n\t{firmware_list}\n"
         )
 
+        
+    @error_handler
     def show_family_info(self):  # sourcery skip: class-extract-method
-        try:
-            family = self.check_family_name(self.fields["family"]["name"].get())
-        except Exception as e:
-            self.show_error("Retrieval Error", e)
-            return
+        family = self.check_family_name(self.fields["family"]["name"].get())
             
         device_list = self._stringify_list(self.app.entity_services["device"].get_devices_by_family_id(family.id))
                 
@@ -60,13 +51,10 @@ class InfoTab(BaseTab):
             f"ID: {family.id}\n"
             f"Associated devices:\n\t{device_list}\n"
         )
-            
+        
+    @error_handler
     def show_company_info(self):
-        try:
-            company = self.check_company_name(self.fields["company"]["name"].get())
-        except Exception as e:
-            self.show_error("Retrieval Error", e)
-            return
+        company = self.check_company_name(self.fields["company"]["name"].get())
 
         device_list = self._stringify_list(self.app.entity_services["device"].get_devices_by_company_id(company.id))
         
@@ -77,12 +65,10 @@ class InfoTab(BaseTab):
             f"Associated devices:\n\t{device_list}\n"
             )
 
+        
+    @error_handler
     def show_firmware_info(self):
-        try:
-            firmware = self.check_firmware_name(self.fields["firmware"]["name"].get())
-        except Exception as e:
-            self.show_error("Retrieval Error", e)
-            return
+        firmware = self.check_firmware_name(self.fields["firmware"]["name"].get())
             
         device_list = self._stringify_list(self.app.entity_services["device_firmware"].get_devices_by_firmware_id(firmware.id))
         

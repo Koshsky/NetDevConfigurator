@@ -10,7 +10,7 @@ from .tabs import (
         DeviceTab
 )
 
-class DBManagerApp(DatabaseApp):        
+class DBManagerApp(DatabaseApp):
     def on_success_callback(self, engine):
         super().on_success_callback(engine)
         if self.tabs:
