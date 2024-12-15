@@ -8,7 +8,7 @@ class DeviceFirmwareService:
         self.db = db
 
     def get_all(self):
-        return self.db.query(DeviceFirmwares).order_by(DeviceFirmwares.device_id).all()
+        return self.db.query(DeviceFirmwares).all()
 
     def get_device_firmwares(self, device_id: int):
         return self.db.query(DeviceFirmwares).filter(DeviceFirmwares.device_id == device_id).all()
@@ -31,7 +31,6 @@ class DeviceFirmwareService:
             self.db.query(Devices)
                 .join(Devices.device_firmwares)  # Используем relationship из модели
                 .filter(DeviceFirmwares.firmware_id == firmware_id)
-                .order_by(Devices.name)
                 .all()
         )
 
@@ -40,7 +39,6 @@ class DeviceFirmwareService:
             self.db.query(Firmwares)
                 .join(Firmwares.device_firmwares)  # Используем relationship из модели
                 .filter(DeviceFirmwares.device_id == device_id)
-                .order_by(Firmwares.name)
                 .all()
         )
 

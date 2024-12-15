@@ -8,14 +8,13 @@ class DevicePortService:
         self.db = db
 
     def get_all(self):
-        return self.db.query(DevicePorts).order_by(DevicePorts.device_id).all()
+        return self.db.query(DevicePorts).all()
 
     def get_device_ports(self, device_id: int):
         return (
             self.db.query(DevicePorts, Ports)
                 .join(Ports, DevicePorts.port_id == Ports.id)
                 .filter(DevicePorts.device_id == device_id)
-                .order_by(DevicePorts.id)
                 .all()
         )
 

@@ -7,7 +7,7 @@ class TemplatePieceService:
         self.db = db
     
     def get_all(self):
-        return self.db.query(TemplatePieces).order_by(TemplatePieces.name).all()
+        return self.db.query(TemplatePieces).all()
 
     def get_by_id(self, id: int):
         return self.db.query(TemplatePieces).filter(TemplatePieces.id == id).first()

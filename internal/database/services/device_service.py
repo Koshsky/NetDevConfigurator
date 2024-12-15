@@ -14,13 +14,12 @@ class DeviceService:
         self.device_firmware = DeviceFirmwareService(db)
 
     def get_all(self):
-        return self.db.query(Devices).order_by(Devices.name).all()
+        return self.db.query(Devices).all()
     
     def get_devices_by_company_id(self, company_id: int):
         return (
             self.db.query(Devices)
                 .filter(Devices.company_id == company_id)
-                .order_by(Devices.name)
                 .all()
         )
     
@@ -28,7 +27,6 @@ class DeviceService:
         return (
             self.db.query(Devices)
                 .filter(Devices.family_id == family_id)
-                .order_by(Devices.name)
                 .all()
         )
 

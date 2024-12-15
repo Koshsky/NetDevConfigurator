@@ -7,7 +7,7 @@ class PortService:
         self.db = db
     
     def get_all(self):
-        return self.db.query(Ports).order_by(Ports.name).all()
+        return self.db.query(Ports).all()
 
     def get_by_id(self, id: int):
         return self.db.query(Ports).filter(Ports.id == id).first()
