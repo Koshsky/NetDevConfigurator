@@ -1,12 +1,12 @@
 ***Порт подключение GERS***
-interface gigabitethernet 0/{x}
+interface {interface_id}
   switchport general allowed vlan add 2
   switchport general allowed vlan add 3 untagged
   switchport forbidden default-vlan
   switchport general pvid 3
 !
 ***Порт подключения устройств-клиентов цифрового звука***
-interface gigabitethernet 0/{x}
+interface {interface_id}
   flowcontrol on
   switchport mode access
   switchport forbidden default-vlan
@@ -14,7 +14,7 @@ interface gigabitethernet 0/{x}
   qos trust cos-dscp
 !
 ***Порт подключения миниПК-клиентов цифрового звука***
-interface gigabitethernet 0/{x}
+interface {interface_id}
   flowcontrol on
   switchport general allowed vlan add 30
   switchport general allowed vlan add 3 untagged
@@ -23,23 +23,23 @@ interface gigabitethernet 0/{x}
   qos trust cos-dscp
 !
 ***Порт подключения клиентов сети данных***
-interface gigabitethernet 0/{x}
+interface {interface_id}
   switchport mode access
   switchport access vlan 3
   switchport forbidden default-vlan
 !
 ***Порт подключения клиентов сети управления***
-interface gigabitethernet 0/{x}
+interface {interface_id}
   switchport mode access
   switchport access vlan 4
 !
 ***Аплинк до видео коммутатора агрегации***
-interface tengigabitethernet 0/{x}
+interface {interface_id}
   switchport general allowed vlan add 2
   switchport forbidden default-vlan
 !
 ***Аплинк до коммутатора агрегации сети данных и управления***
-interface tengigabitethernet 0/{x}
+interface {interface_id}
   switchport general allowed vlan add 3-4
   switchport forbidden default-vlan
 !

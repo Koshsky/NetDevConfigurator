@@ -1,31 +1,31 @@
 ***Порт подключения клиентов сети данных***
-interface {port.DevicePort.name}
+interface {interface_id}
   switchport mode access
   switchport access vlan 3
   switchport forbidden default-vlan
 !
 ***Порт подключения клиентов сети управления***
-interface gigabitethernet 0/{i}
+interface {interface_id}
   switchport mode access
   switchport access vlan 4
 !
 ***Аплинк сети данных до маршрутизатора***
-interface tengigabitethernet 0/{i}
+interface {interface_id}
   switchport general allowed vlan add 3
   switchport forbidden default-vlan
 !
 ***Аплинк сети управления до маршрутизатора***
-interface tengigabitethernet 0/{i}
+interface {interface_id}
   switchport general allowed vlan add 4
   switchport forbidden default-vlan
 !
 ***Аплинк сети данных и управления до маршрутизатора(маршрутизатор ESR-20)***
-interface tengigabitethernet 0/{i}
+interface {interface_id}
   switchport general allowed vlan add 3,4
   switchport forbidden default-vlan
 !
 ***Даунлинк до коммутатора доступа ТШ***
-interface tengigabitethernet 0/{i}
+interface {interface_id}
   switchport general allowed vlan add 3-4
   switchport forbidden default-vlan
 !

@@ -9,6 +9,8 @@ class AddTab(BaseTab):
     def create_widgets(self):
         self.create_block("company", {"name": None}, ("SUBMIT", self.submit_company))
         self.create_block("family", {"name": None}, ("SUBMIT", self.submit_family))
+        self.create_block("firmware", {"folder": ['./firmwares']}, ("SUBMIT", self.submit_firmwares_from_folder))
+        self.create_block("protocol", {"name": None}, ("SUBMIT", self.submit_protocol))
         self.create_block(
             "device", 
             {
@@ -19,16 +21,50 @@ class AddTab(BaseTab):
             }, 
             ("SUBMIT", self.submit_device)
         )
-        self.create_block("firmware", {"folder": ['./firmwares']}, ("SUBMIT", self.submit_firmwares_from_folder))
-        self.create_block("protocol", {"name": None}, ("SUBMIT", self.submit_protocol))
+        self.create_block(
+            "template_piece",
+            {
+                "name": None,
+                "type": ['interface', 'header', 'footer'],
+                "role": ['data', 'ipmi', 'or', 'tsh', 'video'],
+                'text': None
+            },
+            ('SUBMIT', self.submit_template_piece)
+        )
         self.create_feedback_area()
     
+    @error_handler
+    def submit_template_piece(self):
+        template_name = self.fields['template_piece']['name'].get().strip()
+        template_type = self.fields['template_piece']['type'].get().strip()
+        role = self.fields['template_piece']['role'].get().strip()
+        text = self.fields['template_piece']['text'].get().strip()
+        
+        if not template_name:
+            raise ValueError("Template piece's name cannot be empty.")
+        if not template_type:
+            raise ValueError("Select template piece type")
+        if not role:
+            raise ValueError("Select template piece role")
+        if not text:
+            raise ValueError("Template piece's text cannot be empty.")
+        
+        self.app.entity_services['template_piece'].create(
+            {
+                'name': template_name,
+                'type': template_type,
+                'role': role,
+                'text': text
+            }
+        )
+
+        self.display_feedback("Successfully added to the template_pieces table.")
     @error_handler
     def submit_protocol(self):
         protocol_name = self.fields['protocol']['name'].get().strip()
         if not protocol_name:
-            self.display_feedback("Error: Protocol name cannot be empty.")
-            return
+            raise ValueError("Protocol name cannot be empty.")
+        
         self.app.entity_services["protocol"].create({"name": protocol_name})
         self.display_feedback("Successfully added to the protocols table.")
             
@@ -36,8 +72,8 @@ class AddTab(BaseTab):
     def submit_family(self):
         family_name = self.fields['family']['name'].get().strip()
         if not family_name:
-            self.display_feedback("Error: Family name cannot be empty.")
-            return
+            raise ValueError("Family name cannot be empty.")
+        
         self.app.entity_services["family"].create({"name": family_name})
         self.display_feedback("Successfully added to the families table.")
             
@@ -47,11 +83,10 @@ class AddTab(BaseTab):
         dev_type = self.fields["device"]["dev_type"].get().strip()
 
         if not device_name:
-            self.display_feedback("Error: Device name cannot be empty.")
-            return
+            raise ValueError("Device name cannot be empty.")
         if not dev_type:
-            self.display_feedback("Error: Select device type")
-            return
+            raise ValueError("Select device type")
+        
         company = self.check_company_name(self.fields["device"]["company"].get())
         family = self.check_family_name(self.fields["device"]["family"].get())
         new_device = {
@@ -69,8 +104,8 @@ class AddTab(BaseTab):
     def submit_company(self):
         company_name = self.fields['company']['name'].get().strip()
         if not company_name:
-            self.display_feedback("Error: Company name cannot be empty.")
-            return
+            raise ValueError("Company name cannot be empty.")
+        
         self.app.entity_services["company"].create({"name": company_name})
         self.display_feedback("Successfully added to the companies table.")
             
@@ -78,12 +113,9 @@ class AddTab(BaseTab):
     def submit_firmwares_from_folder(self):
         folder_name = self.fields['firmware']['folder'].get().strip()
         if not folder_name:
-            self.display_feedback("Error: Folder name cannot be empty.")
-            return
-            
+            raise ValueError("Folder name cannot be empty.")
         if not os.path.isdir(folder_name):
-            self.display_feedback(f"Error: Folder '{folder_name}' does not exist.")
-            return  
+            raise ValueError("Folder '{folder_name}' does not exist.")
 
         folder_name = folder_name if os.path.isabs(folder_name) else os.path.abspath(folder_name)
         existing_firmwares = [firmware.name for firmware in self.app.entity_services["firmware"].get_all()]
