@@ -1,17 +1,20 @@
 #Building configuration...
-#ISS config ver. 9; SW ver. 10.3.3.1 (f74b00f1) for MES2424 rev.B. Do not remove or edit this line
-!  
-hostname "<sert_name>_mes2424_data"
+#ISS config ver. 9; SW ver. 10.3.3.1 (f74b00f1) for {DEVICE_NAME} rev.B. Do not remove or edit this line
 !
-vlan 3-4
-  vlan active
+-----------------------------------------------------------------------------
+hostname "<CERT_NAME>_<DEVICE_NAME>_<DEVICE_ROLE>"
 !
 switching-mode cut-through
 !
 no spanning-tree
 !
+-----------------------------------------------------------------------------
 username mvsadmin password encrypted zbICg2SPBsvT1IfFwRpH3Q== privilege 15
 username admin_rec password encrypted Ts6Wa2/X/ebD/HnwyJC5NQ== privilege 15
+!
+-----------------------------------------------------------------------------
+vlan active
+  vlan 3-4
 !
 vlan 3
   name "DATA"
@@ -19,9 +22,11 @@ vlan 3
 vlan 4
   name "MGMT"
 !
+-----------------------------------------------------------------------------
 interface vlan 4
-  ip address 10.4.0.3 255.255.0.0
+  ip address {VLAN_INTERFACE_IP} {MASK}
 !
+-----------------------------------------------------------------------------
 interface gigabitethernet 0/1
   switchport mode access
   switchport forbidden default-vlan
@@ -161,6 +166,9 @@ interface tengigabitethernet 0/3
 interface tengigabitethernet 0/4
   switchport forbidden default-vlan     
 !
+
+
+
 ip route 0.0.0.0  0.0.0.0 10.4.0.254
 !
 ip ssh cipher aes256-cbc

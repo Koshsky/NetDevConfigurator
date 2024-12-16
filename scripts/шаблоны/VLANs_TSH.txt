@@ -33,5 +33,5 @@ vlan 30
 ***
 
 interface vlan 4
-  ip address 10.4.X.11 255.255.0.0
+  ip address 10.4.{OR}.11 255.255.0.0
 !

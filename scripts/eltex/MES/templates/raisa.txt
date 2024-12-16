@@ -1,6 +1,8 @@
 #Building configuration...
 #ISS config ver. 9; SW ver. 10.3.3.1 (f74b00f1) for MES2424 rev.B. Do not remove or edit this line
-! 
+!
+
+
 hostname "<sert_name>_mes2424_raisa"
 !
 vlan 5

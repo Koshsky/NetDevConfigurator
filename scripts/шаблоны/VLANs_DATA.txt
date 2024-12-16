@@ -1,8 +1,6 @@
 vlan 3-4
   vlan active
 !
-
-
 vlan 3
   name "DATA"
 !
