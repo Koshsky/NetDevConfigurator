@@ -3,7 +3,7 @@ from pprint import pformat
 
 class InfoTab(BaseTab):
     def create_widgets(self):
-        entities = ['company', 'family', 'device', 'firmware', 'template_piece', 'template_piece']
+        entities = ['company', 'family', 'device', 'firmware', 'template_piece']
         for entity in entities:
             self.create_block(entity, {"name":None}, ("SHOW", getattr(self, f'show_{entity}_info')))
         self.create_feedback_area()
