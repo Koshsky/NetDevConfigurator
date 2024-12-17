@@ -47,7 +47,7 @@ class BaseTab:
     def check_family_name(self, family_name: str) -> int:
         return self.__validate_entity('family', family_name)
     def check_template_piece_name(self, template_peice_name: str) -> int:
-        return self.__validate_entity('template_piece', template_peice_name)
+        return self.__validate_entity('template', template_peice_name)
     def check_device_name(self, device_name: str) -> int:
         return self.__validate_entity('device', device_name)
     def check_firmware_name(self, firmware_name: str) -> int:

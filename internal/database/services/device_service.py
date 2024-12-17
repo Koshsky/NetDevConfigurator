@@ -78,7 +78,7 @@ class DeviceService:
             },
             "ports": [
                 {
-                    "interface": device_port.name,
+                    "interface": device_port.interface,
                     "material": port.material,
                     "speed": port.speed,
                     "name": port.name

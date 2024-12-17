@@ -7,7 +7,7 @@ class TablesTab(BaseTab):
         self.create_button_in_line(("Devices", lambda : self.load_table('device')))
         self.create_button_in_line(("Firmwares", lambda : self.load_table('firmware')))
         self.create_button_in_line(("Protocols", lambda : self.load_table('protocol')))
-        self.create_button_in_line(("Template pieces", lambda : self.load_table('template_piece')))
+        self.create_button_in_line(("Templates", lambda : self.load_table('template')))
         self.create_feedback_area()
 
     @error_handler

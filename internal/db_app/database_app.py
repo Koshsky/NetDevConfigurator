@@ -13,7 +13,7 @@ from internal.database.services import (
         DevicePortService,
         FamilyService,
         PortService,
-        TemplatePieceService
+        TemplateService
 )
 
 class DatabaseApp:
@@ -72,7 +72,7 @@ class DatabaseApp:
             'device_firmware': DeviceFirmwareService(self.session),
             'device_protocol': DeviceProtocolService(self.session),
             'device_port': DevicePortService(self.session),
-            'template_piece': TemplatePieceService(self.session),
+            'template': TemplateService(self.session),
         }
         
     def get_tuples_of_entities(self):

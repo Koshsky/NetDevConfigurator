@@ -22,34 +22,34 @@ class AddTab(BaseTab):
             ("SUBMIT", self.submit_device)
         )
         self.create_block(
-            "template_piece",
+            "template",
             {
                 "name": None,
                 "type": ['interface', 'header', 'footer'],
                 "role": ['data', 'ipmi', 'or', 'tsh', 'video'],
                 'text': None
             },
-            ('SUBMIT', self.submit_template_piece)
+            ('SUBMIT', self.submit_template)
         )
         self.create_feedback_area()
     
     @error_handler
-    def submit_template_piece(self):
-        template_name = self.fields['template_piece']['name'].get().strip()
-        template_type = self.fields['template_piece']['type'].get().strip()
-        role = self.fields['template_piece']['role'].get().strip()
-        text = self.fields['template_piece']['text'].get().strip()
+    def submit_template(self):
+        template_name = self.fields['template']['name'].get().strip()
+        template_type = self.fields['template']['type'].get().strip()
+        role = self.fields['template']['role'].get().strip()
+        text = self.fields['template']['text'].get().strip()
         
         if not template_name:
-            raise ValueError("Template piece's name cannot be empty.")
+            raise ValueError("Template name cannot be empty.")
         if not template_type:
-            raise ValueError("Select template piece type")
+            raise ValueError("Select template type")
         if not role:
-            raise ValueError("Select template piece role")
+            raise ValueError("Select template role")
         if not text:
-            raise ValueError("Template piece's text cannot be empty.")
+            raise ValueError("Template text cannot be empty.")
         
-        self.app.entity_services['template_piece'].create(
+        self.app.entity_services['template'].create(
             {
                 'name': template_name,
                 'type': template_type,
@@ -58,7 +58,7 @@ class AddTab(BaseTab):
             }
         )
 
-        self.display_feedback("Successfully added to the template_pieces table.")
+        self.display_feedback("Successfully added to the templates table.")
     @error_handler
     def submit_protocol(self):
         protocol_name = self.fields['protocol']['name'].get().strip()

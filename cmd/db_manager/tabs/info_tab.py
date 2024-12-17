@@ -3,22 +3,22 @@ from pprint import pformat
 
 class InfoTab(BaseTab):
     def create_widgets(self):
-        entities = ['company', 'family', 'device', 'firmware', 'template_piece']
+        entities = ['company', 'family', 'device', 'firmware', 'template']
         for entity in entities:
             self.create_block(entity, {"name":None}, ("SHOW", getattr(self, f'show_{entity}_info')))
         self.create_feedback_area()
         
     @error_handler
-    def show_template_piece_info(self):
-        template_piece = self.check_template_piece_name(self.fields['template_piece']['name'].get())
+    def show_template_info(self):
+        template = self.check_template_name(self.fields['template']['name'].get())
         
         self.display_feedback(
             f"Template Piece Information:\n"
-            f"id: {template_piece.id}\n"
-            f"name: {template_piece.name}\n"
-            f"type: {template_piece.type}\n"
-            f"role: {template_piece.role}\n"
-            f"text:\n{template_piece.text}\n"
+            f"id: {template.id}\n"
+            f"name: {template.name}\n"
+            f"type: {template.type}\n"
+            f"role: {template.role}\n"
+            f"text:\n{template.text}\n"
         )
         
     @error_handler

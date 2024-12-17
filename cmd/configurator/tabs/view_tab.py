@@ -2,8 +2,8 @@ from internal.db_app.base_tab import BaseTab
 from typing import Dict, List
 
 from tkinter import ttk
-# TODO: сделать просмотр содержимого template_pieces из базы данных по их имени
-# TODO: сделать возможным просмотр СПИСКА template_pieces из базы данных
+# TODO: сделать просмотр содержимого templates из базы данных по их имени
+# TODO: сделать возможным просмотр СПИСКА templates из базы данных
 
 class ViewTab(BaseTab):        
     def create_widgets(self):

@@ -9,4 +9,4 @@ from .device_firmware_service import DeviceFirmwareService
 from .device_protocol_service import DeviceProtocolService
 from .device_port_service import DevicePortService
 from .family_service import FamilyService
-from .template_piece_service import TemplatePieceService
+from .template_service import TemplateService
