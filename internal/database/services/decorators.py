@@ -2,17 +2,9 @@ from functools import wraps
 
 def transactional(func):
     """A decorator that wraps database transaction methods to automatically handle commit and rollback operations.
+
     It ensures that database transactions are properly managed,
     committing successful operations and rolling back in case of exceptions.
-
-    Args:
-        func: The method to be wrapped with transaction management.
-
-    Returns:
-        A wrapped function that manages database transaction commit and rollback.
-
-    Raises:
-        Any exception that occurs during the original function's execution, after rolling back the transaction.
 
     Example:
         @transactional

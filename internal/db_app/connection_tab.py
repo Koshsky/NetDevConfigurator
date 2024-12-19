@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
 from sqlalchemy import create_engine
-from sqlalchemy.exc import SQLAlchemyError
 
 class ConnectionTab:
     def __init__(self, parent, on_success_callback, on_failure_callback, app):
@@ -37,15 +36,21 @@ class ConnectionTab:
         self.message_label = tk.Label(self.frame, text="", wraplength=400)
         self.message_label.pack(pady=5)
 
-
-    def on_button_click(self):  # sourcery skip: extract-method
+    def on_button_click(self):
         db_params = {key: entry.get() for key, entry in self.entries.items()}
 
-        connection_string = f"postgresql://{db_params['username']}:{db_params['password']}@{db_params['host']}:{db_params['port']}/{db_params['database']}"
+        connection_string = (
+            f"postgresql://"
+                f"{db_params['username']}:"
+                f"{db_params['password']}@"
+                f"{db_params['host']}:"
+                f"{db_params['port']}/"
+                f"{db_params['database']}"
+        )
 
         try:
             engine = create_engine(connection_string)
-            connect = engine.connect()  # Проверка подключения
+            connect = engine.connect()  # Checking the connection
             connect.close()
 
             self.on_success_callback(engine)

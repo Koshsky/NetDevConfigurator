@@ -2,9 +2,8 @@ import tkinter as tk
 import tkinter.messagebox as messagebox
 from tkinter import IntVar, ttk
 
-class RetrievalError(Exception):
-    """Exception raised for errors in the retrieval process."""
-    pass
+from .decorators import error_handler
+from .exceptions import RetrievalError
 
 class BaseTab:
     def __init__(self, parent, app):
@@ -17,6 +16,42 @@ class BaseTab:
 
     def create_widgets(self):
         raise NotImplementedError
+
+    def __getattr__(self, name):
+        """Dynamically generates validation methods for different entity types based on method name patterns.
+
+        This method intercepts attribute access for methods starting with 'check_' and ending with '_name',
+        creating dynamic validator functions on-the-fly.
+
+        Examples:
+            # Automatically creates methods like:
+            # my_tab.check_protocol_name(protocol)
+            # my_tab.check_device_name(device)
+        """
+        if name.startswith('check_') and name.endswith('_name'):
+            entity_type = name[6:-5]  # Extract entity type from method name
+            def dynamic_validator(value):
+                return self.__validate_entity(entity_type, value)
+            return dynamic_validator
+        raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
+
+    def __validate_entity(self, entity_type: str, entity_name: str) -> int:
+        if not (entity_name := entity_name.strip()):
+            raise ValueError(f"{entity_type.capitalize()} name cannot be empty")
+
+        service = self.app.entity_services.get(entity_type)
+        if not service:
+            raise RetrievalError(f"Invalid entity type: {entity_type}")
+
+        if entity := service.get_by_name(entity_name):
+            return entity
+        else:
+            raise RetrievalError(f'{entity_type.capitalize()} "{entity_name}" not found in databases')
+
+    def clear_frame(self):
+        for widget in self.frame.winfo_children():
+            widget.destroy()
+
     def create_block(self, entity_name, parameters, button=None, width=None):
         if entity_name not in self.fields:
             self.fields[entity_name] = {}
@@ -26,7 +61,7 @@ class BaseTab:
 
         for param_name, param_presets in parameters.items():
             ttk.Label(self.frame, text=f"{param_name}").grid(row=self.cur_row, column=self.cur_col, padx=5, pady=5)
-            
+
             if param_presets is None or len(param_presets) == 0:
                 self.__create_entry_field(entity_name, param_name)
             elif isinstance(param_presets, list):
@@ -40,27 +75,8 @@ class BaseTab:
             self.button = tk.Button(self.frame, text=button[0], command=button[1])
             self.button.grid(row=self.cur_row-1, column=3, padx=5, pady=5)
 
-    def check_protocol_name(self, protocol_name: str) -> int:
-        return self.__validate_entity('protocol', protocol_name)
-    def check_port_name(self, port_name: str) -> int:
-        return self.__validate_entity('port', port_name)
-    def check_family_name(self, family_name: str) -> int:
-        return self.__validate_entity('family', family_name)
-    def check_template_piece_name(self, template_peice_name: str) -> int:
-        return self.__validate_entity('template', template_peice_name)
-    def check_device_name(self, device_name: str) -> int:
-        return self.__validate_entity('device', device_name)
-    def check_firmware_name(self, firmware_name: str) -> int:
-        return self.__validate_entity('firmware', firmware_name)
-    def check_company_name(self, company_name: str) -> int:
-        return self.__validate_entity('company', company_name)
-    def check_template_name(self, template_name: str) -> int:
-        return self.__validate_entity('template', template_name)
-    def clear_frame(self):
-        for widget in self.frame.winfo_children():
-            widget.destroy()
     def create_button_in_line(self, button):
-        if not (isinstance(button, tuple) and len(button) == 2 
+        if not (isinstance(button, tuple) and len(button) == 2
                                      and isinstance(button[0], str) and callable(button[1])):
             raise TypeError("button parameter must be a tuple of (str, callable)")
         button = tk.Button(self.frame, text=button[0], command=button[1])
@@ -74,15 +90,16 @@ class BaseTab:
         self.feedback_text.config(state=tk.DISABLED)
 
         self.cur_row += 1
-        
+
     def show_error(self, title, error):
         messagebox.showerror(title, error)
+
     def display_feedback(self, message):
         self.feedback_text.config(state=tk.NORMAL)
         self.feedback_text.delete(1.0, tk.END)
         self.feedback_text.insert(tk.END, message)
         self.feedback_text.config(state=tk.DISABLED)
-        
+
     def __create_entry_field(self, entity_name, param_name):
         field = ttk.Entry(self.frame)
         field.grid(row=self.cur_row, column=self.cur_col+1, padx=5, pady=5)
@@ -113,7 +130,7 @@ class BaseTab:
                     self.cur_row = first_row
                     self.cur_col += 1
                     space = width
-        if width is not None and len(param_presets) > width:
+        if width is not None and len(param_presets) == width:
                 self.cur_row = first_row + width
                 self.cur_col = first_col
 
@@ -136,20 +153,6 @@ class BaseTab:
                     self.cur_row = first_row
                     self.cur_col += 2
                     space = width
-        if width is not None and len(param_presets) > width:
+        if width is not None and len(param_presets) == width:
                 self.cur_row = first_row + width
                 self.cur_col = first_col
-
-    def __validate_entity(self, entity_type: str, entity_name: str) -> int:
-        if not (entity_name := entity_name.strip()):
-            raise ValueError(f"{entity_type.capitalize()} name cannot be empty")
-
-        service = self.app.entity_services.get(entity_type)
-        if not service:
-            raise RetrievalError(f"Invalid entity type: {entity_type}")
-
-        if entity := service.get_by_name(entity_name):
-            return entity
-        else:
-            raise RetrievalError(f'{entity_type.capitalize()} "{entity_name}" not found in databases')
-    

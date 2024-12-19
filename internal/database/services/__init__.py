@@ -26,7 +26,7 @@ def setup_database_services(session):
         'template': TemplateService(session),
         'device_template': DeviceTemplateService(session)
     }
-    
+
 def prepare_entity_collections(entity_services):
     return dict(
         companies=tuple(
