@@ -7,7 +7,7 @@ from ..base_service import BaseService
 class DeviceProtocolService(BaseService):
     def __init__(self, db: Session):
         super().__init__(db, DeviceProtocols)
-    
+
     def get_protocols_by_device_id(self, device_id: int):
         return (
             self.db.query(Protocols)

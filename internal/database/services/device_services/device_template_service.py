@@ -28,8 +28,8 @@ class DeviceTemplateService(BaseService):
         max_ordered_number = self._get_max_ordered_number(device_id, preset)
 
         device_template = DeviceTemplates(
-            device_id=device_id, 
-            template_id=template_id, 
+            device_id=device_id,
+            template_id=template_id,
             ordered_number=max_ordered_number + 1,
             preset=preset
         )
@@ -47,7 +47,7 @@ class DeviceTemplateService(BaseService):
             .filter(DeviceTemplates.device_id == device_id,
                     DeviceTemplates.preset == preset,
                     DeviceTemplates.ordered_number >= ordered_number) \
-            .update({DeviceTemplates.ordered_number: DeviceTemplates.ordered_number + 1}, 
+            .update({DeviceTemplates.ordered_number: DeviceTemplates.ordered_number + 1},
                     synchronize_session=False)
 
         new_device_template = DeviceTemplates(

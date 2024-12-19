@@ -7,10 +7,10 @@ from ..base_service import BaseService
 class DeviceFirmwareService(BaseService):
     def __init__(self, db: Session):
         super().__init__(db, DeviceFirmwares)
-        
+
     def get_device_firmwares(self, device_id: int):
         return self.db.query(DeviceFirmwares).filter(DeviceFirmwares.device_id == device_id).all()
-    
+
     def get_by_device_firmware_id(self, device_id: int, firmware_id: int):
         return (
             self.db.query(DeviceFirmwares)
@@ -20,7 +20,7 @@ class DeviceFirmwareService(BaseService):
                 )
                 .first()
         )
-    
+
     def get_devices_by_firmware_id(self, firmware_id: int):
         return (
             self.db.query(Devices)
@@ -36,7 +36,7 @@ class DeviceFirmwareService(BaseService):
                 .filter(DeviceFirmwares.device_id == device_id)
                 .all()
         )
-        
+
     def delete_by_device_firmware_id(self, device_id: int, firmware_id: int):
         db_device_firmware = self.get_by_device_firmware_id(device_id, firmware_id)
         self.delete(db_device_firmware)

@@ -13,21 +13,21 @@ class DeviceService(BaseService):
         self.device_port_service = DevicePortService(db)
         self.device_protocol_service = DeviceProtocolService(db)
         self.device_firmware_service = DeviceFirmwareService(db)
-    
+
     def get_devices_by_company_id(self, company_id: int):
         return (
             self.db.query(Devices)
                 .filter(Devices.company_id == company_id)
                 .all()
         )
-    
+
     def get_devices_by_family_id(self, family_id: int):
         return (
             self.db.query(Devices)
                 .filter(Devices.family_id == family_id)
                 .all()
         )
-    
+
     def get_info(self, device_id):
         device = self.get_by_id(device_id)
         device_ports = self.device_port_service.get_device_ports(device.id)

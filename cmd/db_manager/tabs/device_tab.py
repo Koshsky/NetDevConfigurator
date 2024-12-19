@@ -18,11 +18,11 @@ class DeviceTab(BaseTab):
         ports = self._get_port_input(device.company_id)
         self._clear_protocols(device)
         self._write_protocols(device)
-        
+
         if ports:
             self._clear_ports(device)
             self._write_ports(device.id, ports)
-        
+
         self.display_feedback("SUCCESS")
 
     def _get_port_input(self, company_id):
@@ -32,27 +32,27 @@ class DeviceTab(BaseTab):
         if strategy_method is None:
             raise ValueError(f"There is not strategy_method for {company_name}")
         return strategy_method(self.fields['device']['ports'])
-        
+
     def _write_ports(self, device_id, ports):
         for interface, port_id in ports.items():
             self.app.entity_services['device_port'].create({"device_id": device_id, "port_id": port_id, 'interface': interface})
-            
+
     def _write_protocols(self, device):
         for protocol_name, checkbox in self.fields["device"]["protocols"].items():
             if checkbox.get() == 1:
                 protocol = self.check_protocol_name(protocol_name)
                 self.app.entity_services['device_protocol'].create({"device_id": device.id, "protocol_id": protocol.id})
-            
+
     def _clear_ports(self, device):
         device_ports = self.app.entity_services['device_port'].get_device_ports(device.id)  # TODO: подумать о необходимости такого подхода. нужен ли он?
         for device_port in device_ports:
             self.app.entity_services['device_port'].delete_by_id(device_port.DevicePorts.id)
-            
+
     def _clear_protocols(self, device):
         device_protocols = self.app.entity_services['device_protocol'].get_device_protocols(device.id)
         for device_protocol in device_protocols:
             self.app.entity_services['device_protocol'].delete_by_id(device_protocol.id)
-    
+
     def _validate_port_input(self, ports_input):
         def check_none_in_the_middle(fields):
             res = False
@@ -101,4 +101,3 @@ class DeviceTab(BaseTab):
     def _default_port_strategy(self, ports_input):
         # Default strategy if no company-specific strategy exists
         return {}
-        

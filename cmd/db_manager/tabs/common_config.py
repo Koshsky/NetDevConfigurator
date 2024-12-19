@@ -8,9 +8,9 @@ class CommonConfigTab(BaseTab):
         self.role = "common"
         self.device = None
         self.preset = ''
-        
+
         super().__init__(app, parent)
-        
+
     @property
     def message_prefix(self):
         return (
@@ -18,7 +18,7 @@ class CommonConfigTab(BaseTab):
             f"role: {self.role}\n"
             f"preset: {self.preset}\n"
         )
-        
+
     def create_widgets(self):
         self.create_block("setup", {
             "device_name": list(self.app.entity_collections['devices']),
@@ -29,7 +29,7 @@ class CommonConfigTab(BaseTab):
         self.create_block("config", {
                 "template_name": self.template_names,
                 "ordered_number": None,
-                
+
         }, width=12)
         self.create_button_in_line(("PUSH BACK", self.push_back))
         self.create_button_in_line(("INSERT", self.insert))
@@ -40,7 +40,7 @@ class CommonConfigTab(BaseTab):
         template = self.check_template_name(self.fields['config']['template_name'].get())
         self.app.entity_services['device_template'].push_back(self.device.id, template.id, self.preset)
         self.display_feedback(f'{self.message_prefix}\nTemplate {template.name} pushed back to device {self.device.name}')
-        
+
     @error_handler
     def insert(self):
         template = self.check_template_name(self.fields['config']['template_name'].get())
@@ -49,7 +49,7 @@ class CommonConfigTab(BaseTab):
             raise ValueError("ordered_number must be digit greater than 0")
         self.app.entity_services['device_template'].insert(self.device.id, template.id, int(ordered_number), self.preset)
         self.display_feedback(f'{self.message_prefix}\nTemplate {template.name} inserted to device {self.device.name} at position {ordered_number}')
-        
+
     @error_handler
     def refresh(self):
         device = self.check_device_name(self.fields['setup']['device_name'].get())
@@ -59,13 +59,13 @@ class CommonConfigTab(BaseTab):
             raise ValueError("Device_role cannot be empty")
         elif role not in self.app.entity_collections['roles']:
             raise ValueError(f"Unknown role: {role}")
-        
+
         template_names = [template.name for template in self.app.entity_services['template'].get_all_by_role_family_id(family_id, role)]
         if not template_names:
             raise ValueError(f"There is no templates for role: {role}")
         self.template_names = template_names
         self.fields['config']['template_name']['values'] = self.template_names
-        
+
         self.device = device
         self.role = role
         self.preset = self.fields['setup']['preset'].get().strip()

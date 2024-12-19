@@ -5,7 +5,7 @@ from .models import (
     Families,
     Ports,
     Templates,
-    
+
     Devices,
     DeviceFirmwares,
     DeviceProtocols,

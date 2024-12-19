@@ -10,17 +10,17 @@ class BaseService:
 
     def get_by_id(self, entity_id: int):
         return self.db.query(self.model).filter(self.model.id == entity_id).first()
-        
+
     def get_by_name(self, name: str):
         return self.db.query(self.model).filter(self.model.name == name).first()
 
     def get_info(self, entity):
         raise NotImplementedError()
-    
+
     def get_info_by_name(self, name: str):
         entity = self.get_by_name(name)
         return self.get_info(entity)
-    
+
     def get_info_by_id(self, entity_id: int):
         entity = self.get_by_id(entity_id)
         return self.get_info(entity)
@@ -31,7 +31,7 @@ class BaseService:
         self.db.commit()
         self.db.refresh(entity)
         return entity
-    
+
     def delete(self, entity):
         if entity:
             self.db.delete(entity)

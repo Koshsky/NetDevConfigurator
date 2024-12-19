@@ -10,7 +10,7 @@ def run_postgres_command(command, env, error_context):
     try:
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
         _, error = process.communicate()
-        
+
         if process.returncode != 0:
             print(f'Error {error_context}: {error.decode()}')
             return False
@@ -18,7 +18,7 @@ def run_postgres_command(command, env, error_context):
     except Exception as e:
         print(f'Error {error_context}: {e}')
         return False
-    
+
 
 def backup_postgres_db(db_params):
     host, port, database_name, user, password = db_params

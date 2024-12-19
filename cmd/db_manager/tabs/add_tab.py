@@ -12,13 +12,13 @@ class AddTab(BaseTab):
         self.create_block("firmware", {"folder": ['./firmwares']}, ("SUBMIT", self.submit_firmwares_from_folder))
         self.create_block("protocol", {"name": None}, ("SUBMIT", self.submit_protocol))
         self.create_block(
-            "device", 
+            "device",
             {
-                "name": None,        
+                "name": None,
                 "company": list(self.app.entity_collections['companies']),
                 "family": list(self.app.entity_collections['families']),
                 "dev_type": ["switch", "router"],
-            }, 
+            },
             ("SUBMIT", self.submit_device)
         )
         self.create_block(
@@ -33,14 +33,14 @@ class AddTab(BaseTab):
             ('SUBMIT', self.submit_template)
         )
         self.create_feedback_area()
-    
+
     @error_handler
     def submit_template(self):
         template_name = self.fields['template']['name'].get().strip()
         template_type = self.fields['template']['type'].get().strip()
         role = self.fields['template']['role'].get().strip()
         text = self.fields['template']['text'].get().strip()
-        
+
         if not template_name:
             raise ValueError("Template name cannot be empty.")
         if not template_type:
@@ -49,9 +49,9 @@ class AddTab(BaseTab):
             raise ValueError("Select template role")
         if not text:
             raise ValueError("Template text cannot be empty.")
-        
+
         family = self.check_family_name(self.fields['template']['family'].get())
-        
+
         self.app.entity_services['template'].create(
             {
                 'name': template_name,
@@ -68,19 +68,19 @@ class AddTab(BaseTab):
         protocol_name = self.fields['protocol']['name'].get().strip()
         if not protocol_name:
             raise ValueError("Protocol name cannot be empty.")
-        
+
         self.app.entity_services["protocol"].create({"name": protocol_name})
         self.display_feedback("Successfully added to the protocols table.")
-            
+
     @error_handler
     def submit_family(self):
         family_name = self.fields['family']['name'].get().strip()
         if not family_name:
             raise ValueError("Family name cannot be empty.")
-        
+
         self.app.entity_services["family"].create({"name": family_name})
         self.display_feedback("Successfully added to the families table.")
-            
+
     @error_handler
     def submit_device(self):
         device_name = self.fields["device"]["name"].get().strip()
@@ -90,7 +90,7 @@ class AddTab(BaseTab):
             raise ValueError("Device name cannot be empty.")
         if not dev_type:
             raise ValueError("Select device type")
-        
+
         company = self.check_company_name(self.fields["device"]["company"].get())
         family = self.check_family_name(self.fields["device"]["family"].get())
         new_device = {
@@ -99,20 +99,20 @@ class AddTab(BaseTab):
             "family_id": family.id,
             "dev_type": dev_type,
         }
-        
+
         device = self.app.entity_services["device"].create(new_device)
 
         self.display_feedback("Successfully added to the devices table.")
-            
+
     @error_handler
     def submit_company(self):
         company_name = self.fields['company']['name'].get().strip()
         if not company_name:
             raise ValueError("Company name cannot be empty.")
-        
+
         self.app.entity_services["company"].create({"name": company_name})
         self.display_feedback("Successfully added to the companies table.")
-            
+
     @error_handler
     def submit_firmwares_from_folder(self):
         folder_name = self.fields['firmware']['folder'].get().strip()
@@ -128,7 +128,7 @@ class AddTab(BaseTab):
             if firmware_name in existing_firmwares:
                 print(f"Firmware '{firmware_name}' already exists in the table. Skipping.")
                 continue
-            
+
             new_firmware = {
                     "name": firmware_name,
                     "full_path": f'{folder_name}/{firmware_name}',

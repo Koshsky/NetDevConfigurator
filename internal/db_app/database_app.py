@@ -9,10 +9,10 @@ class DatabaseApp:
     def __init__(self, root, title):
         self.init_root(root)
         self.tabs = []
-        
+
         self.session = None  # TODO: почему я сделал две переменные для сессии... действительно нужно ДВЕ или нет?
         self.create_connection_tab()
-        
+
         screen_width = self.root.winfo_screenwidth()
         screen_height = self.root.winfo_screenheight()
         self.root.geometry(f"{screen_width}x{screen_height-40}")
@@ -23,11 +23,11 @@ class DatabaseApp:
         self.root = root
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill='both', expand=True)
-        
+
     def create_connection_tab(self):
         self.connection_tab = ConnectionTab(self.notebook, self.on_success_callback, self.on_failure_callback, self)
         self.notebook.add(self.connection_tab.frame, text="CONNECTION")
-        
+
     def create_tab(self, ClassTab: type, tab_name: str):
         tab = ClassTab(self.notebook, self)
         self.notebook.add(tab.frame, text=tab_name)

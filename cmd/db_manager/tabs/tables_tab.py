@@ -11,13 +11,13 @@ class TablesTab(BaseTab):
             rows = self.app.entity_services[entity].get_all()
             self.display_feedback(self.format_table(rows))
         return wrapper
-        
+
     def format_table(self, rows):
         if not rows:
             return "No data found."
 
         rows = sorted(rows, key=lambda x: x.name)
-        
+
         column_names = [column.name for column in rows[0].__table__.columns]
         table = "\t".join(column_names[:2])
         for row in rows:
