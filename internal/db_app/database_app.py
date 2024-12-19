@@ -3,18 +3,7 @@ from tkinter import ttk
 from sqlalchemy.orm import sessionmaker
 
 from .connection_tab import ConnectionTab
-from internal.database.services import (
-        CompanyService, 
-        DeviceService, 
-        FirmwareService,
-        ProtocolService,
-        DeviceFirmwareService, 
-        DeviceProtocolService,
-        DevicePortService,
-        FamilyService,
-        PortService,
-        TemplateService
-)
+from internal.database.services import *
 
 class DatabaseApp:
     def __init__(self, root, title):
@@ -22,7 +11,6 @@ class DatabaseApp:
         self.tabs = []
         
         self.session = None  # TODO: почему я сделал две переменные для сессии... действительно нужно ДВЕ или нет?
-        self.Session = None
         self.create_connection_tab()
         
         screen_width = self.root.winfo_screenwidth()
@@ -55,32 +43,10 @@ class DatabaseApp:
             self.notebook.hide(tab.frame)
 
     def on_success_callback(self, engine):
-        self.Session = sessionmaker(bind=engine)
-        self.session = self.Session()
-        self.init_db_services()
-        self.get_tuples_of_entities()
-        print("session: ", self.session)
-
-    def init_db_services(self):
-        self.entity_services = {
-            'company': CompanyService(self.session),
-            'family': FamilyService(self.session),
-            'device': DeviceService(self.session),
-            'firmware': FirmwareService(self.session),
-            'protocol': ProtocolService(self.session),
-            'port': PortService(self.session),
-            'device_firmware': DeviceFirmwareService(self.session),
-            'device_protocol': DeviceProtocolService(self.session),
-            'device_port': DevicePortService(self.session),
-            'template': TemplateService(self.session),
-        }
-        
-    def get_tuples_of_entities(self):
-        self.companies = tuple(company.name for company in self.entity_services["company"].get_all())
-        self.families = tuple(family.name for family in self.entity_services["family"].get_all())
-        self.devices = tuple(device.name for device in self.entity_services["device"].get_all())
-        self.protocols = tuple(protocol.name for protocol in self.entity_services["protocol"].get_all())
-        self.ports = (None, ) + tuple(port.name for port in self.entity_services["port"].get_all())
+        self.session = sessionmaker(bind=engine)()
+        self.entity_services = setup_database_services(self.session)
+        self.entity_collections = prepare_entity_collections(self.entity_services)
+        print("Successful connection to the database")
 
     def on_failure_callback(self, error):
         self.hide_all_tabs()

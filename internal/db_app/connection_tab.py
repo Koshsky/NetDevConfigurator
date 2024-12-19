@@ -37,9 +37,9 @@ class ConnectionTab:
         self.message_label = tk.Label(self.frame, text="", wraplength=400)
         self.message_label.pack(pady=5)
 
+
     def on_button_click(self):  # sourcery skip: extract-method
         db_params = {key: entry.get() for key, entry in self.entries.items()}
-        print("Entered data:", db_params)
 
         connection_string = f"postgresql://{db_params['username']}:{db_params['password']}@{db_params['host']}:{db_params['port']}/{db_params['database']}"
 
@@ -48,10 +48,8 @@ class ConnectionTab:
             connect = engine.connect()  # Проверка подключения
             connect.close()
 
-            print("Successful connection to the database")
             self.on_success_callback(engine)
             self.message_label.config(text="Connection successful.", fg="green")
         except Exception as error:
-            print("Error connecting to database:", error)
             self.on_failure_callback(error)
             self.message_label.config(text=f'Error: {str(error)}', fg="red")

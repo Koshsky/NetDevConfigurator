@@ -15,8 +15,8 @@ class AddTab(BaseTab):
             "device", 
             {
                 "name": None,        
-                "company": list(self.app.companies),
-                "family": list(self.app.families),
+                "company": list(self.app.entity_collections['companies']),
+                "family": list(self.app.entity_collections['families']),
                 "dev_type": ["switch", "router"],
             }, 
             ("SUBMIT", self.submit_device)
@@ -25,8 +25,9 @@ class AddTab(BaseTab):
             "template",
             {
                 "name": None,
-                "type": ['interface', 'header', 'footer'],
-                "role": ['data', 'ipmi', 'or', 'tsh', 'video'],
+                "family": list(self.app.entity_collections['families']),
+                "type": list(self.app.entity_collections['template_types']),
+                "role": list(self.app.entity_collections['roles']),
                 'text': None
             },
             ('SUBMIT', self.submit_template)
@@ -49,9 +50,12 @@ class AddTab(BaseTab):
         if not text:
             raise ValueError("Template text cannot be empty.")
         
+        family = self.check_family_name(self.fields['template']['family'].get())
+        
         self.app.entity_services['template'].create(
             {
                 'name': template_name,
+                'family_id': family.id,
                 'type': template_type,
                 'role': role,
                 'text': text

@@ -6,3 +6,4 @@ from .update_tab import UpdateTab
 
 from .info_tab import InfoTab
 from .device_tab import DeviceTab
+from .common_config import CommonConfigTab

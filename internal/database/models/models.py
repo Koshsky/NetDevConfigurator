@@ -102,9 +102,11 @@ class Devices(Base):
 class Templates(Base):
     __tablename__ = 'templates'
     __table_args__ = (
+        CheckConstraint("(role)::text = ANY (ARRAY['common'::text, 'data'::text, 'ipmi'::text, 'or'::text, 'tsh'::text, 'video'::text, 'raisa_or'::text, 'raisa_agr'::text])", name='check_role_value'),
+        CheckConstraint("(type)::text = ANY (ARRAY['header'::text, 'hostname'::text, 'VLAN'::text, 'ssh'::text, 'type-commutation'::text, 'STP'::text, 'credentials'::text, 'addr-set'::text, 'interface'::text, 'GW'::text, 'telnet'::text, 'SNMP'::text, 'ZTP'::text, 'jumbo'::text, 'priority'::text])", name='check_type_value'),
         ForeignKeyConstraint(['family_id'], ['families.id'], name='template_pieces_family_id_fkey'),
         PrimaryKeyConstraint('id', name='template_pieces_pkey'),
-        UniqueConstraint('family_id', 'name', 'role', name='unique_family_name_role')
+        UniqueConstraint('name', 'type', 'role', 'text', 'family_id', name='unique_template_row')
     )
 
     id = Column(Integer, Sequence('template_pieces_id_seq'), primary_key=True)
@@ -173,13 +175,15 @@ class DeviceTemplates(Base):
     __table_args__ = (
         ForeignKeyConstraint(['device_id'], ['devices.id'], name='device_templates_device_id_fkey'),
         ForeignKeyConstraint(['template_id'], ['templates.id'], name='device_templates_template_id_fkey'),
-        PrimaryKeyConstraint('id', name='device_templates_pkey')
+        PrimaryKeyConstraint('id', name='device_templates_pkey'),
+        UniqueConstraint('ordered_number', 'preset', name='unique_ordered_num_preset')
     )
 
     id = Column(Integer, primary_key=True)
     device_id = Column(Integer, nullable=False)
     template_id = Column(Integer, nullable=False)
     ordered_number = Column(Integer, nullable=False)
+    preset = Column(String(255), nullable=False)
 
     device = relationship('Devices', back_populates='device_templates')
     template = relationship('Templates', back_populates='device_templates')

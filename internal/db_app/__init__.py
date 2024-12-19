@@ -5,7 +5,10 @@ from .base_tab import BaseTab, RetrievalError
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import SQLAlchemyError  # base SQL exception
 
+from functools import wraps
+
 def error_handler(func):
+    @wraps(func)
     def wrapper(self, *args, **kwargs):
         try:
             return func(self, *args, **kwargs)

@@ -54,6 +54,8 @@ class BaseTab:
         return self.__validate_entity('firmware', firmware_name)
     def check_company_name(self, company_name: str) -> int:
         return self.__validate_entity('company', company_name)
+    def check_template_name(self, template_name: str) -> int:
+        return self.__validate_entity('template', template_name)
     def clear_frame(self):
         for widget in self.frame.winfo_children():
             widget.destroy()

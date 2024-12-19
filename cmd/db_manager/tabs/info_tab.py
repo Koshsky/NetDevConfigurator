@@ -3,41 +3,34 @@ from pprint import pformat
 
 class InfoTab(BaseTab):
     def create_widgets(self):
-        entities = ['company', 'family', 'device', 'firmware', 'template']
+        entities = ['company', 'family', 'device', 'firmware']
         for entity in entities:
             self.create_block(entity, {"name":None}, ("SHOW", getattr(self, f'show_{entity}_info')))
+        self.create_block('template',
+        {
+            'name': None,
+            'type': list(self.app.entity_collections['template_types']),
+            'role': list(self.app.entity_collections['roles']),
+        }, 
+        ("SHOW", self.show_template_info))
         self.create_feedback_area()
         
     @error_handler
     def show_template_info(self):
-        template = self.check_template_name(self.fields['template']['name'].get())
+        name = self.fields['template']['name'].get()
+        type_ = self.fields['template']['type'].get()
+        role = self.fields['template']['role'].get()
+        template = self.app.entity_services['template'].get_by_name_type_role(name, type_, role)
         
         self.display_feedback(
-            f"Template Piece Information:\n"
-            f"id: {template.id}\n"
-            f"name: {template.name}\n"
-            f"type: {template.type}\n"
-            f"role: {template.role}\n"
-            f"text:\n{template.text}\n"
+            pformat(self.app.entity_services['template'].get_info(template.id))
         )
         
     @error_handler
     def show_device_info(self):
         device = self.check_device_name(self.fields["device"]["name"].get())
-        
-        company_name = self.app.entity_services["company"].get_by_id(device.company_id).name
-        family_name = self.app.entity_services["family"].get_by_id(device.family_id).name
-        protocol_list = self._stringify_list(self.app.entity_services["device_protocol"].get_protocols_by_device_id(device.id))
-        firmware_list = self._stringify_list(self.app.entity_services["device_firmware"].get_firmwares_by_device_id(device.id))
-                
         self.display_feedback(
-            # f"{device.name}(id={device.id}) Information:\n"
-            # f"Company: {company_name}\n"
-            # f"Family: {family_name}\n"
-            # f"Device Type: {device.dev_type}\n"
-            # f"Associated Protocols:\n\t{protocol_list}\n"
-            # f"Associated Firmwares:\n\t{firmware_list}\n"
-            pformat(self.app.entity_services['device'].get_info(device))
+            pformat(self.app.entity_services['device'].get_info(device.id))
         )
 
         

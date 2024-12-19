@@ -6,8 +6,8 @@ class DeviceTab(BaseTab):
     def create_widgets(self):
         self.create_block("device", {
                 "name":None,
-                "protocols": self.app.protocols,
-                "ports": {f"{i}": self.app.ports for i in range(60)}
+                "protocols": self.app.entity_collections['protocols'],
+                "ports": {f"{i}": self.app.entity_collections['ports'] for i in range(60)}
         }, width=12)
         self.create_button_in_line(("WRITE", self.write_device))
         self.create_feedback_area()
@@ -23,7 +23,7 @@ class DeviceTab(BaseTab):
             self._clear_ports(device)
             self._write_ports(device.id, ports)
         
-        self.display_feedback(self._generate_device_config_feedback(device, ports))
+        self.display_feedback("SUCCESS")
 
     def _get_port_input(self, company_id):
         company_name = self.app.entity_services['company'].get_by_id(company_id).name
@@ -34,8 +34,8 @@ class DeviceTab(BaseTab):
         return strategy_method(self.fields['device']['ports'])
         
     def _write_ports(self, device_id, ports):
-        for name, port_id in ports.items():
-            self.app.entity_services['device_port'].create({"device_id": device_id, "port_id": port_id, 'name': name})
+        for interface, port_id in ports.items():
+            self.app.entity_services['device_port'].create({"device_id": device_id, "port_id": port_id, 'interface': interface})
             
     def _write_protocols(self, device):
         for protocol_name, checkbox in self.fields["device"]["protocols"].items():

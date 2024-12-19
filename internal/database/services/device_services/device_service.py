@@ -9,9 +9,9 @@ from .device_protocol_service import DeviceProtocolService
 class DeviceService:
     def __init__(self, db: Session):
         self.db = db
-        self.device_port = DevicePortService(db)
-        self.device_protocol = DeviceProtocolService(db)
-        self.device_firmware = DeviceFirmwareService(db)
+        self.device_port_service = DevicePortService(db)
+        self.device_protocol_service = DeviceProtocolService(db)
+        self.device_firmware_service = DeviceFirmwareService(db)
 
     def get_all(self):
         return self.db.query(Devices).all()
@@ -59,10 +59,11 @@ class DeviceService:
         self.delete(db_device)
         
     
-    def get_info(self, device):
-        device_ports = self.device_port.get_device_ports(device.id)
-        device_protocols = self.device_protocol.get_device_protocols(device.id)
-        device_firmwares = self.device_firmware.get_device_firmwares(device.id)
+    def get_info(self, device_id):
+        device = self.get_by_id(device_id)
+        device_ports = self.device_port_service.get_device_ports(device.id)
+        device_protocols = self.device_protocol_service.get_device_protocols(device.id)
+        device_firmwares = self.device_firmware_service.get_device_firmwares(device.id)
 
         return {
             "id": device.id,

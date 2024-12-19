@@ -1,0 +1,86 @@
+from functools import wraps
+from sqlalchemy.orm import Session
+from sqlalchemy import func  # Add this import at the top of the file
+
+from internal.database.models import DeviceTemplates, Templates
+
+
+def transactional(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        try:
+            result = func(self, *args, **kwargs)
+            self.db.commit()
+            return result
+        except Exception as e:
+            self.db.rollback()
+            raise
+    return wrapper
+
+class DeviceTemplateService:
+    def __init__(self, db: Session):
+        self.db = db
+
+    def get_all(self):
+        return self.db.query(DeviceTemplates).all()
+
+    def get_device_templates(self, device_id: int):
+        return (
+            self.db.query(DeviceTemplates, Templates)
+                .join(Templates, DeviceTemplates.port_id == Templates.id)
+                .filter(DeviceTemplates.device_id == device_id)
+                .all()
+        )
+
+    def get_by_id(self, device_template_id: int):
+        return self.db.query(DeviceTemplates).filter(DeviceTemplates.id == device_template_id).first()
+
+    def _get_max_ordered_number(self, device_id: int, preset: str) -> int:
+        return self.db.query(func.max(DeviceTemplates.ordered_number)) \
+            .filter(DeviceTemplates.device_id == device_id, DeviceTemplates.preset == preset) \
+            .scalar() or 0
+
+    @transactional
+    def push_back(self, device_id: int, template_id: int, preset: str):
+        max_ordered_number = self._get_max_ordered_number(device_id, preset)
+
+        device_template = DeviceTemplates(
+            device_id=device_id, 
+            template_id=template_id, 
+            ordered_number=max_ordered_number + 1,
+            preset=preset
+        )
+
+        self.db.add(device_template)
+        return device_template
+
+    @transactional
+    def insert(self, device_id: int, template_id: int, ordered_number: int, preset: str):
+        max_ordered_number = self._get_max_ordered_number(device_id, preset)
+        if ordered_number > max_ordered_number + 1:
+            raise ValueError(f"The ordered_number={ordered_number} value exceeds the allowed limit for device_id={device_id}.")
+        # Shift existing templates
+        self.db.query(DeviceTemplates) \
+            .filter(DeviceTemplates.device_id == device_id,
+                    DeviceTemplates.preset == preset,
+                    DeviceTemplates.ordered_number >= ordered_number) \
+            .update({DeviceTemplates.ordered_number: DeviceTemplates.ordered_number + 1}, 
+                    synchronize_session=False)
+
+        new_device_template = DeviceTemplates(
+            device_id=device_id,
+            template_id=template_id,
+            ordered_number=ordered_number,
+            preset=preset
+        )
+
+        self.db.add(new_device_template)
+        return new_device_template
+
+    def delete(self, device_template: DeviceTemplates):
+        if device_template:
+            self.db.delete(device_template)
+
+    def delete_by_id(self, device_template_id: int):
+        device_template = self.get_by_id(device_template_id)
+        self.delete(device_template)
