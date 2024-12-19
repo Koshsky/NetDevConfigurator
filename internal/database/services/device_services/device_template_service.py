@@ -3,26 +3,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func  # Add this import at the top of the file
 
 from internal.database.models import DeviceTemplates, Templates
+from ..decorators import transactional
+from ..base_service import BaseService
 
-
-def transactional(func):
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        try:
-            result = func(self, *args, **kwargs)
-            self.db.commit()
-            return result
-        except Exception as e:
-            self.db.rollback()
-            raise
-    return wrapper
-
-class DeviceTemplateService:
+class DeviceTemplateService(BaseService):
     def __init__(self, db: Session):
-        self.db = db
-
-    def get_all(self):
-        return self.db.query(DeviceTemplates).all()
+        super().__init__(db, DeviceTemplates)
 
     def get_device_templates(self, device_id: int):
         return (
@@ -31,9 +17,6 @@ class DeviceTemplateService:
                 .filter(DeviceTemplates.device_id == device_id)
                 .all()
         )
-
-    def get_by_id(self, device_template_id: int):
-        return self.db.query(DeviceTemplates).filter(DeviceTemplates.id == device_template_id).first()
 
     def _get_max_ordered_number(self, device_id: int, preset: str) -> int:
         return self.db.query(func.max(DeviceTemplates.ordered_number)) \
@@ -76,11 +59,3 @@ class DeviceTemplateService:
 
         self.db.add(new_device_template)
         return new_device_template
-
-    def delete(self, device_template: DeviceTemplates):
-        if device_template:
-            self.db.delete(device_template)
-
-    def delete_by_id(self, device_template_id: int):
-        device_template = self.get_by_id(device_template_id)
-        self.delete(device_template)

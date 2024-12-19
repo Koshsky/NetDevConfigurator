@@ -4,17 +4,15 @@ from internal.database.models import Devices
 from .device_firmware_service import DeviceFirmwareService
 from .device_port_service import DevicePortService
 from .device_protocol_service import DeviceProtocolService
+from ..base_service import BaseService
 
 
-class DeviceService:
+class DeviceService(BaseService):
     def __init__(self, db: Session):
-        self.db = db
+        super().__init__(db, Devices)
         self.device_port_service = DevicePortService(db)
         self.device_protocol_service = DeviceProtocolService(db)
         self.device_firmware_service = DeviceFirmwareService(db)
-
-    def get_all(self):
-        return self.db.query(Devices).all()
     
     def get_devices_by_company_id(self, company_id: int):
         return (
@@ -29,35 +27,6 @@ class DeviceService:
                 .filter(Devices.family_id == family_id)
                 .all()
         )
-
-
-    def get_by_id(self, device_id: int):
-        return self.db.query(Devices).filter(Devices.id == device_id).first()
-
-    def get_by_name(self, name: str):
-        return self.db.query(Devices).filter(Devices.name == name).first()
-
-
-    def create(self, device: dict):
-        device = Devices(**device)
-        self.db.add(device)
-        self.db.commit()
-        self.db.refresh(device)
-        return device
-
-    def delete(self, device):
-        if device:
-            self.db.delete(device)
-            self.db.commit()
-
-    def delete_by_id(self, device_id: int):
-        db_device = self.get_by_id(device_id)
-        self.delete(db_device)
-
-    def delete_by_name(self, name: str):
-        db_device = self.get_by_name(name)
-        self.delete(db_device)
-        
     
     def get_info(self, device_id):
         device = self.get_by_id(device_id)
@@ -77,13 +46,11 @@ class DeviceService:
                 "name": device.company.name,
                 "id": device.company.id
             },
-            "ports": [
+            "protocols": [
                 {
-                    "interface": device_port.interface,
-                    "material": port.material,
-                    "speed": port.speed,
-                    "name": port.name
-                } for device_port, port in device_ports
+                    "name": device_protocol.protocol.name,
+                    "id": device_protocol.protocol.id
+                } for device_protocol in device_protocols
             ],
             "firmwares": [
                 {
@@ -93,18 +60,12 @@ class DeviceService:
                     "id": device_firmware.firmware.id
                 } for device_firmware in device_firmwares
             ],
-            "protocols": [
+            "ports": [
                 {
-                    "name": device_protocol.protocol.name,
-                    "id": device_protocol.protocol.id
-                } for device_protocol in device_protocols
-            ]
+                    "interface": device_port.interface,
+                    "material": port.material,
+                    "speed": port.speed,
+                    "name": port.name
+                } for device_port, port in device_ports
+            ],
         }
-
-    def get_info_by_name(self, device_name: str):
-        device = self.get_by_name(device_name)
-        return self.get_info(device)
-    
-    def get_info_by_id(self, device_id: int):
-        device = self.get_by_id(device_id)
-        return self.get_info(device)
