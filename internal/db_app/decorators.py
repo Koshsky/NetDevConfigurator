@@ -1,9 +1,9 @@
 from functools import wraps
 
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from .exceptions import RetrievalError
-
+from internal.database.services import EntityNotFoundError
 def error_handler(func):
     """A decorator that provides comprehensive error handling for database-related methods.
 

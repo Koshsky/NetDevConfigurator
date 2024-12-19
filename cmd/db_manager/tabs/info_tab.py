@@ -21,16 +21,15 @@ class InfoTab(BaseTab):
         type_ = self.fields['template']['type'].get()
         role = self.fields['template']['role'].get()
         template = self.app.entity_services['template'].get_by_name_type_role(name, type_, role)
-
         self.display_feedback(
-            pformat(self.app.entity_services['template'].get_info(template.id))
+            pformat(self.app.entity_services['template'].get_info_by_id(template.id))
         )
 
     @error_handler
     def show_device_info(self):
-        device = self.check_device_name(self.fields["device"]["name"].get())
+        device_name = self.fields["device"]["name"].get().strip()
         self.display_feedback(
-            pformat(self.app.entity_services['device'].get_info(device.id))
+            pformat(self.app.entity_services['device'].get_info_by_name(device_name))
         )
 
 

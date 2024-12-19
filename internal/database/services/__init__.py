@@ -12,6 +12,9 @@ from .device_services.device_port_service import DevicePortService
 from .device_services.device_service import DeviceService
 from .device_services.device_template_service import DeviceTemplateService
 
+from .exceptions import EntityNotFoundError
+
+
 def setup_database_services(session):
     return {
         'company': CompanyService(session),

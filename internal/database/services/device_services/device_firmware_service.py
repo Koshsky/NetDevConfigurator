@@ -39,4 +39,4 @@ class DeviceFirmwareService(BaseService):
 
     def delete_by_device_firmware_id(self, device_id: int, firmware_id: int):
         db_device_firmware = self.get_by_device_firmware_id(device_id, firmware_id)
-        self.delete(db_device_firmware)
+        self.__delete(db_device_firmware)

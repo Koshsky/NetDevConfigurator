@@ -28,8 +28,7 @@ class DeviceService(BaseService):
                 .all()
         )
 
-    def get_info(self, device_id):
-        device = self.get_by_id(device_id)
+    def get_info(self, device):
         device_ports = self.device_port_service.get_device_ports(device.id)
         device_protocols = self.device_protocol_service.get_device_protocols(device.id)
         device_firmwares = self.device_firmware_service.get_device_firmwares(device.id)
