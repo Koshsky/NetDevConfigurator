@@ -10,7 +10,7 @@ class DatabaseApp:
         self.init_root(root)
         self.tabs = []
 
-        self.session = None  # TODO: почему я сделал две переменные для сессии... действительно нужно ДВЕ или нет?
+        self.session = None
         self.create_connection_tab()
 
         screen_width = self.root.winfo_screenwidth()
