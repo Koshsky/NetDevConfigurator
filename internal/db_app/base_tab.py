@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox as messagebox
 from tkinter import IntVar, ttk
+from ttkwidgets.autocomplete import AutocompleteEntry, AutocompleteCombobox
 
 from .decorators import error_handler
 from .exceptions import RetrievalError
@@ -107,7 +108,7 @@ class BaseTab:
         self.cur_row += 1
 
     def __create_combobox_field(self, entity_name, param_name, param_presets):
-        field = ttk.Combobox(self.frame, values=param_presets)
+        field = AutocompleteCombobox(self.frame, completevalues=param_presets)
         field.grid(row=self.cur_row, column=self.cur_col+1, padx=5, pady=5)
         field.current(0)
         self.fields[entity_name][param_name] = field
@@ -142,7 +143,7 @@ class BaseTab:
         for sub_param, preset in param_presets.items():
             label = ttk.Label(self.frame, text=f"{sub_param}")
             label.grid(row=self.cur_row, column=self.cur_col+1, padx=5, pady=5, sticky='e')
-            field = ttk.Combobox(self.frame, values=preset)
+            field = AutocompleteCombobox(self.frame, completevalues=preset)
             field.grid(row=self.cur_row, column=self.cur_col+2, padx=5, pady=5)
             field.current(0)
             self.fields[entity_name][param_name][sub_param] = field
@@ -153,6 +154,6 @@ class BaseTab:
                     self.cur_row = first_row
                     self.cur_col += 2
                     space = width
-        if width is not None and len(param_presets) == width:
+        if width is not None and len(param_presets) > width:
                 self.cur_row = first_row + width
                 self.cur_col = first_col
