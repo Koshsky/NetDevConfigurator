@@ -639,7 +639,15 @@ snmp view iso 1 included
   },
 ]
 
-
+templates = [
+  {
+    "name": "telnet",  
+    "type": "telnet",
+    "role": "common",
+    "text": """no feature telnet
+!""",  
+  },
+]
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
