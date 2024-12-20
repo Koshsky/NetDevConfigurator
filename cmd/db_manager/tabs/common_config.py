@@ -33,7 +33,14 @@ class CommonConfigTab(BaseTab):
         }, width=12)
         self.create_button_in_line(("PUSH BACK", self.push_back))
         self.create_button_in_line(("INSERT", self.insert))
+        self.create_button_in_line(("REMOVE", self.remove))
         self.create_feedback_area()
+
+    @error_handler
+    def remove(self):
+        ordered_number = self.fields['config']['ordered_number'].get().strip()
+        self.app.entity_services['device_template'].remove(self.preset, int(ordered_number))
+        self.display_feedback(f"Device template {ordered_number} removed successfully")
 
     @error_handler
     def push_back(self):

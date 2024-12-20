@@ -1,6 +1,7 @@
 from functools import wraps
 from sqlalchemy.orm import Session
 from sqlalchemy import func  # Add this import at the top of the file
+from sqlalchemy import delete, insert
 
 from internal.database.models import DeviceTemplates, Templates
 from ..decorators import transactional
@@ -22,13 +23,13 @@ class DeviceTemplateService(BaseService):
             .all()
         )
         return [preset[0] for preset in presets]
-    
+
     def get_device_configuration(self, device_id: int, preset: str):
             rows = (
                 self.db.query(DeviceTemplates, Templates)
                     .join(Templates, DeviceTemplates.template_id == Templates.id)
                     .filter(
-                        DeviceTemplates.preset == preset, 
+                        DeviceTemplates.preset == preset,
                         DeviceTemplates.device_id == device_id
                     )
                     .order_by(DeviceTemplates.ordered_number)
@@ -43,7 +44,7 @@ class DeviceTemplateService(BaseService):
                         'text': template.iext
                      },
                      'ordered_number': device_template.ordered_number
-                } 
+                }
                 for device_template, template in rows
         ]
 
@@ -66,6 +67,18 @@ class DeviceTemplateService(BaseService):
 
         self.db.add(device_template)
         return device_template
+
+    @transactional
+    def remove(self, preset: str, ordered_number: int):
+        self.db.query(DeviceTemplates) \
+            .filter(DeviceTemplates.preset == preset, DeviceTemplates.ordered_number == ordered_number) \
+                .delete(synchronize_session=False)
+        # Shift existing templates
+        self.db.query(DeviceTemplates) \
+            .filter(DeviceTemplates.preset == preset,
+                    DeviceTemplates.ordered_number > ordered_number) \
+            .update({DeviceTemplates.ordered_number: DeviceTemplates.ordered_number - 1},
+                    synchronize_session=False)
 
     @transactional
     def insert(self, device_id: int, template_id: int, ordered_number: int, preset: str):
