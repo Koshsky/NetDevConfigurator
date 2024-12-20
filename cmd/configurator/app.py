@@ -6,7 +6,7 @@ from .tabs import (
     DeviceTab
 )
 
-class ConfiguratorApp(DatabaseApp):        
+class ConfiguratorApp(DatabaseApp):
     def init_root(self, root):
         self.device = None
         self.ports = None
@@ -14,7 +14,7 @@ class ConfiguratorApp(DatabaseApp):
         self.header_templates = None
         self.footer_templates = None
         super().init_root(root)
-              
+
     def on_success_callback(self, engine):
         super().on_success_callback(engine)
         self.create_tab(DeviceTab, "Device")
@@ -24,12 +24,12 @@ class ConfiguratorApp(DatabaseApp):
 
     def _get_port_map(self):
         ports = self.entity_services['device_port'].get_device_ports(self.device.id)
-        return {        
+        return {
             f'{idx+1}. {port.Ports.speed}Mbps {port.Ports.material}': self.interface_templates
             for idx, port in enumerate(ports)
         }
 
-        
+
 
 if __name__ == "__main__":
     root = tk.Tk()

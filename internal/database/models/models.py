@@ -1,4 +1,4 @@
-from sqlalchemy import CheckConstraint, Column, ForeignKeyConstraint, Integer, PrimaryKeyConstraint, String, Text, UniqueConstraint
+from sqlalchemy import CheckConstraint, Column, ForeignKeyConstraint, Integer, PrimaryKeyConstraint, Sequence, String, Text, UniqueConstraint
 
 from sqlalchemy.orm import declarative_base, relationship
 
@@ -29,6 +29,7 @@ class Families(Base):
     name = Column(String(255), nullable=False)
 
     devices = relationship('Devices', back_populates='family')
+    templates = relationship('Templates', back_populates='family')
 
 
 class Firmwares(Base):
@@ -56,8 +57,8 @@ class Ports(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
+    speed = Column(Integer, nullable=False)
     material = Column(String(255))
-    speed = Column(Integer)
 
     device_ports = relationship('DevicePorts', back_populates='port')
 
@@ -72,19 +73,6 @@ class Protocols(Base):
     name = Column(String, nullable=False)
 
     device_protocols = relationship('DeviceProtocols', back_populates='protocol')
-
-
-class TemplatePieces(Base):
-    __tablename__ = 'template_pieces'
-    __table_args__ = (
-        PrimaryKeyConstraint('id', name='template_pieces_pkey'),
-    )
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    type = Column(String, nullable=False)
-    role = Column(String, nullable=False)
-    text = Column(Text)
 
 
 class Devices(Base):
@@ -108,6 +96,28 @@ class Devices(Base):
     device_firmwares = relationship('DeviceFirmwares', back_populates='device')
     device_ports = relationship('DevicePorts', back_populates='device')
     device_protocols = relationship('DeviceProtocols', back_populates='device')
+    device_templates = relationship('DeviceTemplates', back_populates='device')
+
+
+class Templates(Base):
+    __tablename__ = 'templates'
+    __table_args__ = (
+        CheckConstraint("(role)::text = ANY (ARRAY['common'::text, 'data'::text, 'ipmi'::text, 'or'::text, 'tsh'::text, 'video'::text, 'raisa_or'::text, 'raisa_agr'::text])", name='check_role_value'),
+        CheckConstraint("(type)::text = ANY (ARRAY['header'::text, 'hostname'::text, 'VLAN'::text, 'ssh'::text, 'type-commutation'::text, 'STP'::text, 'credentials'::text, 'addr-set'::text, 'interface'::text, 'GW'::text, 'telnet'::text, 'SNMP'::text, 'ZTP'::text, 'jumbo'::text, 'priority'::text])", name='check_type_value'),
+        ForeignKeyConstraint(['family_id'], ['families.id'], name='template_pieces_family_id_fkey'),
+        PrimaryKeyConstraint('id', name='template_pieces_pkey'),
+        UniqueConstraint('name', 'type', 'role', 'text', 'family_id', name='unique_template_row')
+    )
+
+    id = Column(Integer, Sequence('template_pieces_id_seq'), primary_key=True)
+    name = Column(String, nullable=False)
+    type = Column(String, nullable=False)
+    role = Column(String, nullable=False)
+    text = Column(Text, nullable=False)
+    family_id = Column(Integer)
+
+    family = relationship('Families', back_populates='templates')
+    device_templates = relationship('DeviceTemplates', back_populates='template')
 
 
 class DeviceFirmwares(Base):
@@ -138,7 +148,7 @@ class DevicePorts(Base):
     id = Column(Integer, primary_key=True)
     device_id = Column(Integer, nullable=False)
     port_id = Column(Integer, nullable=False)
-    name = Column(String(255))
+    interface = Column(String(255), nullable=False)
 
     device = relationship('Devices', back_populates='device_ports')
     port = relationship('Ports', back_populates='device_ports')
@@ -158,3 +168,22 @@ class DeviceProtocols(Base):
 
     device = relationship('Devices', back_populates='device_protocols')
     protocol = relationship('Protocols', back_populates='device_protocols')
+
+
+class DeviceTemplates(Base):
+    __tablename__ = 'device_templates'
+    __table_args__ = (
+        ForeignKeyConstraint(['device_id'], ['devices.id'], name='device_templates_device_id_fkey'),
+        ForeignKeyConstraint(['template_id'], ['templates.id'], name='device_templates_template_id_fkey'),
+        PrimaryKeyConstraint('id', name='device_templates_pkey'),
+        UniqueConstraint('ordered_number', 'preset', name='unique_ordered_num_preset')
+    )
+
+    id = Column(Integer, primary_key=True)
+    device_id = Column(Integer, nullable=False)
+    template_id = Column(Integer, nullable=False)
+    ordered_number = Column(Integer, nullable=False)
+    preset = Column(String(255), nullable=False)
+
+    device = relationship('Devices', back_populates='device_templates')
+    template = relationship('Templates', back_populates='device_templates')

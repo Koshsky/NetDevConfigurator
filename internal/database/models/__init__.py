@@ -2,13 +2,15 @@ from .models import (
     Companies,
     Firmwares,
     Protocols,
+    Families,
+    Ports,
+    Templates,
+
     Devices,
     DeviceFirmwares,
     DeviceProtocols,
+    DeviceTemplates,
     DevicePorts,
-    Families,
-    Ports,
-    TemplatePieces
 )
 
-# sqlacodegen --outfile ./internal/database/models/models.py postgresql://postgres:postgres@localhost:5432/device_registry
+# sqlacodegen --outfile ~/NetDevConfigurator/internal/database/models/models.py postgresql://postgres:postgres@localhost:5432/device_registry

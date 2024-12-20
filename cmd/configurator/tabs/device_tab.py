@@ -2,7 +2,7 @@ from internal.db_app.base_tab import BaseTab
 from typing import Dict, List
 
 
-class DeviceTab(BaseTab):        
+class DeviceTab(BaseTab):
     def create_widgets(self):
         self.create_block("device", {"name": list(self.app.devices)})
         self.create_button_in_line(("UPDATE TABS", self.update_tabs))

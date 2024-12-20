@@ -17,7 +17,7 @@ class TemplateTab(BaseTab):
         }, width=15)
         self.create_button_in_line(("GENERATE", self.generate_template))
         self.create_feedback_area()
-        
+
     def generate_template(self):
         header_name = self.fields["header"]["name"].get().strip()  # TODO: обновить базу данных, а тут получать ее объект а не просто имя.
         footer_name = self.fields["header"]["name"].get().strip()  # если объекта не существует в базе данных, обрабатывать этот случай с выводом ошибки в дисплей
