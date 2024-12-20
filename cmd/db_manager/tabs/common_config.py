@@ -53,14 +53,15 @@ class CommonConfigTab(BaseTab):
     @error_handler
     def refresh(self):
         device = self.check_device_name(self.fields['setup']['device_name'].get())
-        family_id = self.app.entity_services['device'].get_info(device.id)['family']['id']
+        family_id = self.app.entity_services['device'].get_info_by_id(device.id)['family']['id']
         role = self.fields['setup']['device_role'].get().strip()
         if not role:
             raise ValueError("Device_role cannot be empty")
         elif role not in self.app.entity_collections['roles']:
             raise ValueError(f"Unknown role: {role}")
 
-        template_names = [template.name for template in self.app.entity_services['template'].get_all_by_role_family_id(family_id, role)]
+        template_names = self.app.entity_services['template'].list_templates_by_role_and_family(family_id, role)
+        template_names.extend(self.app.entity_services['template'].list_interface_templates(family_id, role))
         if not template_names:
             raise ValueError(f"There is no templates for role: {role}")
         self.template_names = template_names

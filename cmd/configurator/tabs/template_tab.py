@@ -1,20 +1,14 @@
-from internal.db_app.base_tab import BaseTab
-from typing import Dict, List
+from internal.db_app import BaseTab
 
 from tkinter import ttk
 
 
 class TemplateTab(BaseTab):
     def create_widgets(self):
-        if self.app.device is None:
+        if self.app.device_info is None:
             self.create_feedback_area()
             self.display_feedback("Please, choose a device in DeviceTab.")
             return
-        self.create_block("template", {
-                "header": self.app.header_templates,
-                "footer": self.app.footer_templates,
-                "interfaces": self.app._get_port_map()
-        }, width=15)
         self.create_button_in_line(("GENERATE", self.generate_template))
         self.create_feedback_area()
 

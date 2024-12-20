@@ -10,13 +10,43 @@ class DeviceTemplateService(BaseService):
     def __init__(self, db: Session):
         super().__init__(db, DeviceTemplates)
 
-    def get_device_templates(self, device_id: int):
-        return (
-            self.db.query(DeviceTemplates, Templates)
-                .join(Templates, DeviceTemplates.port_id == Templates.id)
-                .filter(DeviceTemplates.device_id == device_id)
-                .all()
+    def get_presets(self, device_id, device_role):
+        presets = (
+            self.db.query(DeviceTemplates.preset)
+            .join(Templates, DeviceTemplates.template_id == Templates.id)
+            .filter(
+                DeviceTemplates.device_id == device_id,
+                Templates.role == device_role
+            )
+            .distinct()
+            .all()
         )
+        return [preset[0] for preset in presets]
+    
+    def get_device_configuration(self, device_id: int, preset: str):
+            rows = (
+                self.db.query(DeviceTemplates, Templates)
+                    .join(Templates, DeviceTemplates.template_id == Templates.id)
+                    .filter(
+                        DeviceTemplates.preset == preset, 
+                        DeviceTemplates.device_id == device_id
+                    )
+                    .order_by(DeviceTemplates.ordered_number)
+                    .all()
+            )
+            return [
+                {
+                     'template': {
+                        'id': template.id,
+                        'role': template.role,
+                        'type': template.type,
+                        'text': template.iext
+                     },
+                     'ordered_number': device_template.ordered_number
+                } 
+                for device_template, template in rows
+        ]
+
 
     def _get_max_ordered_number(self, device_id: int, preset: str) -> int:
         return self.db.query(func.max(DeviceTemplates.ordered_number)) \

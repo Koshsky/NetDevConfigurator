@@ -532,7 +532,7 @@ vlan 4
   {
     "name": "AddrMgmt",  
     "type": "addr-set",
-    "role": "ipmi",
+    "role": "mgmt",
     "text": """interface vlan 4
   ip address 10.4.0.4 255.255.0.0
 !""",  
@@ -556,7 +556,7 @@ vlan 4
   {
     "name": "AddrRais",  
     "type": "addr-set",
-    "role": "raisa_agr",
+    "role": "rais-adr",
     "text": """interface vlan 4
   ip address 10.5.0.5 255.255.0.0
 !""",  
@@ -564,7 +564,7 @@ vlan 4
   {
     "name": "AddrRaisOr",  
     "type": "addr-set",
-    "role": "raisa_or",
+    "role": "rais-or",
     "text": """interface vlan 5
   ip address 10.5.{OR}.11 255.255.0.0
 !""",  
@@ -593,7 +593,7 @@ vlan 4
   {
     "name": "Hostname",  
     "type": "hostname",
-    "role": "raisa_agr",
+    "role": "rais-agr",
     "text": """hostname "{CERT}-{MODEL}-{ROLE}"
 !""",  
   },
@@ -614,7 +614,7 @@ vlan 4
   {
     "name": "Hostname",  
     "type": "hostname",
-    "role": "raisa_or",
+    "role": "rais-or",
     "text": """hostname "{CERT}-{MODEL}-{ROLE}{OR}"
 !""",  
   },
@@ -640,29 +640,4 @@ snmp view iso 1 included
 ]
 
 
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
 
-from internal.database.services import *
-
-connection_string = "postgresql://postgres:postgres@localhost:5432/device_registry"
-try:
-    engine = create_engine(connection_string)
-    connect = engine.connect()  # Checking the connection
-    connect.close()
-
-    session = sessionmaker(bind=engine)()
-    entity_services = setup_database_services(session)
-    print("Connection successful.")
-except Exception as error:
-    print(f'Error: {str(error)}')
-
-
-try:
-    family_id = entity_services['family'].get_by_name(("MES14xx/24xx/34xx/37xx").strip()).id
-
-    for template in templates:
-        template['family_id'] = family_id
-        entity_services['template'].create(template)
-except Exception as error:
-    print(f'Error: {str(error)}')

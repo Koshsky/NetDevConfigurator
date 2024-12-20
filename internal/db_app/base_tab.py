@@ -1,9 +1,8 @@
 import tkinter as tk
 import tkinter.messagebox as messagebox
 from tkinter import IntVar, ttk
-from ttkwidgets.autocomplete import AutocompleteEntry, AutocompleteCombobox
+from ttkwidgets.autocomplete import AutocompleteCombobox
 
-from .decorators import error_handler
 from .exceptions import RetrievalError
 
 class BaseTab:

@@ -69,8 +69,7 @@ def prepare_entity_collections(entity_services):
             'jumbo',
             'priority',
         ),
-        roles=(
-            'common',
+        roles=(  # common suits for all
             'data',
             'ipmi',
             'or',
