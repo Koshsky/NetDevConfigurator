@@ -7,7 +7,6 @@ def update_config(func):
     def wrapper(self, *args, **kwargs):
         message = func(self, *args, **kwargs)
         self._config = self.app.entity_services['preset'].get_info_by_name(self.preset.name)
-        print(1)
         self.display_feedback(f'{message or ""}\n{self.config_meta}\n\n{self.config_template}')
         return message
     return wrapper
@@ -63,7 +62,8 @@ class CommonConfigTab(BaseTab):
     @update_config
     @preset_is_not_none
     def push_back(self) -> str:
-        template = self.check_template_name(self.fields['template']['name'].get())
+        template_name = self.fields['template']['name'].get()
+        template = self.app.entity_services['template'].get_by_name_and_role(template_name, self.preset.role)
         self.app.entity_services['device_preset'].push_back(self.preset.id, template.id)
         return f'Template {template.name} successfully pushed back\n'
 
@@ -71,7 +71,8 @@ class CommonConfigTab(BaseTab):
     @update_config
     @preset_is_not_none
     def insert(self) -> str:
-        template = self.check_template_name(self.fields['template']['name'].get())
+        template_name = self.fields['template']['name'].get()
+        template = self.app.entity_services['template'].get_by_name_and_role(template_name, self.preset.role)
         ordered_number = self.fields['template']['ordered_number'].get().strip()
         if ordered_number and ordered_number.isdigit():
             self.app.entity_services['device_preset'].insert(self.preset.id, template.id, int(ordered_number))
@@ -85,7 +86,7 @@ class CommonConfigTab(BaseTab):
         self.preset = self.check_preset_name(self.fields['preset']['name'].get())
         self.family_id = self.app.entity_services['device'].get_by_id(self.preset.device_id).family_id
 
-        template_names = self.app.entity_services['template'].get_templates_by_family_and_role(self.family_id, self.preset.role)
+        template_names = self.app.entity_services['template'].get_by_family_id_and_role(self.family_id, self.preset.role)
         if not template_names:
             raise ValueError(f"There is no templates for role: {role}")
         self.fields['template']['name']['values'] = template_names

@@ -14,7 +14,7 @@ class BaseService:
         else:
             raise EntityNotFoundError(f"{self.model.__name__} with id {entity_id} not found")
 
-    def get_by_name(self, entity_name: str):  # TODO: get_all_by_name!
+    def get_by_name(self, entity_name: str):
         if entity:= self.db.query(self.model).filter(self.model.name == entity_name).first():
             return entity
         else:

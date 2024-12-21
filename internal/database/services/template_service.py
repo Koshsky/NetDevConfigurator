@@ -24,7 +24,13 @@ class TemplateService(BaseService):
             "text": template.text,
         }
 
-    def get_templates_by_family_and_role(self, family_id: int, role: str): # to create a list of suitable templates
+    def get_by_name(self, template_name: str):
+        if template:= self.db.query(Templates).filter(Templates.name == template_name).all():
+            return template
+        else:
+            raise EntityNotFoundError(f"{Templates.__name__} with name {template_name} not found")
+
+    def get_by_family_id_and_role(self, family_id: int, role: str): # to create a list of suitable templates
         roles_to_check = ['common', role]
 
         if (
@@ -35,16 +41,15 @@ class TemplateService(BaseService):
             )
             .all()
         ):
-            return [entity.name for entity in entities]
+            return [template.name for template in entities]
         else:
             raise EntityNotFoundError("Templates not found")
 
-    def get_by_name_type_role(self, name: str, type: str, role: str):  # for unambiguous selection
-        if entity := self.db.query(Templates).filter(
+    def get_by_name_and_role(self, name: str, role: str):  # for unambiguous selection
+        if template := self.db.query(Templates).filter(
                 Templates.name == name,
-                Templates.type == type,
                 Templates.role == role
             ).first():
-            return entity
+            return template
         else:
             raise EntityNotFoundError("Template not found")
