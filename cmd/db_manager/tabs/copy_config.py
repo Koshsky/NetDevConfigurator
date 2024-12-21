@@ -1,5 +1,5 @@
 from internal.db_app import error_handler
-from .common_config import CommonConfigTab, show_config
+from .common_config import CommonConfigTab, update_config
 
 class CopyConfigTab(CommonConfigTab):
     def create_widgets(self):
@@ -14,8 +14,8 @@ class CopyConfigTab(CommonConfigTab):
         self.create_button_in_line(("COPY", self.copy))
         self.create_feedback_area()
 
-    @show_config
     @error_handler
+    @update_config
     def copy(self) -> str:
         device = self.check_device_name(self.fields['from']['device'].get())
         dist_device = self.check_device_name(self.fields['to']['device'].get())
@@ -29,9 +29,8 @@ class CopyConfigTab(CommonConfigTab):
         new_preset = self.fields['to']['preset'].get().strip()
         if new_preset in self.app.entity_collections['presets']:
             raise ValueError("preset_to already exists")
-        
-        
+
+
 
         self.preset = preset
         self.device = device
-        return ""

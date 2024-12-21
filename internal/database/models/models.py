@@ -96,7 +96,7 @@ class Devices(Base):
     device_firmwares = relationship('DeviceFirmwares', back_populates='device')
     device_ports = relationship('DevicePorts', back_populates='device')
     device_protocols = relationship('DeviceProtocols', back_populates='device')
-    device_templates = relationship('DeviceTemplates', back_populates='device')
+    presets = relationship('Presets', back_populates='device')
 
 
 class Templates(Base):
@@ -117,7 +117,7 @@ class Templates(Base):
     family_id = Column(Integer)
 
     family = relationship('Families', back_populates='templates')
-    device_templates = relationship('DeviceTemplates', back_populates='template')
+    device_presets = relationship('DevicePresets', back_populates='template')
 
 
 class DeviceFirmwares(Base):
@@ -170,20 +170,38 @@ class DeviceProtocols(Base):
     protocol = relationship('Protocols', back_populates='device_protocols')
 
 
-class DeviceTemplates(Base):
-    __tablename__ = 'device_templates'
+class Presets(Base):
+    __tablename__ = 'presets'
     __table_args__ = (
-        ForeignKeyConstraint(['device_id'], ['devices.id'], name='device_templates_device_id_fkey'),
-        ForeignKeyConstraint(['template_id'], ['templates.id'], name='device_templates_template_id_fkey'),
-        PrimaryKeyConstraint('id', name='device_templates_pkey'),
-        UniqueConstraint('ordered_number', 'preset', name='unique_ordered_num_preset')
+        CheckConstraint("(role)::text = ANY (ARRAY['common'::text, 'data'::text, 'ipmi'::text, 'or'::text, 'tsh'::text, 'video'::text, 'raisa_or'::text, 'raisa_agr'::text])", name='check_role_value'),
+        ForeignKeyConstraint(['device_id'], ['devices.id'], name='presets_device_id_fkey'),
+        PrimaryKeyConstraint('id', name='presets_pkey'),
+        UniqueConstraint('name', name='unique_name'),
+        UniqueConstraint('name', name='presets_name_key')
     )
 
     id = Column(Integer, primary_key=True)
     device_id = Column(Integer, nullable=False)
+    role = Column(String(256), nullable=False)
+    name = Column(String)
+    description = Column(Text)
+
+    device = relationship('Devices', back_populates='presets')
+    device_presets = relationship('DevicePresets', back_populates='preset')
+
+
+class DevicePresets(Base):
+    __tablename__ = 'device_presets'
+    __table_args__ = (
+        ForeignKeyConstraint(['preset_id'], ['presets.id'], name='device_templates_preset_id_fkey'),
+        ForeignKeyConstraint(['template_id'], ['templates.id'], name='device_templates_template_id_fkey'),
+        PrimaryKeyConstraint('id', name='device_templates_pkey')
+    )
+
+    id = Column(Integer, Sequence('device_templates_id_seq'), primary_key=True)
     template_id = Column(Integer, nullable=False)
     ordered_number = Column(Integer, nullable=False)
-    preset = Column(String(255), nullable=False)
+    preset_id = Column(Integer, nullable=False)
 
-    device = relationship('Devices', back_populates='device_templates')
-    template = relationship('Templates', back_populates='device_templates')
+    preset = relationship('Presets', back_populates='device_presets')
+    template = relationship('Templates', back_populates='device_presets')

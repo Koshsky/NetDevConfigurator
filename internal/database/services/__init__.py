@@ -10,7 +10,8 @@ from .device_services.device_firmware_service import DeviceFirmwareService
 from .device_services.device_protocol_service import DeviceProtocolService
 from .device_services.device_port_service import DevicePortService
 from .device_services.device_service import DeviceService
-from .device_services.device_template_service import DeviceTemplateService
+from .device_services.device_preset_service import DevicePresetService
+from .preset_service import PresetService
 
 from .exceptions import EntityNotFoundError
 
@@ -27,7 +28,8 @@ def setup_database_services(session):
         'device_protocol': DeviceProtocolService(session),
         'device_port': DevicePortService(session),
         'template': TemplateService(session),
-        'device_template': DeviceTemplateService(session)
+        'device_preset': DevicePresetService(session),
+        'preset': PresetService(session)
     }
 
 def prepare_entity_collections(entity_services):
@@ -52,7 +54,9 @@ def prepare_entity_collections(entity_services):
                 for template in entity_services['template'].get_all()
             }
         )),
-        presets=tuple(entity_services['device_template'].get_all_preset()),
+        presets=tuple(
+            preset.name for preset in entity_services["preset"].get_all()
+        ),
         template_types=(
             'header',
             'hostname',

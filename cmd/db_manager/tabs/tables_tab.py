@@ -2,7 +2,7 @@ from internal.db_app import BaseTab, error_handler
 
 class TablesTab(BaseTab):
     def create_widgets(self):
-        for entity in ['company', 'family', 'device', 'firmware', 'port', 'protocol','template']:
+        for entity in ['company', 'family', 'device', 'firmware', 'port', 'protocol', 'template', 'preset']:
             self.create_button_in_line((entity.capitalize(), self.load_table(entity)))
         self.create_feedback_area()
 

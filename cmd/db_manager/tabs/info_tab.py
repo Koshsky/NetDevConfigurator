@@ -3,7 +3,7 @@ from pprint import pformat
 
 class InfoTab(BaseTab):
     def create_widgets(self):
-        entities = ['company', 'family', 'device', 'firmware']
+        entities = ['company', 'family', 'device', 'firmware', 'preset']
         for entity in entities:
             self.create_block(entity, {"name":None}, ("SHOW", getattr(self, f'show_{entity}_info')))
         self.create_block('template',
@@ -16,6 +16,20 @@ class InfoTab(BaseTab):
         self.create_feedback_area()
 
     @error_handler
+    def show_preset_info(self):
+        preset_name = self.fields["preset"]["name"].get().strip()
+        self.display_feedback(
+            pformat(self.app.entity_services['preset'].get_info_by_name(preset_name), sort_dicts=False)
+        )
+
+    @error_handler
+    def show_device_info(self):
+        device_name = self.fields["device"]["name"].get().strip()
+        self.display_feedback(
+            pformat(self.app.entity_services['device'].get_info_by_name(device_name), sort_dicts=False)
+        )
+
+    @error_handler
     def show_template_info(self):
         name = self.fields['template']['name'].get()
         type_ = self.fields['template']['type'].get()
@@ -23,13 +37,6 @@ class InfoTab(BaseTab):
         template = self.app.entity_services['template'].get_by_name_type_role(name, type_, role)
         self.display_feedback(
             pformat(self.app.entity_services['template'].get_info_by_id(template.id))
-        )
-
-    @error_handler
-    def show_device_info(self):
-        device_name = self.fields["device"]["name"].get().strip()
-        self.display_feedback(
-            pformat(self.app.entity_services['device'].get_info_by_name(device_name))
         )
 
 

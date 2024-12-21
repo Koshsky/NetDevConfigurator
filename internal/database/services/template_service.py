@@ -24,24 +24,7 @@ class TemplateService(BaseService):
             "text": template.text,
         }
 
-    def list_templates_by_role_and_family(self, family_id: int, role: str):
-        roles_to_check = ['common', role]
-
-        if (
-            templates := self.db.query(Templates)
-            .filter(
-                Templates.family_id == family_id,
-                Templates.role.in_(roles_to_check),
-                Templates.type != 'interface',
-            )
-            .all()
-        ):
-            return [template.name for template in templates]
-        else:
-            raise EntityNotFoundError("Templates not found")
-
-
-    def list_interface_templates(self, family_id: int, role: str): # to create a list of suitable templates
+    def get_templates_by_family_and_role(self, family_id: int, role: str): # to create a list of suitable templates
         roles_to_check = ['common', role]
 
         if (
@@ -49,7 +32,6 @@ class TemplateService(BaseService):
             .filter(
                 Templates.family_id == family_id,
                 Templates.role.in_(roles_to_check),
-                Templates.type == 'interface'
             )
             .all()
         ):

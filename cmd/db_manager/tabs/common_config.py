@@ -2,96 +2,91 @@ from internal.db_app import BaseTab, error_handler
 import pprint
 from functools import wraps
 
-def show_config(func):
+def update_config(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
-        message =  func(self, *args, **kwargs)
-        self._config = self.app.entity_services['device_template'].get_device_configuration(self.device.id, self.preset)
-        self.display_feedback(f'{message}{self.information}\n{self.config}')
+        message = func(self, *args, **kwargs)
+        self._config = self.app.entity_services['preset'].get_info_by_name(self.preset.name)
+        print(1)
+        self.display_feedback(f'{message or ""}\n{self.config_meta}\n\n{self.config_template}')
         return message
+    return wrapper
+
+def preset_is_not_none(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        if self.preset is None:
+            raise ValueError('No preset selected')
+        return func(self, *args, **kwargs)
     return wrapper
 
 class CommonConfigTab(BaseTab):
     def __init__(self, app, parent):
-        self.role = "common"
-        self.device = None
-        self.preset = ''
         self._config = None
-
+        self.preset = None
+        self.family_id = None
         super().__init__(app, parent)
 
     @property
-    def config(self):
-        return '\r\n'.join(entity['template']['text'] for entity in self._config) + '\r\nend\n'
-
+    def config_meta(self):
+        return f"Device: {self._config['device']}\nPreset: {self._config['preset']}\nRole: {self._config['role']}"
     @property
-    def information(self):
-        return (
-            f"device_name: {self.device.name}\n"
-            f"role: {self.role}\n"
-            f"preset: {self.preset}\n"
-        )
+    def config_template(self):
+        return '\r\n'.join(entity['template']['text'] for entity in self._config['configuration']) + '\r\nend\n'
 
     def create_widgets(self):
-        self.create_block("setup", {
-            "device_name": list(self.app.entity_collections['devices']),
-            "device_role": list(self.app.entity_collections['roles']),
-            "preset": None,
+        self.create_block("preset", {
+            "name": list(self.app.entity_collections['presets']),
         })
         self.create_button_in_line(("REFRESH", self.refresh))
-        self.create_block("config", {
-                "template_name": ["1", "2'"],
+        self.create_block("template", {
+                "name": ["1", "2'"],
                 "ordered_number": None,
 
-        }, width=12)
+        })
         self.create_button_in_line(("PUSH BACK", self.push_back))
         self.create_button_in_line(("INSERT", self.insert))
         self.create_button_in_line(("REMOVE", self.remove))
         self.create_feedback_area()
 
-    @show_config
     @error_handler
+    @update_config
+    @preset_is_not_none
     def remove(self) -> str:
-        ordered_number = self.fields['config']['ordered_number'].get().strip()
-        self.app.entity_services['device_template'].remove(self.preset, int(ordered_number))
-        return ""
+        ordered_number = self.fields['template']['ordered_number'].get().strip()
+        if ordered_number and ordered_number.isdigit():
+            self.app.entity_services['device_preset'].remove(self.preset.id, int(ordered_number))
+        else:
+            raise ValueError("Invalid ordered number")
 
-    @show_config
     @error_handler
+    @update_config
+    @preset_is_not_none
     def push_back(self) -> str:
-        template = self.check_template_name(self.fields['config']['template_name'].get())
-        self.app.entity_services['device_template'].push_back(self.device.id, template.id, self.preset)
-        return f'Template {template.name} succesfully pushed back\n'
+        template = self.check_template_name(self.fields['template']['name'].get())
+        self.app.entity_services['device_preset'].push_back(self.preset.id, template.id)
+        return f'Template {template.name} successfully pushed back\n'
 
-    @show_config
     @error_handler
+    @update_config
+    @preset_is_not_none
     def insert(self) -> str:
-        template = self.check_template_name(self.fields['config']['template_name'].get())
-        ordered_number = self.fields['config']['ordered_number'].get().strip()
-        if not ordered_number.isdigit() or int(ordered_number) < 1:
-            raise ValueError("ordered_number must be digit greater than 0")
-        self.app.entity_services['device_template'].insert(self.device.id, template.id, int(ordered_number), self.preset)
+        template = self.check_template_name(self.fields['template']['name'].get())
+        ordered_number = self.fields['template']['ordered_number'].get().strip()
+        if ordered_number and ordered_number.isdigit():
+            self.app.entity_services['device_preset'].insert(self.preset.id, template.id, int(ordered_number))
+        else:
+            raise ValueError("Invalid ordered number")
         return f'Template {template.name} successfully inserted at position {ordered_number}\n'
 
-    @show_config
     @error_handler
+    @update_config
     def refresh(self):
-        device = self.check_device_name(self.fields['setup']['device_name'].get())
-        family_id = self.app.entity_services['device'].get_info_by_id(device.id)['family']['id']
-        role = self.fields['setup']['device_role'].get().strip()
-        if not role:
-            raise ValueError("Device_role cannot be empty")
-        elif role not in self.app.entity_collections['roles']:
-            raise ValueError(f"Unknown role: {role}")
+        self.preset = self.check_preset_name(self.fields['preset']['name'].get())
+        self.family_id = self.app.entity_services['device'].get_by_id(self.preset.device_id).family_id
 
-        template_names = self.app.entity_services['template'].list_templates_by_role_and_family(family_id, role)
-        template_names.extend(self.app.entity_services['template'].list_interface_templates(family_id, role))
+        template_names = self.app.entity_services['template'].get_templates_by_family_and_role(self.family_id, self.preset.role)
         if not template_names:
             raise ValueError(f"There is no templates for role: {role}")
-        self.fields['config']['template_name']['values'] = template_names
-
-        self.device = device
-        self.role = role
-        self.preset = self.fields['setup']['preset'].get().strip()
-        self.fields['config']['template_name'].set(template_names[0])
-        return ''
+        self.fields['template']['name']['values'] = template_names
+        self.fields['template']['name'].set(template_names[0])

@@ -2,7 +2,7 @@ from internal.db_app import BaseTab, error_handler
 
 class DeleteTab(BaseTab):
     def create_widgets(self):
-        entities = ["company", "family", "device", "firmware", "protocol", "template"]
+        entities = ["company", "family", "device", "firmware", "protocol", "template", 'preset']
         for entity in entities:
             self.create_block(entity, {"name": None}, ("delete", lambda e=entity: self.delete_entity(e)))
 
