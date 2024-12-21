@@ -1,6 +1,6 @@
 from functools import wraps
 from sqlalchemy.orm import Session
-from sqlalchemy import func  # Add this import at the top of the file
+from sqlalchemy import func
 from sqlalchemy import delete, insert
 
 from internal.database.models import DeviceTemplates, Templates
@@ -41,7 +41,7 @@ class DeviceTemplateService(BaseService):
                         'id': template.id,
                         'role': template.role,
                         'type': template.type,
-                        'text': template.iext
+                        'text': template.text
                      },
                      'ordered_number': device_template.ordered_number
                 }

@@ -1,18 +1,31 @@
 from internal.db_app import BaseTab, error_handler
 import pprint
+from functools import wraps
 
+def show_config(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        message =  func(self, *args, **kwargs)
+        self._config = self.app.entity_services['device_template'].get_device_configuration(self.device.id, self.preset)
+        self.display_feedback(f'{message}{self.information}\n{self.config}')
+        return message
+    return wrapper
 
 class CommonConfigTab(BaseTab):
     def __init__(self, app, parent):
-        self.template_names = ["1", "2"]
         self.role = "common"
         self.device = None
         self.preset = ''
+        self._config = None
 
         super().__init__(app, parent)
 
     @property
-    def message_prefix(self):
+    def config(self):
+        return '\r\n'.join(entity['template']['text'] for entity in self._config) + '\r\nend\n'
+
+    @property
+    def information(self):
         return (
             f"device_name: {self.device.name}\n"
             f"role: {self.role}\n"
@@ -27,7 +40,7 @@ class CommonConfigTab(BaseTab):
         })
         self.create_button_in_line(("REFRESH", self.refresh))
         self.create_block("config", {
-                "template_name": self.template_names,
+                "template_name": ["1", "2'"],
                 "ordered_number": None,
 
         }, width=12)
@@ -36,27 +49,31 @@ class CommonConfigTab(BaseTab):
         self.create_button_in_line(("REMOVE", self.remove))
         self.create_feedback_area()
 
+    @show_config
     @error_handler
-    def remove(self):
+    def remove(self) -> str:
         ordered_number = self.fields['config']['ordered_number'].get().strip()
         self.app.entity_services['device_template'].remove(self.preset, int(ordered_number))
-        self.display_feedback(f"Device template {ordered_number} removed successfully")
+        return ""
 
+    @show_config
     @error_handler
-    def push_back(self):
+    def push_back(self) -> str:
         template = self.check_template_name(self.fields['config']['template_name'].get())
         self.app.entity_services['device_template'].push_back(self.device.id, template.id, self.preset)
-        self.display_feedback(f'{self.message_prefix}\nTemplate {template.name} pushed back to device {self.device.name}')
+        return f'Template {template.name} succesfully pushed back\n'
 
+    @show_config
     @error_handler
-    def insert(self):
+    def insert(self) -> str:
         template = self.check_template_name(self.fields['config']['template_name'].get())
         ordered_number = self.fields['config']['ordered_number'].get().strip()
         if not ordered_number.isdigit() or int(ordered_number) < 1:
             raise ValueError("ordered_number must be digit greater than 0")
         self.app.entity_services['device_template'].insert(self.device.id, template.id, int(ordered_number), self.preset)
-        self.display_feedback(f'{self.message_prefix}\nTemplate {template.name} inserted to device {self.device.name} at position {ordered_number}')
+        return f'Template {template.name} successfully inserted at position {ordered_number}\n'
 
+    @show_config
     @error_handler
     def refresh(self):
         device = self.check_device_name(self.fields['setup']['device_name'].get())
@@ -71,11 +88,10 @@ class CommonConfigTab(BaseTab):
         template_names.extend(self.app.entity_services['template'].list_interface_templates(family_id, role))
         if not template_names:
             raise ValueError(f"There is no templates for role: {role}")
-        self.template_names = template_names
-        self.fields['config']['template_name']['values'] = self.template_names
+        self.fields['config']['template_name']['values'] = template_names
 
         self.device = device
         self.role = role
         self.preset = self.fields['setup']['preset'].get().strip()
-        self.fields['config']['template_name'].set(self.template_names[0])
-        self.display_feedback(f'{self.message_prefix}\nrefreshed')
+        self.fields['config']['template_name'].set(template_names[0])
+        return ''
