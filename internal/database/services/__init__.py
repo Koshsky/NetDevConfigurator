@@ -52,6 +52,7 @@ def prepare_entity_collections(entity_services):
                 for template in entity_services['template'].get_all()
             }
         )),
+        presets=tuple(entity_services['device_template'].get_all_preset()),
         template_types=(
             'header',
             'hostname',
@@ -69,7 +70,7 @@ def prepare_entity_collections(entity_services):
             'jumbo',
             'priority',
         ),
-        roles=(  # common suits for all
+        roles=(  # `common` suits for all
             'data',
             'ipmi',
             'or',

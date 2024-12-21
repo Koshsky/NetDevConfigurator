@@ -24,6 +24,14 @@ class DeviceTemplateService(BaseService):
         )
         return [preset[0] for preset in presets]
 
+    def get_all_preset(self):
+        presets = (
+            self.db.query(DeviceTemplates.preset)
+            .distinct()
+            .all()
+        )
+        return [preset[0] for preset in presets]
+
     def get_device_configuration(self, device_id: int, preset: str):
             rows = (
                 self.db.query(DeviceTemplates, Templates)

@@ -15,6 +15,7 @@ class DBManagerApp(DatabaseApp):
         self.create_tab(DeleteTab, "DELETE")
         self.create_tab(DeviceTab, "DEVICE")
         self.create_tab(CommonConfigTab, "CONFIG")
+        self.create_tab(CopyConfigTab, "COPY CONFIG")
 
 if __name__ == "__main__":
     root = tk.Tk()
