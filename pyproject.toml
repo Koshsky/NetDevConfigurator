@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "netdevconfigurator"
+version = "0.1.0"
+description = ""
+authors = ["Shmonov Matvey Vasilievich <meology77@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+sqlalchemy = "^2.0.36"
+ttkwidgets = "^0.13.0"
+scrapli = "^2024.7.30.post1"
+scrapli-community = "^2024.7.30"
+serial = "^0.0.97"
+psycopg2-binary = "^2.9.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
