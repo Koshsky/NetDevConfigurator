@@ -43,10 +43,16 @@ class CommonConfigTab(BaseTab):
 
     @property
     def config_meta(self):
-        return f"Device: {self._config['device']}\nPreset: {self._config['preset']}\nRole: {self._config['role']}"
+        return (
+            f"Preset: {self._config['preset']}\n"
+            f"Role: {self._config['role']}\n"
+            f"Device: {self._config['target']}\n"
+            f"Description: {self._config['description']}\n"
+        )
     @property
     def config_template(self):
-        return '\r\n'.join(entity['template']['text'] for entity in self._config['configuration']) + '\r\nend\n'
+        # TODO: есть догадки что символ переноса строки - это '\r\n'
+        return '\n'.join(entity['text'] for entity in self._config['configuration']) + '\r\nend\n'
 
     @error_handler
     @update_config
@@ -88,6 +94,6 @@ class CommonConfigTab(BaseTab):
 
         template_names = self.app.entity_services['template'].get_by_family_id_and_role(self.family_id, self.preset.role)
         if not template_names:
-            raise ValueError(f"There is no templates for role: {role}")
+            raise ValueError("There are no suitable configuration templates")
         self.fields['template']['name']['values'] = template_names
         self.fields['template']['name'].set(template_names[0])

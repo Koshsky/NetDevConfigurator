@@ -8,6 +8,7 @@ from ..decorators import transactional
 from ..base_service import BaseService
 from ..template_service import TemplateService
 from ..preset_service import PresetService
+from .device_service import DeviceService
 
 def check_template_role(func):
     def wrapper(self, preset_id: int, template_id: int, *args, **kwargs):
@@ -25,12 +26,36 @@ class DevicePresetService(BaseService):
         super().__init__(db, DevicePresets)
         self.preset_service = PresetService(db)
         self.template_service = TemplateService(db)
+        self.device_service = DeviceService(db)
 
     def _get_max_ordered_number(self, preset_id: int) -> int:
         return self.db.query(func.max(DevicePresets.ordered_number)) \
             .filter(DevicePresets.preset_id == preset_id) \
             .scalar() or 0
 
+    def __clear(self, preset_id):
+        self.db.query(DevicePresets).filter(DevicePresets.preset_id == preset_id).delete()
+        self.db.commit()
+
+    def copy(self, source, destination):
+        if source == destination:
+            raise ValueError("preset_from is preset_to!")
+        dev1 = self.device_service.get_by_id(source.device_id)
+        dev2 = self.device_service.get_by_id(destination.device_id)
+        if dev1.family_id != dev2.family_id:
+            raise ValueError("Devices are from different families!")
+
+        self.__clear(destination.id)
+        records = self.db.query(DevicePresets).filter_by(preset_id=source.id).all()
+        for record in records:
+            new_record = record.__class__(
+                preset_id=destination.id,
+                template_id=record.template_id,
+                ordered_number=record.ordered_number,
+            )
+            self.db.add(new_record)
+
+        self.db.commit()
     @check_template_role
     @transactional
     def push_back(self, preset_id: int, template_id: int):

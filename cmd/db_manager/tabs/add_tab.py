@@ -50,7 +50,7 @@ class AddTab(BaseTab):
         if not preset_name:
             raise ValueError("Preset name cannot be empty.")
         role = self.fields['template']['role'].get().strip()
-        if role not in self.entity_collections['role'] or role == 'common':
+        if role not in self.app.entity_collections['role'] or role == 'common':
             raise ValueError("Invalid role.")
 
         self.app.entity_services['preset'].create(
@@ -60,6 +60,7 @@ class AddTab(BaseTab):
                 'device_id': device.id
             }
         )
+        self.display_feedback("successfully")
 
     @error_handler
     def submit_template(self):

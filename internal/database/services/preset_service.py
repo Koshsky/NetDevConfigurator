@@ -33,14 +33,15 @@ class PresetService(BaseService):
         return {
             "preset": preset.name,
             "id": preset.id,
-            "target": self.device_service.get_by_id(rows[0][0].device_id).name,
-            "role": rows[0][0].role,
-            "description": rows[0][0].description,
+            "target": self.device_service.get_by_id(preset.device_id).name,
+            "role": preset.role,
+            "description": preset.description,
             "configuration": [
                 {
                     'template_id': template.id,
                     'name': template.name,
                     'type': template.type,
+                    'text': template.text
                 } for preset, device_preset, template in rows
             ]
         }
