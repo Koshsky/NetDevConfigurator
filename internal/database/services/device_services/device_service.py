@@ -30,8 +30,8 @@ class DeviceService(BaseService):
 
     def get_info(self, device):
         device_ports = self.device_port_service.get_device_ports(device.id)
-        device_protocols = self.device_protocol_service.get_protocols_by_device_id(device.id)
-        device_firmwares = self.device_firmware_service.get_device_firmwares(device.id)
+        associated_protocols = self.device_protocol_service.get_protocols_by_device_id(device.id)
+        associated_firmwares = self.device_firmware_service.get_firmwares_by_device_id(device.id)
 
         return {
             "id": device.id,
@@ -49,15 +49,15 @@ class DeviceService(BaseService):
                 {
                     "name": protocol.name,
                     "id": protocol.id
-                } for _, protocol in device_protocols
+                } for _, protocol in associated_protocols
             ],
             "firmwares": [
                 {
-                    "name": device_firmware.firmware.name,
-                    "full_path": device_firmware.firmware.full_path,
-                    "type": device_firmware.firmware.type,
-                    "id": device_firmware.firmware.id
-                } for device_firmware in device_firmwares
+                    "name": firmware.name,
+                    "full_path": firmware.full_path,
+                    "type": firmware.type,
+                    "id": firmware.id
+                } for firmware in associated_firmwares
             ],
             "ports": [
                 {

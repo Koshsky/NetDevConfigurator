@@ -4,8 +4,8 @@ from sqlalchemy.exc import IntegrityError
 
 class UpdateTab(BaseTab):
     def create_widgets(self):
-        self.create_block("device", {"name":None}, None)
-        self.create_block("firmware", {"name":None}, None)
+        self.create_block("device", {"name":list(self.app.entity_collections['device'])}, None)
+        self.create_block("firmware", {"name":list(self.app.entity_collections['firmware'])}, None)
         self.create_button_in_line(("LINK", lambda: self._manage_link(link=True)))
         self.create_button_in_line(("UNLINK", lambda: self._manage_link(link=False)))
         self.create_feedback_area()

@@ -6,8 +6,8 @@ class DeviceTab(BaseTab):
     def create_widgets(self):
         self.create_block("device", {
                 "name":None,
-                "protocols": self.app.entity_collections['protocols'],
-                "ports": {f"{i}": self.app.entity_collections['ports'] for i in range(60)}
+                "protocols": self.app.entity_collections['protocol'],
+                "ports": {f"{i}": self.app.entity_collections['port'] for i in range(60)}
         }, width=12)
         self.create_button_in_line(("WRITE", self.write_device))
         self.create_feedback_area()
@@ -49,8 +49,8 @@ class DeviceTab(BaseTab):
             self.app.entity_services['device_port'].delete_by_id(device_port.DevicePorts.id)
 
     def _clear_protocols(self, device):
-        device_protocols = self.app.entity_services['device_protocol'].get_device_protocols(device.id)
-        for device_protocol in device_protocols:
+        device_protocols = self.app.entity_services['device_protocol'].get_protocols_by_device_id(device.id)
+        for device_protocol, _ in device_protocols:
             self.app.entity_services['device_protocol'].delete_by_id(device_protocol.id)
 
     def _validate_port_input(self, ports_input):

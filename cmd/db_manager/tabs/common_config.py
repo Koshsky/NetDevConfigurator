@@ -35,7 +35,7 @@ class CommonConfigTab(BaseTab):
 
     def create_widgets(self):
         self.create_block("preset", {
-            "name": list(self.app.entity_collections['presets']),
+            "name": list(self.app.entity_collections['preset']),
         })
         self.create_button_in_line(("REFRESH", self.refresh))
         self.create_block("template", {

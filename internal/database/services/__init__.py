@@ -34,30 +34,33 @@ def setup_database_services(session):
 
 def prepare_entity_collections(entity_services):
     return dict(
-        companies=tuple(
+        company=tuple(
             company.name for company in entity_services["company"].get_all()
         ),
-        families=tuple(
+        firmware=tuple(
+            firmware.name for firmware in entity_services["firmware"].get_all()
+        ),
+        family=tuple(
             family.name for family in entity_services["family"].get_all()
         ),
-        devices=tuple(
+        device=tuple(
             device.name for device in entity_services["device"].get_all()
         ),
-        protocols=tuple(
+        protocol=tuple(
             protocol.name for protocol in entity_services["protocol"].get_all()
         ),
-        ports=(None,)
+        port=(None,)
         + tuple(port.name for port in entity_services["port"].get_all()),
-        templates=tuple(set(
+        template=tuple(set(
             {
                 template.name
                 for template in entity_services['template'].get_all()
             }
         )),
-        presets=tuple(
+        preset=tuple(
             preset.name for preset in entity_services["preset"].get_all()
         ),
-        template_types=(
+        template_type=(
             'header',
             'hostname',
             'VLAN',
@@ -74,7 +77,7 @@ def prepare_entity_collections(entity_services):
             'jumbo',
             'priority',
         ),
-        roles=(  # `common` suits for all
+        role=(  # `common` suits for all
             'data',
             'ipmi',
             'or',

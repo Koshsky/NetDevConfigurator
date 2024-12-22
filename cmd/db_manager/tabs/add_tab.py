@@ -15,8 +15,8 @@ class AddTab(BaseTab):
             "device",
             {
                 "name": None,
-                "company": list(self.app.entity_collections['companies']),
-                "family": list(self.app.entity_collections['families']),
+                "company": list(self.app.entity_collections['company']),
+                "family": list(self.app.entity_collections['family']),
                 "dev_type": ["switch", "router"],
             },
             ("SUBMIT", self.submit_device)
@@ -25,14 +25,41 @@ class AddTab(BaseTab):
             "template",
             {
                 "name": None,
-                "family": list(self.app.entity_collections['families']),
-                "type": list(self.app.entity_collections['template_types']),
-                "role": list(self.app.entity_collections['roles']),
+                "family": list(self.app.entity_collections['family']),
+                "type": list(self.app.entity_collections['template_type']),
+                "role": list(self.app.entity_collections['role']),
                 'text': None
             },
             ('SUBMIT', self.submit_template)
         )
+        self.create_block(
+            "preset",
+            {
+                "name": None,
+                "device": list(self.app.entity_collections['device']),
+                "role": list(self.app.entity_collections['role']),
+            },
+            ('SUBMIT', self.submit_preset)
+        )
         self.create_feedback_area()
+
+    @error_handler
+    def submit_preset(self):
+        device = self.check_device_name(self.fields['preset']['device'].get())
+        preset_name = self.fields['preset']['name'].get().strip()
+        if not preset_name:
+            raise ValueError("Preset name cannot be empty.")
+        role = self.fields['template']['role'].get().strip()
+        if role not in self.entity_collections['role'] or role == 'common':
+            raise ValueError("Invalid role.")
+
+        self.app.entity_services['preset'].create(
+            {
+                'name': preset_name,
+                'role': role,
+                'device_id': device.id
+            }
+        )
 
     @error_handler
     def submit_template(self):

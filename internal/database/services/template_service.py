@@ -13,16 +13,17 @@ class TemplateService(BaseService):
     def get_info(self, template):
         family = self.family_service.get_by_id(template.family_id)
         return {
-            "id": template.id,
-            "family": {
-                "id": family.id,
-                "name": family.name,
-            },
             "name": template.name,
+            "id": template.id,
+            "family": family.name,
             "type": template.type,
             "role": template.role,
             "text": template.text,
         }
+
+    def get_info_by_name(self, template_name):
+        templates = self.get_by_name(template_name)
+        return [self.get_info(template) for template in templates]
 
     def get_by_name(self, template_name: str):
         if template:= self.db.query(Templates).filter(Templates.name == template_name).all():

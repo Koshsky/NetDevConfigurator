@@ -31,18 +31,16 @@ class PresetService(BaseService):
                 .all()
         )
         return {
-            "device": self.device_service.get_by_id(rows[0][0].device_id).name,
             "preset": preset.name,
+            "id": preset.id,
+            "target": self.device_service.get_by_id(rows[0][0].device_id).name,
             "role": rows[0][0].role,
             "description": rows[0][0].description,
             "configuration": [
                 {
-                    'template': {
-                        'id': template.id,
-                        'type': template.type,
-                        'text': template.text
-                    },
-                    'ordered_number': device_preset.ordered_number
+                    'template_id': template.id,
+                    'name': template.name,
+                    'type': template.type,
                 } for preset, device_preset, template in rows
             ]
         }
