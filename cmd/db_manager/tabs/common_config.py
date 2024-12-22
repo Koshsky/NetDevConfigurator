@@ -26,20 +26,13 @@ class CommonConfigTab(BaseTab):
         self.family_id = None
         super().__init__(app, parent)
 
-    @property
-    def config_meta(self):
-        return f"Device: {self._config['device']}\nPreset: {self._config['preset']}\nRole: {self._config['role']}"
-    @property
-    def config_template(self):
-        return '\r\n'.join(entity['template']['text'] for entity in self._config['configuration']) + '\r\nend\n'
-
     def create_widgets(self):
         self.create_block("preset", {
-            "name": list(self.app.entity_collections['preset']),
+            "name": self.app.entity_collections['preset'],
         })
         self.create_button_in_line(("REFRESH", self.refresh))
         self.create_block("template", {
-                "name": ["1", "2'"],
+                "name": ("1", "2"),  # TODO: нужно что-то придумать с этим....
                 "ordered_number": None,
 
         })
@@ -47,6 +40,13 @@ class CommonConfigTab(BaseTab):
         self.create_button_in_line(("INSERT", self.insert))
         self.create_button_in_line(("REMOVE", self.remove))
         self.create_feedback_area()
+
+    @property
+    def config_meta(self):
+        return f"Device: {self._config['device']}\nPreset: {self._config['preset']}\nRole: {self._config['role']}"
+    @property
+    def config_template(self):
+        return '\r\n'.join(entity['template']['text'] for entity in self._config['configuration']) + '\r\nend\n'
 
     @error_handler
     @update_config

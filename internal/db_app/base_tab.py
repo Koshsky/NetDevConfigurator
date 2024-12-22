@@ -64,9 +64,9 @@ class BaseTab:
 
             if param_presets is None or len(param_presets) == 0:
                 self.__create_entry_field(entity_name, param_name)
-            elif isinstance(param_presets, list):
-                self.__create_combobox_field(entity_name, param_name, param_presets)
             elif isinstance(param_presets, tuple):
+                self.__create_combobox_field(entity_name, param_name, param_presets)
+            elif isinstance(param_presets, list):
                 self.__create_checkbox_group(entity_name, param_name, param_presets, width)
             elif isinstance(param_presets, dict):
                 self.__create_combobox_group(entity_name, param_name, param_presets, width)

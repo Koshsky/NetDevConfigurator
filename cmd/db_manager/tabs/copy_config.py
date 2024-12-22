@@ -4,7 +4,7 @@ from .common_config import CommonConfigTab, update_config
 class CopyConfigTab(CommonConfigTab):
     def create_widgets(self):
         self.create_block("preset", {
-            "from": list(self.app.entity_collections['preset']),
+            "from": self.app.entity_collections['preset'],
             "to": None
         })
         self.create_button_in_line(("COPY", self.copy))

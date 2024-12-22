@@ -6,7 +6,7 @@ class DeviceTab(BaseTab):
     def create_widgets(self):
         self.create_block("device", {
                 "name":None,
-                "protocols": self.app.entity_collections['protocol'],
+                "protocols": list(self.app.entity_collections['protocol']),
                 "ports": {f"{i}": self.app.entity_collections['port'] for i in range(60)}
         }, width=12)
         self.create_button_in_line(("WRITE", self.write_device))

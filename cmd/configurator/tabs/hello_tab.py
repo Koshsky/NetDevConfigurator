@@ -5,11 +5,11 @@ class HelloTab(BaseTab):
     def create_widgets(self):
         self.create_block("params", {
             "CERT": None,
-            "DEVICE": list(self.app.entity_collections['devices']),
-            "ROLE": list(self.app.entity_collections['roles']),
+            "DEVICE": self.app.entity_collections['devices'],
+            "ROLE": self.app.entity_collections['roles'],
             "OR": None,
         })
-        self.create_block('preset', {'name': ["common", "common2"]}, ("UPDATE", self.update_preset_list))
+        self.create_block('preset', {'name': list("common", "common2")}, ("UPDATE", self.update_preset_list))
         self.create_button_in_line(("REGISTER DEVICE", self.register_device))
         self.create_feedback_area()
 

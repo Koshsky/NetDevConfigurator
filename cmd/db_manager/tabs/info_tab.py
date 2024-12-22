@@ -7,7 +7,7 @@ class InfoTab(BaseTab):
         for entity_type in entity_types:
             self.create_block(
                 entity_type,
-                {"name": list(self.app.entity_collections[entity_type])},
+                {"name": self.app.entity_collections[entity_type]},
                 ("SHOW", getattr(self, f"show_{entity_type}_info"))
             )
         self.create_feedback_area()

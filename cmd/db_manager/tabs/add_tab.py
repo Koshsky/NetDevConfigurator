@@ -9,15 +9,15 @@ class AddTab(BaseTab):
     def create_widgets(self):
         self.create_block("company", {"name": None}, ("SUBMIT", self.submit_company))
         self.create_block("family", {"name": None}, ("SUBMIT", self.submit_family))
-        self.create_block("firmware", {"folder": ['./firmwares']}, ("SUBMIT", self.submit_firmwares_from_folder))
+        self.create_block("firmware", {"folder": ('./firmwares',)}, ("SUBMIT", self.submit_firmwares_from_folder))
         self.create_block("protocol", {"name": None}, ("SUBMIT", self.submit_protocol))
         self.create_block(
             "device",
             {
                 "name": None,
-                "company": list(self.app.entity_collections['company']),
-                "family": list(self.app.entity_collections['family']),
-                "dev_type": ["switch", "router"],
+                "company": self.app.entity_collections['company'],
+                "family": self.app.entity_collections['family'],
+                "dev_type": ("switch", "router"),
             },
             ("SUBMIT", self.submit_device)
         )
@@ -25,9 +25,9 @@ class AddTab(BaseTab):
             "template",
             {
                 "name": None,
-                "family": list(self.app.entity_collections['family']),
-                "type": list(self.app.entity_collections['template_type']),
-                "role": list(self.app.entity_collections['role']),
+                "family": self.app.entity_collections['family'],
+                "type": self.app.entity_collections['template_type'],
+                "role": self.app.entity_collections['role'],
                 'text': None
             },
             ('SUBMIT', self.submit_template)
@@ -36,8 +36,8 @@ class AddTab(BaseTab):
             "preset",
             {
                 "name": None,
-                "device": list(self.app.entity_collections['device']),
-                "role": list(self.app.entity_collections['role']),
+                "device": self.app.entity_collections['device'],
+                "role": self.app.entity_collections['role'],
             },
             ('SUBMIT', self.submit_preset)
         )
