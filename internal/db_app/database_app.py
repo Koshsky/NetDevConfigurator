@@ -28,8 +28,10 @@ class DatabaseApp:
         self.connection_tab = ConnectionTab(self.notebook, self.on_success_callback, self.on_failure_callback, self)
         self.notebook.add(self.connection_tab.frame, text="CONNECTION")
 
-    def create_tab(self, ClassTab: type, tab_name: str):
-        tab = ClassTab(self.notebook, self)
+    def create_tab(self, ClassTab: type, tab_name: str, *args, **kwargs):
+        print(1)
+        tab = ClassTab(self.notebook, self, *args, **kwargs)
+        print(1)
         self.notebook.add(tab.frame, text=tab_name)
         self.tabs.append(tab)
 

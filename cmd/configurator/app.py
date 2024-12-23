@@ -45,8 +45,10 @@ class ConfiguratorApp(DatabaseApp):
             self.tabs.pop()
 
     def create_config_tabs(self):
-        self.create_tab(TemplateTab, "Templates")
-        self.create_tab(InterfacesTab, "Interfaces")
+        self.templates = {k: v for k, v in app._config.items() if v['type'] != 'interface'}
+        self.interfaces = {k: v for k, v in app._config.items() if v['type'] == 'interface'}
+        self.create_tab(TemplateTab, "Templates", self.templates, width=6)
+        self.create_tab(TemplateTab, "Interfaces", self.interfaces, width=12)
 
 
 if __name__ == "__main__":

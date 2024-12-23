@@ -4,10 +4,9 @@ from tkinter import ttk
 
 
 class TemplateTab(BaseTab):
-    def __init__(self, parent, app):
-        self.templates = {
-            k: v for k, v in app._config.items() if v['type'] != 'interface'
-        }
+    def __init__(self, parent, app, templates, *, width=6):
+        self.templates = templates
+        self.width = width
         super().__init__( parent, app)
 
     def create_widgets(self):
@@ -19,7 +18,7 @@ class TemplateTab(BaseTab):
         )
         self.create_block("config", {
             "templates": {k: self._get_templates_by_type(v['type']) for k, v in self.templates.items()}
-        }, width=6)
+        }, width=self.width)
         self.create_button_in_line(("UPDATE", self.update_config))
         self.create_button_in_line(("ACTUALIZE", self.actualize_values))
         self.create_feedback_area()
