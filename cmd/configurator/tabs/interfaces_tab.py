@@ -1,12 +1,11 @@
 from internal.db_app import BaseTab
-import pprint
 from tkinter import ttk
 
 
-class TemplateTab(BaseTab):
+class InterfacesTab(BaseTab):
     def __init__(self, parent, app):
         self.templates = {
-            k: v for k, v in app._config.items() if v['type'] != 'interface'
+            k: v for k, v in app._config.items() if v['type'] == 'interface'
         }
         super().__init__( parent, app)
 
@@ -18,19 +17,19 @@ class TemplateTab(BaseTab):
             f"OR:\t{self.app.params['OR']}"
         )
         self.create_block("config", {
-            "templates": {k: self._get_templates_by_type(v['type']) for k, v in self.templates.items()}
-        }, width=6)
+            "interfaces": {k: self._get_templates_by_type(v['type']) for k, v in self.templates.items()}
+        }, width=12)
         self.create_button_in_line(("UPDATE", self.update_config))
         self.create_button_in_line(("ACTUALIZE", self.actualize_values))
         self.create_feedback_area()
 
     def actualize_values(self):
         for k, v in self.templates.items():
-            self.fields['config']['templates'][k].set(v['name'])
+            self.fields['config']['interfaces'][k].set(v['name'])
 
     def update_config(self):
         for k, v in self.templates.items():
-            actual_name = self.fields['config']['templates'][k].get().strip()
+            actual_name = self.fields['config']['interfaces'][k].get().strip()
             if actual_name not in self._get_templates_by_type(v['type']):
                 raise ValueError(f"Invalid template for {k}")
             actual_template = self.app.entity_services['template'].get_by_name_and_role(actual_name, v['role'])

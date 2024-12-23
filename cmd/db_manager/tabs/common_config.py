@@ -52,7 +52,7 @@ class CommonConfigTab(BaseTab):
     @property
     def config_template(self):
         # TODO: есть догадки что символ переноса строки - это '\r\n'
-        return '\n'.join(entity['text'] for entity in self._config['configuration']) + '\r\nend\n'
+        return '\n'.join(f'{i}\t{entity["name"]}' for i, entity in enumerate(self._config['configuration'])) + '\r\nend\n'
 
     @error_handler
     @update_config

@@ -34,17 +34,14 @@ class TemplateService(BaseService):
     def get_by_family_id_and_role(self, family_id: int, role: str): # to create a list of suitable templates
         roles_to_check = ['common', role]
 
-        if (
-            entities := self.db.query(Templates)
+        return (
+            self.db.query(Templates)
             .filter(
                 Templates.family_id == family_id,
                 Templates.role.in_(roles_to_check),
             )
             .all()
-        ):
-            return [template.name for template in entities]
-        else:
-            raise EntityNotFoundError("Templates not found")
+        )
 
     def get_by_name_and_role(self, name: str, role: str):  # for unambiguous selection
         if template := self.db.query(Templates).filter(

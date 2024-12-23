@@ -22,7 +22,6 @@ class InfoTab(BaseTab):
 
     @error_handler
     def __show_info(self, entity_type: str):
-        check_name = getattr(self, f'check_{entity_type}_name')
         entity_name = self.fields[entity_type]["name"].get().strip()
         self.display_feedback(
             pformat(self.app.entity_services[entity_type].get_info_by_name(entity_name), sort_dicts=False)

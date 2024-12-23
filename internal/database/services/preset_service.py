@@ -3,22 +3,19 @@ from sqlalchemy.orm import Session
 from internal.database.models import Presets, DevicePresets, Templates, Devices
 from .base_service import BaseService
 from .device_services.device_service import DeviceService
+from .device_services.device_port_service import DevicePortService
+from .template_service import TemplateService
 
 
 class PresetService(BaseService):
     def __init__(self, db: Session):
         super().__init__(db, Presets)
         self.device_service = DeviceService(db)
+        self.device_port_service = DevicePortService(db)
+        self.template_service = TemplateService(db)
 
     def get_all_by_device_id(self, device_id):
-        presets = (
-            self.db.query(Presets.name)
-            .filter(
-                Presets.device_id == device_id,
-            )
-            .all()
-        )
-        return [preset[0] for preset in presets]
+        return [preset for preset in self.get_all() if preset.device_id == device_id]
 
     def get_info(self, preset):
         rows = (
@@ -30,18 +27,16 @@ class PresetService(BaseService):
                 .order_by(DevicePresets.ordered_number)
                 .all()
         )
+        interfaces = (port['interface'] for port in self.device_service.get_info_by_id(preset.device_id)['ports'])  # generator
         return {
             "preset": preset.name,
             "id": preset.id,
             "target": self.device_service.get_by_id(preset.device_id).name,
             "role": preset.role,
             "description": preset.description,
-            "configuration": [
-                {
-                    'template_id': template.id,
-                    'name': template.name,
-                    'type': template.type,
-                    'text': template.text
-                } for preset, device_preset, template in rows
-            ]
+            "configuration": {
+                f'{template.name if template.type != "interface" else next(interfaces)}':
+                    self.template_service.get_info(template)
+                for preset, device_preset, template in rows
+            }
         }

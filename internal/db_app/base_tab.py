@@ -52,6 +52,11 @@ class BaseTab:
         for widget in self.frame.winfo_children():
             widget.destroy()
 
+    def create_label(self, text):
+        label = ttk.Label(self.frame, text=text)
+        label.grid(row=self.cur_row, column=self.cur_col, padx=5, pady=5)
+        self.cur_row += 1
+
     def create_block(self, entity_name, parameters, button=None, width=None):
         if entity_name not in self.fields:
             self.fields[entity_name] = {}
