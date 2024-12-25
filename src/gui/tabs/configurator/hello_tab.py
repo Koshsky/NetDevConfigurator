@@ -1,5 +1,7 @@
-from gui import BaseTab, error_handler
+from gui import BaseTab, apply_error_handler
 
+
+@apply_error_handler
 class HelloTab(BaseTab):
     def create_widgets(self):
         self.create_block("device", {  # for filtering presets
@@ -14,10 +16,11 @@ class HelloTab(BaseTab):
         self.create_feedback_area()
         self.refresh_presets()
 
-    @error_handler
     def update_tabs(self):
         preset = self.check_preset_name(self.fields['params']['preset'].get())
         device = self.check_device_name(self.fields['device']['name'].get())
+        if preset.device_id != device.id:
+            raise ValueError("Preset and device do not match")
 
         self.app.register_settings(
             cert=self.fields['params']['CERT'].get().strip(),
@@ -27,7 +30,6 @@ class HelloTab(BaseTab):
         )
         self.app.update_config_tabs()
 
-    @error_handler
     def refresh_presets(self):
         device = self.check_device_name(self.fields['device']['name'].get())
         role = self.fields['device']['role'].get().strip()

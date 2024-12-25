@@ -1,7 +1,8 @@
-from gui import BaseTab, error_handler
+from gui import BaseTab, apply_error_handler
 from sqlalchemy.exc import IntegrityError
 
 
+@apply_error_handler
 class UpdateTab(BaseTab):
     def create_widgets(self):
         self.create_block("device", {"name":self.app.entity_collections['device']}, None)
@@ -10,7 +11,6 @@ class UpdateTab(BaseTab):
         self.create_button_in_line(("UNLINK", lambda: self._manage_link(link=False)))
         self.create_feedback_area()
 
-    @error_handler
     def _manage_link(self, link: bool):
         device = self.check_device_name(self.fields["device"]["name"].get().strip())
         firmware = self.check_firmware_name(self.fields["firmware"]["name"].get().strip())

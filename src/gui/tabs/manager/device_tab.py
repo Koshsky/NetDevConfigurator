@@ -1,7 +1,8 @@
-from gui import BaseTab, error_handler
+from gui import BaseTab, apply_error_handler
 import pprint
 
 
+@apply_error_handler
 class DeviceTab(BaseTab):
     def create_widgets(self):
         self.create_block("device", {
@@ -12,7 +13,6 @@ class DeviceTab(BaseTab):
         self.create_button_in_line(("WRITE", self.write_device))
         self.create_feedback_area()
 
-    @error_handler
     def write_device(self):
         device = self.check_device_name(self.fields["device"]["name"].get())
         self._validate_port_input(self.fields['device']['ports'])

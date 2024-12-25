@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from .exceptions import RetrievalError
 from database.services import EntityNotFoundError
 
+
 def error_handler(func):
     """A decorator that provides comprehensive error handling for database-related methods.
 
@@ -40,3 +41,9 @@ def error_handler(func):
             self.app.session.rollback()
 
     return wrapper
+
+def apply_error_handler(cls):
+    for attr_name, attr_value in cls.__dict__.items():
+        if callable(attr_value):
+            setattr(cls, attr_name, error_handler(attr_value))
+    return cls

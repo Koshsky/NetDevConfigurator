@@ -1,6 +1,8 @@
-from gui import BaseTab, error_handler
+from gui import BaseTab, apply_error_handler
 from pprint import pformat
 
+
+@apply_error_handler
 class InfoTab(BaseTab):
     def create_widgets(self):
         entity_types = ['company', 'family', 'device', 'firmware', 'preset', 'template']
@@ -20,7 +22,6 @@ class InfoTab(BaseTab):
             return dynamic_show_info
         return super().__getattr__(name)
 
-    @error_handler
     def __show_info(self, entity_type: str):
         entity_name = self.fields[entity_type]["name"].get().strip()
         self.display_feedback(

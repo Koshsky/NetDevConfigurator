@@ -2,10 +2,14 @@ import tkinter as tk
 
 from gui.base_app import DatabaseApp
 from gui.tabs.configurator import *
+import uuid
+import os
 
 
 class ConfiguratorApp(DatabaseApp):
     def __init__(self, *args, **kwargs):
+        self.directory = '/tmp/netdevconfigurator'
+        os.makedirs(self.directory, exist_ok=True)
         self.params = {
             "CERT": None,
             "OR": None,
@@ -15,6 +19,7 @@ class ConfiguratorApp(DatabaseApp):
         self._device = None
         self._preset = None
         self._config = None
+        self._path = None
         super().__init__(*args, **kwargs)
 
     def on_success_callback(self, engine):
@@ -34,6 +39,11 @@ class ConfiguratorApp(DatabaseApp):
         self._device = device
         self._preset = preset
         self._config = self.db_services['preset'].get_info(preset)['configuration']
+        self._path = self.generate_filename()
+
+    def generate_filename(self):
+        filename = f"config_{uuid.uuid4()}.txt"
+        return os.path.join(self.directory, filename)
 
     def update_config_tabs(self):
         self.remove_config_tabs()

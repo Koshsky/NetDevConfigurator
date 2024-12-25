@@ -14,12 +14,12 @@ def mes_on_close(cls):
 
 
 mes_config = {
-    "host": "10.4.1.11",  # 10.3.1.13 
+    "host": "10.4.1.11",  # 10.3.1.13
     "auth_username": "admin",
     "auth_password": "mvsadmin",
     "on_open": mes_on_open,
     "on_close": mes_on_close,
-    "comms_prompt_pattern": r"^(\\n)?[a-z0-9.\-_@/:]{1,63}[#>]\s*$",  # 
+    "comms_prompt_pattern": r"^(\\n)?[a-z0-9.\-_@/:]{1,63}[#>]\s*$",
     "ssh_config_file": "~/NetDevConfigurator/modules/my_ssh_config",
 }
 

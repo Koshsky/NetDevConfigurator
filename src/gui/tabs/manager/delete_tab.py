@@ -1,5 +1,6 @@
-from gui import BaseTab, error_handler
+from gui import BaseTab, apply_error_handler
 
+@apply_error_handler
 class DeleteTab(BaseTab):
     def create_widgets(self):
         entities = ["company", "family", "device", "firmware", "protocol", 'preset']
@@ -16,7 +17,6 @@ class DeleteTab(BaseTab):
         )
         self.create_feedback_area()
 
-    @error_handler
     def delete_template(self):
         name = self.fields['template']['name'].get().strip()
         role = self.fields['template']['role'].get().strip()
@@ -24,7 +24,6 @@ class DeleteTab(BaseTab):
         self.app.db_services['template'].delete(template)
         self.display_feedback("Successfully deleted from the templates table.")
 
-    @error_handler
     def delete_entity(self, entity_type):
         self.app.db_services[entity_type].delete_by_name(self.fields[entity_type]["name"].get())
         self.display_feedback(f"Successfully deleted from the {entity_type}s table.")

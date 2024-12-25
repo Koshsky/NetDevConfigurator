@@ -3,8 +3,9 @@ import pprint
 
 from database.services import determine_firmware_type
 
-from gui import BaseTab, error_handler
+from gui import BaseTab, apply_error_handler
 
+@apply_error_handler
 class AddTab(BaseTab):
     def create_widgets(self):
         self.create_block("company", {"name": None}, ("SUBMIT", self.submit_company))
@@ -43,7 +44,6 @@ class AddTab(BaseTab):
         )
         self.create_feedback_area()
 
-    @error_handler
     def submit_preset(self):
         device = self.check_device_name(self.fields['preset']['device'].get())
         preset_name = self.fields['preset']['name'].get().strip()
@@ -62,21 +62,14 @@ class AddTab(BaseTab):
         )
         self.display_feedback("successfully")
 
-    @error_handler
     def submit_template(self):
         template_name = self.fields['template']['name'].get().strip()
         template_type = self.fields['template']['type'].get().strip()
         role = self.fields['template']['role'].get().strip()
         text = self.fields['template']['text'].get().strip()
 
-        if not template_name:
-            raise ValueError("Template name cannot be empty.")
-        if not template_type:
-            raise ValueError("Select template type")
-        if not role:
-            raise ValueError("Select template role")
-        if not text:
-            raise ValueError("Template text cannot be empty.")
+        if not (template_name and template_type and role):
+            raise ValueError("All parameters must be set")
 
         family = self.check_family_name(self.fields['template']['family'].get())
 
@@ -91,7 +84,7 @@ class AddTab(BaseTab):
         )
 
         self.display_feedback("Successfully added to the templates table.")
-    @error_handler
+
     def submit_protocol(self):
         protocol_name = self.fields['protocol']['name'].get().strip()
         if not protocol_name:
@@ -100,7 +93,6 @@ class AddTab(BaseTab):
         self.app.db_services["protocol"].create({"name": protocol_name})
         self.display_feedback("Successfully added to the protocols table.")
 
-    @error_handler
     def submit_family(self):
         family_name = self.fields['family']['name'].get().strip()
         if not family_name:
@@ -109,7 +101,6 @@ class AddTab(BaseTab):
         self.app.db_services["family"].create({"name": family_name})
         self.display_feedback("Successfully added to the families table.")
 
-    @error_handler
     def submit_device(self):
         device_name = self.fields["device"]["name"].get().strip()
         dev_type = self.fields["device"]["dev_type"].get().strip()
@@ -132,7 +123,6 @@ class AddTab(BaseTab):
 
         self.display_feedback("Successfully added to the devices table.")
 
-    @error_handler
     def submit_company(self):
         company_name = self.fields['company']['name'].get().strip()
         if not company_name:
@@ -141,7 +131,6 @@ class AddTab(BaseTab):
         self.app.db_services["company"].create({"name": company_name})
         self.display_feedback("Successfully added to the companies table.")
 
-    @error_handler
     def submit_firmwares_from_folder(self):
         folder_name = self.fields['firmware']['folder'].get().strip()
         if not folder_name:

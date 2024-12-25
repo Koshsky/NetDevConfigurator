@@ -1,5 +1,7 @@
-from gui import BaseTab, error_handler
+from gui import BaseTab, apply_error_handler
 
+
+@apply_error_handler
 class TablesTab(BaseTab):
     def create_widgets(self):
         for entity in ['company', 'family', 'device', 'firmware', 'port', 'protocol', 'template', 'preset']:

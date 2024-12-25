@@ -1,8 +1,9 @@
-from gui import BaseTab, error_handler
+from gui import BaseTab, apply_error_handler
 import pprint
 from tkinter import ttk
 
 
+@apply_error_handler
 class TemplateTab(BaseTab):
     def __init__(self, parent, app, templates, *, width=6):
         self.templates = templates
@@ -27,7 +28,6 @@ class TemplateTab(BaseTab):
         for k, v in self.templates.items():
             self.fields['config']['templates'][k].set(v['name'])
 
-    @error_handler
     def update_config(self):
         for k, v in self.templates.items():
             actual_name = self.fields['config']['templates'][k].get().strip()

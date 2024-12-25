@@ -1,4 +1,4 @@
-from gui import BaseTab, error_handler
+from gui import BaseTab, apply_error_handler
 import pprint
 from functools import wraps
 
@@ -19,6 +19,7 @@ def preset_is_not_none(func):
         return func(self, *args, **kwargs)
     return wrapper
 
+@apply_error_handler
 class CommonConfigTab(BaseTab):
     def __init__(self, app, parent):
         self._config = None
@@ -54,7 +55,6 @@ class CommonConfigTab(BaseTab):
         # TODO: есть догадки что символ переноса строки - это '\r\n'
         return '\n'.join(f'{i}\t{v["name"]}' for i, (k, v) in enumerate(self._config['configuration'].items(), start=1)) + '\nend\n'
 
-    @error_handler
     @update_config
     @preset_is_not_none
     def remove(self) -> str:
@@ -64,7 +64,6 @@ class CommonConfigTab(BaseTab):
         else:
             raise ValueError("Invalid ordered number")
 
-    @error_handler
     @update_config
     @preset_is_not_none
     def push_back(self) -> str:
@@ -73,7 +72,6 @@ class CommonConfigTab(BaseTab):
         self.app.db_services['preset'].push_back(self.preset.id, template.id)
         return f'Template {template.name} successfully pushed back\n'
 
-    @error_handler
     @update_config
     @preset_is_not_none
     def insert(self) -> str:
@@ -86,7 +84,6 @@ class CommonConfigTab(BaseTab):
             raise ValueError("Invalid ordered number")
         return f'Template {template.name} successfully inserted at position {ordered_number}\n'
 
-    @error_handler
     @update_config
     def refresh(self):
         self.preset = self.check_preset_name(self.fields['preset']['name'].get())

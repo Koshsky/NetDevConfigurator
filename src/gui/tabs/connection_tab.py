@@ -1,7 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
 from sqlalchemy import create_engine
+from gui.decorators import apply_error_handler
 
+
+@apply_error_handler
 class ConnectionTab:
     def __init__(self, parent, on_success_callback, on_failure_callback, app):
         self.frame = ttk.Frame(parent)
