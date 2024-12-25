@@ -34,7 +34,7 @@ class HelloTab(BaseTab):
         if not role or role not in self.app.entity_collections['role']:
             raise ValueError(f"Invalid role: '{role}'. Role must be one of {list(self.app.entity_collections['role'])}.")
 
-        presets = self.app.entity_services['preset'].get_all_by_device_id(device.id)
+        presets = self.app.db_services['preset'].get_all_by_device_id(device.id)
         self.filtered_presets = [preset.name for preset in presets if preset.role == role]
         self.fields['params']['preset']['values'] = self.filtered_presets
         self.fields['params']['preset'].set(self.filtered_presets[0] if self.filtered_presets else '')

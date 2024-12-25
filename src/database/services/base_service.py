@@ -38,16 +38,16 @@ class BaseService:
         self.db.refresh(entity)
         return entity
 
-    def __delete(self, entity):
+    def delete(self, entity):
         if entity:
             self.db.delete(entity)
             self.db.commit()
 
     def delete_by_name(self, name: str):
         if db_entity := self.get_by_name(name):
-            self.__delete(db_entity)
+            self.delete(db_entity)
 
     def delete_by_id(self, entity_id: int):
         if db_entity := self.get_by_id(entity_id):
-            self.__delete(db_entity)
+            self.delete(db_entity)
 

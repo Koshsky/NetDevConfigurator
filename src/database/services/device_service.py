@@ -7,64 +7,43 @@ from .device_protocol_service import DeviceProtocolService
 from .base_service import BaseService
 
 
-class DeviceService(BaseService):
+class DeviceService(
+    BaseService,
+    DeviceFirmwareService,
+    DevicePortService,
+    DeviceProtocolService
+    ):
     def __init__(self, db: Session):
         super().__init__(db, Devices)
-        self.device_port_service = DevicePortService(db)
-        self.device_protocol_service = DeviceProtocolService(db)
-        self.device_firmware_service = DeviceFirmwareService(db)
 
-    def get_devices_by_company_id(self, company_id: int):
+    def get_all_by_company_id(self, company_id: int):
         return (
             self.db.query(Devices)
                 .filter(Devices.company_id == company_id)
                 .all()
         )
 
-    def get_devices_by_family_id(self, family_id: int):
+    def get_all_by_family_id(self, family_id: int):
         return (
             self.db.query(Devices)
                 .filter(Devices.family_id == family_id)
                 .all()
         )
 
-    def get_info(self, device):
-        device_ports = self.device_port_service.get_device_ports(device.id)
-        associated_protocols = self.device_protocol_service.get_protocols_by_device_id(device.id)
-        associated_firmwares = self.device_firmware_service.get_firmwares_by_device_id(device.id)
-
+    def get_info(self, entity):
         return {
-            "id": device.id,
-            "name": device.name,
-            "dev_type": device.dev_type,
+            "id": entity.id,
+            "name": entity.name,
+            "dev_type": entity.dev_type,
             "family": {
-                "name": device.family.name,
-                "id": device.family.id
+                "name": entity.family.name,
+                "id": entity.family.id
             },
             "company": {
-                "name": device.company.name,
-                "id": device.company.id
+                "name": entity.company.name,
+                "id": entity.company.id
             },
-            "protocols": [
-                {
-                    "name": protocol.name,
-                    "id": protocol.id
-                } for _, protocol in associated_protocols
-            ],
-            "firmwares": [
-                {
-                    "name": firmware.name,
-                    "full_path": firmware.full_path,
-                    "type": firmware.type,
-                    "id": firmware.id
-                } for firmware in associated_firmwares
-            ],
-            "ports": [
-                {
-                    "interface": device_port.interface,
-                    "material": port.material,
-                    "speed": port.speed,
-                    "name": port.name
-                } for device_port, port in device_ports
-            ],
+            "protocols": self.get_protocols_by_device_id(entity.id),
+            "firmwares": self.get_firmwares_by_device_id(entity.id),
+            "ports": self.get_ports_by_device_id(entity.id),
         }

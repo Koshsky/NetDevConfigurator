@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from database.models import Firmwares, DeviceFirmwares
+from database.models import Firmwares, Devices, DeviceFirmwares
 from .base_service import BaseService
 from .device_firmware_service import DeviceFirmwareService
 
@@ -11,7 +11,12 @@ class FirmwareService(BaseService):
         self.device_service = DeviceFirmwareService(db)
 
     def get_info(self, firmware: Firmwares):
-        associated_devices = self.device_service.get_devices_by_firmware_id(firmware.id)
+        associated_devices = (
+            self.db.query(Devices)
+            .join(DeviceFirmwares, DeviceFirmwares.device_id == Devices.id)
+            .filter(DeviceFirmwares.firmware_id == firmware.id)
+            .all()
+        )
         return {
             "id": firmware.id,
             "name": firmware.name,

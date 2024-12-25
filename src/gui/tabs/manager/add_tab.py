@@ -53,7 +53,7 @@ class AddTab(BaseTab):
         if role not in self.app.entity_collections['role'] or role == 'common':
             raise ValueError("Invalid role.")
 
-        self.app.entity_services['preset'].create(
+        self.app.db_services['preset'].create(
             {
                 'name': preset_name,
                 'role': role,
@@ -80,7 +80,7 @@ class AddTab(BaseTab):
 
         family = self.check_family_name(self.fields['template']['family'].get())
 
-        self.app.entity_services['template'].create(
+        self.app.db_services['template'].create(
             {
                 'name': template_name,
                 'family_id': family.id,
@@ -97,7 +97,7 @@ class AddTab(BaseTab):
         if not protocol_name:
             raise ValueError("Protocol name cannot be empty.")
 
-        self.app.entity_services["protocol"].create({"name": protocol_name})
+        self.app.db_services["protocol"].create({"name": protocol_name})
         self.display_feedback("Successfully added to the protocols table.")
 
     @error_handler
@@ -106,7 +106,7 @@ class AddTab(BaseTab):
         if not family_name:
             raise ValueError("Family name cannot be empty.")
 
-        self.app.entity_services["family"].create({"name": family_name})
+        self.app.db_services["family"].create({"name": family_name})
         self.display_feedback("Successfully added to the families table.")
 
     @error_handler
@@ -128,7 +128,7 @@ class AddTab(BaseTab):
             "dev_type": dev_type,
         }
 
-        device = self.app.entity_services["device"].create(new_device)
+        device = self.app.db_services["device"].create(new_device)
 
         self.display_feedback("Successfully added to the devices table.")
 
@@ -138,7 +138,7 @@ class AddTab(BaseTab):
         if not company_name:
             raise ValueError("Company name cannot be empty.")
 
-        self.app.entity_services["company"].create({"name": company_name})
+        self.app.db_services["company"].create({"name": company_name})
         self.display_feedback("Successfully added to the companies table.")
 
     @error_handler
@@ -150,7 +150,7 @@ class AddTab(BaseTab):
             raise ValueError("Folder '{folder_name}' does not exist.")
 
         folder_name = folder_name if os.path.isabs(folder_name) else os.path.abspath(folder_name)
-        existing_firmwares = [firmware.name for firmware in self.app.entity_services["firmware"].get_all()]
+        existing_firmwares = [firmware.name for firmware in self.app.db_services["firmware"].get_all()]
         for filename in os.listdir(folder_name):
             firmware_name = filename
             if firmware_name in existing_firmwares:
@@ -162,6 +162,6 @@ class AddTab(BaseTab):
                     "full_path": f'{folder_name}/{firmware_name}',
                     "type": determine_firmware_type(firmware_name)
             }
-            self.app.entity_services["firmware"].create(new_firmware)
+            self.app.db_services["firmware"].create(new_firmware)
 
         self.display_feedback("Successfully added new firmwares from the folder.")

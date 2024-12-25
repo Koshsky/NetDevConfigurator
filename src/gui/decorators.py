@@ -36,7 +36,7 @@ def error_handler(func):
             self.show_error("SQLAlchemyError", e)
             self.app.session.rollback()
         except Exception as e:
-            self.show_error("UKNOWN ERROR", e)
+            self.show_error(type(e).__name__, e)
             self.app.session.rollback()
 
     return wrapper

@@ -33,7 +33,7 @@ class ConfiguratorApp(DatabaseApp):
         self.params["ROLE"] = preset.role
         self._device = device
         self._preset = preset
-        self._config = self.entity_services['preset'].get_info(preset)['configuration']
+        self._config = self.db_services['preset'].get_info(preset)['configuration']
 
     def update_config_tabs(self):
         self.remove_config_tabs()

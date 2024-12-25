@@ -43,8 +43,8 @@ class DatabaseApp:
 
     def on_success_callback(self, engine):
         self.session = sessionmaker(bind=engine)()
-        self.entity_services = setup_database_services(self.session)
-        self.entity_collections = prepare_entity_collections(self.entity_services)
+        self.db_services = setup_database_services(self.session)
+        self.entity_collections = prepare_entity_collections(self.db_services)
         print("Successful connection to the database")
 
     def on_failure_callback(self, error):

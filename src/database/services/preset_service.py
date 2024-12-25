@@ -3,15 +3,17 @@ from sqlalchemy.orm import Session
 from database.models import Presets, DevicePresets, Templates, Devices
 from .base_service import BaseService
 from .device_service import DeviceService
-from .device_port_service import DevicePortService
+from .device_preset_service import DevicePresetService
 from .template_service import TemplateService
 
 
-class PresetService(BaseService):
+class PresetService(
+    BaseService,
+    DevicePresetService
+):
     def __init__(self, db: Session):
         super().__init__(db, Presets)
         self.device_service = DeviceService(db)
-        self.device_port_service = DevicePortService(db)
         self.template_service = TemplateService(db)
 
     def get_all_by_device_id(self, device_id):

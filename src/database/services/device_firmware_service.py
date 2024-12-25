@@ -4,36 +4,50 @@ from database.models import DeviceFirmwares, Devices, Firmwares
 from .base_service import BaseService
 
 
-class DeviceFirmwareService(BaseService):
+class DeviceFirmwareService:
     def __init__(self, db: Session):
-        super().__init__(db, DeviceFirmwares)
+        self.db = db
 
-    def get_by_device_firmware_id(self, device_id: int, firmware_id: int):
-        return (
-            self.db.query(DeviceFirmwares)
-                .filter(
-                    DeviceFirmwares.device_id == device_id,
-                    DeviceFirmwares.firmware_id == firmware_id,
-                )
-                .first()
-        )
-
-    def get_devices_by_firmware_id(self, firmware_id: int):
-        return (
-            self.db.query(Devices)
-                .join(Devices.device_firmwares)
-                .filter(DeviceFirmwares.firmware_id == firmware_id)
-                .all()
-        )
+    def reset_firmwares(self, device_id: int):
+        self.db.query(DeviceFirmwares).filter(DeviceFirmwares.device_id == device_id).delete()
+        self.db.commit()
 
     def get_firmwares_by_device_id(self, device_id: int):
-        return (
-            self.db.query(Firmwares)
-                .join(Firmwares.device_firmwares)
+        return [
+            {
+                    "name": firmware.name,
+                    "full_path": firmware.full_path,
+                    "type": firmware.type,
+                    "id": firmware.id
+            } for firmware in (
+                self.db.query(Firmwares)
+                .join(DeviceFirmwares, DeviceFirmwares.firmware_id == Firmwares.id,)
+                .join(Devices, Devices.id == DeviceFirmwares.device_id)
                 .filter(DeviceFirmwares.device_id == device_id)
                 .all()
-        )
+            )
+        ]
 
-    def delete_by_device_firmware_id(self, device_id: int, firmware_id: int):
-        db_device_firmware = self.get_by_device_firmware_id(device_id, firmware_id)
-        self.__delete(db_device_firmware)
+    def add_firmware_by_id(self, device_id: int, firmware_id: int):
+        if (
+            self.db.query(DeviceFirmwares)
+            .join(Firmwares, DeviceFirmwares.firmware_id == Firmwares.id)
+            .filter(DeviceFirmwares.device_id == device_id)
+            .all()
+        ):
+            raise ValueError("Firmware already exists for this device")
+        self.db.add(DeviceFirmwares(device_id=device_id, firmware_id=firmware_id))
+        self.db.commit()
+
+    def remove_firmware_by_id(self, device_id: int, firmware_id: int):
+        if not (
+            self.db.query(DeviceFirmwares)
+            .join(Firmwares, DeviceFirmwares.firmware_id == Firmwares.id)
+            .filter(DeviceFirmwares.device_id == device_id)
+            .all()
+        ):
+            raise ValueError("Firmware does not exist for this device")
+        self.db.query(DeviceFirmwares).filter(
+            DeviceFirmwares.device_id == device_id,
+            DeviceFirmwares.firmware_id == firmware_id).delete()
+        self.db.commit()

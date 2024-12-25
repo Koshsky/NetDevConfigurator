@@ -32,8 +32,8 @@ class TemplateTab(BaseTab):
             actual_name = self.fields['config']['templates'][k].get().strip()
             if actual_name not in self._get_templates_by_type(v['type']):
                 raise ValueError(f"Invalid template for {k}")
-            actual_template = self.app.entity_services['template'].get_by_name_and_role(actual_name, v['role'])
-            actual = self.app.entity_services['template'].get_info(actual_template)
+            actual_template = self.app.db_services['template'].get_by_name_and_role(actual_name, v['role'])
+            actual = self.app.db_services['template'].get_info(actual_template)
             self.app._config[k] = actual
             self.templates[k] = actual
         self.display_feedback(pprint.pformat(
@@ -41,5 +41,5 @@ class TemplateTab(BaseTab):
         ))
 
     def _get_templates_by_type(self, t):
-        entities = self.app.entity_services['template'].get_by_family_id_and_role(self.app._device.family_id, self.app._preset.role)
+        entities = self.app.db_services['template'].get_by_family_id_and_role(self.app._device.family_id, self.app._preset.role)
         return tuple(entity.name for entity in entities if entity.type == t)

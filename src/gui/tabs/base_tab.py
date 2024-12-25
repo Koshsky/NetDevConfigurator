@@ -39,7 +39,7 @@ class BaseTab:
         if not (entity_name := entity_name.strip()):
             raise ValueError(f"{entity_type.capitalize()} name cannot be empty")
 
-        service = self.app.entity_services.get(entity_type)
+        service = self.app.db_services.get(entity_type)
         if not service:
             raise RetrievalError(f"Invalid entity type: {entity_type}")
 
@@ -98,6 +98,7 @@ class BaseTab:
 
     def show_error(self, title, error):
         messagebox.showerror(title, error)
+        print(f'{title}: {error}')
 
     def display_feedback(self, message):
         self.feedback_text.config(state=tk.NORMAL)

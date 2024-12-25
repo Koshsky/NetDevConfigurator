@@ -6,7 +6,7 @@ def update_config(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         message = func(self, *args, **kwargs)
-        self._config = self.app.entity_services['preset'].get_info_by_name(self.preset.name)
+        self._config = self.app.db_services['preset'].get_info_by_name(self.preset.name)
         self.display_feedback(f'{message or ""}\n{self.config_meta}\n\n{self.config_template}')
         return message
     return wrapper
@@ -60,7 +60,7 @@ class CommonConfigTab(BaseTab):
     def remove(self) -> str:
         ordered_number = self.fields['template']['ordered_number'].get().strip()
         if ordered_number and ordered_number.isdigit():
-            self.app.entity_services['device_preset'].remove(self.preset.id, int(ordered_number))
+            self.app.db_services['preset'].remove(self.preset.id, int(ordered_number))
         else:
             raise ValueError("Invalid ordered number")
 
@@ -69,8 +69,8 @@ class CommonConfigTab(BaseTab):
     @preset_is_not_none
     def push_back(self) -> str:
         template_name = self.fields['template']['name'].get()
-        template = self.app.entity_services['template'].get_by_name_and_role(template_name, self.preset.role)
-        self.app.entity_services['device_preset'].push_back(self.preset.id, template.id)
+        template = self.app.db_services['template'].get_by_name_and_role(template_name, self.preset.role)
+        self.app.db_services['preset'].push_back(self.preset.id, template.id)
         return f'Template {template.name} successfully pushed back\n'
 
     @error_handler
@@ -78,10 +78,10 @@ class CommonConfigTab(BaseTab):
     @preset_is_not_none
     def insert(self) -> str:
         template_name = self.fields['template']['name'].get()
-        template = self.app.entity_services['template'].get_by_name_and_role(template_name, self.preset.role)
+        template = self.app.db_services['template'].get_by_name_and_role(template_name, self.preset.role)
         ordered_number = self.fields['template']['ordered_number'].get().strip()
         if ordered_number and ordered_number.isdigit():
-            self.app.entity_services['device_preset'].insert(self.preset.id, template.id, int(ordered_number))
+            self.app.db_services['preset'].insert(self.preset.id, template.id, int(ordered_number))
         else:
             raise ValueError("Invalid ordered number")
         return f'Template {template.name} successfully inserted at position {ordered_number}\n'
@@ -90,9 +90,9 @@ class CommonConfigTab(BaseTab):
     @update_config
     def refresh(self):
         self.preset = self.check_preset_name(self.fields['preset']['name'].get())
-        self.family_id = self.app.entity_services['device'].get_by_id(self.preset.device_id).family_id
+        self.family_id = self.app.db_services['device'].get_by_id(self.preset.device_id).family_id
 
-        template_names = self.app.entity_services['template'].get_by_family_id_and_role(self.family_id, self.preset.role)
+        template_names = self.app.db_services['template'].get_by_family_id_and_role(self.family_id, self.preset.role)
         if not template_names:
             raise ValueError("There are no suitable configuration templates")
         self.fields['template']['name']['values'] = template_names

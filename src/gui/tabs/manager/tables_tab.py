@@ -8,7 +8,7 @@ class TablesTab(BaseTab):
 
     def load_table(self, entity):
         def wrapper():
-            rows = self.app.entity_services[entity].get_all()
+            rows = self.app.db_services[entity].get_all()
             self.display_feedback(self.format_table(rows))
         return wrapper
 

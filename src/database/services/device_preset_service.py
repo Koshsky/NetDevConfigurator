@@ -3,17 +3,14 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from sqlalchemy import delete, insert
 
-from database.models import DevicePresets, Templates
+from database.models import DevicePresets, Templates, Presets
 from .decorators import transactional
-from .base_service import BaseService
-from .template_service import TemplateService
-from .preset_service import PresetService
-from .device_service import DeviceService
+
 
 def check_template_role(func):
     def wrapper(self, preset_id: int, template_id: int, *args, **kwargs):
-        template = self.template_service.get_by_id(template_id)
-        preset = self.preset_service.get_by_id(preset_id)
+        template = self.db.query(Templates).filter(Templates.id == template_id).first()
+        preset = self.db.query(Presets).filter(Presets.id == preset_id).first()
         if template.role not in ['common', preset.role]:
             raise ValueError("Template and preset have different roles")
         return func(self, preset_id, template_id, *args, **kwargs)
@@ -21,35 +18,34 @@ def check_template_role(func):
     return wrapper
 
 
-class DevicePresetService(BaseService):
+class DevicePresetService:
     def __init__(self, db: Session):
-        super().__init__(db, DevicePresets)
-        self.preset_service = PresetService(db)
-        self.template_service = TemplateService(db)
-        self.device_service = DeviceService(db)
+        self.db = db
 
     def _get_max_ordered_number(self, preset_id: int) -> int:
         return self.db.query(func.max(DevicePresets.ordered_number)) \
             .filter(DevicePresets.preset_id == preset_id) \
             .scalar() or 0
 
-    def __clear(self, preset_id):
+    def _clear(self, preset_id):
         self.db.query(DevicePresets).filter(DevicePresets.preset_id == preset_id).delete()
         self.db.commit()
 
-    def copy(self, source, destination):
-        if source == destination:
+    def copy(self, source_preset, destination_preset):
+        if source_preset == destination_preset:
             raise ValueError("preset_from is preset_to!")
-        dev1 = self.device_service.get_by_id(source.device_id)
-        dev2 = self.device_service.get_by_id(destination.device_id)
+        if source_preset.role != destination_preset.role:
+            raise ValueError("Preset roles are different!")
+        dev1 = self.device_service.get_by_id(source_preset.device_id)
+        dev2 = self.device_service.get_by_id(destination_preset.device_id)
         if dev1.family_id != dev2.family_id:
             raise ValueError("Devices are from different families!")
 
-        self.__clear(destination.id)
-        records = self.db.query(DevicePresets).filter_by(preset_id=source.id).all()
+        self._clear(destination_preset.id)
+        records = self.db.query(DevicePresets).filter_by(preset_id=source_preset.id).all()
         for record in records:
             new_record = record.__class__(
-                preset_id=destination.id,
+                preset_id=destination_preset.id,
                 template_id=record.template_id,
                 ordered_number=record.ordered_number,
             )

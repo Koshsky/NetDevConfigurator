@@ -14,5 +14,5 @@ class CopyConfigTab(CommonConfigTab):
     def copy(self) -> str:
         source = self.check_preset_name(self.fields['preset']['from'].get())
         destination = self.check_preset_name(self.fields['preset']['to'].get())
-        self.app.entity_services['device_preset'].copy(source, destination)
+        self.app.db_services['preset'].copy(source, destination)
         self.display_feedback("Success")

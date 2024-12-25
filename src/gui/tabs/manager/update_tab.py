@@ -15,13 +15,13 @@ class UpdateTab(BaseTab):
         device = self.check_device_name(self.fields["device"]["name"].get().strip())
         firmware = self.check_firmware_name(self.fields["firmware"]["name"].get().strip())
 
-        service = self.app.entity_services["device_firmware"]
+        service = self.app.db_services["device"]
 
         if link:
-            service.create({"device_id": device.id, "firmware_id": firmware.id})
+            service.add_firmware_by_id(device.id, firmware.id)
             message = "Linked device with firmware successfully."
         else:
-            service.delete_by_device_firmware_id(device.id, firmware.id)
+            service.remove_firmware_by_id(device.id, firmware.id)
             message = "Unlinked device with firmware successfully."
 
         self.display_feedback(message)
