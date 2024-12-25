@@ -193,7 +193,7 @@ class Presets(Base):
 class DevicePresets(Base):
     __tablename__ = 'device_presets'
     __table_args__ = (
-        ForeignKeyConstraint(['preset_id'], ['presets.id'], name='device_templates_preset_id_fkey'),
+        ForeignKeyConstraint(['preset_id'], ['presets.id'], ondelete='CASCADE', name='device_templates_preset_id_fkey'),
         ForeignKeyConstraint(['template_id'], ['templates.id'], name='device_templates_template_id_fkey'),
         PrimaryKeyConstraint('id', name='device_templates_pkey')
     )

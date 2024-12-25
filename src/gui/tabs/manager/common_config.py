@@ -52,7 +52,7 @@ class CommonConfigTab(BaseTab):
     @property
     def config_template(self):
         # TODO: есть догадки что символ переноса строки - это '\r\n'
-        return '\n'.join(f'{i}\t{entity["name"]}' for i, entity in enumerate(self._config['configuration'])) + '\r\nend\n'
+        return '\n'.join(f'{i}\t{v["name"]}' for i, (k, v) in enumerate(self._config['configuration'].items(), start=1)) + '\nend\n'
 
     @error_handler
     @update_config
@@ -92,7 +92,8 @@ class CommonConfigTab(BaseTab):
         self.preset = self.check_preset_name(self.fields['preset']['name'].get())
         self.family_id = self.app.db_services['device'].get_by_id(self.preset.device_id).family_id
 
-        template_names = self.app.db_services['template'].get_by_family_id_and_role(self.family_id, self.preset.role)
+        templates = self.app.db_services['template'].get_by_family_id_and_role(self.family_id, self.preset.role)
+        template_names = [template.name for template in templates]
         if not template_names:
             raise ValueError("There are no suitable configuration templates")
         self.fields['template']['name']['values'] = template_names

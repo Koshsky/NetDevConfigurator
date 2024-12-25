@@ -44,10 +44,11 @@ class TemplateService(BaseService):
         )
 
     def get_by_name_and_role(self, name: str, role: str):  # for unambiguous selection
-        if template := self.db.query(Templates).filter(
+        return (
+            self.db.query(Templates)
+            .filter(
                 Templates.name == name,
-                Templates.role == role
-            ).first():
-            return template
-        else:
-            raise EntityNotFoundError("Template not found")
+                Templates.role.in_(['common', role] ),
+            )
+            .first()
+        )
