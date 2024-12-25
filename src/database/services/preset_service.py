@@ -37,7 +37,7 @@ class PresetService(
             "role": preset.role,
             "description": preset.description,
             "configuration": {
-                f'{template.name if template.type != "interface" else next(interfaces)}':
+                f'{template.type if template.type != "interface" else next(interfaces)}':
                     self.template_service.get_info(template)
                 for preset, device_preset, template in rows
             }
