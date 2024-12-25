@@ -9,7 +9,7 @@ class ConfiguratorApp(DatabaseApp):
         self.params = {
             "CERT": None,
             "OR": None,
-            "DEVICE": None,
+            "MODEL": None,
             "ROLE": None
         }
         self._device = None
@@ -29,7 +29,7 @@ class ConfiguratorApp(DatabaseApp):
             raise ValueError("preset.device_id != device.id")
         self.params["CERT"] = cert
         self.params["OR"] = OR
-        self.params["DEVICE"] = device.name
+        self.params["MODEL"] = device.name
         self.params["ROLE"] = preset.role
         self._device = device
         self._preset = preset
@@ -49,6 +49,7 @@ class ConfiguratorApp(DatabaseApp):
         self.interfaces = {k: v for k, v in app._config.items() if v['type'] == 'interface'}
         self.create_tab(TemplateTab, "Templates", self.templates, width=6)
         self.create_tab(TemplateTab, "Interfaces", self.interfaces, width=12)
+        self.create_tab(ViewTab, "VIEW")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-from internal.db_app import BaseTab, error_handler
+from gui import BaseTab, error_handler
 
 class HelloTab(BaseTab):
     def create_widgets(self):

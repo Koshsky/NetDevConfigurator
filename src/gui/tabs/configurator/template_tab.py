@@ -1,4 +1,4 @@
-from internal.db_app import BaseTab
+from gui import BaseTab, error_handler
 import pprint
 from tkinter import ttk
 
@@ -11,7 +11,7 @@ class TemplateTab(BaseTab):
 
     def create_widgets(self):
         self.create_label(
-            f"DEVICE:\t{self.app.params['DEVICE']}\n"
+            f"MODEL:\t{self.app.params['MODEL']}\n"
             f"CERT:\t{self.app.params['CERT']}\n"
             f"ROLE:\t{self.app.params['ROLE']}\n"
             f"OR:\t{self.app.params['OR']}"
@@ -27,6 +27,7 @@ class TemplateTab(BaseTab):
         for k, v in self.templates.items():
             self.fields['config']['templates'][k].set(v['name'])
 
+    @error_handler
     def update_config(self):
         for k, v in self.templates.items():
             actual_name = self.fields['config']['templates'][k].get().strip()
