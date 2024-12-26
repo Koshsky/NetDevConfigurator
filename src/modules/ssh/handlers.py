@@ -20,14 +20,14 @@ class DeviceHandler:
     """Base class for device handlers."""
     def __init__(
         self,
-        comms_prompt_pattern: str = r"^(\\n)?[a-z0-9\.\-_@/:]{1,63}[#>]\s*$",
+        comms_prompt_pattern: str = r"^(\n)?.+@.+[#>$]\s*$",
         ssh_config_file: str = "~/NetDevConfigurator/src/modules/ssh/default_ssh_config"
     ) -> None:
         self.comms_prompt_pattern = comms_prompt_pattern
         self.ssh_config_file = ssh_config_file
 
     def on_open(self, cls: GenericDriver) -> None:
-        raise NotImplementedError("Subclasses should implement this method.")
+        raise NotImplementedError("Subclasses should implement on_open method.")
 
     def tftp_send(self, cls: GenericDriver, path_to_file: str) -> Response:
         if path_to_file.startswith(self.tftp_folder):
@@ -38,14 +38,11 @@ class DeviceHandler:
         return cls.send_command("show running-config")
 
 class ubuntuHandler(DeviceHandler):
-    def __init__(self):
+    def __init__(self):  # r"^(\n)?.+@.+[#>$]\s*$"
         super().__init__()
 
     def on_open(self, cls: GenericDriver) -> None:
         handle_device_open(cls, [])
-
-    def test_func(self, cls: GenericDriver) -> str:
-        return f"{cls.tftp_server}/{cls.tftp_folder}"
 
 class MES14xx24xx37xxHandler(DeviceHandler):
     def on_open(self, cls: GenericDriver) -> None:
