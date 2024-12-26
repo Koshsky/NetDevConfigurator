@@ -20,6 +20,7 @@ class TemplateTab(BaseTab):
         self.create_block("config", {
             "templates": {k: self._get_templates_by_type(v['type']) for k, v in self.templates.items()}
         }, width=self.width)
+        self.actualize_values()
         self.create_button_in_line(("UPDATE", self.update_config))
         self.create_button_in_line(("ACTUALIZE", self.actualize_values))
         self.create_feedback_area()

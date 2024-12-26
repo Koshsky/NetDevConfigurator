@@ -1,5 +1,0 @@
-Host *
-    HostKeyAlgorithms +ssh-rsa
-    PubkeyAcceptedAlgorithms +ssh-rsa
-    Ciphers aes256-cbc
-    StrictHostKeyChecking no

@@ -1,8 +1,8 @@
-from scrapli.driver import Driver
+from scrapli.driver import GenericDriver
 from scrapli.response import Response
 
 def http_connect():
-    conn = Driver(
+    conn = GenericDriver(
         host="192.168.1.1",
         auth_username="admin",
         auth_password="1234",
