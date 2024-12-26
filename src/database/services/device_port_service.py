@@ -52,7 +52,7 @@ class DevicePortService:
             .filter(Ports.speed == port.speed, DevicePorts.device_id == device_id)
             .all()
         )
-        return f'{"ten" if port.speed==10000 else ""}gigabitethernet 0/{q}'
+        return f'{"ten" if port.speed==10000 else ""}gigabitethernet 0/{q + 1}'
 
     def _default_get_next_interface(self, device_id: int, port_id: int) -> str:
         raise NotImplementedError("There is no default method for getting next interface")

@@ -29,7 +29,7 @@ class PresetService(
                 .order_by(DevicePresets.ordered_number)
                 .all()
         )
-        interfaces = (port['interface'] for port in self.device_service.get_info_by_id(preset.device_id)['ports'])  # generator
+        interfaces = (port['interface'] for port in self.device_service.get_info_by_id(preset.device_id)['ports'])  # generator 
         return {
             "preset": preset.name,
             "id": preset.id,

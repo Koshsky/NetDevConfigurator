@@ -6,7 +6,8 @@ def update_config(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         message = func(self, *args, **kwargs)
-        self._config = self.app.db_services['preset'].get_info_by_name(self.preset.name)
+        self._config = self.app.db_services['preset'].get_info(self.preset)
+        print(self.preset.name)
         self.display_feedback(f'{message or ""}\n{self.config_meta}\n\n{self.config_template}')
         return message
     return wrapper

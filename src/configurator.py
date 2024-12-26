@@ -8,7 +8,7 @@ import os
 
 class ConfiguratorApp(DatabaseApp):
     def __init__(self, *args, **kwargs):
-        self.directory = '/tmp/netdevconfigurator'
+        self.directory = '/srv/tftp/tmp'
         os.makedirs(self.directory, exist_ok=True)
         self.params = {
             "CERT": None,
@@ -42,7 +42,7 @@ class ConfiguratorApp(DatabaseApp):
         self._path = self.generate_filename()
 
     def generate_filename(self):
-        filename = f"config_{uuid.uuid4()}.txt"
+        filename = f"config_{uuid.uuid4()}.conf"
         return os.path.join(self.directory, filename)
 
     def update_config_tabs(self):

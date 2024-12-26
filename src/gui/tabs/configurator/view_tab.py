@@ -13,7 +13,7 @@ def prepare_config_file(func):
         template = self._get_text_configuration()
         with open(self.app._path, 'w') as f:
             f.write(template)
-        self.display_feedback('Template saved')
+        self.display_feedback(f'Template saved: {self.app._path}')
 
         return func(self, *args, **kwargs)
     return wrapper
@@ -48,7 +48,7 @@ class ViewTab(BaseTab):
         pass
 
     @prepare_config_file
-    def load_by_SNMP(self):
+    def load_by_snmp(self):
         pass
 
     def update_firmwares(self):
