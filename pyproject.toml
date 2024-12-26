@@ -12,7 +12,6 @@ sqlalchemy = "^2.0.36"
 ttkwidgets = "^0.13.0"
 scrapli = "^2024.7.30.post1"
 scrapli-community = "^2024.7.30"
-serial = "^0.0.97"
 psycopg2-binary = "^2.9.10"
 
 
