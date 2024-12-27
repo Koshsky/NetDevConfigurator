@@ -30,8 +30,8 @@ class DeviceHandler:
         raise NotImplementedError("Subclasses should implement on_open method.")
 
     def tftp_send(self, cls: GenericDriver, path_to_file: str) -> Response:
-        if path_to_file.startswith(self.tftp_folder):
-            path_to_file = path_to_file[len(self.tftp_folder):]
+        if path_to_file.startswith(cls.tftp_folder):
+            path_to_file = path_to_file[len(cls.tftp_folder):]
         return cls.send_command(f'copy tftp://{cls.tftp_server}/{path_to_file} running-config')  # TODO: running-config -> startup-config
 
     def show_run(self, cls: GenericDriver) -> Response:
@@ -43,6 +43,11 @@ class ubuntuHandler(DeviceHandler):
 
     def on_open(self, cls: GenericDriver) -> None:
         handle_device_open(cls, [])
+
+    def tftp_send(self, cls: GenericDriver, path_to_file: str) -> Response:
+        if path_to_file.startswith(cls.tftp_folder):
+            path_to_file = path_to_file[len(cls.tftp_folder):]
+        print(f'exe: copy tftp://{cls.tftp_server}{cls.tftp_folder}/{path_to_file} startup-config')
 
 class MES14xx24xx37xxHandler(DeviceHandler):
     def on_open(self, cls: GenericDriver) -> None:

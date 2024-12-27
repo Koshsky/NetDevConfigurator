@@ -14,7 +14,7 @@ class SSHDriver(GenericDriver):
         self,
         family: str,
         tftp_server: str,
-        tftp_folder: str = '/srv/tftp',
+        tftp_folder: str = '/srv/tftp/',
         **kwargs
     ) -> None:
         super().__init__(**kwargs)
