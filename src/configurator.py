@@ -20,10 +20,14 @@ class ConfiguratorApp(DatabaseApp):
 
     def create_config_tabs(self):
         self.templates = {
-            k: v for k, v in app.device_configuration.items() if v["type"] != "interface"
+            k: v
+            for k, v in app.device_configuration.items()
+            if v["type"] != "interface"
         }
         self.interfaces = {
-            k: v for k, v in app.device_configuration.items() if v["type"] == "interface"
+            k: v
+            for k, v in app.device_configuration.items()
+            if v["type"] == "interface"
         }
         self.create_tab(TemplateTab, "Templates", self.templates, width=6)
         self.create_tab(TemplateTab, "Interfaces", self.interfaces, width=12)
@@ -48,7 +52,9 @@ class ConfiguratorApp(DatabaseApp):
         )
         self._device = device
         self._preset = preset
-        self.device_configuration = self.db_services["preset"].get_info(preset)["configuration"]
+        self.device_configuration = self.db_services["preset"].get_info(
+            preset, check=True
+        )["configuration"]
         self.config_path = self.generate_filename()
 
     def generate_filename(self):

@@ -32,7 +32,7 @@ class AddTab(BaseTab):
                 "name": None,
                 "family": self.app.entity_collections["family"],
                 "type": self.app.entity_collections["template_type"],
-                "role": self.app.entity_collections["role"],
+                "role": self.app.entity_collections["role"] + ("common",),
                 "text": None,
             },
             ("SUBMIT", self.submit_template),

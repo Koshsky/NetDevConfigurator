@@ -8,7 +8,7 @@ def update_config(func):
         message = func(self, *args, **kwargs)
         self._config = self.app.db_services["preset"].get_info(self.preset)
         self.display_feedback(
-            f"{message or ''}\n{self.config_meta}\n\n{self.config_template}"
+            f"{message or ''}\n{self.config_meta()}\n\n{self.config_template}"
         )
         return message
 
@@ -53,13 +53,25 @@ class CommonConfigTab(BaseTab):
         self.create_button_in_line(("REMOVE", self.remove))
         self.create_feedback_area()
 
-    @property
     def config_meta(self):
+        interfaces = len(
+            [
+                i
+                for _, i in self._config["configuration"].items()
+                if i["type"] == "interface"
+            ]
+        )
+        device_ports = len(
+            self.app.db_services["device"].get_info_by_name(self._config["target"])[
+                "ports"
+            ]
+        )
         return (
             f"Preset: {self._config['preset']}\n"
             f"Role: {self._config['role']}\n"
             f"Device: {self._config['target']}\n"
             f"Description: {self._config['description']}\n"
+            f"Described interfaces/Physical ports: {interfaces}/{device_ports}\n"
         )
 
     @property

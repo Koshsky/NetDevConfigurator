@@ -16,7 +16,7 @@ class DeleteTab(BaseTab):
             "template",
             {
                 "name": self.app.entity_collections["template"],
-                "role": self.app.entity_collections["role"],
+                "role": self.app.entity_collections["role"] + ("common",),
             },
             ("delete", self.delete_template),
         )

@@ -25,7 +25,8 @@ class DevicePresetService:
     def push_back(self, preset: Presets, template: Templates):
         if self.validate(preset) and template.type == "interface":
             raise ValueError(
-                "Cannot insert interface template into preset. Preset has all interface descriptions"
+                "Cannot insert interface template into preset:\n"
+                "the number of interface templates has reached the limit for the preset"
             )
         max_ordered_number = self._get_max_ordered_number(preset.id)
 
@@ -43,7 +44,8 @@ class DevicePresetService:
     def insert(self, preset: Presets, template: Templates, ordered_number: int):
         if self.validate(preset) and template.type == "interface":
             raise ValueError(
-                "Cannot insert interface template into preset. Preset has all interface descriptions"
+                "Cannot insert interface template into preset:\n"
+                "the number of interface templates has reached the limit for the preset"
             )
         max_ordered_number = self._get_max_ordered_number(preset.id)
         if ordered_number > max_ordered_number + 1:
@@ -66,16 +68,16 @@ class DevicePresetService:
         self.db.add(new_device_preset)
         return new_device_preset
 
+    @transactional
     def copy(self, source_preset, destination_preset):
         if source_preset == destination_preset:
             raise ValueError("preset_from is preset_to!")
         if source_preset.role != destination_preset.role:
             raise ValueError("Preset roles are different!")
-        dev1 = self.device_service.get_by_id(source_preset.device_id)
-        dev2 = self.device_service.get_by_id(destination_preset.device_id)
-        if dev1.family_id != dev2.family_id:
+        dev1 = self.device_service.get_info_by_id(source_preset.device_id)
+        dev2 = self.device_service.get_info_by_id(destination_preset.device_id)
+        if dev1["family"] != dev2["family"]:
             raise ValueError("Devices are from different families!")
-
         self._clear(destination_preset.id)
         records = (
             self.db.query(DevicePresets).filter_by(preset_id=source_preset.id).all()
