@@ -30,7 +30,9 @@ class ConfiguratorApp(DatabaseApp):
             if v["type"] == "interface"
         }
         self.create_tab(TemplateTab, "Templates", self.templates, width=6)
-        self.create_tab(TemplateTab, "Interfaces", self.interfaces, width=12)
+        self.create_tab(
+            TemplateTab, "Interfaces", self.interfaces, width=12, allow_none=False
+        )
         self.create_tab(ViewTab, "VIEW")
 
     def on_success_callback(self, engine):

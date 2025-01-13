@@ -4,9 +4,10 @@ import pprint
 
 @apply_error_handler
 class TemplateTab(BaseTab):
-    def __init__(self, parent, app, templates, *, width=6):
+    def __init__(self, parent, app, templates, *, width=6, allow_none=True):
         self.templates = templates
         self.width = width
+        self.allow_none = allow_none
         super().__init__(parent, app)
 
     def create_widgets(self):
@@ -40,16 +41,29 @@ class TemplateTab(BaseTab):
             actual_name = self.fields["config"]["templates"][k].get().strip()
             if actual_name not in self._get_templates_by_type(v["type"]):
                 raise ValueError(f"Invalid template for {k}")
-            actual_template = self.app.db_services["template"].get_by_name_and_role(
-                actual_name, v["role"]
-            )
-            actual = self.app.db_services["template"].get_info(actual_template)
+            if actual_name == "None":
+                actual = {
+                    "name": "None",
+                    "id": -1,
+                    "family": "all",
+                    "type": "all",
+                    "role": "common",
+                    "text": "",
+                }
+            else:
+                actual_template = self.app.db_services["template"].get_by_name_and_role(
+                    actual_name, v["role"]
+                )
+                actual = self.app.db_services["template"].get_info(actual_template)
             self.app.device_configuration[k] = actual
             self.templates[k] = actual
-        self.display_feedback(pprint.pformat(self.app.device_configuration, sort_dicts=False))
+        self.display_feedback(
+            pprint.pformat(self.app.device_configuration, sort_dicts=False)
+        )
 
     def _get_templates_by_type(self, t):
         entities = self.app.db_services["template"].get_by_family_id_and_role(
             self.app._device.family_id, self.app._preset.role
         )
-        return tuple(entity.name for entity in entities if entity.type == t)
+        tail = ("None",) if self.allow_none else tuple()
+        return tuple(entity.name for entity in entities if entity.type == t) + tail
