@@ -5,6 +5,7 @@ from .family_service import FamilyService
 from .base_service import BaseService
 from .exceptions import EntityNotFoundError
 
+
 class TemplateService(BaseService):
     def __init__(self, db: Session):
         super().__init__(db, Templates)
@@ -26,13 +27,21 @@ class TemplateService(BaseService):
         return [self.get_info(template) for template in templates]
 
     def get_by_name(self, template_name: str):
-        if template:= self.db.query(Templates).filter(Templates.name == template_name).all():
+        if (
+            template := self.db.query(Templates)
+            .filter(Templates.name == template_name)
+            .all()
+        ):
             return template
         else:
-            raise EntityNotFoundError(f"{Templates.__name__} with name {template_name} not found")
+            raise EntityNotFoundError(
+                f"{Templates.__name__} with name {template_name} not found"
+            )
 
-    def get_by_family_id_and_role(self, family_id: int, role: str): # to create a list of suitable templates
-        roles_to_check = ['common', role]
+    def get_by_family_id_and_role(
+        self, family_id: int, role: str
+    ):  # to create a list of suitable templates
+        roles_to_check = ["common", role]
 
         return (
             self.db.query(Templates)
@@ -48,7 +57,7 @@ class TemplateService(BaseService):
             self.db.query(Templates)
             .filter(
                 Templates.name == name,
-                Templates.role.in_(['common', role] ),
+                Templates.role.in_(["common", role]),
             )
             .first()
         )

@@ -22,6 +22,7 @@ def error_handler(func):
             self.session.add(device)
             self.session.commit()
     """
+
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         try:
@@ -41,6 +42,7 @@ def error_handler(func):
             self.app.session.rollback()
 
     return wrapper
+
 
 def apply_error_handler(cls):
     for attr_name, attr_value in cls.__dict__.items():

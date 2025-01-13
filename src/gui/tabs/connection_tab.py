@@ -17,7 +17,7 @@ class ConnectionTab:
             "port": "5432",
             "database": "device_registry",
             "username": "postgres",
-            "password": "postgres"
+            "password": "postgres",
         }
 
         self.entries = {}
@@ -44,11 +44,11 @@ class ConnectionTab:
 
         connection_string = (
             f"postgresql://"
-                f"{db_params['username']}:"
-                f"{db_params['password']}@"
-                f"{db_params['host']}:"
-                f"{db_params['port']}/"
-                f"{db_params['database']}"
+            f"{db_params['username']}:"
+            f"{db_params['password']}@"
+            f"{db_params['host']}:"
+            f"{db_params['port']}/"
+            f"{db_params['database']}"
         )
 
         try:
@@ -60,4 +60,4 @@ class ConnectionTab:
             self.message_label.config(text="Connection successful.", fg="green")
         except Exception as error:
             self.on_failure_callback(error)
-            self.message_label.config(text=f'Error: {str(error)}', fg="red")
+            self.message_label.config(text=f"Error: {str(error)}", fg="red")

@@ -1,5 +1,4 @@
 from scrapli.driver import GenericDriver
-import time
 
 
 def mes_on_open(cls):
@@ -7,6 +6,7 @@ def mes_on_open(cls):
     cls.channel.send_return()
     cls.send_command("set cli pagination off")  # important
     print("mes_on_open finished")
+
 
 def mes_on_close(cls):
     cls.channel.write(channel_input="exit")

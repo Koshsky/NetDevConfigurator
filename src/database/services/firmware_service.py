@@ -22,8 +22,9 @@ class FirmwareService(BaseService):
             "name": firmware.name,
             "full_path": firmware.full_path,
             "type": firmware.type,
-            "associated_devices": [device.name for device in associated_devices]
+            "associated_devices": [device.name for device in associated_devices],
         }
+
 
 def determine_firmware_type(firmware_name: str) -> str:
     # первичная: .bl1
@@ -35,12 +36,12 @@ def determine_firmware_type(firmware_name: str) -> str:
     firmware = "firmware"
 
     firmware_types = {
-        '.bl1': primary,
-        '.uboot': secondary,
-        '.boot': secondary,
-        '.firmware': firmware,
-        '.iss': firmware,
-        '.ros': firmware,
+        ".bl1": primary,
+        ".uboot": secondary,
+        ".boot": secondary,
+        ".firmware": firmware,
+        ".iss": firmware,
+        ".ros": firmware,
     }
 
     return next(

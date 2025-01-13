@@ -1,7 +1,17 @@
 import tkinter as tk
 
 from gui.base_app import DatabaseApp
-from gui.tabs.manager import *
+from gui.tabs.manager import (
+    TablesTab,
+    InfoTab,
+    AddTab,
+    UpdateTab,
+    DeleteTab,
+    DeviceTab,
+    CommonConfigTab,
+    CopyConfigTab,
+)
+
 
 class DBManagerApp(DatabaseApp):
     def on_success_callback(self, engine):
@@ -17,6 +27,7 @@ class DBManagerApp(DatabaseApp):
         self.create_tab(DeviceTab, "DEVICE")
         self.create_tab(CommonConfigTab, "CONFIG")
         self.create_tab(CopyConfigTab, "COPY CONFIG")
+
 
 if __name__ == "__main__":
     root = tk.Tk()

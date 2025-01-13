@@ -7,10 +7,7 @@ from .device_preset_service import DevicePresetService
 from .template_service import TemplateService
 
 
-class PresetService(
-    BaseService,
-    DevicePresetService
-):
+class PresetService(BaseService, DevicePresetService):
     def __init__(self, db: Session):
         super().__init__(db, Presets)
         self.device_service = DeviceService(db)
@@ -22,14 +19,17 @@ class PresetService(
     def get_info(self, preset):
         rows = (
             self.db.query(Presets, DevicePresets, Templates)
-                .join(DevicePresets, Presets.id == DevicePresets.preset_id)
-                .join(Templates, DevicePresets.template_id == Templates.id)
-                .join(Devices, Presets.device_id == Devices.id)
-                .filter(Presets.name == preset.name)
-                .order_by(DevicePresets.ordered_number)
-                .all()
+            .join(DevicePresets, Presets.id == DevicePresets.preset_id)
+            .join(Templates, DevicePresets.template_id == Templates.id)
+            .join(Devices, Presets.device_id == Devices.id)
+            .filter(Presets.name == preset.name)
+            .order_by(DevicePresets.ordered_number)
+            .all()
         )
-        interfaces = (port['interface'] for port in self.device_service.get_info_by_id(preset.device_id)['ports'])  # generator 
+        interfaces = (
+            port["interface"]
+            for port in self.device_service.get_info_by_id(preset.device_id)["ports"]
+        )  # generator
         return {
             "preset": preset.name,
             "id": preset.id,
@@ -37,8 +37,9 @@ class PresetService(
             "role": preset.role,
             "description": preset.description,
             "configuration": {
-                f'{template.type if template.type != "interface" else next(interfaces)}':
-                    self.template_service.get_info(template)
+                f"{template.type if template.type != 'interface' else next(interfaces)}": self.template_service.get_info(
+                    template
+                )
                 for preset, device_preset, template in rows
-            }
+            },
         }
