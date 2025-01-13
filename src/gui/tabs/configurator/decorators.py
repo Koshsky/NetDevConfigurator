@@ -30,6 +30,5 @@ class update_driver:
                 "auth_password": self.fields["credentials"]["password"].get(),
                 "transport": cls.transport,
             }
-            print(self.driver)
 
         return wrapper

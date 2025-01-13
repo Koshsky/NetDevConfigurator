@@ -7,7 +7,6 @@ def update_config(func):
     def wrapper(self, *args, **kwargs):
         message = func(self, *args, **kwargs)
         self._config = self.app.db_services["preset"].get_info(self.preset)
-        print(self.preset.name)
         self.display_feedback(
             f"{message or ''}\n{self.config_meta}\n\n{self.config_template}"
         )
@@ -91,7 +90,7 @@ class CommonConfigTab(BaseTab):
         template = self.app.db_services["template"].get_by_name_and_role(
             template_name, self.preset.role
         )
-        self.app.db_services["preset"].push_back(self.preset.id, template.id)
+        self.app.db_services["preset"].push_back(self.preset, template)
         return f"Template {template.name} successfully pushed back\n"
 
     @update_config
@@ -104,7 +103,7 @@ class CommonConfigTab(BaseTab):
         ordered_number = self.fields["template"]["ordered_number"].get().strip()
         if ordered_number and ordered_number.isdigit():
             self.app.db_services["preset"].insert(
-                self.preset.id, template.id, int(ordered_number)
+                self.preset, template, int(ordered_number)
             )
         else:
             raise ValueError("Invalid ordered number")

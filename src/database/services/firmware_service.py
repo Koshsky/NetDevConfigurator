@@ -50,5 +50,5 @@ def determine_firmware_type(firmware_name: str) -> str:
             for extension, description in firmware_types.items()
             if firmware_name.endswith(extension)
         ),
-        "UKNOWN",
+        "UNKNOWN",
     )

@@ -28,6 +28,7 @@ class PresetService(BaseService, DevicePresetService):
             .order_by(DevicePresets.ordered_number)
             .all()
         )
+        self.validate(preset)
         interfaces = (
             port["interface"]
             for port in self.device_service.get_info_by_id(preset.device_id)["ports"]
@@ -41,7 +42,7 @@ class PresetService(BaseService, DevicePresetService):
             "role": preset.role,
             "description": preset.description,
             "configuration": {
-                f"{template.type if template.type != 'interface' else next(interfaces)}": self.template_service.get_info(
+                f"{template.type if template.type != 'interface' else next(interfaces, 'INVALID INTERFACE')}": self.template_service.get_info(
                     template
                 )
                 for preset, device_preset, template in rows
