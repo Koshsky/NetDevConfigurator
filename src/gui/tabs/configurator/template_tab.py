@@ -44,9 +44,9 @@ class TemplateTab(BaseTab):
                 actual_name, v["role"]
             )
             actual = self.app.db_services["template"].get_info(actual_template)
-            self.app._config[k] = actual
+            self.app.device_configuration[k] = actual
             self.templates[k] = actual
-        self.display_feedback(pprint.pformat(self.app._config, sort_dicts=False))
+        self.display_feedback(pprint.pformat(self.app.device_configuration, sort_dicts=False))
 
     def _get_templates_by_type(self, t):
         entities = self.app.db_services["template"].get_by_family_id_and_role(

@@ -81,7 +81,7 @@ class ViewTab(BaseTab):
 
     def _get_text_configuration(self):
         template = ""
-        for k, v in self.app._config.items():
+        for k, v in self.app.device_configuration.items():
             if v["text"]:
                 template += v["text"].replace("{INTERFACE_ID}", k) + "\n"
         template = template.replace("{CERT}", self.app.params["CERT"])
