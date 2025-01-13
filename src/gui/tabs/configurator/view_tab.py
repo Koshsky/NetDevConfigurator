@@ -9,13 +9,6 @@ from .decorators import prepare_config_file, update_driver
 class ViewTab(BaseTab):
     def create_widgets(self):
         self.create_block(
-            "tftp-server",
-            {
-                "IP": ("10.3.1.144",),
-                "port": ("69",),
-            },
-        )
-        self.create_block(
             "host",
             {
                 "IP": ("10.3.1.13",),
@@ -52,9 +45,7 @@ class ViewTab(BaseTab):
     @prepare_config_file
     def load_by_ssh(self):
         with SSHDriver(**self.driver) as ssh:
-            resp = ssh.tftp_send(
-                ssh, self.app.config_path
-            )  # TODO: rename _path -> config_path
+            resp = ssh.tftp_send(ssh, self.app.config_path)
             print(resp.result)
 
     @prepare_config_file

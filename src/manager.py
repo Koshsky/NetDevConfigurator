@@ -11,6 +11,7 @@ from gui.tabs.manager import (
     CommonConfigTab,
     CopyConfigTab,
 )
+from config import config
 
 
 class DBManagerApp(DatabaseApp):
@@ -31,5 +32,5 @@ class DBManagerApp(DatabaseApp):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = DBManagerApp(root, "Database manager")
+    app = DBManagerApp(root, config["manager"]["title"])
     root.mainloop()

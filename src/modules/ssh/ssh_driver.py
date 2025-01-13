@@ -6,13 +6,12 @@ from .handlers import (
     ubuntuHandler,
 )
 
+from config import config
 from scrapli.driver import GenericDriver
 
 
 class SSHDriver(GenericDriver):
-    def __init__(
-        self, family: str, tftp_server: str, tftp_folder: str = "/srv/tftp", **kwargs
-    ) -> None:
+    def __init__(self, family: str, **kwargs) -> None:
         handler_map = {
             "MES14xx/24xx/34xx/37xx": MES14xx24xx37xxHandler(),
             "MES11xx/21xx/22xx/31xx": MES11xx21xx31xxHandler(),
@@ -29,8 +28,9 @@ class SSHDriver(GenericDriver):
         super().__init__(**kwargs)
 
         self.family = family
-        self.tftp_server = tftp_server
-        self.tftp_folder = tftp_folder
+        self.tftp_server = config["tftp-server"]["address"]
+        self.config_folder = config["tftp-server"]["folder"]["config"]
+        self.firmware_folder = config["tftp-server"]["folder"]["firmware"]
 
         self.comms_prompt_pattern = self.handler.comms_prompt_pattern
         self.ssh_config_file = self.handler.ssh_config_file

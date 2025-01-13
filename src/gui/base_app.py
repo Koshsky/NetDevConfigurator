@@ -38,9 +38,7 @@ class DatabaseApp:
     def display_all_tabs(self):
         for tab in self.tabs:
             self.notebook.select(tab.frame)
-        self.notebook.select(
-            self.connection_tab.frame
-        )  # чтобы не изменять активную вкладку
+        self.notebook.select(self.connection_tab.frame)  # to not change the active tab
 
     def hide_all_tabs(self):
         for tab in self.tabs:

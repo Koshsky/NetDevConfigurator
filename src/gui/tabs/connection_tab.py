@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from sqlalchemy import create_engine
 from gui.decorators import apply_error_handler
+from config import config
 
 
 @apply_error_handler
@@ -12,13 +13,7 @@ class ConnectionTab:
         self.on_success_callback = on_success_callback
         self.on_failure_callback = on_failure_callback
 
-        self.fields = {
-            "host": "localhost",
-            "port": "5432",
-            "database": "device_registry",
-            "username": "postgres",
-            "password": "postgres",
-        }
+        self.fields = config["database"]
 
         self.entries = {}
         self.create_widgets()

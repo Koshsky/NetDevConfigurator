@@ -1,0 +1,21 @@
+database:
+  host: localhost
+  port: 5432
+  database: device_registry
+  username: postgres
+  password: postgres
+
+tftp-server:
+  address: 10.3.1.144
+  port: 69
+  folder:
+    config: /srv/tftp/tmp
+    firmware: /srv/tftp/firmware
+
+ssh-config-file: "~/NetDevConfigurator/src/modules/ssh/default_ssh_config"
+
+configurator:
+  title: Configurator
+
+manager:
+  title: Database Manager

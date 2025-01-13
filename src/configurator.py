@@ -4,18 +4,30 @@ from gui.base_app import DatabaseApp
 from gui.tabs.configurator import HelloTab, TemplateTab, ViewTab
 import uuid
 import os
+from config import config
 
 
 class ConfiguratorApp(DatabaseApp):
     def __init__(self, *args, **kwargs):
-        self.directory = "/srv/tftp/tmp"
-        os.makedirs(self.directory, exist_ok=True)
+        self.config_folder = config["tftp-server"]["folder"]["config"]
+        os.makedirs(self.config_folder, exist_ok=True)  # TODO: clear folder (?)
         self.params = {"CERT": None, "OR": None, "MODEL": None, "ROLE": None}
         self._device = None
         self._preset = None
         self._config = None
         self.config_path = None
         super().__init__(*args, **kwargs)
+
+    def create_config_tabs(self):
+        self.templates = {
+            k: v for k, v in app._config.items() if v["type"] != "interface"
+        }
+        self.interfaces = {
+            k: v for k, v in app._config.items() if v["type"] == "interface"
+        }
+        self.create_tab(TemplateTab, "Templates", self.templates, width=6)
+        self.create_tab(TemplateTab, "Interfaces", self.interfaces, width=12)
+        self.create_tab(ViewTab, "VIEW")
 
     def on_success_callback(self, engine):
         super().on_success_callback(engine)
@@ -41,7 +53,7 @@ class ConfiguratorApp(DatabaseApp):
 
     def generate_filename(self):
         filename = f"config_{uuid.uuid4()}.conf"
-        return os.path.join(self.directory, filename)
+        return os.path.join(self.config_folder, filename)
 
     def update_config_tabs(self):
         self.remove_config_tabs()
@@ -52,19 +64,8 @@ class ConfiguratorApp(DatabaseApp):
             self.notebook.forget(2)
             self.tabs.pop()
 
-    def create_config_tabs(self):
-        self.templates = {
-            k: v for k, v in app._config.items() if v["type"] != "interface"
-        }
-        self.interfaces = {
-            k: v for k, v in app._config.items() if v["type"] == "interface"
-        }
-        self.create_tab(TemplateTab, "Templates", self.templates, width=6)
-        self.create_tab(TemplateTab, "Interfaces", self.interfaces, width=12)
-        self.create_tab(ViewTab, "VIEW")
-
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = ConfiguratorApp(root, "Configurator")
+    app = ConfiguratorApp(root, config["configurator"]["title"])
     root.mainloop()

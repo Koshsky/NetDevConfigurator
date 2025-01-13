@@ -3,6 +3,7 @@ from typing import List
 
 from scrapli.driver import GenericDriver
 from scrapli.response import Response
+from config import config
 
 
 class BaseHandler:
@@ -11,7 +12,7 @@ class BaseHandler:
     def __init__(
         self,
         comms_prompt_pattern: str = r"^(\n)?.+[#>$]\s*$",
-        ssh_config_file: str = "~/NetDevConfigurator/src/modules/ssh/default_ssh_config",
+        ssh_config_file: str = config["ssh-config-file"],
     ) -> None:
         self.comms_prompt_pattern = comms_prompt_pattern
         self.ssh_config_file = ssh_config_file
@@ -30,7 +31,7 @@ class BaseHandler:
         )
         return cls.send_command(
             f"copy tftp://{cls.tftp_server}{path_to_file} startup-config"
-        )  # TODO: running-config -> startup-config
+        )
 
     def show_run(self, cls: GenericDriver) -> Response:
         return cls.send_command("show running-config")
