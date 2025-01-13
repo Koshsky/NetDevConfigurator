@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 
 from database.models import DeviceFirmwares, Devices, Firmwares
-from .base_service import BaseService
 
 
 class DeviceFirmwareService:
@@ -9,19 +8,25 @@ class DeviceFirmwareService:
         self.db = db
 
     def reset_firmwares(self, device_id: int):
-        self.db.query(DeviceFirmwares).filter(DeviceFirmwares.device_id == device_id).delete()
+        self.db.query(DeviceFirmwares).filter(
+            DeviceFirmwares.device_id == device_id
+        ).delete()
         self.db.commit()
 
     def get_firmwares_by_device_id(self, device_id: int):
         return [
             {
-                    "name": firmware.name,
-                    "full_path": firmware.full_path,
-                    "type": firmware.type,
-                    "id": firmware.id
-            } for firmware in (
+                "name": firmware.name,
+                "full_path": firmware.full_path,
+                "type": firmware.type,
+                "id": firmware.id,
+            }
+            for firmware in (
                 self.db.query(Firmwares)
-                .join(DeviceFirmwares, DeviceFirmwares.firmware_id == Firmwares.id,)
+                .join(
+                    DeviceFirmwares,
+                    DeviceFirmwares.firmware_id == Firmwares.id,
+                )
                 .join(Devices, Devices.id == DeviceFirmwares.device_id)
                 .filter(DeviceFirmwares.device_id == device_id)
                 .all()
@@ -49,5 +54,6 @@ class DeviceFirmwareService:
             raise ValueError("Firmware does not exist for this device")
         self.db.query(DeviceFirmwares).filter(
             DeviceFirmwares.device_id == device_id,
-            DeviceFirmwares.firmware_id == firmware_id).delete()
+            DeviceFirmwares.firmware_id == firmware_id,
+        ).delete()
         self.db.commit()

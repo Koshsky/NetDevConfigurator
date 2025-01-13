@@ -15,5 +15,5 @@ class CompanyService(BaseService):
         return {
             "id": company.id,
             "name": company.name,
-            "associated_devices": [device.name for device in associated_devices]
+            "associated_devices": [device.name for device in associated_devices],
         }

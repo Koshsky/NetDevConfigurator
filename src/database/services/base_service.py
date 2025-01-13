@@ -1,5 +1,6 @@
 from .exceptions import EntityNotFoundError
 
+
 class BaseService:
     def __init__(self, db, model):
         self.db = db
@@ -9,16 +10,28 @@ class BaseService:
         return self.db.query(self.model).all()
 
     def get_by_id(self, entity_id: int):
-        if entity := self.db.query(self.model).filter(self.model.id == entity_id).first():
+        if (
+            entity := self.db.query(self.model)
+            .filter(self.model.id == entity_id)
+            .first()
+        ):
             return entity
         else:
-            raise EntityNotFoundError(f"{self.model.__name__} with id {entity_id} not found")
+            raise EntityNotFoundError(
+                f"{self.model.__name__} with id {entity_id} not found"
+            )
 
     def get_by_name(self, entity_name: str):
-        if entity:= self.db.query(self.model).filter(self.model.name == entity_name).first():
+        if (
+            entity := self.db.query(self.model)
+            .filter(self.model.name == entity_name)
+            .first()
+        ):
             return entity
         else:
-            raise EntityNotFoundError(f"{self.model.__name__} with name {entity_name} not found")
+            raise EntityNotFoundError(
+                f"{self.model.__name__} with name {entity_name} not found"
+            )
 
     def get_info(self, entity):
         raise NotImplementedError()
@@ -50,4 +63,3 @@ class BaseService:
     def delete_by_id(self, entity_id: int):
         if db_entity := self.get_by_id(entity_id):
             self.delete(db_entity)
-

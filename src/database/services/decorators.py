@@ -1,5 +1,6 @@
 from functools import wraps
 
+
 def transactional(func):
     """A decorator that wraps database transaction methods to automatically handle commit and rollback operations.
 
@@ -13,6 +14,7 @@ def transactional(func):
             # Commits automatically if no exception occurs
             # Rolls back if an exception is raised
     """
+
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         try:
@@ -22,4 +24,5 @@ def transactional(func):
         except Exception as e:
             self.db.rollback()
             raise
+
     return wrapper

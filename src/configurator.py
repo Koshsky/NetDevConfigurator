@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from gui.base_app import DatabaseApp
-from gui.tabs.configurator import *
+from gui.tabs.configurator import HelloTab, TemplateTab, ViewTab
 import uuid
 import os
 
