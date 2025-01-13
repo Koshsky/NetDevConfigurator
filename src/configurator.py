@@ -8,18 +8,13 @@ import os
 
 class ConfiguratorApp(DatabaseApp):
     def __init__(self, *args, **kwargs):
-        self.directory = '/srv/tftp/tmp'
+        self.directory = "/srv/tftp/tmp"
         os.makedirs(self.directory, exist_ok=True)
-        self.params = {
-            "CERT": None,
-            "OR": None,
-            "MODEL": None,
-            "ROLE": None
-        }
+        self.params = {"CERT": None, "OR": None, "MODEL": None, "ROLE": None}
         self._device = None
         self._preset = None
         self._config = None
-        self._path = None
+        self.config_path = None
         super().__init__(*args, **kwargs)
 
     def on_success_callback(self, engine):
@@ -36,10 +31,13 @@ class ConfiguratorApp(DatabaseApp):
         self.params["OR"] = OR
         self.params["MODEL"] = device.name
         self.params["ROLE"] = preset.role
+        self.params["FAMILY"] = (
+            self.db_services["family"].get_by_id(device.family_id).name
+        )
         self._device = device
         self._preset = preset
-        self._config = self.db_services['preset'].get_info(preset)['configuration']
-        self._path = self.generate_filename()
+        self._config = self.db_services["preset"].get_info(preset)["configuration"]
+        self.config_path = self.generate_filename()
 
     def generate_filename(self):
         filename = f"config_{uuid.uuid4()}.conf"
@@ -55,8 +53,12 @@ class ConfiguratorApp(DatabaseApp):
             self.tabs.pop()
 
     def create_config_tabs(self):
-        self.templates = {k: v for k, v in app._config.items() if v['type'] != 'interface'}
-        self.interfaces = {k: v for k, v in app._config.items() if v['type'] == 'interface'}
+        self.templates = {
+            k: v for k, v in app._config.items() if v["type"] != "interface"
+        }
+        self.interfaces = {
+            k: v for k, v in app._config.items() if v["type"] == "interface"
+        }
         self.create_tab(TemplateTab, "Templates", self.templates, width=6)
         self.create_tab(TemplateTab, "Interfaces", self.interfaces, width=12)
         self.create_tab(ViewTab, "VIEW")
