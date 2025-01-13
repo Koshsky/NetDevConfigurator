@@ -3,7 +3,7 @@ import tkinter.messagebox as messagebox
 from tkinter import IntVar, ttk
 from ttkwidgets.autocomplete import AutocompleteCombobox
 
-from gui.exceptions import RetrievalError
+from database.services import EntityNotFoundError
 
 
 class BaseTab:
@@ -46,12 +46,12 @@ class BaseTab:
 
         service = self.app.db_services.get(entity_type)
         if not service:
-            raise RetrievalError(f"Invalid entity type: {entity_type}")
+            raise EntityNotFoundError(f"Invalid entity type: {entity_type}")
 
         if entity := service.get_by_name(entity_name):
             return entity
         else:
-            raise RetrievalError(
+            raise EntityNotFoundError(
                 f'{entity_type.capitalize()} "{entity_name}" not found in databases'
             )
 

@@ -2,7 +2,6 @@ from functools import wraps
 
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from .exceptions import RetrievalError
 from database.services import EntityNotFoundError
 
 
@@ -27,10 +26,8 @@ def error_handler(func):
     def wrapper(self, *args, **kwargs):
         try:
             return func(self, *args, **kwargs)
-        except RetrievalError as e:
-            self.show_error("ValueError", e)
-        except RetrievalError as e:
-            self.show_error("RetrievalError", e)
+        except EntityNotFoundError as e:
+            self.show_error("EntityNotFoundError", e)
         except IntegrityError as e:
             self.show_error("IntegrityError", e)
             self.app.session.rollback()
