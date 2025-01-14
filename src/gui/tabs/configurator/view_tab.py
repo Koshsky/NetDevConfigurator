@@ -45,7 +45,7 @@ class ViewTab(BaseTab):
     @prepare_config_file
     def load_by_ssh(self):
         with SSHDriver(**self.driver) as ssh:
-            resp = ssh.tftp_send(ssh, self.app.config_path)
+            resp = ssh.update_startup_config(ssh, self.app.config_path)
             print(resp.result)
 
     @prepare_config_file

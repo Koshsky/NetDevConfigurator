@@ -24,7 +24,7 @@ mes2428 = {
 def test_sshdriver():
     if input():
         with SSHDriver(**mes2428) as ssh:
-            resp = ssh.tftp_send(
+            resp = ssh.update_startup_config(
                 ssh, "/srv/tftp/tmp/config_2757b31e-051f-4537-a820-4f43c36f19b2.conf"
             )
             print(resp.result)

@@ -23,11 +23,11 @@ class BaseHandler:
     def on_close(self, cls: GenericDriver) -> None:
         raise NotImplementedError("Subclasses should implement on_close method.")
 
-    def tftp_send(self, cls: GenericDriver, path_to_file: str) -> Response:
+    def update_startup_config(self, cls: GenericDriver, path_to_file: str) -> Response:
         if path_to_file.startswith(cls.tftp_folder):
             path_to_file = path_to_file[len(cls.tftp_folder) :]
         print(
-            "tftp_send:", f"copy tftp://{cls.tftp_server}/{path_to_file} startup-config"
+            "update_startup_config:", f"copy tftp://{cls.tftp_server}/{path_to_file} startup-config"
         )
         return cls.send_command(
             f"copy tftp://{cls.tftp_server}{path_to_file} startup-config"
