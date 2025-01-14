@@ -12,7 +12,7 @@ tftp-server:
     config: /srv/tftp/tmp
     firmware: /srv/tftp/firmware
 
-ssh-config-file: "~/NetDevConfigurator/src/modules/ssh/default_ssh_config"
+ssh-config-file: ~/NetDevConfigurator/src/modules/ssh/default_ssh_config
 
 configurator:
   title: Configurator
