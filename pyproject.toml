@@ -13,6 +13,7 @@ ttkwidgets = "^0.13.0"
 scrapli = {extras = ["ssh2"], version = "^2024.7.30.post1"}
 psycopg2-binary = "^2.9.10"
 pyyaml = "^6.0.2"
+pyserial = "^3.5"
 
 
 [build-system]
