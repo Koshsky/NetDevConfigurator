@@ -48,19 +48,17 @@ class ViewTab(BaseTab):
             resp = ssh.update_startup_config(ssh, self.app.config_filename)
             print(resp.result)
 
-    @prepare_config_file
-    @update_driver
-    def load_by_http(self):
+    def load_by_COM(self):
+        # TODO: первоначально: настроить vlan 1
+        # а конкретно дать ip address:
+        # conf t; interface vlan 1; ip address 10.4.0.x (подходящий);   // TODO: реализовать это как метод SSHDriver?
+        # end; ip route 0.0.0.0 0.0.0.0 10.4.0.254   (??)
+        # self.load_by_ssh()
         pass
 
     @prepare_config_file
     @update_driver
-    def load_by_COM(self):
-        # TODO: первоначально: настроить vlan 1
-        # а конкретно дать ip address:
-        # conf t; interface vlan 1; ip address 10.4.0.x (подходящий);   // TODO: реализовать это как голую функцию?
-        # end; ip route 0.0.0.0 0.0.0.0 10.4.0.254   (??)
-        # self.load_by_ssh()
+    def load_by_http(self):
         pass
 
     @prepare_config_file

@@ -4,6 +4,7 @@ from typing import List
 from scrapli.driver import GenericDriver
 from scrapli.response import Response
 from config import config
+from modules import ssh_logger
 
 
 class BaseHandler:
@@ -23,25 +24,27 @@ class BaseHandler:
     def on_close(self, cls: GenericDriver) -> None:
         raise NotImplementedError("Subclasses should implement on_close method.")
 
-    def load_boot(self, cls: GenericDriver) -> None:
+    def load_boot(self, cls: GenericDriver) -> Response:
         raise NotImplementedError("Subclasses should implement  load_boot method")
 
-    def load_uboot(self, cls: GenericDriver) -> None:
+    def load_uboot(self, cls: GenericDriver) -> Response:
         raise NotImplementedError("Subclasses should implement  load_uboot method")
 
-    def load_firmware(self, cls: GenericDriver) -> None:
+    def load_firmware(self, cls: GenericDriver) -> Response:
         raise NotImplementedError("Subclasses should implement  load_firmware method")
 
+    @ssh_logger
     def update_startup_config(self, cls: GenericDriver, path_to_file: str) -> Response:
         return cls.send_command(
             f"copy tftp://{cls.tftp_server}{cls.tmp_folder}/{path_to_file} startup-config"
         )
 
+    @ssh_logger
     def show_run(self, cls: GenericDriver) -> Response:
         return cls.send_command("show running-config")
 
 
-def handle_device_open(cls: GenericDriver, commands: List[str]) -> None:
+def handle_device_open(cls: GenericDriver, commands: List[str]) -> Response:
     """Handle the opening sequence for devices."""
     try:
         cls.channel.write(cls.auth_password)
@@ -49,7 +52,7 @@ def handle_device_open(cls: GenericDriver, commands: List[str]) -> None:
         for command in commands:
             print(f"on_open: execute {command}")
             if resp := cls.send_command(command):
-                print(resp.result)
+                return resp
         logging.info(f"Successfully completed opening sequence for {cls.family}.")
     except Exception as e:
         logging.error(f"Error during opening sequence for {cls.family}: {e}")

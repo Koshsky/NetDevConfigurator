@@ -6,22 +6,6 @@ from database.services import EntityNotFoundError
 
 
 def error_handler(func):
-    """A decorator that provides comprehensive error handling for database-related methods.
-
-    It catches and handles various database and retrieval exceptions,
-    displaying appropriate error messages and managing database session rollbacks.
-    The decorator wraps method calls to intercept and gracefully handle different types of exceptions
-    that may occur during database operations, ensuring consistent error reporting and session management.
-
-    Examples:
-        # Applying the decorator to a database method
-        @error_handler
-        def save_device(self, device):
-            # Method implementation that might raise database exceptions
-            self.session.add(device)
-            self.session.commit()
-    """
-
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         try:

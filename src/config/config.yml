@@ -14,10 +14,4 @@ tftp-server:
 
 ssh-config-file: ~/NetDevConfigurator/src/modules/ssh/default_ssh_config
 
-configurator:
-  title: Configurator
-
-manager:
-  title: Database
-
 backup-folder: ./backups
