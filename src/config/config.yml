@@ -18,4 +18,6 @@ configurator:
   title: Configurator
 
 manager:
-  title: Database   
+  title: Database
+
+backup-folder: ./backups

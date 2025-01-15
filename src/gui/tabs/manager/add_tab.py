@@ -1,7 +1,3 @@
-import os
-
-from database.services import determine_firmware_type
-
 from gui import BaseTab, apply_error_handler
 
 
@@ -10,11 +6,6 @@ class AddTab(BaseTab):
     def create_widgets(self):
         self.create_block("company", {"name": None}, ("SUBMIT", self.submit_company))
         self.create_block("family", {"name": None}, ("SUBMIT", self.submit_family))
-        self.create_block(
-            "firmware",
-            {"folder": ("./firmwares",)},
-            ("SUBMIT", self.submit_firmwares_from_folder),
-        )
         self.create_block("protocol", {"name": None}, ("SUBMIT", self.submit_protocol))
         self.create_block(
             "device",
@@ -130,33 +121,3 @@ class AddTab(BaseTab):
 
         self.app.db_services["company"].create({"name": company_name})
         self.display_feedback("Successfully added to the companies table.")
-
-    def submit_firmwares_from_folder(self):
-        folder_name = self.fields["firmware"]["folder"].get().strip()
-        if not folder_name:
-            raise ValueError("Folder name cannot be empty.")
-        if not os.path.isdir(folder_name):
-            raise ValueError("Folder '{folder_name}' does not exist.")
-
-        folder_name = (
-            folder_name if os.path.isabs(folder_name) else os.path.abspath(folder_name)
-        )
-        existing_firmwares = [
-            firmware.name for firmware in self.app.db_services["firmware"].get_all()
-        ]
-        for filename in os.listdir(folder_name):
-            firmware_name = filename
-            if firmware_name in existing_firmwares:
-                print(
-                    f"Firmware '{firmware_name}' already exists in the table. Skipping."
-                )
-                continue
-
-            new_firmware = {
-                "name": firmware_name,
-                "full_path": f"{folder_name}/{firmware_name}",
-                "type": determine_firmware_type(firmware_name),
-            }
-            self.app.db_services["firmware"].create(new_firmware)
-
-        self.display_feedback("Successfully added new firmwares from the folder.")

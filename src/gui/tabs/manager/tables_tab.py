@@ -8,7 +8,6 @@ class TablesTab(BaseTab):
             "company",
             "family",
             "device",
-            "firmware",
             "port",
             "protocol",
             "template",

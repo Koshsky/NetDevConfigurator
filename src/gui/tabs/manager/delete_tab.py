@@ -4,7 +4,7 @@ from gui import BaseTab, apply_error_handler
 @apply_error_handler
 class DeleteTab(BaseTab):
     def create_widgets(self):
-        entities = ["company", "family", "device", "firmware", "protocol", "preset"]
+        entities = ["company", "family", "device", "protocol", "preset"]
         for entity in entities:
             self.create_block(
                 entity,

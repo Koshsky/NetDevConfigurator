@@ -32,23 +32,6 @@ class Families(Base):
     templates = relationship('Templates', back_populates='family')
 
 
-class Firmwares(Base):
-    __tablename__ = 'firmwares'
-    __table_args__ = (
-        CheckConstraint("(type)::text = ANY (ARRAY[('primary_bootloader'::character varying)::text, ('secondary_bootloader'::character varying)::text, ('firmware'::character varying)::text])", name='firmwares_firmware_type_check'),
-        PrimaryKeyConstraint('id', name='firmwares_pkey'),
-        UniqueConstraint('full_path', name='firmwares_full_path_key'),
-        UniqueConstraint('name', name='unique_firmware_name')
-    )
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    full_path = Column(String, nullable=False)
-    type = Column(String, nullable=False)
-
-    device_firmwares = relationship('DeviceFirmwares', back_populates='firmware')
-
-
 class Ports(Base):
     __tablename__ = 'ports'
     __table_args__ = (
@@ -90,10 +73,12 @@ class Devices(Base):
     company_id = Column(Integer, nullable=False)
     dev_type = Column(String, nullable=False)
     family_id = Column(Integer, nullable=False)
+    boot = Column(String)
+    uboot = Column(String)
+    firmware = Column(String)
 
     company = relationship('Companies', back_populates='devices')
     family = relationship('Families', back_populates='devices')
-    device_firmwares = relationship('DeviceFirmwares', back_populates='device')
     device_ports = relationship('DevicePorts', back_populates='device')
     device_protocols = relationship('DeviceProtocols', back_populates='device')
     presets = relationship('Presets', back_populates='device')
@@ -118,23 +103,6 @@ class Templates(Base):
 
     family = relationship('Families', back_populates='templates')
     device_presets = relationship('DevicePresets', back_populates='template')
-
-
-class DeviceFirmwares(Base):
-    __tablename__ = 'device_firmwares'
-    __table_args__ = (
-        ForeignKeyConstraint(['device_id'], ['devices.id'], ondelete='CASCADE', name='device_firmwares_device_id_fkey'),
-        ForeignKeyConstraint(['firmware_id'], ['firmwares.id'], ondelete='CASCADE', name='device_firmwares_firmware_id_fkey'),
-        PrimaryKeyConstraint('id', name='device_firmwares_pkey'),
-        UniqueConstraint('device_id', 'firmware_id', name='unique_device_firmware')
-    )
-
-    id = Column(Integer, primary_key=True)
-    device_id = Column(Integer, nullable=False)
-    firmware_id = Column(Integer, nullable=False)
-
-    device = relationship('Devices', back_populates='device_firmwares')
-    firmware = relationship('Firmwares', back_populates='device_firmwares')
 
 
 class DevicePorts(Base):

@@ -64,15 +64,10 @@ class ViewTab(BaseTab):
         pass
 
     def update_firmwares(self):
-        firmwares = self.app.db_services["device"].get_info(self.app._device)[
-            "firmwares"
-        ]
-        for firmware in firmwares:
-            path = firmware["full_path"]
-            if not os.path.exists(path):
-                raise Exception(f"File {path} not found")
-        pass
-        pass
+        # TODO: СДЕЛАТЬ ПОИСК ФАЙЛОВ ПО МАСКЕ ИЗ ТАБЛИЦЫ DEVICES
+        # firmwares = self.app.db_services["device"].get_info(self.app._device)[
+        #     "firmwares"
+        # ]
         pass
 
     def show_template(self):

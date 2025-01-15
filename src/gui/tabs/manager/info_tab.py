@@ -5,7 +5,7 @@ from pprint import pformat
 @apply_error_handler
 class InfoTab(BaseTab):
     def create_widgets(self):
-        entity_types = ["company", "family", "device", "firmware", "preset", "template"]
+        entity_types = ["company", "family", "device", "preset", "template"]
         for entity_type in entity_types:
             self.create_block(
                 entity_type,

@@ -23,9 +23,9 @@ class DBManagerApp(DatabaseApp):
         self.create_tab(TablesTab, "TABLES")
         self.create_tab(InfoTab, "INFO")
         self.create_tab(AddTab, "ADD")
-        self.create_tab(UpdateTab, "UPDATE")
         self.create_tab(DeleteTab, "DELETE")
-        self.create_tab(DeviceTab, "DEVICE")
+        self.create_tab(UpdateTab, "FIRMWARE")
+        self.create_tab(DeviceTab, "PORTS")
         self.create_tab(CommonConfigTab, "CONFIG")
         self.create_tab(CopyConfigTab, "COPY CONFIG")
 

@@ -4,6 +4,8 @@ import os
 import argparse
 from datetime import datetime
 
+from config import config
+
 db_params = ["localhost", "5432", "device_registry", "postgres", "postgres"]
 
 
@@ -26,7 +28,7 @@ def run_postgres_command(command, env, error_context):
 def backup_postgres_db(db_params):
     host, port, database_name, user, password = db_params
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-    path = f"./backups/dev{timestamp}.sql"
+    path = f"{config['backup-folder']}/dev{timestamp}.sql"
 
     command = [
         "pg_dump",
