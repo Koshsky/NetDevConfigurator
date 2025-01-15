@@ -5,9 +5,10 @@ def prepare_config_file(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         template = self._get_text_configuration()
-        with open(self.app.config_path, "w") as f:
+        config_path = f"/srv/tftp/{self.app.config_filename}"
+        with open(config_path, "w") as f:
             f.write(template)
-        self.display_feedback(f"Template saved:\n{self.app.config_path}")
+        self.display_feedback(f"Template saved:\n{config_path}")
 
         return func(self, *args, **kwargs)
 
@@ -24,7 +25,6 @@ class update_driver:
             self.driver = {
                 "auth_strict_key": False,  # important for unknown hosts
                 "family": self.app.params["FAMILY"],
-                "tftp_server": self.fields["tftp-server"]["IP"].get(),
                 "host": self.fields["host"]["IP"].get(),
                 "auth_username": self.fields["credentials"]["username"].get(),
                 "auth_password": self.fields["credentials"]["password"].get(),

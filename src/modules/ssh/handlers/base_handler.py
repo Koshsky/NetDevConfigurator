@@ -23,14 +23,18 @@ class BaseHandler:
     def on_close(self, cls: GenericDriver) -> None:
         raise NotImplementedError("Subclasses should implement on_close method.")
 
+    def load_boot(self, cls: GenericDriver) -> None:
+        raise NotImplementedError("Subclasses should implement  load_boot method")
+
+    def load_uboot(self, cls: GenericDriver) -> None:
+        raise NotImplementedError("Subclasses should implement  load_uboot method")
+
+    def load_firmware(self, cls: GenericDriver) -> None:
+        raise NotImplementedError("Subclasses should implement  load_firmware method")
+
     def update_startup_config(self, cls: GenericDriver, path_to_file: str) -> Response:
-        if path_to_file.startswith(cls.tftp_folder):
-            path_to_file = path_to_file[len(cls.tftp_folder) :]
-        print(
-            "update_startup_config:", f"copy tftp://{cls.tftp_server}/{path_to_file} startup-config"
-        )
         return cls.send_command(
-            f"copy tftp://{cls.tftp_server}{path_to_file} startup-config"
+            f"copy tftp://{cls.tftp_server}{cls.tmp_folder}/{path_to_file} startup-config"
         )
 
     def show_run(self, cls: GenericDriver) -> Response:

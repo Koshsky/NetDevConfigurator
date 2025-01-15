@@ -9,8 +9,8 @@ tftp-server:
   address: 10.3.1.144
   port: 69
   folder:
-    config: /srv/tftp/tmp
-    firmware: /srv/tftp/firmware
+    config: tmp
+    firmware: firmware
 
 ssh-config-file: ~/NetDevConfigurator/src/modules/ssh/default_ssh_config
 

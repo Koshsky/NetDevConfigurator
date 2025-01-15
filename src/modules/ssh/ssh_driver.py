@@ -29,7 +29,7 @@ class SSHDriver(GenericDriver):
 
         self.family = family
         self.tftp_server = config["tftp-server"]["address"]
-        self.config_folder = config["tftp-server"]["folder"]["config"]
+        self.tmp_folder = config["tftp-server"]["folder"]["config"]
         self.firmware_folder = config["tftp-server"]["folder"]["firmware"]
 
         self.comms_prompt_pattern = self.handler.comms_prompt_pattern

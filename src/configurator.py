@@ -9,13 +9,13 @@ from config import config
 
 class ConfiguratorApp(DatabaseApp):
     def __init__(self, *args, **kwargs):
-        self.config_folder = config["tftp-server"]["folder"]["config"]
-        os.makedirs(self.config_folder, exist_ok=True)  # TODO: clear folder (?)
+        self.tmp_folder = config["tftp-server"]["folder"]["config"]
+        os.makedirs(self.tmp_folder, exist_ok=True)  # TODO: clear folder (?)
         self.params = {"CERT": None, "OR": None, "MODEL": None, "ROLE": None}
         self._device = None
         self._preset = None
         self.device_configuration = None
-        self.config_path = None
+        self.config_filename = None
         super().__init__(*args, **kwargs)
 
     def create_config_tabs(self):
@@ -57,11 +57,10 @@ class ConfiguratorApp(DatabaseApp):
         self.device_configuration = self.db_services["preset"].get_info(
             preset, check=True
         )["configuration"]
-        self.config_path = self.generate_filename()
+        self.config_filename = self.generate_filename()
 
     def generate_filename(self):
-        filename = f"config_{uuid.uuid4()}.conf"
-        return os.path.join(self.config_folder, filename)
+        return f"config_{uuid.uuid4()}.conf"
 
     def update_config_tabs(self):
         self.remove_config_tabs()
