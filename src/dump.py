@@ -58,6 +58,8 @@ def backup_postgres_db(db_params):
     with contextlib.suppress(Exception):
         env = {"PGPASSWORD": password}
         run_postgres_command(command, env, path)
+    
+    print(f"Database backuped successfully to {path}")
 
 
 def restore_postgres_db(db_params, path):
@@ -90,7 +92,7 @@ def restore_postgres_db(db_params, path):
         and run_postgres_command(create_command, env, "when creating database")
         and run_postgres_command(restore_command, env, "when restoring db")
     ):
-        print("Database restored successfully")
+        print(f"Database restored successfully from {path}")
 
 
 if __name__ == "__main__":
@@ -113,6 +115,5 @@ if __name__ == "__main__":
         else:
             path = get_most_recent_file(config['backup-folder'])
         restore_postgres_db(db_params, path)
-        print(f'restored {path}')
     else:
         print("Please specify either --backup or --restore.")
