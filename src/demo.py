@@ -1,38 +1,21 @@
-from modules.ssh import SSHDriver
+import os
+import glob
+
 from config import config
-from pprint import pprint
-
-ubuntu = {
-    "family": "ubuntu",
-    "host": "127.0.0.14",  # network device
-    "auth_username": "koshsky",
-    "auth_password": "fdsjkl",
-    "auth_strict_key": False,  # important for unknown hosts
-    "transport": "ssh2",
-}
-
-mes2428 = {
-    "family": "MES14xx/24xx/34xx/37xx",
-    "host": "10.3.1.13",  # network device
-    "auth_username": "mvsadmin",
-    "auth_password": "MVS_admin",
-    "auth_strict_key": False,  # important for unknown hosts
-    "transport": "ssh2",
-}
 
 
-def test_sshdriver():
-    if input():
-        with SSHDriver(**mes2428) as ssh:
-            resp = ssh.update_startup_config(
-                ssh, "/srv/tftp/tmp/config_2757b31e-051f-4537-a820-4f43c36f19b2.conf"
-            )
-            print(resp.result)
-    else:
-        with SSHDriver(**ubuntu) as ssh:
-            resp = ssh.send_command("ls -la")
-            print(resp.result)
+def get_most_recent_file(directory):
+    files = glob.glob(os.path.join(directory, "*"))
+    if not files:
+        return None
+    most_recent_file = max(files, key=os.path.getmtime)
+
+    return most_recent_file
 
 
-if __name__ == "__main__":
-    pprint(config)
+most_recent_file = get_most_recent_file(config["backup-folder"])
+
+if most_recent_file:
+    print(f"Самый свежий файл: {most_recent_file}")
+else:
+    print("В директории нет файлов.")

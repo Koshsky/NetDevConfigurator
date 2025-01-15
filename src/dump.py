@@ -2,11 +2,21 @@ import subprocess
 import contextlib
 import os
 import argparse
+import glob
 from datetime import datetime
 
 from config import config
 
 db_params = ["localhost", "5432", "device_registry", "postgres", "postgres"]
+
+
+def get_most_recent_file(directory):
+    files = glob.glob(os.path.join(directory, "*"))
+    if not files:
+        return None
+    most_recent_file = max(files, key=os.path.getmtime)
+
+    return most_recent_file
 
 
 def run_postgres_command(command, env, error_context):
@@ -99,10 +109,10 @@ if __name__ == "__main__":
         backup_postgres_db(db_params)
     elif args.restore:
         if args.output:
-            restore_postgres_db(db_params, args.output)
+            path = args.output
         else:
-            print(
-                "Output filename must be specified for restore operation using -o or --output."
-            )
+            path = get_most_recent_file(config['backup-folder'])
+        restore_postgres_db(db_params, path)
+        print(f'restored {path}')
     else:
         print("Please specify either --backup or --restore.")
