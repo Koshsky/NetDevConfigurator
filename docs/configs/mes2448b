@@ -1,0 +1,258 @@
+#Building configuration...
+#ISS config ver. 9; SW ver. 10.3.6.6 (728c49ab) for MES2448B rev.B. Do not remove or edit this line
+!   
+hostname "rami-tsh3-mes2448b"  
+!
+no logging console
+!
+no spanning-tree
+!
+vlan 2-4
+  vlan active
+!              
+switching-mode cut-through
+!
+spanning-tree mode rst        
+!
+username mvsadmin password encrypted zbICg2SPBsvT1IfFwRpH3Q== privilege 15  
+username admin_rec password encrypted Ts6Wa2/X/ebD/HnwyJC5NQ== privilege 15    
+!    
+vlan 2 
+  name "VIDEO"
+! 
+vlan 3 
+  name "DATA"
+! 
+vlan 4 
+  name "MGMT"
+!
+interface vlan 2
+! 
+interface vlan 3
+! 
+interface vlan 4
+  ip address 10.4.3.11 255.255.0.0
+! 
+interface gigabitethernet 0/1
+  switchport general allowed vlan add 2
+  switchport general allowed vlan add 3 untagged
+  switchport forbidden default-vlan
+  switchport general pvid 3    
+! 
+interface gigabitethernet 0/2
+  switchport general allowed vlan add 2
+  switchport general allowed vlan add 3 untagged
+  switchport forbidden default-vlan
+  switchport general pvid 3    
+! 
+interface gigabitethernet 0/3
+  switchport general allowed vlan add 2
+  switchport general allowed vlan add 3 untagged
+  switchport forbidden default-vlan
+  switchport general pvid 3    
+! 
+interface gigabitethernet 0/4
+  switchport general allowed vlan add 2
+  switchport general allowed vlan add 3 untagged
+  switchport forbidden default-vlan
+  switchport general pvid 3    
+! 
+interface gigabitethernet 0/5
+  switchport general allowed vlan add 2
+  switchport general allowed vlan add 3 untagged
+  switchport forbidden default-vlan
+  switchport general pvid 3    
+! 
+interface gigabitethernet 0/6
+  switchport general allowed vlan add 2
+  switchport general allowed vlan add 3 untagged
+  switchport forbidden default-vlan
+  switchport general pvid 3    
+! 
+interface gigabitethernet 0/7
+  switchport general allowed vlan add 2
+  switchport general allowed vlan add 3 untagged
+  switchport forbidden default-vlan
+  switchport general pvid 3    
+! 
+interface gigabitethernet 0/8
+  switchport general allowed vlan add 2
+  switchport general allowed vlan add 3 untagged
+  switchport forbidden default-vlan
+  switchport general pvid 3    
+! 
+interface gigabitethernet 0/9
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/10
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/11
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/12
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/13
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/14
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/15
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/16
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/17
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/18
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/19
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/20
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/21
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/22
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/23
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/24
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/25
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/26
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/27
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/28
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/29
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/30
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/31
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/32
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/33
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/34
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/35
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/36
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/37
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/38
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/39
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/40
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/41
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/42
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/43
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/44
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/45
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/46
+  switchport mode access
+  switchport access vlan 3    
+! 
+interface gigabitethernet 0/47
+  switchport mode access
+  switchport access vlan 4    
+! 
+interface gigabitethernet 0/48
+  switchport mode access
+  switchport access vlan 4    
+! 
+interface tengigabitethernet 0/1
+  switchport general allowed vlan add 2    
+! 
+interface tengigabitethernet 0/2
+  switchport general allowed vlan add 2    
+! 
+interface tengigabitethernet 0/3
+  switchport general allowed vlan add 3-4    
+! 
+interface tengigabitethernet 0/4
+  switchport general allowed vlan add 3-4    
+! 
+ip route 0.0.0.0  0.0.0.0 10.4.0.254
+!  
+end
