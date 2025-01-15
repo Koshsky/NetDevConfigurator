@@ -7,8 +7,6 @@ from datetime import datetime
 
 from config import config
 
-db_params = ["localhost", "5432", "device_registry", "postgres", "postgres"]
-
 
 def get_most_recent_file(directory):
     files = glob.glob(os.path.join(directory, "*"))
@@ -36,54 +34,63 @@ def run_postgres_command(command, env, error_context):
 
 
 def backup_postgres_db(db_params):
-    host, port, database_name, user, password = db_params
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
     path = f"{config['backup-folder']}/dev{timestamp}.sql"
 
     command = [
         "pg_dump",
         "-h",
-        host,
+        db_params["host"],
         "-p",
-        port,
+        str(db_params["port"]),
         "-U",
-        user,
+        db_params["username"],
         "-F",
         "c",
         "-f",
         path,
-        database_name,
+        db_params["database"],
     ]
 
     with contextlib.suppress(Exception):
-        env = {"PGPASSWORD": password}
+        env = {"PGPASSWORD": db_params["password"]}
         run_postgres_command(command, env, path)
-    
+
     print(f"Database backuped successfully to {path}")
 
 
 def restore_postgres_db(db_params, path):
-    host, port, database_name, user, password = db_params
-    env = {"PGPASSWORD": password}
+    env = {"PGPASSWORD": db_params["password"]}
 
     if not os.path.isfile(path):
         print(f"Error: {path} doesn't exist.")
         return
 
-    base_command = lambda cmd: ["psql", "-h", host, "-p", port, "-U", user, "-c", cmd]
+    def base_command(cmd):
+        return [
+            "psql",
+            "-h",
+            db_params["host"],
+            "-p",
+            str(db_params["port"]),
+            "-U",
+            db_params["username"],
+            "-c",
+            cmd,
+        ]
 
-    drop_command = base_command(f"DROP DATABASE IF EXISTS {database_name};")
-    create_command = base_command(f"CREATE DATABASE {database_name};")
+    drop_command = base_command(f"DROP DATABASE IF EXISTS {db_params['database']};")
+    create_command = base_command(f"CREATE DATABASE {db_params['database']};")
     restore_command = [
         "pg_restore",
         "-h",
-        host,
+        db_params["host"],
         "-p",
-        port,
+        str(db_params["port"]),
         "-U",
-        user,
+        db_params["username"],
         "-d",
-        database_name,
+        db_params["database"],
         path,
     ]
 
@@ -108,12 +115,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.backup:
-        backup_postgres_db(db_params)
+        backup_postgres_db(config["database"])
     elif args.restore:
         if args.output:
             path = args.output
         else:
-            path = get_most_recent_file(config['backup-folder'])
-        restore_postgres_db(db_params, path)
+            path = get_most_recent_file(config["backup-folder"])
+        restore_postgres_db(config["database"], path)
     else:
         print("Please specify either --backup or --restore.")
