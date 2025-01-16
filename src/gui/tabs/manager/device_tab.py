@@ -66,6 +66,4 @@ class DeviceTab(BaseTab):
                 res.append(port)
             return res[::-1]
 
-        port_input = strip_none(port_input)
-
-        return check_mixed_speeds(port_input)
+        return check_mixed_speeds(strip_none(port_input))
