@@ -12,6 +12,6 @@ tftp-server:
     config: tmp
     firmware: firmware
 
-ssh-config-file: ~/NetDevConfigurator/src/modules/ssh/default_ssh_config
+ssh-config-file: ~/NetDevConfigurator/src/config/ssh.conf
 
 backup-folder: ./backups

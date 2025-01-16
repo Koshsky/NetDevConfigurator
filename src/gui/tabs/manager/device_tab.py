@@ -20,7 +20,6 @@ class DeviceTab(BaseTab):
 
     def write_device(self):
         device = self.check_device_name(self.fields["device"]["name"].get())
-        self._validate_port_input(self.fields["device"]["ports"])
 
         self.write_protocols(device)
         self.write_ports(device)
@@ -28,11 +27,12 @@ class DeviceTab(BaseTab):
         self.display_feedback("SUCCESS")
 
     def write_ports(self, device):
+        port_input = list(
+            map(lambda x: x[1].get(), self.fields["device"]["ports"].items())
+        )
+        ports = self.prepare_port_input(port_input)
         self.app.db_services["device"].reset_ports(device.id)
-        for _, combo in self.fields["device"]["ports"].items():
-            if combo.get() == "None":
-                break
-            port = self.check_port_name(combo.get())
+        for port in ports:
             self.app.db_services["device"].add_port_by_id(device.id, port.id)
 
     def write_protocols(self, device):
@@ -44,24 +44,28 @@ class DeviceTab(BaseTab):
                     device.id, protocol.id
                 )
 
-    def _validate_port_input(self, ports_input):
-        def check_none_in_the_middle(fields):
-            res = False
-            for _, combo in fields.items():
-                if combo.get() == "None":
-                    res = True
-                elif res:  # res == true if None was previously encountered and not now
-                    raise ValueError(
-                        "[NONE] encountered in the middle of port enumeration"
-                    )
+    def prepare_port_input(self, port_input):
+        def strip_none(ports):
+            while ports[-1] == "None":
+                ports.pop()
+            return ports
 
         def check_mixed_speeds(fields):
-            is1000mpbs = True
-            for _, combo in fields.items():
-                if "1000Mbps" not in combo.get():
-                    is1000mpbs = False
-                elif not is1000mpbs and "1000Mbps" in combo.get():
+            is1000mbps = False
+            res = []
+            for port_name in fields[::-1]:
+                if port_name == "None":
+                    res.append(res[-1])
+                    continue
+                # may raise exception (invalid name)
+                port = self.app.db_services["port"].get_by_name(port_name)
+                if port.speed != 10000:
+                    is1000mbps = True
+                elif is1000mbps and port.speed == 10000:
                     raise ValueError("Mixed speeds in port enumeration")
+                res.append(port)
+            return res[::-1]
 
-        check_none_in_the_middle(ports_input)
-        check_mixed_speeds(ports_input)
+        port_input = strip_none(port_input)
+
+        return check_mixed_speeds(port_input)
