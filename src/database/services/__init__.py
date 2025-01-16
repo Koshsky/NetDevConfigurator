@@ -42,8 +42,7 @@ def prepare_entity_collections(entity_services):
         "protocol": tuple(
             protocol.name for protocol in entity_services["protocol"].get_all()
         ),
-        "port": (None,)
-        + tuple(port.name for port in entity_services["port"].get_all()),
+        "port": tuple(port.name for port in entity_services["port"].get_all()),
         "template": tuple(
             set({template.name for template in entity_services["template"].get_all()})
         ),

@@ -10,7 +10,8 @@ class DeviceTab(BaseTab):
                 "name": self.app.entity_collections["device"],
                 "protocols": list(self.app.entity_collections["protocol"]),
                 "ports": {
-                    f"{i}": self.app.entity_collections["port"] for i in range(60)
+                    f"{i}": (None,) + self.app.entity_collections["port"]
+                    for i in range(60)
                 },
             },
             width=12,
