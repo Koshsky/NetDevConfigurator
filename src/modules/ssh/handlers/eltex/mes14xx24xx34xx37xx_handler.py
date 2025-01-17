@@ -18,10 +18,10 @@ class MES14xx24xx34xx37xxHandler(BaseHandler):
 
     def load_boot(self, cls: GenericDriver, filename: str) -> Response:
         return cls.send_command(
-            f"copy tftp://{cls.tftp_server}/{cls.tmp_folder}/{filename} boot"
+            f"copy tftp://{cls.tftp_server}/{cls.firmware_folder}/{filename} boot"
         )
 
     def load_firmware(self, cls: GenericDriver, filename: str) -> Response:
         return cls.send_command(
-            f"copy tftp://{cls.tftp_server}/{cls.tmp_folder}/{filename} image"
+            f"copy tftp://{cls.tftp_server}/{cls.firmware_folder}/{filename} image"
         )

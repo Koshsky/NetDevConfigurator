@@ -22,5 +22,5 @@ class MES23xx33xx35xx36xx53xx5400Handler(BaseHandler):  # + mes3300
 
     def load_boot(self, cls: GenericDriver, filename: str) -> Response:
         return cls.send_command(
-            f"boot system tftp://{cls.tftp_server}/{cls.tmp_folder}/{filename}"
+            f"boot system tftp://{cls.tftp_server}/{cls.firmware_folder}/{filename}"
         )
