@@ -1,5 +1,4 @@
 from gui import BaseTab, apply_error_handler
-import os
 
 from modules.ssh import SSHDriver
 from .decorators import prepare_config_file, update_driver

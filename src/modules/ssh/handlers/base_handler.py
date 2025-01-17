@@ -31,7 +31,7 @@ class BaseHandler:
             if not line.startswith("#"):
                 break
             res += line + "\n"
-        return res.strip()
+        return res + "!"
 
     def load_boot(self, cls: GenericDriver) -> Response:
         raise NotImplementedError("Subclasses should implement  load_boot method")
@@ -41,6 +41,9 @@ class BaseHandler:
 
     def load_firmware(self, cls: GenericDriver) -> Response:
         raise NotImplementedError("Subclasses should implement  load_firmware method")
+
+    def reload(self, cls: GenericDriver) -> Response:
+        raise NotImplementedError("Subclasses should implement  reload method")
 
     @ssh_logger
     def update_startup_config(self, cls: GenericDriver, path_to_file: str) -> Response:
