@@ -6,7 +6,7 @@ from scrapli.response import Response
 from modules import ssh_logger
 
 
-class MES14xx24xx37xxHandler(BaseHandler):
+class MES14xx24xx34xx37xxHandler(BaseHandler):
     @ssh_logger
     def on_open(self, cls: GenericDriver) -> Response:
         return handle_device_open(cls, ["set cli pagination off"])

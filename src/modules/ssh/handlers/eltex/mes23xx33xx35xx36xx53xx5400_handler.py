@@ -6,7 +6,7 @@ from scrapli.response import Response
 from modules import ssh_logger
 
 
-class MES23xx35xxHandler(BaseHandler):  # + mes3300
+class MES23xx33xx35xx36xx53xx5400Handler(BaseHandler):  # + mes3300
     @ssh_logger
     def on_open(self, cls: GenericDriver) -> Response:
         return handle_device_open(

@@ -33,13 +33,15 @@ class BaseHandler:
             res += line + "\n"
         return res + "!"
 
-    def load_boot(self, cls: GenericDriver) -> Response:
-        raise NotImplementedError("Subclasses should implement  load_boot method")
+    def load_boot(self, cls: GenericDriver, path_to_file: str) -> Response:
+        return cls.send_command(
+            f"copy tftp://{cls.tftp_server}{cls.tmp_folder}/{path_to_file} boot"
+        )
 
-    def load_uboot(self, cls: GenericDriver) -> Response:
+    def load_uboot(self, cls: GenericDriver, path_to_file: str) -> Response:
         raise NotImplementedError("Subclasses should implement  load_uboot method")
 
-    def load_firmware(self, cls: GenericDriver) -> Response:
+    def load_firmware(self, cls: GenericDriver, path_to_file: str) -> Response:
         raise NotImplementedError("Subclasses should implement  load_firmware method")
 
     def reload(self, cls: GenericDriver) -> Response:
