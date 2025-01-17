@@ -12,6 +12,18 @@ tftp-server:
     config: tmp
     firmware: firmware
 
+serial:
+  port: /dev/ttyUSB0
+  baudrate: 115200
+  parity: None
+  bitesize: 8
+  stopbits: 1
+  timeout: 1
+  flow-control:
+    xonxoff: False
+    rtscts: False
+    dsrdtr: False
+
 ssh-config-file: ~/NetDevConfigurator/src/config/ssh.conf
 
 backup-folder: ./backups

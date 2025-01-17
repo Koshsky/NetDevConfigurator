@@ -3,13 +3,10 @@ import tkinter as tk
 from gui.base_app import DatabaseApp
 from gui.tabs.configurator import HelloTab, TemplateTab, ViewTab
 import uuid
-from config import config
-from utils import prepare_tmp_folder
 
 
 class ConfiguratorApp(DatabaseApp):
     def __init__(self, *args, **kwargs):
-        self.tmp_folder = prepare_tmp_folder(config["tftp-server"]["folder"]["config"])
         self.params = {"CERT": None, "OR": None, "MODEL": None, "ROLE": None}
         self._device = None
         self._preset = None

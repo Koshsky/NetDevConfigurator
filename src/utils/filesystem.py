@@ -1,6 +1,5 @@
 import os
 import fnmatch
-import shutil
 
 
 # TODO: добавить сюда функцию из файла draft.py с работы
@@ -19,13 +18,3 @@ def find_most_recent_file(directory: str, pattern: str) -> str:
                 most_recent_file = filename
 
     return most_recent_file
-
-
-def prepare_tmp_folder(path: str) -> str:
-    if os.path.exists(path):
-        shutil.rmtree(path)
-        print(f"Folder '{path}' successfully deleted.")
-
-    os.makedirs(path, exist_ok=True)
-    print(f"Folder '{path}' successfully created.")
-    return path
