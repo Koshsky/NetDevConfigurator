@@ -24,6 +24,15 @@ class BaseHandler:
     def on_close(self, cls: GenericDriver) -> None:
         raise NotImplementedError("Subclasses should implement on_close method.")
 
+    def get_header(self, cls: GenericDriver) -> str:
+        resp = cls.send_command("show running-config").result()
+        res = ""
+        for line in resp.split("\n"):
+            if not line.startswith("#"):
+                break
+            res += line + "\n"
+        return res.strip()
+
     def load_boot(self, cls: GenericDriver) -> Response:
         raise NotImplementedError("Subclasses should implement  load_boot method")
 

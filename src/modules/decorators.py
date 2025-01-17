@@ -6,7 +6,7 @@ def ssh_logger(func):
     def wrapper(self, *args, **kwargs):
         print(f"Calling {func.__name__}...")
         resp = func(self, *args, **kwargs)
-        print(resp)
+        print(resp.result())
         print("========================================================")
 
     return wrapper
