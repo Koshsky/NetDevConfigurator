@@ -4,30 +4,30 @@ from gui.base_app import DatabaseApp
 from gui.tabs.configurator import HelloTab, TemplateTab, ViewTab
 import uuid
 
+from modules.ssh import SSHDriver
+from scrapli.exceptions import ScrapliConnectionNotOpened
+
 
 class ConfiguratorApp(DatabaseApp):
     def __init__(self, *args, **kwargs):
         self.params = {"CERT": None, "OR": None, "MODEL": None, "ROLE": None}
-        self._device = None
-        self._preset = None
+        self.ssh = None
+        self.device = None
+        self.preset = None
         self.device_configuration = None
         self.config_filename = None
         super().__init__(*args, **kwargs)
 
     def create_config_tabs(self):
-        self.templates = {
-            k: v
-            for k, v in app.device_configuration.items()
-            if v["type"] != "interface"
-        }
-        self.interfaces = {
-            k: v
-            for k, v in app.device_configuration.items()
-            if v["type"] == "interface"
-        }
-        self.create_tab(TemplateTab, "Templates", self.templates, width=6)
+        templates, interfaces = {}, {}
+        for k, v in app.device_configuration.items():
+            if v["type"] == "interface":
+                interfaces[k] = v
+            else:
+                templates[k] = v
+        self.create_tab(TemplateTab, "Templates", templates, width=6)
         self.create_tab(
-            TemplateTab, "Interfaces", self.interfaces, width=12, allow_none=False
+            TemplateTab, "Interfaces", interfaces, width=12, allow_none=False
         )
         self.create_tab(ViewTab, "VIEW")
 
@@ -36,7 +36,25 @@ class ConfiguratorApp(DatabaseApp):
         self.create_tab(HelloTab, "Device")
         self.notebook.select(self.tabs[0].frame)
 
-    def register_settings(self, cert, OR, device, preset):
+    def update_driver(self, ip, port, username, password):
+        # TODO: close?
+        driver = {
+            "auth_strict_key": False,  # important for unknown hosts
+            "family": self.params["FAMILY"],
+            "host": ip,  # TODO: port?????
+            "auth_username": username,
+            "auth_password": password,
+        }
+        self.ssh2 = SSHDriver(**driver)
+        try:
+            self.ssh2.open()
+        except ScrapliConnectionNotOpened as e:
+            self.ssh2 = None
+            print(f"{e.__name_}_: {e}")
+
+    def register_settings(
+        self, cert, OR, device, preset
+    ):  # TODO: подумать и переименовать
         if not (cert and OR and device and preset):
             raise ValueError("All parameters must be set")
         if preset.device_id != device.id:
@@ -48,15 +66,12 @@ class ConfiguratorApp(DatabaseApp):
         self.params["FAMILY"] = (
             self.db_services["family"].get_by_id(device.family_id).name
         )
-        self._device = device
-        self._preset = preset
+        self.device = device
+        self.preset = preset
         self.device_configuration = self.db_services["preset"].get_info(
             preset, check=True
         )["configuration"]
-        self.config_filename = self.generate_filename()
-
-    def generate_filename(self):
-        return f"config_{uuid.uuid4()}.conf"
+        self.config_filename = f"config_{uuid.uuid4()}.conf"
 
     def update_config_tabs(self):
         self.remove_config_tabs()

@@ -19,10 +19,34 @@ class HelloTab(BaseTab):
                 "CERT": None,
                 "OR": None,
             },
-            ("SELECT", self.update_tabs),
         )
+        self.create_button_in_line(("UPDATE TABS", self.update_tabs))
+        self.create_block(
+            "host",
+            {
+                "ip": ("10.3.1.13",),
+                "port": ("22",),
+            },
+        )
+        self.create_block(
+            "credentials",
+            {
+                "username": ("mvsadmin",),
+                "password": ("MVS_admin", None),
+            },
+        )
+        self.create_button_in_line(("UPDATE CREDENTIALS", self.update_creds))
         self.create_feedback_area()
         self.refresh_presets()
+
+    def update_creds(self):
+        ip = self.fields["host"]["ip"].get()
+        port = self.fields["host"]["port"].get()
+        username = self.fields["credentials"]["username"].get()
+        password = self.fields["credentials"]["password"].get()
+        if not all([ip, port, username, password]):
+            raise ValueError("Please fill all fields")
+        self.app.update_driver(ip, port, username, password)
 
     def update_tabs(self):
         preset = self.check_preset_name(self.fields["params"]["preset"].get())

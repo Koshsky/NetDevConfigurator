@@ -1,4 +1,5 @@
 from functools import wraps
+from scrapli.response import Response
 
 
 def ssh_logger(func):
@@ -6,7 +7,10 @@ def ssh_logger(func):
     def wrapper(self, *args, **kwargs):
         print(f"Calling {func.__name__}...")
         resp = func(self, *args, **kwargs)
-        print(resp.result())
+        if isinstance(resp, Response):
+            print(resp.result())
+        else:
+            print(resp)
         print("========================================================")
 
     return wrapper

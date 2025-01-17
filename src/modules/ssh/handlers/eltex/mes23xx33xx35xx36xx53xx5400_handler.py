@@ -3,25 +3,24 @@ from ..base_handler import BaseHandler, handle_device_open
 from scrapli.driver import GenericDriver
 from scrapli.response import Response
 
-from modules import ssh_logger
+from modules import apply_ssh_logger
 
 
+@apply_ssh_logger
 class MES23xx33xx35xx36xx53xx5400Handler(BaseHandler):  # + mes3300
-    @ssh_logger
     def on_open(self, cls: GenericDriver) -> Response:
         return handle_device_open(
             cls, ["terminal datadump", "terminal width 0", "terminal no prompt"]
         )
 
-    def on_close(self, cls: GenericDriver) -> None:
-        cls.channel.write(channel_input="exit")
-        cls.channel.send_return()
+    def update_startup_config(
+        self, cls: GenericDriver, filename: str
+    ) -> Response:  # TODO: выяснить так ли это
+        return cls.send_command(  # если так, вынести это в base_handler
+            f"copy tftp://{cls.tftp_server}/{cls.tmp_folder}/{filename} startup-config"
+        )
 
-    def load_boot(self, cls: GenericDriver) -> Response:
-        raise NotImplementedError("Subclasses should implement  load_boot method")
-
-    def load_uboot(self, cls: GenericDriver) -> Response:
-        raise NotImplementedError("Subclasses should implement  load_uboot method")
-
-    def load_firmware(self, cls: GenericDriver) -> Response:
-        raise NotImplementedError("Subclasses should implement  load_firmware method")
+    def load_boot(self, cls: GenericDriver, filename: str) -> Response:
+        return cls.send_command(
+            f"boot system tftp://{cls.tftp_server}/{cls.tmp_folder}/{filename}"
+        )

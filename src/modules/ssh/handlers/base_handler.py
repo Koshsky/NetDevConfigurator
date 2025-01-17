@@ -4,7 +4,6 @@ from typing import List
 from scrapli.driver import GenericDriver
 from scrapli.response import Response
 from config import config
-from modules import ssh_logger
 
 
 class BaseHandler:
@@ -19,10 +18,34 @@ class BaseHandler:
         self.ssh_config_file = ssh_config_file
 
     def on_open(self, cls: GenericDriver) -> None:
-        raise NotImplementedError("Subclasses should implement on_open method.")
+        raise NotImplementedError("on_open not implemented.")
 
     def on_close(self, cls: GenericDriver) -> None:
-        raise NotImplementedError("Subclasses should implement on_close method.")
+        cls.channel.write(channel_input="exit")
+        cls.channel.send_return()
+
+    def update_startup_config(self, cls: GenericDriver, filename: str) -> Response:
+        raise NotImplementedError("update_startup_config not implemented")
+
+    def load_boot(self, cls: GenericDriver, filename: str) -> Response:
+        raise NotImplementedError("load_boot not implemented")
+
+    def load_uboot(self, cls: GenericDriver, filename: str) -> Response:
+        raise NotImplementedError("load_uboot not implemented")
+
+    def load_firmware(self, cls: GenericDriver, filename: str) -> Response:
+        raise NotImplementedError("load_firmware not implemented")
+
+    def show_run(self, cls: GenericDriver) -> Response:
+        return cls.send_command("show running-config")
+
+    def reload(self, cls: GenericDriver):
+        cls.channel.write(channel_input="reload")
+        cls.channel.send_return()
+        cls.channel.write(channel_input="y")
+        cls.channel.send_return()
+        cls.channel.write(channel_input="y")
+        cls.channel.send_return()
 
     def get_header(self, cls: GenericDriver) -> str:
         resp = cls.send_command("show running-config").result()
@@ -31,31 +54,7 @@ class BaseHandler:
             if not line.startswith("#"):
                 break
             res += line + "\n"
-        return res + "!"
-
-    def load_boot(self, cls: GenericDriver, path_to_file: str) -> Response:
-        return cls.send_command(
-            f"copy tftp://{cls.tftp_server}{cls.tmp_folder}/{path_to_file} boot"
-        )
-
-    def load_uboot(self, cls: GenericDriver, path_to_file: str) -> Response:
-        raise NotImplementedError("Subclasses should implement  load_uboot method")
-
-    def load_firmware(self, cls: GenericDriver, path_to_file: str) -> Response:
-        raise NotImplementedError("Subclasses should implement  load_firmware method")
-
-    def reload(self, cls: GenericDriver) -> Response:
-        raise NotImplementedError("Subclasses should implement  reload method")
-
-    @ssh_logger
-    def update_startup_config(self, cls: GenericDriver, path_to_file: str) -> Response:
-        return cls.send_command(
-            f"copy tftp://{cls.tftp_server}{cls.tmp_folder}/{path_to_file} startup-config"
-        )
-
-    @ssh_logger
-    def show_run(self, cls: GenericDriver) -> Response:
-        return cls.send_command("show running-config")
+        return res + "!\n"
 
 
 def handle_device_open(cls: GenericDriver, commands: List[str]) -> Response:

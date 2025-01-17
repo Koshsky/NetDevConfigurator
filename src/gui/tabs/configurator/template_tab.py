@@ -63,7 +63,7 @@ class TemplateTab(BaseTab):
 
     def _get_templates_by_type(self, t):
         entities = self.app.db_services["template"].get_by_family_id_and_role(
-            self.app._device.family_id, self.app._preset.role
+            self.app.device.family_id, self.app.preset.role
         )
         tail = ("None",) if self.allow_none else tuple()
         return tuple(entity.name for entity in entities if entity.type == t) + tail

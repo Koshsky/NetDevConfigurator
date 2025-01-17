@@ -9,7 +9,7 @@ tftp-server:
   address: 10.3.1.144
   port: 69
   folder:
-    config: tmp
+    tmp: tmp
     firmware: firmware
 
 serial:
