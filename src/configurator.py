@@ -4,6 +4,10 @@ from gui.base_app import DatabaseApp
 from gui.tabs.configurator import HelloTab, TemplateTab, ViewTab
 import uuid
 
+from config import config
+
+config = config["app"]
+
 
 class ConfiguratorApp(DatabaseApp):
     def __init__(self, *args, **kwargs):
@@ -25,9 +29,19 @@ class ConfiguratorApp(DatabaseApp):
                 interfaces[k] = v
             else:
                 templates[k] = v
-        self.create_tab(TemplateTab, "Templates", templates, width=6)
         self.create_tab(
-            TemplateTab, "Interfaces", interfaces, width=12, allow_none=False
+            TemplateTab,
+            "Templates",
+            templates,
+            width=config["templates"]["width"],
+            allow_none=config["templates"]["allow-none"],
+        )
+        self.create_tab(
+            TemplateTab,
+            "Interfaces",
+            interfaces,
+            width=config["interfaces"]["width"],
+            allow_none=config["interfaces"]["allow-none"],
         )
         self.create_tab(ViewTab, "VIEW")
 
@@ -45,6 +59,16 @@ class ConfiguratorApp(DatabaseApp):
         }
 
     @property
+    def get_driver(self):
+        return {
+            "auth_strict_key": False,  # important for unknown hosts
+            "family": self.db_services["family"].get_by_id(self.device.family_id).name,
+            "host": self.credentials["ip"],
+            "auth_username": self.credentials["username"],
+            "auth_password": self.credentials["password"],
+        }
+
+    @property
     def text_configuration(self):
         template = "=============HEADER=============\n"  # TODO: get from connection (com/ssh/...)
         for k, v in self.config_template.items():
@@ -56,7 +80,7 @@ class ConfiguratorApp(DatabaseApp):
         template = template.replace("{ROLE}", self.preset.role)  # ROLE
         return template + "end\n"
 
-    def register_settings(
+    def register_parameters(
         self, cert, OR, device, preset
     ):  # TODO: подумать и переименовать
         if not (cert and OR and device and preset):

@@ -5,7 +5,7 @@ config = config["serial"]
 
 
 class SerialConnection:
-    def __init__(self):
+    def __init__(self, **driver):
         self.port = config["port"]
         self.baudrate = config["baudrate"]
         self.parity = (
@@ -18,6 +18,13 @@ class SerialConnection:
         self.timeout = config["timeout"]
         self.flow_control = config["flow-control"]
         self.ser = None
+
+        self.password = driver["password"]
+        self.username = driver["username"]
+
+    def log_in(self):  # TODO: реализовать.
+        with self as conn:
+            print(type(conn), self.password, self.username)
 
     def __enter__(self):
         self.ser = serial.Serial(

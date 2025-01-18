@@ -1,6 +1,7 @@
 from gui import BaseTab, apply_error_handler
 
 from .decorators import prepare_config_file
+from modules.ssh import SSHDriver
 
 
 @apply_error_handler
@@ -27,8 +28,9 @@ class ViewTab(BaseTab):
 
     @prepare_config_file
     def load_by_ssh(self):
-        resp = self.ssh2.update_startup_config(self.ssh2, self.app.config_filename)
-        print(resp.result)
+        with SSHDriver(self.app.driver) as conn:
+            resp = conn.update_startup_config(conn, self.app.config_filename)
+            print(resp.result)
 
     def load_by_COM(self):
         # TODO: первоначально: настроить vlan 1

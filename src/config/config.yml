@@ -12,6 +12,19 @@ tftp-server:
     tmp: tmp
     firmware: firmware
 
+host:
+  username: mvsadmin
+  password: MVS_admin
+
+app:
+  templates:
+    width: 6
+    allow-none: True
+  interfaces:
+    width: 12
+    allow-none: False
+
+
 serial:
   port: /dev/ttyUSB0
   baudrate: 115200

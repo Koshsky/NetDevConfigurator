@@ -1,5 +1,7 @@
 from gui import BaseTab, apply_error_handler
 
+from config import config
+
 
 @apply_error_handler
 class HelloTab(BaseTab):
@@ -31,22 +33,22 @@ class HelloTab(BaseTab):
         self.create_block(
             "credentials",
             {
-                "username": ("mvsadmin",),
-                "password": ("MVS_admin", None),
+                "username": (config["host"]["username"],),
+                "password": (config["host"]["password"],),
             },
         )
-        self.create_button_in_line(("UPDATE CREDENTIALS", self.update_creds))
+        self.create_button_in_line(("UPDATE CREDENTIALS", self.update_credentials))
         self.create_feedback_area()
         self.refresh_presets()
 
-    def update_creds(self):
+    def update_credentials(self):
         ip = self.fields["host"]["ip"].get()
         port = self.fields["host"]["port"].get()
         username = self.fields["credentials"]["username"].get()
         password = self.fields["credentials"]["password"].get()
         if not all([ip, port, username, password]):
             raise ValueError("Please fill all fields")
-        self.app.update_driver(ip, port, username, password)
+        self.app.update_credentials(ip, port, username, password)
 
     def update_tabs(self):
         preset = self.check_preset_name(self.fields["params"]["preset"].get())
@@ -54,7 +56,7 @@ class HelloTab(BaseTab):
         if preset.device_id != device.id:
             raise ValueError("Preset and device do not match")
 
-        self.app.register_settings(
+        self.app.register_parameters(
             cert=self.fields["params"]["CERT"].get().strip(),
             OR=self.fields["params"]["OR"].get().strip(),
             device=device,

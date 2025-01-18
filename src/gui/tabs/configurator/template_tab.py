@@ -5,8 +5,14 @@ import pprint
 @apply_error_handler
 class TemplateTab(BaseTab):
     def __init__(
-        self, parent, app, templates, *, width=6, allow_none=True
-    ):  # TODO: allow_none -> config.yaml
+        self,
+        parent,
+        app,
+        templates,
+        *,
+        allow_none=False,
+        width=6,
+    ):
         self.templates = templates
         self.width = width
         self.allow_none = allow_none
