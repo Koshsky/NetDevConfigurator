@@ -1,6 +1,6 @@
 from gui import BaseTab, apply_error_handler
 
-from .decorators import prepare_config_file, check_driver
+from .decorators import prepare_config_file
 
 
 @apply_error_handler
@@ -25,7 +25,6 @@ class ViewTab(BaseTab):
         self.create_button_in_line(("UPDATE FIRMWARES", self.update_firmwares))
         self.create_feedback_area()
 
-    @check_driver("ssh2")
     @prepare_config_file
     def load_by_ssh(self):
         resp = self.ssh2.update_startup_config(self.ssh2, self.app.config_filename)
@@ -50,22 +49,9 @@ class ViewTab(BaseTab):
     def update_firmwares(self):
         # TODO: СДЕЛАТЬ ПОИСК ФАЙЛОВ ПО МАСКЕ ИЗ ТАБЛИЦЫ DEVICES
         # firmwares = self.app.db_services["device"].get_info(self.app.device)[
-        #     "firmwares"
+        #     "firmwares"``
         # ]
         raise NotImplementedError("update_firmwares not implemented")
 
     def show_template(self):
-        template = self.get_text_configuration()
-        self.display_feedback(template)
-
-    @check_driver("ssh2")
-    def get_text_configuration(self):
-        template = self.app.ssh2.get_header(self.app.ssh2)
-        for k, v in self.app.device_configuration.items():
-            if v["text"]:
-                template += v["text"].replace("{INTERFACE_ID}", k) + "\n"
-        template = template.replace("{CERT}", self.app.params["CERT"])
-        template = template.replace("{OR}", self.app.params["OR"])
-        template = template.replace("{MODEL}", self.app.params["MODEL"])
-        template = template.replace("{ROLE}", self.app.params["ROLE"])
-        return template + "end\n"
+        self.display_feedback(self.app.text_configuration)

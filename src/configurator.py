@@ -4,23 +4,23 @@ from gui.base_app import DatabaseApp
 from gui.tabs.configurator import HelloTab, TemplateTab, ViewTab
 import uuid
 
-from modules.ssh import SSHDriver
-from scrapli.exceptions import ScrapliConnectionNotOpened
-
 
 class ConfiguratorApp(DatabaseApp):
     def __init__(self, *args, **kwargs):
-        self.params = {"CERT": None, "OR": None, "MODEL": None, "ROLE": None}
-        self.ssh = None
+        self.config_params = {
+            "CERT": None,
+            "OR": None,
+        }  # ROLE from preset, MODEL from device
         self.device = None
         self.preset = None
-        self.device_configuration = None
+        self.config_template = None
         self.config_filename = None
+        self.credentials = None
         super().__init__(*args, **kwargs)
 
     def create_config_tabs(self):
         templates, interfaces = {}, {}
-        for k, v in app.device_configuration.items():
+        for k, v in app.config_template.items():
             if v["type"] == "interface":
                 interfaces[k] = v
             else:
@@ -36,21 +36,25 @@ class ConfiguratorApp(DatabaseApp):
         self.create_tab(HelloTab, "Device")
         self.notebook.select(self.tabs[0].frame)
 
-    def update_driver(self, ip, port, username, password):
-        # TODO: close?
-        driver = {
-            "auth_strict_key": False,  # important for unknown hosts
-            "family": self.params["FAMILY"],
-            "host": ip,  # TODO: port?????
-            "auth_username": username,
-            "auth_password": password,
+    def update_credentials(self, ip, port, username, password):
+        self.credentials = {
+            "ip": ip,
+            "port": port,
+            "username": username,
+            "password": password,
         }
-        self.ssh2 = SSHDriver(**driver)
-        try:
-            self.ssh2.open()
-        except ScrapliConnectionNotOpened as e:
-            self.ssh2 = None
-            print(f"{e.__name_}_: {e}")
+
+    @property
+    def text_configuration(self):
+        template = "=============HEADER=============\n"  # TODO: get from connection (com/ssh/...)
+        for k, v in self.config_template.items():
+            if v["text"]:
+                template += v["text"].replace("{INTERFACE_ID}", k) + "\n"
+        template = template.replace("{CERT}", self.config_params["CERT"])
+        template = template.replace("{OR}", self.config_params["OR"])
+        template = template.replace("{MODEL}", self.device.name)  # MODEL
+        template = template.replace("{ROLE}", self.preset.role)  # ROLE
+        return template + "end\n"
 
     def register_settings(
         self, cert, OR, device, preset
@@ -59,18 +63,13 @@ class ConfiguratorApp(DatabaseApp):
             raise ValueError("All parameters must be set")
         if preset.device_id != device.id:
             raise ValueError("preset.device_id != device.id")
-        self.params["CERT"] = cert
-        self.params["OR"] = OR
-        self.params["MODEL"] = device.name
-        self.params["ROLE"] = preset.role
-        self.params["FAMILY"] = (
-            self.db_services["family"].get_by_id(device.family_id).name
-        )
+        self.config_params["CERT"] = cert
+        self.config_params["OR"] = OR
         self.device = device
         self.preset = preset
-        self.device_configuration = self.db_services["preset"].get_info(
-            preset, check=True
-        )["configuration"]
+        self.config_template = self.db_services["preset"].get_info(preset, check=True)[
+            "configuration"
+        ]
         self.config_filename = f"config_{uuid.uuid4()}.conf"
 
     def update_config_tabs(self):
