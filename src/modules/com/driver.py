@@ -22,7 +22,7 @@ class SerialConnection:
         self.password = driver["password"]
         self.username = driver["username"]
 
-    def log_in(self):  # TODO: реализовать.
+    def log_in(self):  # TODO: реализовать. (IMPORTANT NOT URGENT)
         with self as conn:
             print(type(conn), self.password, self.username)
 

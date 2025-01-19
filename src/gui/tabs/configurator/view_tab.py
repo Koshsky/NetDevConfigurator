@@ -33,7 +33,7 @@ class ViewTab(BaseTab):
             print(resp.result)
 
     def load_by_COM(self):
-        # TODO: первоначально: настроить vlan 1
+        # TODO: первоначально: настроить vlan 1  (IMPORTANT NOT URGENT)
         # а конкретно дать ip address:
         # conf t; interface vlan 1; ip address 10.4.0.x (подходящий);
         # end; ip route 0.0.0.0 0.0.0.0 10.4.0.254   (??)
@@ -49,7 +49,7 @@ class ViewTab(BaseTab):
         raise NotImplementedError("load_by_snmp not implemented")
 
     def update_firmwares(self):
-        # TODO: СДЕЛАТЬ ПОИСК ФАЙЛОВ ПО МАСКЕ ИЗ ТАБЛИЦЫ DEVICES
+        # TODO: СДЕЛАТЬ ПОИСК ФАЙЛОВ ПО МАСКЕ ИЗ ТАБЛИЦЫ DEVICES (IMPORTANT NOT URGENT)
         # firmwares = self.app.db_services["device"].get_info(self.app.device)[
         #     "firmwares"``
         # ]

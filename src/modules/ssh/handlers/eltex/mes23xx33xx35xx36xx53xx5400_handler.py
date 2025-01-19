@@ -15,7 +15,9 @@ class MES23xx33xx35xx36xx53xx5400Handler(BaseHandler):  # + mes3300
 
     def update_startup_config(
         self, cls: GenericDriver, filename: str
-    ) -> Response:  # TODO: выяснить так ли это
+    ) -> (
+        Response
+    ):  # TODO: выяснить так ли это делается для mes3300-24f (IMPORTANT URGENT)
         return cls.send_command(  # если так, вынести это в base_handler
             f"copy tftp://{cls.tftp_server}/{cls.tmp_folder}/{filename} startup-config"
         )
