@@ -82,7 +82,7 @@ class ConfiguratorApp(DatabaseApp):
 
     def register_parameters(
         self, cert, OR, device, preset
-    ):  # TODO: подумать и переименовать
+    ):  # TODO: think and rename (NOT IMPORTANT NOT URGENT)
         if not (cert and OR and device and preset):
             raise ValueError("All parameters must be set")
         if preset.device_id != device.id:
