@@ -54,6 +54,27 @@ class SerialConnection:
         response = [line.decode().strip() for line in self.ser.readlines()]
         return "\n".join(response)
 
+    def __enter__(self):
+        if self.ser.is_open:
+            self.__close_port()
+        self.ser.open()
+        if not self.ser.is_open:
+            raise Exception("Failed to open serial port")
+        time.sleep(0.1)
+        self.__log_in()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.ser.write("exit\n".encode())
+        self.__close_port()
+
+    def __close_port(self):
+        if self.ser.is_open:
+            self.ser.setDTR(False)  # Сброс линии DTR
+            self.ser.setRTS(False)  # Сброс линии RTS
+            time.sleep(0.1)
+            self.ser.close()
+
     @check_port_open
     def __is_logged(self):  # BAZA
         self.ser.write("\n".encode())
@@ -80,24 +101,3 @@ class SerialConnection:
             )
         else:
             print("already logged in")
-
-    def __enter__(self):
-        if self.ser.is_open:
-            self.close_port()
-        self.ser.open()
-        if not self.ser.is_open:
-            raise Exception("Failed to open serial port")
-        time.sleep(0.1)
-        self.__log_in()
-        return self
-
-    def close_port(self):
-        if self.ser.is_open:
-            self.ser.setDTR(False)  # Сброс линии DTR
-            self.ser.setRTS(False)  # Сброс линии RTS
-            time.sleep(0.1)
-            self.ser.close()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.ser.write("exit\n".encode())
-        self.close_port()
