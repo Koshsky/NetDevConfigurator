@@ -2,9 +2,6 @@ import os
 import fnmatch
 
 
-# TODO: добавить сюда функцию из файла draft.py с работы (IMPORTANT URGENT)
-
-
 def find_most_recent_file(directory: str, pattern: str) -> str:
     most_recent_file = None
     most_recent_time = 0

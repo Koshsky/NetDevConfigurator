@@ -18,7 +18,7 @@ def check_port_open(func):
 
 
 class SerialConnection:
-    success_signs = {"logged in", "succeeded", "successful", "success"}
+    success_signs = {"succeeded", "successful", "success"}
 
     def __init__(self, **driver):
         self.ser = serial.Serial(
@@ -48,9 +48,19 @@ class SerialConnection:
     def show_clock(self):
         self.ser.write(b"show clock\n")
         time.sleep(0.1)
+        return self._get_response()
 
     @check_port_open
-    def get_response(self):
+    def set_up(self):
+        pass
+        # TODO: первоначально: настроить vlan 1  (IMPORTANT NOT URGENT)
+        # а конкретно дать ip address:
+        # conf t; interface vlan 1; ip address 10.4.0.x (подходящий);
+        # end; ip route 0.0.0.0 0.0.0.0 10.4.0.254   (??)
+        # self.load_by_ssh()
+
+    @check_port_open
+    def _get_response(self):
         response = [line.decode().strip() for line in self.ser.readlines()]
         return "\n".join(response)
 
@@ -91,11 +101,10 @@ class SerialConnection:
             self.ser.write(f"{self.username}\n".encode())
             self.ser.write(f"{self.password}\n".encode())
             time.sleep(0.1)
-            response = self.ser.readlines()
-            for line in response:
-                if self.success_signs.intersection(line.decode().lower().split()):
-                    print("Successfully logged in")
-                    return True
+            response = self._get_response()
+            if self.success_signs.intersection(response.lower().split()):
+                print("Successfully logged in")
+                return True
             raise Exception(
                 f"failed to log in: wrong credentials: {self.username} {self.password}"
             )
