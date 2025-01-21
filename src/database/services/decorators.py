@@ -8,7 +8,7 @@ def transactional(func):
             result = func(self, *args, **kwargs)
             self.db.commit()
             return result
-        except Exception as e:
+        except Exception:
             self.db.rollback()
             raise
 
