@@ -18,7 +18,7 @@ def check_port_open(func):
     return wrapper
 
 
-class COMDriverCore:
+class COMDriverBase:
     def __init__(self, family, **driver):
         self.core = get_core(family)
         self.ser = serial.Serial(

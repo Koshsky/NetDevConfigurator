@@ -1,12 +1,12 @@
 from config import config
 
 
-from .base_driver import COMDriverCore, check_port_open
+from .base_driver import COMDriverBase, check_port_open
 
 config = config["serial"]
 
 
-class COMDriver(COMDriverCore):
+class COMDriver(COMDriverBase):
     @check_port_open
     def show_run(self):
         self.ser.write(f"{self.core.show_run}\n".encode())
