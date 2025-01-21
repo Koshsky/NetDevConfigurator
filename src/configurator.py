@@ -59,7 +59,7 @@ class ConfiguratorApp(DatabaseApp):
         }
 
     @property
-    def get_driver(self):
+    def driver(self):
         return {
             "auth_strict_key": False,  # important for unknown hosts
             "family": self.db_services["family"].get_by_id(self.device.family_id).name,

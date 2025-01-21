@@ -1,3 +1,3 @@
-from .ssh_driver import SSHDriver
+from .driver import SSHDriver
 
 __all__ = ["SSHDriver"]

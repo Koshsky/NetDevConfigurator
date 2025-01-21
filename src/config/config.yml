@@ -38,5 +38,5 @@ serial:
     dsrdtr: False
 
 ssh-config-file: ~/NetDevConfigurator/src/config/ssh.conf
-
+free-temp-ip: 10.4.200.200
 backup-folder: ./backups

@@ -1,3 +1,3 @@
-from .driver import SerialConnection
+from .driver import COMDriver
 
-__all__ = ["SerialConnection"]
+__all__ = ["COMDriver"]

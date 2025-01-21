@@ -1,53 +1,15 @@
-import serial
 from config import config
-import time
 
-from functools import wraps
+
+from .base_driver import COMDriverCore, check_port_open
 
 config = config["serial"]
 
 
-def check_port_open(func):
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        if not self.ser.is_open:
-            raise Exception("Serial port is not open")
-        return func(self, *args, **kwargs)
-
-    return wrapper
-
-
-class SerialConnection:
-    success_signs = {"succeeded", "successful", "success"}
-
-    def __init__(self, **driver):
-        self.ser = serial.Serial(
-            port=config["port"],
-            baudrate=config["baudrate"],
-            parity=(
-                serial.PARITY_NONE
-                if config["parity"] == "None"
-                else serial.PARITY_ODD  # TODO: добавить обработку ошибок. вынести в функцию
-            ),
-            stopbits=(
-                serial.STOPBITS_ONE
-                if config["stopbits"] == 1
-                else serial.STOPBITS_TWO  # TODO: добавить обработку ошибок. вынести в функцию
-            ),
-            bytesize=serial.EIGHTBITS,
-            timeout=config["timeout"],
-        )
-        self.ser.xonxoff = config["flow-control"]["xonxoff"]
-        self.ser.rtscts = config["flow-control"]["rtscts"]
-        self.ser.dsrdtr = config["flow-control"]["dsrdtr"]
-
-        self.password = driver["auth_password"]
-        self.username = driver["auth_username"]
-
+class COMDriver(COMDriverCore):
     @check_port_open
-    def show_clock(self):
-        self.ser.write(b"show clock\n")
-        time.sleep(0.1)
+    def show_run(self):
+        self.ser.write(f"{self.core.show_run}\n".encode())
         return self._get_response()
 
     @check_port_open
@@ -58,55 +20,3 @@ class SerialConnection:
         # conf t; interface vlan 1; ip address 10.4.0.x (подходящий);
         # end; ip route 0.0.0.0 0.0.0.0 10.4.0.254   (??)
         # self.load_by_ssh()
-
-    @check_port_open
-    def _get_response(self):
-        response = [line.decode().strip() for line in self.ser.readlines()]
-        return "\n".join(response)
-
-    def __enter__(self):
-        if self.ser.is_open:
-            self.__close_port()
-        self.ser.open()
-        if not self.ser.is_open:
-            raise Exception("Failed to open serial port")
-        time.sleep(0.1)
-        self.__log_in()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.ser.write("exit\n".encode())
-        self.__close_port()
-
-    def __close_port(self):
-        if self.ser.is_open:
-            self.ser.setDTR(False)  # Сброс линии DTR
-            self.ser.setRTS(False)  # Сброс линии RTS
-            time.sleep(0.1)
-            self.ser.close()
-
-    @check_port_open
-    def __is_logged(self):  # BAZA
-        self.ser.write("\n".encode())
-        self.ser.write("\n".encode())
-        time.sleep(0.1)
-        self.ser.write("\n".encode())
-        response = self.ser.readlines()
-        return len(set(line.strip() for line in response[-3::])) == 1
-
-    @check_port_open
-    def __log_in(self):
-        if not self.__is_logged():
-            self.ser.write("\n".encode())
-            self.ser.write(f"{self.username}\n".encode())
-            self.ser.write(f"{self.password}\n".encode())
-            time.sleep(0.1)
-            response = self._get_response()
-            if self.success_signs.intersection(response.lower().split()):
-                print("Successfully logged in")
-                return True
-            raise Exception(
-                f"failed to log in: wrong credentials: {self.username} {self.password}"
-            )
-        else:
-            print("already logged in")

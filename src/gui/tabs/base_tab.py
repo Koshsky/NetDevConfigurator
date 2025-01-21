@@ -19,16 +19,6 @@ class BaseTab:
         raise NotImplementedError
 
     def __getattr__(self, name):
-        """Dynamically generates validation methods for different entity types based on method name patterns.
-
-        This method intercepts attribute access for methods starting with 'check_' and ending with '_name',
-        creating dynamic validator functions on-the-fly.
-
-        Examples:
-            # Automatically creates methods like:
-            # my_tab.check_protocol_name(protocol)
-            # my_tab.check_device_name(device)
-        """
         if name.startswith("check_") and name.endswith("_name"):
             entity_type = name[6:-5]  # Extract entity type from method name
 
