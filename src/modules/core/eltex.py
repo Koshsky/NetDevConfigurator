@@ -7,10 +7,10 @@ class BaseMES:
 
     update_startup_config = "copy tftp://{0}/{1}/{2} startup-config"
     show_run = "show running-config"
-    base_configure = [  # TODO: подумать еще!
+    base_configure = [
         "configure terminal",
         "interface vlan 1",
-        f"ip address {config['free-temp-ip']}",
+        f"ip address {config['free-temp-ip']} 255.255.0.0",
         "ssh enable",
         "ip route 0.0.0.0 0.0.0.0 10.4.0.254",
         "end",
