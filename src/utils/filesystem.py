@@ -13,5 +13,8 @@ def find_most_recent_file(directory: str, pattern: str) -> str:
             if file_mtime > most_recent_time:
                 most_recent_time = file_mtime
                 most_recent_file = filename
-
+    if most_recent_file is not None:
+        raise FileNotFoundError(
+            f"No files found matching the pattern {pattern} in the directory {directory}"
+        )
     return most_recent_file

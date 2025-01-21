@@ -32,7 +32,7 @@ class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
             "dev_type": entity.dev_type,
             "family": {"name": entity.family.name, "id": entity.family.id},
             "company": {"name": entity.company.name, "id": entity.company.id},
-            "files": {
+            "pattern": {
                 "boot": entity.boot,
                 "uboot": entity.uboot,
                 "firmware": entity.firmware,

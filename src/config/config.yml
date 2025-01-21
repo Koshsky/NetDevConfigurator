@@ -1,20 +1,19 @@
 database:
-  host: localhost
-  port: 5432
-  database: device_registry
-  username: postgres
-  password: postgres
+  host: localhost            # by default
+  port: 5432                 # by default
+  database: device_registry  # by default
+  username: postgres         # by default
+  password: postgres         # by default
 
 tftp-server:
   address: 10.3.1.144
   port: 69
-  folder:
-    tmp: tmp
-    firmware: firmware
+  folder: /srv/tftp
 
 host:
-  username: mvsadmin
-  password: MVS_admin
+  username: mvsadmin    # by default
+  password: MVS_admin   # by default
+  network: 10.4.0.0/24  # service_network: 192.168.3.0/24, mgmt_network: 10.4.0.0/24
 
 app:
   templates:
@@ -37,6 +36,5 @@ serial:
     rtscts: False
     dsrdtr: False
 
-ssh-config-file: ~/NetDevConfigurator/src/config/ssh.conf
-free-temp-ip: 10.4.200.200
+ssh-config-file: ~/NetDevConfigurator/src/config/ssh.conf  # legacy
 backup-folder: ./backups

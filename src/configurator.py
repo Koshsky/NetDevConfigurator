@@ -50,9 +50,9 @@ class ConfiguratorApp(DatabaseApp):
         self.create_tab(HelloTab, "Device")
         self.notebook.select(self.tabs[0].frame)
 
-    def update_credentials(self, ip, port, username, password):
+    def update_credentials(self, address, port, username, password):
         self.credentials = {
-            "ip": ip,
+            "address": address,
             "port": port,
             "username": username,
             "password": password,
@@ -62,8 +62,8 @@ class ConfiguratorApp(DatabaseApp):
     def driver(self):
         return {
             "auth_strict_key": False,  # important for unknown hosts
-            "family": self.db_services["family"].get_by_id(self.device.family_id).name,
-            "host": self.credentials["ip"],
+            "device": self.db_services["device"].get_info(self.device),
+            "host": self.credentials["address"],
             "auth_username": self.credentials["username"],
             "auth_password": self.credentials["password"],
         }

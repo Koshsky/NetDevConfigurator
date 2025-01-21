@@ -26,9 +26,6 @@ def handle_device_open(cls: GenericDriver, commands):
 
 
 __all__ = [
-    "MES14xx24xx34xx37xx",
-    "MES23xx33xx35xx36xx53xx5400",
-    "MES11xx21xx20xx31xx",
     "handle_device_open",
     "get_core",
 ]

@@ -26,7 +26,7 @@ class HelloTab(BaseTab):
         self.create_block(
             "host",
             {
-                "ip": ("10.3.1.13",),
+                "address": ("10.3.1.13",),
                 "port": ("22",),
             },
         )
@@ -42,13 +42,13 @@ class HelloTab(BaseTab):
         self.refresh_presets()
 
     def update_credentials(self):
-        ip = self.fields["host"]["ip"].get()
+        address = self.fields["host"]["address"].get()
         port = self.fields["host"]["port"].get()
         username = self.fields["credentials"]["username"].get()
         password = self.fields["credentials"]["password"].get()
-        if not all([ip, port, username, password]):
+        if not all([address, port, username, password]):
             raise ValueError("Please fill all fields")
-        self.app.update_credentials(ip, port, username, password)
+        self.app.update_credentials(address, port, username, password)
 
     def update_tabs(self):
         preset = self.check_preset_name(self.fields["params"]["preset"].get())

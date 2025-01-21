@@ -13,14 +13,19 @@ def check_port_open(func):
     def wrapper(self, *args, **kwargs):
         if not self.ser.is_open:
             raise Exception("Serial port is not open")
-        return func(self, *args, **kwargs)
+        func(self, *args, **kwargs)
+        return self._get_result()
 
     return wrapper
 
 
 class COMDriverBase:
-    def __init__(self, family, **driver):
-        self.core = get_core(family)
+    TMP_FOLDER = "tmp"
+    FIRMWARE_FOLDER = "firmware"
+
+    def __init__(self, device, **driver):
+        self.core = get_core(device)
+        self.device = device
         self.ser = serial.Serial(
             port=config["port"],
             baudrate=config["baudrate"],
@@ -76,7 +81,7 @@ class COMDriverBase:
             self.ser.close()
 
     @check_port_open
-    def __is_logged(self):  # BAZA
+    def __is_logged(self):
         self.ser.write(b"\n")
         self.ser.write(b"\n")
         self.ser.write(b"\n")

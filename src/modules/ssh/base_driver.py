@@ -1,12 +1,16 @@
 from config import config
 from scrapli.driver import GenericDriver
-
 from ..core import handle_device_open, get_core
 
 
 class SSHDriverBase(GenericDriver):
-    def __init__(self, family: str, **kwargs) -> None:
-        self.core = get_core(family)
+    TMP_FOLDER = "tmp"
+    FIRMWARE_FOLDER = "firmware"
+    TFTP_FOLDER = config["tftp-server"]["folder"]
+
+    def __init__(self, device, **kwargs) -> None:
+        self.core = get_core(device)
+        self.device = device
 
         kwargs["transport"] = "ssh2"
         kwargs["on_open"] = self.on_open
@@ -15,8 +19,6 @@ class SSHDriverBase(GenericDriver):
         super().__init__(**kwargs)
 
         self.tftp_server = config["tftp-server"]["address"]
-        self.tmp_folder = config["tftp-server"]["folder"]["tmp"]
-        self.firmware_folder = config["tftp-server"]["folder"]["firmware"]
 
     def on_open(self, cls: GenericDriver):
         return handle_device_open(cls, self.core.open_sequence)

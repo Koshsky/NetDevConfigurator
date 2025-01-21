@@ -10,31 +10,27 @@ class BaseMES:
     base_configure = [
         "configure terminal",
         "interface vlan 1",
-        f"ip address {config['free-temp-ip']} 255.255.0.0",
+        f"ip address {config['host']['network']} 255.255.255.0",
         "ssh enable",
-        "ip route 0.0.0.0 0.0.0.0 10.4.0.254",
+        "ip route 0.0.0.0 0.0.0.0 10.4.0.254",  # may cause error, not important in that case
         "end",
     ]
+    reload = ["reload", "y", "y"]
+    show_bootvar = "show bootvar"
 
 
 class MES14xx24xx34xx37xx(BaseMES):
     open_sequence = ["set cli pagination off"]
-    # 0: tftp_server 1: tmp_folder 2: filename
     load_boot = "copy tftp://{0}/{1}/{2} boot"
     load_firmware = "copy tftp://{0}/{1}/{2} image"
-
-    show_bootvar = "show bootvar"
 
 
 class MES23xx33xx35xx36xx53xx5400(BaseMES):
     open_sequence = ["terminal datadump", "terminal width 0", "terminal no prompt"]
-    # 0: tftp_server 1: tmp_folder 2: filename
     load_boot = "boot system tftp://{0}/{1}/{2}"
-    # load_firmware = "copy tftp://{0}/{1}/{2} image"
 
 
 class MES11xx21xx20xx31xx(BaseMES):
     open_sequence = ["terminal datadump"]
-    # 0: tftp_server 1: tmp_folder 2: filename
     # load_boot = "boot system tftp://{0}/{1}/{2}"
     # load_firmware = "copy tftp://{0}/{1}/{2} image"
