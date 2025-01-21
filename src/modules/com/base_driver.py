@@ -13,8 +13,7 @@ def check_port_open(func):
     def wrapper(self, *args, **kwargs):
         if not self.ser.is_open:
             raise Exception("Serial port is not open")
-        func(self, *args, **kwargs)
-        return self._get_result()
+        return func(self, *args, **kwargs)
 
     return wrapper
 
@@ -48,6 +47,17 @@ class COMDriverBase:
 
         self.password = driver["auth_password"]
         self.username = driver["auth_username"]
+
+    @check_port_open
+    def send_command(self, command):
+        self.ser.write(f"{command}\n".encode())
+        return self._get_result()
+
+    def send_commands(self, commands):
+        multi_response = []
+        for command in commands:
+            multi_response.append(self.send_command(command))
+        return "\n".join(multi_response)
 
     @check_port_open
     def _get_response(self):

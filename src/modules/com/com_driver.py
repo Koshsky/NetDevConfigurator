@@ -1,8 +1,6 @@
-from .base_driver import COMDriverBase, check_port_open
+from .base_driver import COMDriverBase
 
 
 class COMDriver(COMDriverBase):
-    @check_port_open
     def base_configure(self):
-        for command in self.core.base_configure:
-            self.ser.write(f"{command}\n".encode())
+        return self.send_commands(self.core.base_configure)
