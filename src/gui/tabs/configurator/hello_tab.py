@@ -37,6 +37,7 @@ class HelloTab(BaseTab):
             preset=preset,
         )
         self.app.update_config_tabs()
+        self.app.notebook.select(self.app.tabs[-1].frame)
 
     def refresh_presets(self):
         device = self.check_device_name(self.fields["device"]["name"].get())
