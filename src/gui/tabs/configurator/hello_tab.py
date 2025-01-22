@@ -1,7 +1,5 @@
 from gui import BaseTab, apply_error_handler
 
-from config import config
-
 
 @apply_error_handler
 class HelloTab(BaseTab):
