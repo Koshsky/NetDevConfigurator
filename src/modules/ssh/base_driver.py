@@ -4,10 +4,6 @@ from ..core import handle_device_open, get_core
 
 
 class SSHDriverBase(GenericDriver):
-    TMP_FOLDER = "tmp"
-    FIRMWARE_FOLDER = "firmware"
-    TFTP_FOLDER = config["tftp-server"]["folder"]
-
     def __init__(self, device, **kwargs) -> None:
         self.core = get_core(device["family"]["name"])
 

@@ -1,8 +1,12 @@
 from .base_driver import SSHDriverBase
 from utils import find_most_recent_file
 
+from config import config
+
 
 class SSHDriver(SSHDriverBase):
+    TFTP_FOLDER = config["tftp-server"]["folder"]
+
     def show_run(self):
         return self.send_command(self.core.show_run).result
 
@@ -37,20 +41,20 @@ class SSHDriver(SSHDriverBase):
 
     def update_boot(self):
         filename = find_most_recent_file(
-            f"{self.TFTP_FOLDER}/{self.FIRMWARE_FOLDER}", self.device["pattern"]["boot"]
+            f"{self.TFTP_FOLDER}/firmware", self.device["pattern"]["boot"]
         )
         return self.send_command(self.core.load_boot.format(filename)).result
 
     def update_uboot(self):
         filename = find_most_recent_file(
-            f"{self.TFTP_FOLDER}/{self.FIRMWARE_FOLDER}",
+            f"{self.TFTP_FOLDER}/firmware",
             self.device["pattern"]["uboot"],
         )
         return self.send_command(self.core.load_uboot.format(filename)).result
 
     def update_firmware(self):
         filename = find_most_recent_file(
-            f"{self.TFTP_FOLDER}/{self.FIRMWARE_FOLDER}",
+            f"{self.TFTP_FOLDER}/firmware",
             self.device["pattern"]["firmware"],
         )
         return self.send_command(self.core.load_firmware.format(filename)).result

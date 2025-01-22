@@ -19,32 +19,19 @@ def check_port_open(func):
 
 
 class COMDriverBase:
-    TMP_FOLDER = "tmp"
-    FIRMWARE_FOLDER = "firmware"
-
     def __init__(self, device, **driver):
         self.core = get_core(device["family"]["name"])
-        self.device = device
         self.ser = serial.Serial(
-            port=config["port"],
-            baudrate=config["baudrate"],
-            parity=(
-                serial.PARITY_NONE
-                if config["parity"] == "None"
-                else serial.PARITY_ODD  # TODO: добавить обработку ошибок. вынести в функцию
-            ),
-            stopbits=(
-                serial.STOPBITS_ONE
-                if config["stopbits"] == 1
-                else serial.STOPBITS_TWO  # TODO: добавить обработку ошибок. вынести в функцию
-            ),
+            port=config["serial-port"],
+            baudrate=115200,
+            parity=serial.PARITY_NONE,
+            stopbits=serial.STOPBITS_ONE,
             bytesize=serial.EIGHTBITS,
-            timeout=config["timeout"],
+            timeout=1,
+            xonxoff=False,
+            rtscts=False,
+            dsrdtr=False,
         )
-        self.ser.xonxoff = config["flow-control"]["xonxoff"]
-        self.ser.rtscts = config["flow-control"]["rtscts"]
-        self.ser.dsrdtr = config["flow-control"]["dsrdtr"]
-
         self.password = driver["auth_password"]
         self.username = driver["auth_username"]
 
