@@ -10,7 +10,6 @@ class SSHDriverBase(GenericDriver):
 
     def __init__(self, device, **kwargs) -> None:
         self.core = get_core(device["family"]["name"])
-        self.device = device
 
         kwargs["transport"] = "ssh2"
         kwargs["on_open"] = self.on_open

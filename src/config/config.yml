@@ -5,6 +5,8 @@ database:
   username: postgres         # by default
   password: postgres         # by default
 
+ssh-config-file: ~/NetDevConfigurator/src/config/ssh.conf
+
 tftp-server:
   address: 10.4.1.144
   port: 69
@@ -13,7 +15,7 @@ tftp-server:
 host:
   username: mvsadmin    # by default
   password: MVS_admin   # by default
-  address: 10.4.10.12
+  address: 10.4.0.3
   port: 22
 
 app:
