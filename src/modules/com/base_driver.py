@@ -23,7 +23,7 @@ class COMDriverBase:
     FIRMWARE_FOLDER = "firmware"
 
     def __init__(self, device, **driver):
-        self.core = get_core(device)
+        self.core = get_core(device["family"]["name"])
         self.device = device
         self.ser = serial.Serial(
             port=config["port"],

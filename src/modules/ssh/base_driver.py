@@ -9,7 +9,7 @@ class SSHDriverBase(GenericDriver):
     TFTP_FOLDER = config["tftp-server"]["folder"]
 
     def __init__(self, device, **kwargs) -> None:
-        self.core = get_core(device)
+        self.core = get_core(device["family"]["name"])
         self.device = device
 
         kwargs["transport"] = "ssh2"

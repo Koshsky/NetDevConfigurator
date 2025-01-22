@@ -17,7 +17,7 @@ class BaseMES:
         "ip route 0.0.0.0 0.0.0.0 10.4.0.254",  # may cause error, not important in that case
         "end",
     ]
-    reload = ["reload", "y", "y"]
+    reload = "reload\nyy"  # cause y y DOESN'T require \n
     show_bootvar = "show bootvar"
 
 
