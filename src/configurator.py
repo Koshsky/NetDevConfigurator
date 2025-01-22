@@ -18,12 +18,7 @@ class ConfiguratorApp(DatabaseApp):
         self.preset = None
         self.config_template = None
         self.config_filename = None
-        self.host_info = {
-            "address": config["host"]["address"],
-            "port": config["host"]["port"],
-            "username": config["host"]["username"],
-            "password": config["host"]["password"],
-        }
+        self.host_info = config["host"]
         super().__init__(*args, **kwargs)
 
     def create_config_tabs(self):
@@ -53,14 +48,6 @@ class ConfiguratorApp(DatabaseApp):
         super().on_success_callback(engine)
         self.create_tab(HelloTab, "Device")
         self.notebook.select(self.tabs[0].frame)
-
-    def update_host_info(self, address, port, username, password):
-        self.host_info = {
-            "address": address,
-            "port": port,
-            "username": username,
-            "password": password,
-        }
 
     @property
     def driver(self):

@@ -23,32 +23,7 @@ class HelloTab(BaseTab):
             },
         )
         self.create_button_in_line(("UPDATE TABS", self.update_tabs))
-        self.create_block(
-            "host",
-            {
-                "address": (config["host"]["address"],),
-                "port": ("22",),
-            },
-        )
-        self.create_block(
-            "credentials",
-            {
-                "username": (config["host"]["username"],),
-                "password": (config["host"]["password"],),
-            },
-        )
-        self.create_button_in_line(("UPDATE CREDENTIALS", self.update_host_info))
-        self.create_feedback_area()
         self.refresh_presets()
-
-    def update_host_info(self):
-        address = self.fields["host"]["address"].get()
-        port = self.fields["host"]["port"].get()
-        username = self.fields["credentials"]["username"].get()
-        password = self.fields["credentials"]["password"].get()
-        if not all([address, port, username, password]):
-            raise ValueError("Please fill all fields")
-        self.app.update_host_info(address, port, username, password)
 
     def update_tabs(self):
         preset = self.check_preset_name(self.fields["params"]["preset"].get())
@@ -80,4 +55,3 @@ class HelloTab(BaseTab):
         self.fields["params"]["preset"].set(
             self.filtered_presets[0] if self.filtered_presets else ""
         )
-        self.display_feedback("Presets refreshed.")
