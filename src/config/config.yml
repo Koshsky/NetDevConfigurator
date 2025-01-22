@@ -11,8 +11,8 @@ tftp-server:
   folder: /srv/tftp
 
 host:
-  username: mvsadmin    # by default
-  password: MVS_admin   # by default
+  username: mvsadmin
+  password: MVS_admin
   address: 10.4.0.3
   port: 22
 
