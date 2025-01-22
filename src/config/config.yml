@@ -1,6 +1,6 @@
 database:
   host: localhost            # by default
-  port: 5432                 # by default
+  port: 54325                # by default
   database: device_registry  # by default
   username: postgres         # by default
   password: postgres         # by default

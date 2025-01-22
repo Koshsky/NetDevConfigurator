@@ -46,7 +46,7 @@ class ConfiguratorApp(DatabaseApp):
             allow_none=config["app"]["interfaces"]["allow-none"],
         )
         self.create_tab(ViewTab, "COMMANDS")
-        self._display_all_tabs()
+        self.refresh_widgets()
 
     @property
     def driver(self):
