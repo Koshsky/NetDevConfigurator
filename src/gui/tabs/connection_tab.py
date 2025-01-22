@@ -52,7 +52,6 @@ class ConnectionTab:
             connect.close()
 
             self.on_success_callback(engine)
-            self.message_label.config(text="Connection successful.", fg="green")
         except Exception as error:
             self.on_failure_callback(error)
             self.message_label.config(text=f"Error: {str(error)}", fg="red")

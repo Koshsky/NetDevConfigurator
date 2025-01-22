@@ -23,7 +23,6 @@ class ConfiguratorApp(DatabaseApp):
 
     def create_tabs(self):
         self.create_tab(HelloTab, "Hello")
-        super().create_tabs()
 
     def create_config_tabs(self):
         templates, interfaces = {}, {}
