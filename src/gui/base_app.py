@@ -47,6 +47,7 @@ class DatabaseApp:
     def refresh_widgets(self):
         for tab in self.tabs:
             tab.refresh_widgets()
+            self.notebook.select(tab.frame)
 
     def _hide_all_tabs(self):
         for tab in self.tabs:

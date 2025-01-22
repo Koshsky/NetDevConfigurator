@@ -92,10 +92,10 @@ class ConfiguratorApp(DatabaseApp):
         self.config_filename = f"config_{uuid.uuid4()}.conf"
 
     def update_config_tabs(self):
-        self.remove_config_tabs()
+        self._remove_config_tabs()
         self.create_config_tabs()
 
-    def remove_config_tabs(self):
+    def _remove_config_tabs(self):
         while len(self.tabs) > 1:
             self.notebook.forget(2)
             self.tabs.pop()
