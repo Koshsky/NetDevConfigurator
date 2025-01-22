@@ -1,9 +1,8 @@
-from gui import apply_error_handler
-from .common_config import CommonConfigTab
+from gui import apply_error_handler, BaseTab
 
 
 @apply_error_handler
-class CopyConfigTab(CommonConfigTab):
+class CopyConfigTab(BaseTab):
     def refresh_widgets(self):
         super().refresh_widgets()
         self.create_block(
