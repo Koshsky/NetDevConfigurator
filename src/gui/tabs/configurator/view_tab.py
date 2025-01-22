@@ -29,8 +29,8 @@ class ViewTab(BaseTab):
     @prepare_config_file
     def load_by_ssh(self):
         with SSHDriver(**self.app.driver) as conn:
-            # resp = conn.update_startup_config(conn, self.app.config_filename)
-            print(conn.show_bootvar())
+            resp = conn.update_startup_config(conn, self.app.config_filename)
+            self.display_feedback(resp)
 
     def load_by_COM(self):
         # TODO: первоначально: настроить vlan 1  (IMPORTANT NOT URGENT)

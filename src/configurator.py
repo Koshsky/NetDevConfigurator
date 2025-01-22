@@ -4,6 +4,7 @@ from gui.base_app import DatabaseApp
 from gui.tabs.configurator import HelloTab, TemplateTab, ViewTab
 import uuid
 
+from modules.ssh import SSHDriver
 from config import config
 
 
@@ -73,8 +74,11 @@ class ConfiguratorApp(DatabaseApp):
 
     @property
     def text_configuration(self):
-        template = "=============HEADER=============\n"  # TODO: get from connection (com/ssh/...)
+        with SSHDriver(**self.driver) as conn:
+            template = conn.get_header()
         for k, v in self.config_template.items():
+            if v["type"] == "header":
+                continue  # TODO: убрать временный костыль.
             if v["text"]:
                 template += v["text"].replace("{INTERFACE_ID}", k) + "\n"
         template = template.replace("{CERT}", self.config_params["CERT"])

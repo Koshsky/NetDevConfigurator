@@ -6,6 +6,15 @@ class SSHDriver(SSHDriverBase):
     def show_run(self):
         return self.send_command(self.core.show_run).result
 
+    def get_header(self):
+        config = self.show_run()
+        header = ""
+        for line in config.split("\n"):
+            if not line.startswith("#"):
+                break
+            header += line + "\n"
+        return header + "!\n"
+
     def base_configure(self):
         return "\n".join(
             resp.result for resp in self.send_commands(self.core.base_configure)
