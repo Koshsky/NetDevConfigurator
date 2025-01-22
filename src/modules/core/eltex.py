@@ -12,9 +12,8 @@ class BaseMES:
     base_configure = [
         "configure terminal",
         "interface vlan 1",
-        f"ip address {config['host']['network']} 255.255.255.0",
+        "ip address 192.168.3.187 255.255.255.0",
         "ssh enable",
-        "ip route 0.0.0.0 0.0.0.0 10.4.0.254",  # may cause error, not important in that case
         "end",
     ]
     reload = "reload\nyy"  # cause y y DOESN'T require \n

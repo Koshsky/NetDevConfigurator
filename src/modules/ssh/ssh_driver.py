@@ -15,6 +15,7 @@ class SSHDriver(SSHDriverBase):
         return self.send_command(self.core.update_startup_config(filename)).result
 
     def show_bootvar(self):
+        print("exec show_bootvar")
         return self.send_command(self.core.show_bootvar).result
 
     def reboot(self):

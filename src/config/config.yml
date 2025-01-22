@@ -13,7 +13,8 @@ tftp-server:
 host:
   username: mvsadmin    # by default
   password: MVS_admin   # by default
-  network: 10.4.0.0/24  # service_network: 192.168.3.0/24, mgmt_network: 10.4.0.0/24
+  address: 10.4.10.12
+  port: 22
 
 app:
   templates:

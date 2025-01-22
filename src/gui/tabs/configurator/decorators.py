@@ -4,7 +4,7 @@ from functools import wraps
 def prepare_config_file(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
-        template = self.get_text_configuration()
+        template = self.app.text_configuration
         config_path = f"/srv/tftp/{self.app.config_filename}"
         with open(config_path, "w") as f:
             f.write(template)

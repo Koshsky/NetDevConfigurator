@@ -6,8 +6,6 @@ import uuid
 
 from config import config
 
-config = config["app"]
-
 
 class ConfiguratorApp(DatabaseApp):
     def __init__(self, *args, **kwargs):
@@ -19,7 +17,12 @@ class ConfiguratorApp(DatabaseApp):
         self.preset = None
         self.config_template = None
         self.config_filename = None
-        self.credentials = None
+        self.host_info = {
+            "address": config["host"]["address"],
+            "port": config["host"]["port"],
+            "username": config["host"]["username"],
+            "password": config["host"]["password"],
+        }
         super().__init__(*args, **kwargs)
 
     def create_config_tabs(self):
@@ -33,15 +36,15 @@ class ConfiguratorApp(DatabaseApp):
             TemplateTab,
             "Templates",
             templates,
-            width=config["templates"]["width"],
-            allow_none=config["templates"]["allow-none"],
+            width=config["app"]["templates"]["width"],
+            allow_none=config["app"]["templates"]["allow-none"],
         )
         self.create_tab(
             TemplateTab,
             "Interfaces",
             interfaces,
-            width=config["interfaces"]["width"],
-            allow_none=config["interfaces"]["allow-none"],
+            width=config["app"]["interfaces"]["width"],
+            allow_none=config["app"]["interfaces"]["allow-none"],
         )
         self.create_tab(ViewTab, "VIEW")
 
@@ -50,8 +53,8 @@ class ConfiguratorApp(DatabaseApp):
         self.create_tab(HelloTab, "Device")
         self.notebook.select(self.tabs[0].frame)
 
-    def update_credentials(self, address, port, username, password):
-        self.credentials = {
+    def update_host_info(self, address, port, username, password):
+        self.host_info = {
             "address": address,
             "port": port,
             "username": username,
@@ -63,9 +66,9 @@ class ConfiguratorApp(DatabaseApp):
         return {
             "auth_strict_key": False,  # important for unknown hosts
             "device": self.db_services["device"].get_info(self.device),
-            "host": self.credentials["address"],
-            "auth_username": self.credentials["username"],
-            "auth_password": self.credentials["password"],
+            "host": self.host_info["address"],
+            "auth_username": self.host_info["username"],
+            "auth_password": self.host_info["password"],
         }
 
     @property
