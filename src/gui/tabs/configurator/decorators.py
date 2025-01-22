@@ -4,11 +4,11 @@ from functools import wraps
 def prepare_config_file(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
-        template = self.app.text_configuration
-        config_path = f"/srv/tftp/{self.app.config_filename}"
+        configuration = self.app.text_configuration
+        config_path = f"/srv/tftp/tmp/{self.app.config_filename}"
         with open(config_path, "w") as f:
-            f.write(template)
-        self.display_feedback(f"Template saved:\n{config_path}")
+            f.write(configuration)
+        self.display_feedback(f"Configuration saved:\n{config_path}")
 
         return func(self, *args, **kwargs)
 

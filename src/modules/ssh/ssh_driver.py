@@ -21,14 +21,19 @@ class SSHDriver(SSHDriverBase):
         )
 
     def update_startup_config(self, filename):
-        return self.send_command(self.core.update_startup_config(filename)).result
+        command = self.core.update_startup_config.format(filename)
+        print(command)
+        return self.send_command(command).result
 
     def show_bootvar(self):
         print("exec show_bootvar")
         return self.send_command(self.core.show_bootvar).result
 
     def reboot(self):
-        return "\n".join(resp.result for resp in self.send_commands(self.core.reload))
+        if isinstance(self.core.reload, str):
+            self.send_command(self.core.reload)
+        else:
+            self.send_commands(self.core.reload)
 
     def update_boot(self):
         filename = find_most_recent_file(
