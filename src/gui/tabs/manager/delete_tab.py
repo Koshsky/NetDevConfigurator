@@ -3,7 +3,8 @@ from gui import BaseTab, apply_error_handler
 
 @apply_error_handler
 class DeleteTab(BaseTab):
-    def create_widgets(self):
+    def refresh_widgets(self):
+        super().refresh_widgets()
         entities = ["company", "family", "device", "protocol", "preset"]
         for entity in entities:
             self.create_block(

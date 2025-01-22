@@ -3,7 +3,8 @@ from gui import BaseTab, apply_error_handler
 
 @apply_error_handler
 class HelloTab(BaseTab):
-    def create_widgets(self):
+    def refresh_widgets(self):
+        super().refresh_widgets()
         self.create_block(
             "device",
             {  # for filtering presets

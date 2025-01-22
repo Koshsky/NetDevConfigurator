@@ -3,7 +3,8 @@ from gui import BaseTab, apply_error_handler
 
 @apply_error_handler
 class AddTab(BaseTab):
-    def create_widgets(self):
+    def refresh_widgets(self):
+        super().refresh_widgets()
         self.create_block("company", {"name": None}, ("SUBMIT", self.submit_company))
         self.create_block("family", {"name": None}, ("SUBMIT", self.submit_family))
         self.create_block("protocol", {"name": None}, ("SUBMIT", self.submit_protocol))

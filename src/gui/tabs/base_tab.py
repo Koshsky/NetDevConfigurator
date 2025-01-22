@@ -12,11 +12,14 @@ class BaseTab:
         self.app = app
         self.cur_row = self.cur_col = 0
         self.fields = {}
-        self.create_widgets()
         self.frame.pack(padx=10, pady=10)
 
-    def create_widgets(self):
-        raise NotImplementedError
+    def refresh_widgets(self):
+        self._clear_frame()
+
+    def _clear_frame(self):
+        for widget in self.frame.winfo_children():
+            widget.destroy()
 
     def __getattr__(self, name):
         if name.startswith("check_") and name.endswith("_name"):
@@ -44,10 +47,6 @@ class BaseTab:
             raise EntityNotFoundError(
                 f'{entity_type.capitalize()} "{entity_name}" not found in databases'
             )
-
-    def clear_frame(self):
-        for widget in self.frame.winfo_children():
-            widget.destroy()
 
     def create_label(self, text):
         label = ttk.Label(self.frame, text=text)

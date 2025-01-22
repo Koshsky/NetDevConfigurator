@@ -5,8 +5,6 @@ from functools import wraps
 
 from ..core import get_core
 
-config = config["serial"]
-
 
 def check_port_open(func):
     @wraps(func)

@@ -7,7 +7,8 @@ from ssh2.exceptions import SocketRecvError
 
 @apply_error_handler
 class ViewTab(BaseTab):
-    def create_widgets(self):
+    def refresh_widgets(self):
+        super().refresh_widgets()
         self.create_button_in_line(("SHOW TEMPLATE", self.show_template))
 
         protocols = [

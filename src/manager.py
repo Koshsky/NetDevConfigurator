@@ -14,11 +14,7 @@ from gui.tabs.manager import (
 
 
 class DBManagerApp(DatabaseApp):
-    def on_success_callback(self, engine):
-        super().on_success_callback(engine)
-        if self.tabs:
-            self.display_all_tabs()
-            return
+    def create_tabs(self):
         self.create_tab(TablesTab, "TABLES")
         self.create_tab(InfoTab, "INFO")
         self.create_tab(AddTab, "ADD")
@@ -27,6 +23,7 @@ class DBManagerApp(DatabaseApp):
         self.create_tab(DeviceTab, "PORTS")
         self.create_tab(CommonConfigTab, "CONFIG")
         self.create_tab(CopyConfigTab, "COPY CONFIG")
+        super().create_tabs()
 
 
 if __name__ == "__main__":

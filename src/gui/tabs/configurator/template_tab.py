@@ -18,7 +18,8 @@ class TemplateTab(BaseTab):
         self.allow_none = allow_none
         super().__init__(parent, app)
 
-    def create_widgets(self):
+    def refresh_widgets(self):
+        super().refresh_widgets()
         self.create_label(
             f"MODEL:\t{self.app.device.name}\n"
             f"CERT:\t{self.app.config_params['CERT']}\n"

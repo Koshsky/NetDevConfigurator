@@ -3,7 +3,8 @@ from gui import BaseTab, apply_error_handler
 
 @apply_error_handler
 class UpdateTab(BaseTab):
-    def create_widgets(self):
+    def refresh_widgets(self):
+        super().refresh_widgets()
         self.create_block("device", {"name": self.app.entity_collections["device"]})
         self.create_block("maska", {"boot": None, "uboot": None, "firmware": None})
         self.create_button_in_line(("UPDATE", lambda: self.write_maska(link=True)))

@@ -21,9 +21,13 @@ class ConfiguratorApp(DatabaseApp):
         self.host_info = config["host"]
         super().__init__(*args, **kwargs)
 
+    def create_tabs(self):
+        self.create_tab(HelloTab, "Hello")
+        super().create_tabs()
+
     def create_config_tabs(self):
         templates, interfaces = {}, {}
-        for k, v in app.config_template.items():
+        for k, v in self.config_template.items():
             if v["type"] == "interface":
                 interfaces[k] = v
             else:
@@ -42,12 +46,8 @@ class ConfiguratorApp(DatabaseApp):
             width=config["app"]["interfaces"]["width"],
             allow_none=config["app"]["interfaces"]["allow-none"],
         )
-        self.create_tab(ViewTab, "VIEW")
-
-    def on_success_callback(self, engine):
-        super().on_success_callback(engine)
-        self.create_tab(HelloTab, "Device")
-        self.notebook.select(self.tabs[0].frame)
+        self.create_tab(ViewTab, "COMMANDS")
+        self._display_all_tabs()
 
     @property
     def driver(self):

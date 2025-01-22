@@ -16,9 +16,9 @@ class ConnectionTab:
         self.fields = config["database"]
 
         self.entries = {}
-        self.create_widgets()
+        self.refresh_widgets()
 
-    def create_widgets(self):
+    def refresh_widgets(self):
         for label_text, default_value in self.fields.items():
             label = tk.Label(self.frame, text=label_text)
             label.pack(pady=5)

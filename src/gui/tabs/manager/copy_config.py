@@ -4,7 +4,8 @@ from .common_config import CommonConfigTab
 
 @apply_error_handler
 class CopyConfigTab(CommonConfigTab):
-    def create_widgets(self):
+    def refresh_widgets(self):
+        super().refresh_widgets()
         self.create_block(
             "preset",
             {

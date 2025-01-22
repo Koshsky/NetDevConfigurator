@@ -33,7 +33,8 @@ class CommonConfigTab(BaseTab):
         self.family_id = None
         super().__init__(app, parent)
 
-    def create_widgets(self):
+    def refresh_widgets(self):
+        super().refresh_widgets()
         self.create_block(
             "preset",
             {
