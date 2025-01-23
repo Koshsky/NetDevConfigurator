@@ -30,7 +30,7 @@ class HelloTab(BaseTab):
         if preset.device_id != device.id:
             raise ValueError("Preset and device do not match")
 
-        self.app.register_parameters(
+        self.app.set_configuration_parameters(
             cert=self.fields["params"]["CERT"].get().strip(),
             OR=self.fields["params"]["OR"].get().strip(),
             device=device,

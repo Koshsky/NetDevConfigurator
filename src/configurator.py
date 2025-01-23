@@ -70,13 +70,11 @@ class ConfiguratorApp(DatabaseApp):
                 template += v["text"].replace("{INTERFACE_ID}", k) + "\n"
         template = template.replace("{CERT}", self.config_params["CERT"])
         template = template.replace("{OR}", self.config_params["OR"])
-        template = template.replace("{MODEL}", self.device.name)  # MODEL
-        template = template.replace("{ROLE}", self.preset.role)  # ROLE
+        template = template.replace("{MODEL}", self.device.name)
+        template = template.replace("{ROLE}", self.preset.role)
         return template + "end\n"
 
-    def register_parameters(
-        self, cert, OR, device, preset
-    ):  # TODO: think and rename (NOT IMPORTANT NOT URGENT)
+    def set_configuration_parameters(self, cert, OR, device, preset):
         if not (cert and OR and device and preset):
             raise ValueError("All parameters must be set")
         if preset.device_id != device.id:
