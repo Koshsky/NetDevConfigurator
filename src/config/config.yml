@@ -16,7 +16,7 @@ host:
   address: 10.4.0.3
   port: 22
 
-ssh-config-file: ~/NetDevConfigurator/src/config/ssh.conf
+ssh-config-file: ~/NetDevConfigurator/src/config/ssh.conf  # unused in last versions
 
 app:
   templates:

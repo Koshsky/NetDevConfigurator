@@ -17,6 +17,7 @@ def check_port_open(func):
 class SSHBaseDriver:
     def __init__(self, device, host, auth_username, auth_password, port=22, **kwargs):
         self.core = get_core(device["family"]["name"])
+        self.device = device
         self.address = host
         self.username = auth_username
         self.password = auth_password

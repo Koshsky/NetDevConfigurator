@@ -4,7 +4,6 @@ from config import config
 class BaseMES:
     comms_prompt_pattern = r"^(\n)?[a-z0-9_]+[>#\$]\s*$"
     success_signs = {"succeeded", "successful", "success"}
-
     update_startup_config = (
         f"copy tftp://{config['tftp-server']['address']}/" + "tmp/{0} startup-config"
     )
