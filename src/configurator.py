@@ -21,32 +21,35 @@ class ConfiguratorApp(DatabaseApp):
         self.host_info = config["host"]
         super().__init__(*args, **kwargs)
 
+    def refresh_widgets(self):
+        for _, tab in self.tabs.items():
+            if isinstance(tab, TemplateTab):
+                if self.device is None:
+                    self.notebook.hide(tab.frame)
+                else:
+                    self.notebook.add(tab.frame)
+                    tab.refresh_widgets()
+            else:
+                tab.refresh_widgets()
+
     def create_tabs(self):
         self.create_tab(HelloTab, "Hello")
-
-    def create_config_tabs(self):
-        templates, interfaces = {}, {}
-        for k, v in self.config_template.items():
-            if v["type"] == "interface":
-                interfaces[k] = v
-            else:
-                templates[k] = v
         self.create_tab(
             TemplateTab,
             "Templates",
-            templates,
             width=config["app"]["templates"]["width"],
             allow_none=config["app"]["templates"]["allow-none"],
+            template_filter=lambda x: x["type"] != "interface",
         )
         self.create_tab(
             TemplateTab,
             "Interfaces",
-            interfaces,
             width=config["app"]["interfaces"]["width"],
             allow_none=config["app"]["interfaces"]["allow-none"],
+            template_filter=lambda x: x["type"] == "interface",
         )
         self.create_tab(ViewTab, "COMMANDS")
-        self.refresh_widgets()
+        super().create_tabs()
 
     @property
     def driver(self):
@@ -86,15 +89,6 @@ class ConfiguratorApp(DatabaseApp):
             "configuration"
         ]
         self.config_filename = f"config_{uuid.uuid4()}.conf"
-
-    def update_config_tabs(self):
-        self._remove_config_tabs()
-        self.create_config_tabs()
-
-    def _remove_config_tabs(self):
-        while len(self.tabs) > 1:
-            self.notebook.forget(2)
-            self.tabs.pop()
 
 
 if __name__ == "__main__":

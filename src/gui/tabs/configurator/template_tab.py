@@ -5,27 +5,19 @@ import pprint
 @apply_error_handler
 class TemplateTab(BaseTab):
     def __init__(
-        self,
-        parent,
-        app,
-        templates,
-        *,
-        allow_none=False,
-        width=6,
+        self, parent, app, *, allow_none=False, width=6, template_filter=lambda x: True
     ):
-        self.templates = templates
         self.width = width
         self.allow_none = allow_none
+        self.template_filter = template_filter
         super().__init__(parent, app)
 
     def refresh_widgets(self):
         super().refresh_widgets()
-        self.create_label(
-            f"MODEL:\t{self.app.device.name}\n"
-            f"CERT:\t{self.app.config_params['CERT']}\n"
-            f"ROLE:\t{self.app.preset.role}\n"
-            f"OR:\t{self.app.config_params['OR']}"
-        )
+        self.templates = {}
+        for k, v in self.app.config_template.items():
+            if self.template_filter(v):
+                self.templates[k] = v
         self.create_block(
             "config",
             {
@@ -41,11 +33,11 @@ class TemplateTab(BaseTab):
         self.create_button_in_line(("ACTUALIZE", self.actualize_values))
         self.create_feedback_area()
 
-    def actualize_values(self):
+    def actualize_values(self):  # TODO: refactor (can I remove self.templates???)
         for k, v in self.templates.items():
             self.fields["config"]["templates"][k].set(v["name"])
 
-    def update_config(self):
+    def update_config(self):  # TODO: refactor (can I remove self.templates???)
         for k, v in self.templates.items():
             actual_name = self.fields["config"]["templates"][k].get().strip()
             if actual_name not in self._get_templates_by_type(v["type"]):

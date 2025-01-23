@@ -7,7 +7,7 @@ from config import config
 
 @apply_error_handler
 class ConnectionTab:
-    def __init__(self, parent, on_success_callback, on_failure_callback, app):
+    def __init__(self, parent, app, on_success_callback, on_failure_callback):
         self.frame = ttk.Frame(parent)
         self.app = app
         self.on_success_callback = on_success_callback
