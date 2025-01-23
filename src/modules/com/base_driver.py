@@ -36,7 +36,7 @@ class COMDriverBase:
     @check_port_open
     def send_command(self, command):
         self.ser.write(f"{command}\n".encode())
-        return self._get_result()
+        return self._get_response()
 
     def send_commands(self, commands):
         multi_response = []
