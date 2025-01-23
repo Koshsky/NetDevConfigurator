@@ -36,7 +36,7 @@ class HelloTab(BaseTab):
             device=device,
             preset=preset,
         )
-        self.app.refresh_widgets()
+        self.app.refresh_tabs()
         self.app.notebook.select(self.app.tabs["COMMANDS"].frame)
 
     def refresh_presets(self):

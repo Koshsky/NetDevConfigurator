@@ -32,7 +32,7 @@ class DatabaseApp:
         self.notebook.add(tab.frame, text=tab_name, state=state)
         self.tabs[tab_name] = tab
 
-    def refresh_widgets(self):
+    def refresh_tabs(self):
         for _, tab in self.tabs.items():
             tab.refresh_widgets()
 
@@ -44,7 +44,7 @@ class DatabaseApp:
         for _, tab in self.tabs.items():
             self.notebook.add(tab.frame)
         self.notebook.hide(self.tabs[CONNECTION_TAB_TITLE].frame)
-        self.refresh_widgets()
+        self.refresh_tabs()
         print("Successful connection to the database")
 
     def on_failure_callback(self, error):

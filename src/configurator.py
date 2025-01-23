@@ -21,7 +21,7 @@ class ConfiguratorApp(DatabaseApp):
         self.host_info = config["host"]
         super().__init__(*args, **kwargs)
 
-    def refresh_widgets(self):
+    def refresh_tabs(self):
         for _, tab in self.tabs.items():
             if isinstance(tab, TemplateTab):
                 if self.device is None:
