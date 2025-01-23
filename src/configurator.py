@@ -63,8 +63,6 @@ class ConfiguratorApp(DatabaseApp):
         with SSHDriver(**self.driver) as conn:
             template = conn.get_header()
         for k, v in self.config_template.items():
-            if v["type"] == "header":
-                continue  # TODO: убрать временный костыль.
             if v["text"]:
                 template += v["text"].replace("{INTERFACE_ID}", k) + "\n"
         template = template.replace("{CERT}", self.config_params["CERT"])
