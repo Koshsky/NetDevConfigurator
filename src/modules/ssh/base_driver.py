@@ -1,24 +1,66 @@
-from config import config
-from scrapli.driver import GenericDriver
-from ..core import handle_device_open, get_core
+import paramiko
+import socket
+from functools import wraps
+from modules.core import get_core
 
 
-class SSHDriverBase(GenericDriver):
-    def __init__(self, device, **kwargs) -> None:
+def check_port_open(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        if self.ssh is None:
+            raise Exception("SSH port is not open")
+        return func(self, *args, **kwargs)
+
+    return wrapper
+
+
+class SSHBaseDriver:
+    def __init__(self, device, host, auth_username, auth_password, port=22, **kwargs):
         self.core = get_core(device["family"]["name"])
+        self.address = host
+        self.username = auth_username
+        self.password = auth_password
+        self.port = port
+        self.ssh = None
 
-        kwargs["transport"] = "ssh2"
-        kwargs["on_open"] = self.on_open
-        kwargs["on_close"] = self.on_close
-        kwargs["comms_prompt_pattern"] = self.core.comms_prompt_pattern
-        kwargs["ssh_config_file"] = config["ssh-config-file"]
-        super().__init__(**kwargs)
+    @check_port_open
+    def send_command(self, command: str) -> str:
+        self.ssh.send(f"{command}\n")
+        return self._get_response()
 
-        self.tftp_server = config["tftp-server"]["address"]
+    @check_port_open
+    def _get_response(self):
+        output = ""
+        while True:
+            try:
+                part = self.ssh.recv(1024).decode("utf-8")
+                output += part
+            except socket.timeout:
+                break
 
-    def on_open(self, cls: GenericDriver):
-        return handle_device_open(cls, self.core.open_sequence)
+        return output
 
-    def on_close(self, cls: GenericDriver):
-        cls.channel.write("exit")
-        cls.channel.send_return()
+    def __enter__(self):
+        cl = paramiko.SSHClient()
+        cl.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        cl.connect(
+            hostname=self.address,
+            username=self.username,
+            password=self.password,
+            look_for_keys=False,
+            allow_agent=False,
+        )
+        self.ssh = cl.invoke_shell()
+        self.ssh.settimeout(1)
+        self._on_open()
+        return self
+
+    def _on_open(self):
+        for command in self.core.open_sequence:
+            self.send_command(command)
+        return self._get_response()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.ssh:
+            self.ssh.close()
+            self.ssh = None

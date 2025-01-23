@@ -1,7 +1,7 @@
-from .base_driver import COMDriverBase
+from .base_driver import COMBaseDriver
 
 
-class COMDriver(COMDriverBase):
+class COMDriver(COMBaseDriver):
     def base_configure(self):
         return self.send_commands(self.core.base_configure)
 
