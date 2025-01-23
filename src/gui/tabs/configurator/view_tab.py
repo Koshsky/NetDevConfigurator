@@ -30,17 +30,20 @@ class ViewTab(BaseTab):
             resp = conn.update_startup_config(self.app.config_filename)
             self.display_feedback(resp)
 
-    def reboot(self):
-        with SSHDriver(**self.app.driver) as conn:
-            conn.reboot()
-
     def load_by_COM(self):
         with COMDriver(**self.app.driver) as conn:
             conn.base_configure_192()
         self.load_by_ssh()
 
+    def reboot(self):
+        with SSHDriver(**self.app.driver) as conn:
+            conn.reboot()
+
     def update_firmwares(self):
-        raise NotImplementedError("update_firmwares not implemented")
+        with SSHDriver(**self.app.driver) as conn:
+            print(conn.update_boot())
+            print(conn.update_uboot())
+            print(conn.update_firmware())
 
     def show_template(self):
         self.display_feedback(self.app.text_configuration)
