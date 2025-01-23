@@ -56,7 +56,6 @@ class ConfiguratorApp(DatabaseApp):
             "host": self.host_info["address"],
             "auth_username": self.host_info["username"],
             "auth_password": self.host_info["password"],
-            "ssh_config_file": config["ssh-config-file"],
         }
 
     @property

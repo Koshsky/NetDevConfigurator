@@ -11,6 +11,7 @@ class SSHDriverBase(GenericDriver):
         kwargs["on_open"] = self.on_open
         kwargs["on_close"] = self.on_close
         kwargs["comms_prompt_pattern"] = self.core.comms_prompt_pattern
+        kwargs["ssh_config_file"] = config["ssh-config-file"]
         super().__init__(**kwargs)
 
         self.tftp_server = config["tftp-server"]["address"]
