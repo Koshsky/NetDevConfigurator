@@ -19,9 +19,6 @@ class SSHDriver(SSHBaseDriver):
             header += line + "\n"
         return header + "!\n"
 
-    def base_configure(self):
-        return "\n".join(resp for resp in self.send_commands(self.core.base_configure))
-
     def update_startup_config(self, filename):
         command = self.core.update_startup_config.format(filename)
         return self.send_command(command)

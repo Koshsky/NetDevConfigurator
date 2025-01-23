@@ -8,7 +8,7 @@ class BaseMES:
         f"copy tftp://{config['tftp-server']['address']}/" + "tmp/{0} startup-config"
     )
     show_run = "show running-config"
-    base_configure = [
+    base_configure_192 = [
         "configure terminal",
         "interface vlan 1",
         "ip address 192.168.3.187 255.255.255.0",

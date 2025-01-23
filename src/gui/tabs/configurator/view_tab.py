@@ -1,8 +1,7 @@
 from gui import BaseTab, apply_error_handler
 
 from .decorators import prepare_config_file
-from modules.ssh import SSHDriver
-from ssh2.exceptions import SocketRecvError
+from modules import SSHDriver, COMDriver
 
 
 @apply_error_handler
@@ -18,7 +17,7 @@ class ViewTab(BaseTab):
             ]
         ]
         if "COM" in protocols:
-            self.create_button_in_line(("LOAD BY COM", self.load_by_COM))
+            self.create_button_in_line(("LOAD BY COM+SSH", self.load_by_COM))
         if "ssh" in protocols:
             self.create_button_in_line(("LOAD BY SSH", self.load_by_ssh))
         self.create_button_in_line(("UPDATE FIRMWARES", self.update_firmwares))
@@ -32,14 +31,13 @@ class ViewTab(BaseTab):
             self.display_feedback(resp)
 
     def reboot(self):
-        try:
-            with SSHDriver(**self.app.driver) as conn:
-                conn.reboot()
-        except SocketRecvError:
-            self.display_feedback("Reboot successful")
+        with SSHDriver(**self.app.driver) as conn:
+            conn.reboot()
 
     def load_by_COM(self):
-        raise NotImplementedError("load_by_COM not implemented")
+        with COMDriver(**self.app.driver) as conn:
+            conn.base_configure_192()
+        self.load_by_ssh()
 
     def update_firmwares(self):
         raise NotImplementedError("update_firmwares not implemented")
