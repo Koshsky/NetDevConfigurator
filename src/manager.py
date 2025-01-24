@@ -23,6 +23,7 @@ class DBManagerApp(DatabaseApp):
         self.create_tab(DeviceTab, "PORTS")
         self.create_tab(CommonConfigTab, "CONFIG")
         self.create_tab(CopyConfigTab, "COPY CONFIG")
+        super().create_tabs()
 
 
 if __name__ == "__main__":

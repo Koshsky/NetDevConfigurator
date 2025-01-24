@@ -31,14 +31,14 @@ class HelloTab(BaseTab):
         if preset.device_id != device.id:
             raise ValueError("Preset and device do not match")
 
-        self.app.register_parameters(
+        self.app.set_configuration_parameters(
             cert=self.fields["params"]["CERT"].get().strip(),
             OR=self.fields["params"]["OR"].get().strip(),
             device=device,
             preset=preset,
         )
-        self.app.update_config_tabs()
-        self.app.notebook.select(self.app.tabs[-1].frame)
+        self.app.refresh_tabs()
+        self.app.notebook.select(self.app.tabs["COMMANDS"].frame)
 
     def refresh_presets(self):
         device = self.check_device_name(self.fields["device"]["name"].get())

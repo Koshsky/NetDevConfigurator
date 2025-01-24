@@ -21,32 +21,35 @@ class ConfiguratorApp(DatabaseApp):
         self.host_info = config["host"]
         super().__init__(*args, **kwargs)
 
+    def refresh_tabs(self):
+        for _, tab in self.tabs.items():
+            if isinstance(tab, TemplateTab):
+                if self.device is None:
+                    self.notebook.hide(tab.frame)
+                else:
+                    self.notebook.add(tab.frame)
+                    tab.refresh_widgets()
+            else:
+                tab.refresh_widgets()
+
     def create_tabs(self):
         self.create_tab(HelloTab, "Hello")
-
-    def create_config_tabs(self):
-        templates, interfaces = {}, {}
-        for k, v in self.config_template.items():
-            if v["type"] == "interface":
-                interfaces[k] = v
-            else:
-                templates[k] = v
         self.create_tab(
             TemplateTab,
             "Templates",
-            templates,
             width=config["app"]["templates"]["width"],
             allow_none=config["app"]["templates"]["allow-none"],
+            template_filter=lambda x: x["type"] != "interface",
         )
         self.create_tab(
             TemplateTab,
             "Interfaces",
-            interfaces,
             width=config["app"]["interfaces"]["width"],
             allow_none=config["app"]["interfaces"]["allow-none"],
+            template_filter=lambda x: x["type"] == "interface",
         )
         self.create_tab(ViewTab, "COMMANDS")
-        self.refresh_widgets()
+        super().create_tabs()
 
     @property
     def driver(self):
@@ -67,13 +70,11 @@ class ConfiguratorApp(DatabaseApp):
                 template += v["text"].replace("{INTERFACE_ID}", k) + "\n"
         template = template.replace("{CERT}", self.config_params["CERT"])
         template = template.replace("{OR}", self.config_params["OR"])
-        template = template.replace("{MODEL}", self.device.name)  # MODEL
-        template = template.replace("{ROLE}", self.preset.role)  # ROLE
+        template = template.replace("{MODEL}", self.device.name)
+        template = template.replace("{ROLE}", self.preset.role)
         return template + "end\n"
 
-    def register_parameters(
-        self, cert, OR, device, preset
-    ):  # TODO: think and rename (NOT IMPORTANT NOT URGENT)
+    def set_configuration_parameters(self, cert, OR, device, preset):
         if not (cert and OR and device and preset):
             raise ValueError("All parameters must be set")
         if preset.device_id != device.id:
@@ -86,15 +87,6 @@ class ConfiguratorApp(DatabaseApp):
             "configuration"
         ]
         self.config_filename = f"config_{uuid.uuid4()}.conf"
-
-    def update_config_tabs(self):
-        self._remove_config_tabs()
-        self.create_config_tabs()
-
-    def _remove_config_tabs(self):
-        while len(self.tabs) > 1:
-            self.notebook.forget(2)
-            self.tabs.pop()
 
 
 if __name__ == "__main__":

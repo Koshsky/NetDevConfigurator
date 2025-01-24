@@ -9,17 +9,8 @@ class ViewTab(BaseTab):
     def refresh_widgets(self):
         super().refresh_widgets()
         self.create_button_in_line(("SHOW TEMPLATE", self.show_template))
-
-        protocols = [
-            protocol["name"]
-            for protocol in self.app.db_services["device"].get_info(self.app.device)[
-                "protocols"
-            ]
-        ]
-        if "COM" in protocols:
-            self.create_button_in_line(("LOAD BY COM+SSH", self.load_by_COM))
-        if "ssh" in protocols:
-            self.create_button_in_line(("LOAD BY SSH", self.load_by_ssh))
+        self.create_button_in_line(("LOAD BY COM+SSH", self.load_by_COM))
+        self.create_button_in_line(("LOAD BY SSH", self.load_by_ssh))
         self.create_button_in_line(("UPDATE FIRMWARES", self.update_firmwares))
         self.create_button_in_line(("REBOOT", self.reboot))
         self.create_feedback_area()
