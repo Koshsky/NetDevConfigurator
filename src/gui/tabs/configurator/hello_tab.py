@@ -12,7 +12,6 @@ class HelloTab(BaseTab):
                 "device": self.app.entity_collections["device"],
                 "role": self.app.entity_collections["role"],
             },
-            ("REFRESH", self.refresh_presets),
         )
         self.create_block(
             "params",

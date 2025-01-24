@@ -57,6 +57,4 @@ class App:
         self.notebook = ttk.Notebook(self.root)
 
         self.notebook.pack(fill="both", expand=True)
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
-        self.root.geometry(f"{screen_width}x{screen_height - 40}")
+        self.root.geometry("1400x1000+400+100")
