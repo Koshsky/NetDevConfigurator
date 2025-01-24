@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from gui.base_app import DatabaseApp
+from gui.base_app import App
 from gui.tabs.configurator import HelloTab, TemplateTab, ViewTab
 import uuid
 
@@ -8,7 +8,7 @@ from modules.ssh import SSHDriver
 from config import config
 
 
-class ConfiguratorApp(DatabaseApp):
+class ConfiguratorApp(App):
     def __init__(self, *args, **kwargs):
         self.config_params = {
             "CERT": config["default-cert"],

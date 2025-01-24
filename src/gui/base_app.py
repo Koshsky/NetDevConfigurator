@@ -8,7 +8,7 @@ from database.services import setup_database_services, prepare_entity_collection
 CONNECTION_TAB_TITLE = "CONNECTION"
 
 
-class DatabaseApp:
+class App:
     def __init__(self, root, title):
         self._init_root(root, title)
         self.session = None

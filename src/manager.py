@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from gui.base_app import DatabaseApp
+from gui.base_app import App
 from gui.tabs.manager import (
     TablesTab,
     InfoTab,
@@ -11,7 +11,7 @@ from gui.tabs.manager import (
 )
 
 
-class DBManagerApp(DatabaseApp):
+class DBManagerApp(App):
     def create_tabs(self):
         self.create_tab(TablesTab, "TABLES")
         self.create_tab(InfoTab, "INFO")
