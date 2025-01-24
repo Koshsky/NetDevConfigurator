@@ -2,7 +2,6 @@ import tkinter as tk
 
 from gui.base_app import App
 from gui.tabs.manager import (
-    TablesTab,
     InfoTab,
     AddTab,
     UpdateTab,
@@ -13,12 +12,11 @@ from gui.tabs.manager import (
 
 class DBManagerApp(App):
     def create_tabs(self):
-        self.create_tab(TablesTab, "TABLES")
-        self.create_tab(InfoTab, "INFO")
         self.create_tab(AddTab, "ADD")
         self.create_tab(DeleteTab, "DELETE")
+        self.create_tab(InfoTab, "INFO")
         self.create_tab(UpdateTab, "DEVICE")
-        self.create_tab(CommonConfigTab, "CONFIG")
+        self.create_tab(CommonConfigTab, "PRESET")
         super().create_tabs()
 
 
