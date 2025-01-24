@@ -10,9 +10,9 @@ tftp-server:
   port: 69
   folder: /srv/tftp
 
-host:
-  username: admin
-  password: admin
+host:  # TODO: сделать это переменными окружения
+  username: admin  # TODO: потому что это потенциально изменяемые переменные
+  password: admin  # TODO: при работе программы.
   address: 10.4.0.3
   port: 22
 
