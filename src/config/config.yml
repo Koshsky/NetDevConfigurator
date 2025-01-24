@@ -18,6 +18,7 @@ host:
 
 
 app:
+  geometry: "1400x1000+300+100"
   templates:
     width: 6
     allow-none: True

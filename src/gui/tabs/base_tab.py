@@ -9,10 +9,10 @@ from database.services import EntityNotFoundError
 class BaseTab:
     def __init__(self, parent, app):
         self.frame = ttk.Frame(parent)
+        self.frame.pack(padx=10, pady=10)
         self.app = app
         self.cur_row = self.cur_col = 0
         self.fields = {}
-        self.frame.pack(padx=10, pady=10)
 
     def refresh_widgets(self):
         self._clear_frame()

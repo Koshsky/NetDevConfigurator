@@ -16,7 +16,6 @@ class HelloTab(BaseTab):
         self.create_block(
             "params",
             {
-                "preset": ("1", "2"),
                 "CERT": (config["default-cert"],),
                 "OR": tuple(str(i) for i in range(1, 26)),
             },

@@ -1,7 +1,7 @@
 from tkinter import ttk
 
 from sqlalchemy.orm import sessionmaker
-
+from config import config
 from .tabs import ConnectionTab
 from database.services import setup_database_services, prepare_entity_collections
 
@@ -57,4 +57,4 @@ class App:
         self.notebook = ttk.Notebook(self.root)
 
         self.notebook.pack(fill="both", expand=True)
-        self.root.geometry("1400x1000+400+100")
+        self.root.geometry(config["app"]["geometry"])
