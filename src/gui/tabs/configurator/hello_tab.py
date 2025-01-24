@@ -1,4 +1,5 @@
 from gui import BaseTab, apply_error_handler
+from config import config
 
 
 @apply_error_handler
@@ -17,8 +18,8 @@ class HelloTab(BaseTab):
             "params",
             {
                 "preset": ("1", "2"),
-                "CERT": None,
-                "OR": None,
+                "CERT": (config["default-cert"],),
+                "OR": tuple(str(i) for i in range(1, 26)),
             },
         )
         self.create_button_in_line(("UPDATE TABS", self.update_tabs))

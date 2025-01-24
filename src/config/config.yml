@@ -16,7 +16,6 @@ host:
   address: 10.4.0.3
   port: 22
 
-ssh-config-file: ~/NetDevConfigurator/src/config/ssh.conf  # unused in last versions
 
 app:
   templates:
@@ -26,7 +25,7 @@ app:
     width: 12
     allow-none: False
 
-
+default-cert: MVS
 serial-port: /dev/ttyUSB0
-
+ssh-config-file: ~/NetDevConfigurator/src/config/ssh.conf  # unused in last versions
 backup-folder: ./backups
