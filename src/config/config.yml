@@ -11,8 +11,8 @@ tftp-server:
   folder: /srv/tftp
 
 host:
-  username: mvsadmin
-  password: MVS_admin
+  username: admin
+  password: admin
   address: 10.4.0.3
   port: 22
 
@@ -28,5 +28,6 @@ app:
 
 default-cert: MVS
 serial-port: /dev/ttyUSB0
+mvs-network: 192.168.3.0/24
 ssh-config-file: ~/NetDevConfigurator/src/config/ssh.conf  # unused in last versions
 backup-folder: ./backups

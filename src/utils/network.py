@@ -14,14 +14,14 @@ def scan_network(network):
     return active_ips
 
 
-def find_first_available_ip(
-    network, filter=lambda ip: ip.packed[-1] >= 100 and ip.packed[-1] < 201
-):
+def find_available_ip(network, filter=None):
     net = ipaddress.IPv4Network(network, strict=False)
     active_ips = scan_network(network)
     for ip in net.hosts():
-        if filter(ip) and str(ip) not in active_ips:
-            return ip
+        if str(ip) not in active_ips:
+            if filter is not None and not filter(ip):
+                continue
+            yield ip
 
 
 if __name__ == "__main__":

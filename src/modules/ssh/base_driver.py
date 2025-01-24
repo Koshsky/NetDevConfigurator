@@ -26,6 +26,7 @@ class SSHBaseDriver:
 
     @check_port_open
     def send_command(self, command: str) -> str:
+        print("SSH send:", command)
         self.ssh.send(f"{command}\n")
         return self._get_response()
 

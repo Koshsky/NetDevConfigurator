@@ -11,11 +11,11 @@ class BaseMES:
     base_configure_192 = [
         "configure terminal",
         "interface vlan 1",
-        "ip address 192.168.3.187 255.255.255.0",
+        "ip address {0} 255.255.255.0".format(next(config["available-ip"])),
         "ssh enable",
         "end",
     ]
-    reload = "reload\nyy"  # cause y y DOESN'T require \n
+    reload = "reload\nyy"  # cause 'y' 'y' DOESN'T require '\n'
     show_bootvar = "show bootvar"
 
 
