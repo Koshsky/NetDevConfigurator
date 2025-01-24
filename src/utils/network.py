@@ -1,28 +1,31 @@
+from scapy.all import ARP, Ether, srp
 import ipaddress
-import os
-from config import config
 
 
-# TODO: need to TEST
-def find_first_available_ip(network):
+def scan_network(network):
+    arp = ARP(pdst=network)
+    ether = Ether(dst="ff:ff:ff:ff:ff:ff")
+    packet = ether / arp
+
+    result = srp(packet, timeout=2, verbose=0)[0]
+
+    active_ips = [received.psrc for sent, received in result]
+    active_ips.sort(key=lambda x: int(x.split(".")[-1]))
+    return active_ips
+
+
+def find_first_available_ip(
+    network, filter=lambda ip: ip.packed[-1] >= 100 and ip.packed[-1] < 201
+):
     net = ipaddress.IPv4Network(network, strict=False)
-
+    active_ips = scan_network(network)
     for ip in net.hosts():
-        if ip.packed[-1] < 100 or ip.packed[-1] > 200:
-            continue
-
-        response = os.system(f"ping -c 1 -W 1 {ip} > /dev/null 2>&1")
-
-        if response != 0:
-            return str(ip)
+        if filter(ip) and str(ip) not in active_ips:
+            return ip
 
 
 if __name__ == "__main__":
-    available_ip = find_first_available_ip(config["host"]["network"])
-    print(
-        f"Первый свободный IP-адрес в сети {config['host']['network']}: {available_ip}"
-    )
-    available_ip = find_first_available_ip(config["host"]["network"])
-    print(
-        f"Первый свободный IP-адрес в сети {config['host']['network']}: {available_ip}"
-    )
+    active_ips = scan_network("192.168.3.0/24")
+    for ip in active_ips:
+        print(ip)
+    print(len(active_ips))
