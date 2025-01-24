@@ -12,7 +12,7 @@ class TablesTab(BaseTab):
             "port",
             "protocol",
             "template",
-            "preset",
+            # "preset",  # TODO: у пресета нет имени.
         ]:
             self.create_button_in_line((entity.capitalize(), self.load_table(entity)))
         self.create_feedback_area()

@@ -5,7 +5,7 @@ from gui import BaseTab, apply_error_handler
 class DeleteTab(BaseTab):
     def refresh_widgets(self):
         super().refresh_widgets()
-        entities = ["company", "family", "device", "protocol", "preset"]
+        entities = ["company", "family", "device", "protocol"]
         for entity in entities:
             self.create_block(
                 entity,
@@ -13,6 +13,14 @@ class DeleteTab(BaseTab):
                 ("delete", lambda e=entity: self.delete_entity(e)),
             )
 
+        self.create_block(
+            "preset",
+            {
+                "device": self.app.entity_collections["device"],
+                "role": self.app.entity_collections["role"],
+            },
+            ("delete", self.delete_preset),
+        )
         self.create_block(
             "template",
             {
@@ -23,11 +31,16 @@ class DeleteTab(BaseTab):
         )
         self.create_feedback_area()
 
+    def delete_preset(self):
+        device = self.check_device_name(self.fields["preset"]["device"].get())
+        role = self.fields["template"]["role"].get().strip()
+        self.app.db_services["preset"].delete_by_device_and_role(device, role)
+        self.display_feedback("Successfully deleted from the presets table.")
+
     def delete_template(self):
         name = self.fields["template"]["name"].get().strip()
         role = self.fields["template"]["role"].get().strip()
-        template = self.app.db_services["template"].get_by_name_and_role(name, role)
-        self.app.db_services["template"].delete(template)
+        self.app.db_services["template"].delete_by_name_and_role(name, role)
         self.display_feedback("Successfully deleted from the templates table.")
 
     def delete_entity(self, entity_type):

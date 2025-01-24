@@ -15,8 +15,16 @@ class PresetService(BaseService, DevicePresetService):
         self.template_service = TemplateService(db)
         self.family_service = FamilyService(db)
 
-    def get_all_by_device_id(self, device_id):
-        return [preset for preset in self.get_all() if preset.device_id == device_id]
+    def get_by_device_and_role(self, device: Devices, role: str):
+        return (
+            self.db.query(Presets)
+            .join(DevicePresets, Presets.id == DevicePresets.preset_id)
+            .filter(Presets.device_id == device.id, Presets.role == role)
+            .first()
+        )
+
+    def delete_by_device_and_role(self, device: Devices, role: str):
+        self.delete(self.get_by_device_and_role(device, role))
 
     def get_info(self, preset, check=False):
         rows = (
@@ -24,7 +32,7 @@ class PresetService(BaseService, DevicePresetService):
             .join(DevicePresets, Presets.id == DevicePresets.preset_id)
             .join(Templates, DevicePresets.template_id == Templates.id)
             .join(Devices, Presets.device_id == Devices.id)
-            .filter(Presets.name == preset.name)
+            .filter(Presets.id == preset.id)
             .order_by(DevicePresets.ordered_number)
             .all()
         )
@@ -38,7 +46,6 @@ class PresetService(BaseService, DevicePresetService):
         )  # generator
         device = self.device_service.get_by_id(preset.device_id)
         return {
-            "preset": preset.name,
             "id": preset.id,
             "target": device.name,
             "family": self.family_service.get_by_id(device.family_id),

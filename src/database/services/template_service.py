@@ -61,3 +61,6 @@ class TemplateService(BaseService):
             )
             .first()
         )
+
+    def delete_by_name_and_role(self, name: str, role: str):
+        self.delete(self.get_by_name_and_role(name, role))

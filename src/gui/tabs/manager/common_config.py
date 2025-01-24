@@ -30,7 +30,6 @@ class CommonConfigTab(BaseTab):
     def __init__(self, app, parent):
         self._config = None
         self.preset = None
-        self.family_id = None
         super().__init__(app, parent)
 
     def refresh_widgets(self):
@@ -38,14 +37,15 @@ class CommonConfigTab(BaseTab):
         self.create_block(
             "preset",
             {
-                "name": self.app.entity_collections["preset"],
+                "device": self.app.entity_collections["device"],
+                "role": self.app.entity_collections["role"],
             },
         )
-        self.create_button_in_line(("REFRESH", self.refresh))
+        self.create_button_in_line(("REFRESH", self.refresh_templates))
         self.create_block(
             "template",
             {
-                "name": ("1", "2"),
+                "name": ("1", "2"),  # TODO: исправить этот костыль.
                 "ordered_number": None,
             },
         )
@@ -53,6 +53,7 @@ class CommonConfigTab(BaseTab):
         self.create_button_in_line(("INSERT", self.insert))
         self.create_button_in_line(("REMOVE", self.remove))
         self.create_feedback_area()
+        self.refresh_templates()
 
     def config_meta(self):
         interfaces = len(
@@ -68,7 +69,6 @@ class CommonConfigTab(BaseTab):
             ]
         )
         return (
-            f"Preset: {self._config['preset']}\n"
             f"Role: {self._config['role']}\n"
             f"Device: {self._config['target']}\n"
             f"Description: {self._config['description']}\n"
@@ -123,14 +123,13 @@ class CommonConfigTab(BaseTab):
         return f"Template {template.name} successfully inserted at position {ordered_number}\n"
 
     @update_config
-    def refresh(self):
-        self.preset = self.check_preset_name(self.fields["preset"]["name"].get())
-        self.family_id = (
-            self.app.db_services["device"].get_by_id(self.preset.device_id).family_id
+    def refresh_templates(self):
+        device = self.check_device_name(self.fields["preset"]["device"].get())
+        self.preset = self.app.db_services["preset"].get_by_device_and_role(
+            device, self.fields["preset"]["role"].get()
         )
-
         templates = self.app.db_services["template"].get_by_family_id_and_role(
-            self.family_id, self.preset.role
+            device.family_id, self.preset.role
         )
         template_names = [template.name for template in templates]
         if not template_names:

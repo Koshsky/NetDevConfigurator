@@ -13,7 +13,7 @@ class ConfiguratorApp(DatabaseApp):
         self.config_params = {
             "CERT": config["default-cert"],
             "OR": None,
-        }  # ROLE from preset, MODEL from device
+        }
         self.device = None
         self.preset = None
         self.config_template = None

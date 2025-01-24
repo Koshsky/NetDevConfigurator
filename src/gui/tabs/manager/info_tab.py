@@ -6,7 +6,7 @@ from pprint import pformat
 class InfoTab(BaseTab):
     def refresh_widgets(self):
         super().refresh_widgets()
-        entity_types = ["company", "family", "device", "preset", "template"]
+        entity_types = ["company", "family", "device", "template"]
         for entity_type in entity_types:
             self.create_block(
                 entity_type,

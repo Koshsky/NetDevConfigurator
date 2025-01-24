@@ -32,7 +32,6 @@ class AddTab(BaseTab):
         self.create_block(
             "preset",
             {
-                "name": None,
                 "device": self.app.entity_collections["device"],
                 "role": self.app.entity_collections["role"],
             },
@@ -42,16 +41,11 @@ class AddTab(BaseTab):
 
     def submit_preset(self):
         device = self.check_device_name(self.fields["preset"]["device"].get())
-        preset_name = self.fields["preset"]["name"].get().strip()
-        if not preset_name:
-            raise ValueError("Preset name cannot be empty.")
         role = self.fields["preset"]["role"].get().strip()
         if role not in self.app.entity_collections["role"] or role == "common":
             raise ValueError("Invalid role.")
 
-        self.app.db_services["preset"].create(
-            {"name": preset_name, "role": role, "device_id": device.id}
-        )
+        self.app.db_services["preset"].create({"role": role, "device_id": device.id})
         self.display_feedback("successfully")
 
     def submit_template(self):

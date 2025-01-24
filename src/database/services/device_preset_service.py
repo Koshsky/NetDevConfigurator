@@ -69,30 +69,6 @@ class DevicePresetService:
         return new_device_preset
 
     @transactional
-    def copy(self, source_preset, destination_preset):
-        if source_preset == destination_preset:
-            raise ValueError("preset_from is preset_to!")
-        if source_preset.role != destination_preset.role:
-            raise ValueError("Preset roles are different!")
-        dev1 = self.device_service.get_info_by_id(source_preset.device_id)
-        dev2 = self.device_service.get_info_by_id(destination_preset.device_id)
-        if dev1["family"] != dev2["family"]:
-            raise ValueError("Devices are from different families!")
-        self._clear(destination_preset.id)
-        records = (
-            self.db.query(DevicePresets).filter_by(preset_id=source_preset.id).all()
-        )
-        for record in records:
-            new_record = record.__class__(
-                preset_id=destination_preset.id,
-                template_id=record.template_id,
-                ordered_number=record.ordered_number,
-            )
-            self.db.add(new_record)
-
-        self.db.commit()
-
-    @transactional
     def remove(self, preset_id: int, ordered_number: int):
         self.db.query(DevicePresets).filter(
             DevicePresets.preset_id == preset_id,
