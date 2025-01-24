@@ -11,7 +11,7 @@ from config import config
 class ConfiguratorApp(DatabaseApp):
     def __init__(self, *args, **kwargs):
         self.config_params = {
-            "CERT": None,
+            "CERT": config["default-cert"],
             "OR": None,
         }  # ROLE from preset, MODEL from device
         self.device = None
@@ -79,7 +79,8 @@ class ConfiguratorApp(DatabaseApp):
             raise ValueError("All parameters must be set")
         if preset.device_id != device.id:
             raise ValueError("preset.device_id != device.id")
-        self.config_params["CERT"] = cert
+        if cert:
+            self.config_params["CERT"] = cert
         self.config_params["OR"] = OR
         self.device = device
         self.preset = preset
