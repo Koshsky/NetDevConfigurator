@@ -18,7 +18,7 @@ class ConfiguratorApp(App):
         self.preset = None
         self.config_template = None
         self.config_filename = None
-        self.host_info = config["host"]
+        self.host_info = config["host"]  # TODO: сделать это переменными окружения (??)
         super().__init__(*args, **kwargs)
 
     def refresh_tabs(self):
