@@ -92,8 +92,12 @@ class ConfiguratorApp(App):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Network Device Configurator")
-    parser.add_argument("--advanced", action="store_true", help="advanced mode")
+    parser = argparse.ArgumentParser(
+        description="Upload configurations and manage network devices"
+    )
+    parser.add_argument(
+        "-A", "--advanced", action="store_true", help="Advanced mode for fine-tuning"
+    )
     args = parser.parse_args()
     root = tk.Tk()
     app = ConfiguratorApp(root, "Configurator", args.advanced)
