@@ -121,7 +121,6 @@ class BaseTab:
 
     def show_error(self, title, error):
         messagebox.showerror(title, error)
-        print(f"{title}: {error}")
 
     def display_feedback(self, message):
         self.feedback_text.config(state=tk.NORMAL)

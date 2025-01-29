@@ -1,4 +1,4 @@
-import pprint
+from pprint import pformat
 
 from gui import BaseTab, apply_error_handler
 
@@ -59,9 +59,7 @@ class TemplateTab(BaseTab):
                 actual = self.app.db_services["template"].get_info(actual_template)
             self.app.config_template[k] = actual
             self.templates[k] = actual
-        self.display_feedback(
-            pprint.pformat(self.app.config_template, sort_dicts=False)
-        )
+        self.display_feedback(pformat(self.app.config_template, sort_dicts=False))
 
     def _get_templates_by_type(self, t):
         entities = self.app.db_services["template"].get_by_family_id_and_role(

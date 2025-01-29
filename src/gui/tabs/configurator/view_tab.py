@@ -32,9 +32,9 @@ class ViewTab(BaseTab):
 
     def update_firmwares(self):
         with SSHDriver(**self.app.driver) as conn:
-            print(conn.update_boot())
-            print(conn.update_uboot())
-            print(conn.update_firmware())
+            conn.update_boot()
+            conn.update_uboot()
+            conn.update_firmware()
 
     def show_template(self):
         self.display_feedback(self.app.text_configuration)

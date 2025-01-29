@@ -35,23 +35,23 @@ class ConfiguratorApp(App):
                 tab.refresh_widgets()
 
     def create_tabs(self):
-        self.create_tab(HelloTab, "Hello")
+        super().create_tabs()
+        self.create_tab(HelloTab, "MAIN")
         self.create_tab(
             TemplateTab,
-            "Templates",
+            "TEMPLATES",
             width=config["app"]["templates"]["width"],
             allow_none=config["app"]["templates"]["allow-none"],
             template_filter=lambda x: x["type"] != "interface",
         )
         self.create_tab(
             TemplateTab,
-            "Interfaces",
+            "INTERFACES",
             width=config["app"]["interfaces"]["width"],
             allow_none=config["app"]["interfaces"]["allow-none"],
             template_filter=lambda x: x["type"] == "interface",
         )
         self.create_tab(ViewTab, "COMMANDS")
-        super().create_tabs()
 
     @property
     def driver(self):
