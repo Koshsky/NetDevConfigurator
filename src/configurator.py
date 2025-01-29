@@ -4,7 +4,7 @@ from gui.base_app import App
 from gui.tabs.configurator import HelloTab, TemplateTab, ViewTab
 import uuid
 
-from modules.ssh import SSHDriver
+from drivers.ssh import SSHDriver
 from config import config
 
 

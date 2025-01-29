@@ -1,7 +1,7 @@
 from gui import BaseTab, apply_error_handler
 
 from .decorators import prepare_config_file
-from modules import SSHDriver, COMDriver
+from drivers import SSHDriver, COMDriver
 
 
 @apply_error_handler

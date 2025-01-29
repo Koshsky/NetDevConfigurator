@@ -1,7 +1,7 @@
 import paramiko
 import socket
 from functools import wraps
-from modules.core import get_core
+from drivers.core import get_core
 
 
 def check_port_open(func):
