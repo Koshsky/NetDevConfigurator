@@ -1,6 +1,8 @@
-import paramiko
 import socket
 from functools import wraps
+
+import paramiko
+
 from drivers.core import get_core
 
 
@@ -15,18 +17,17 @@ def check_port_open(func):
 
 
 class SSHBaseDriver:
-    def __init__(self, device, host, auth_username, auth_password, port=22, **kwargs):
+    def __init__(self, device, **driver):
         self.core = get_core(device["family"]["name"])
         self.device = device
-        self.address = host
-        self.username = auth_username
-        self.password = auth_password
-        self.port = port
+        self.address = driver["host"]
+        self.username = driver["auth_username"]
+        self.password = driver["auth_password"]
+        # self.port = 22
         self.ssh = None
 
     @check_port_open
     def send_command(self, command: str) -> str:
-        print("SSH send:", command)
         self.ssh.send(f"{command}\n")
         return self._get_response()
 

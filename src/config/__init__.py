@@ -1,10 +1,15 @@
 import yaml
-from utils.network import find_available_ip
+import os
 
 
 config = yaml.safe_load(open("./src/config/config.yml"))
-available_ip = find_available_ip(
-    config["mvs-network"],
-    lambda ip: ip.packed[-1] >= 100 and ip.packed[-1] < 201,
-)
-config["available-ip"] = available_ip
+
+# environment variables are used in drivers.core to form commands
+os.environ["TFTP_ADDRESS"] = config["tftp-server"]["address"]
+os.environ["TFTP_PORT"] = str(config["tftp-server"]["port"])
+os.environ["TFTP_FOLDER"] = config["tftp-server"]["folder"]
+
+os.environ["DEV_USERNAME"] = config["host"]["username"]
+os.environ["DEV_PASSWORD"] = config["host"]["password"]
+os.environ["DEV_ADDRESS"] = config["host"]["address"]
+os.environ["DEV_PORT"] = str(config["host"]["port"])

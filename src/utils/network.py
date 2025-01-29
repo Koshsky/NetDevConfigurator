@@ -1,5 +1,6 @@
-from scapy.all import ARP, Ether, srp
 import ipaddress
+
+from scapy.all import ARP, Ether, srp
 
 
 def scan_network(network):
@@ -21,7 +22,7 @@ def find_available_ip(network, filter=None):
         if str(ip) not in active_ips:
             if filter is not None and not filter(ip):
                 continue
-            yield ip
+            return ip
 
 
 if __name__ == "__main__":

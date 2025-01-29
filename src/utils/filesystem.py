@@ -1,5 +1,5 @@
-import os
 import fnmatch
+import os
 
 
 def find_most_recent_file(directory: str, pattern: str) -> str:

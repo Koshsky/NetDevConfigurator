@@ -1,5 +1,6 @@
-from gui import BaseTab, apply_error_handler
 import pprint
+
+from gui import BaseTab, apply_error_handler
 
 
 @apply_error_handler

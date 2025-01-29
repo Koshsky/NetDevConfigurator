@@ -1,7 +1,7 @@
 from .base_app import App
-from .tabs.connection_tab import ConnectionTab
-from .tabs.base_tab import BaseTab
 from .decorators import apply_error_handler
+from .tabs.base_tab import BaseTab
+from .tabs.connection_tab import ConnectionTab
 
 __all__ = [
     "App",

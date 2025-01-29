@@ -1,9 +1,11 @@
 from tkinter import ttk
 
 from sqlalchemy.orm import sessionmaker
+
 from config import config
+from database.services import prepare_entity_collections, setup_database_services
+
 from .tabs import ConnectionTab
-from database.services import setup_database_services, prepare_entity_collections
 
 CONNECTION_TAB_TITLE = "CONNECTION"
 

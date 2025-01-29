@@ -1,11 +1,12 @@
-import tkinter as tk
 import argparse
-from gui.base_app import App
-from gui.tabs.configurator import HelloTab, TemplateTab, ViewTab
+import os
+import tkinter as tk
 import uuid
 
-from drivers.ssh import SSHDriver
 from config import config
+from drivers.ssh import SSHDriver
+from gui.base_app import App
+from gui.tabs.configurator import HelloTab, TemplateTab, ViewTab
 
 
 class ConfiguratorApp(App):
@@ -18,7 +19,6 @@ class ConfiguratorApp(App):
         self.preset = None
         self.config_template = None
         self.config_filename = None
-        self.host_info = config["host"]
         self.advanced = advanced
         super().__init__(root, title)
 
@@ -57,9 +57,9 @@ class ConfiguratorApp(App):
         return {
             "auth_strict_key": False,  # important for unknown hosts
             "device": self.db_services["device"].get_info(self.device),
-            "host": self.host_info["address"],
-            "auth_username": self.host_info["username"],
-            "auth_password": self.host_info["password"],
+            "host": os.environ["DEV_ADDRESS"],
+            "auth_username": os.environ["DEV_USERNAME"],
+            "auth_password": os.environ["DEV_PASSWORD"],
         }
 
     @property

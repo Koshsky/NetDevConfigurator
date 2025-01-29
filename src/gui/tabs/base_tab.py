@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox as messagebox
 from tkinter import IntVar, ttk
+
 from ttkwidgets.autocomplete import AutocompleteCombobox
 
 from database.services import EntityNotFoundError

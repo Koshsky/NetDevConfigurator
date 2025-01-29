@@ -1,3 +1,12 @@
+app:
+  geometry: "1400x1000+300+100"
+  templates:
+    width: 6
+    allow-none: True
+  interfaces:
+    width: 12
+    allow-none: False
+
 database:
   host: localhost            # by default
   port: 5432                 # by default
@@ -10,21 +19,11 @@ tftp-server:
   port: 69
   folder: /srv/tftp
 
-host:  # TODO: сделать это переменными окружения
-  username: admin  # TODO: потому что это потенциально изменяемые переменные
-  password: admin  # TODO: при работе программы.
+host:
+  username: admin
+  password: admin
   address: 10.4.0.3
   port: 22
-
-
-app:
-  geometry: "1400x1000+300+100"
-  templates:
-    width: 6
-    allow-none: True
-  interfaces:
-    width: 12
-    allow-none: False
 
 default-cert: MVS
 serial-port: /dev/ttyUSB0

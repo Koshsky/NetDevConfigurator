@@ -1,5 +1,5 @@
-from gui import BaseTab, apply_error_handler
 from config import config
+from gui import BaseTab, apply_error_handler
 
 
 @apply_error_handler

@@ -1,5 +1,6 @@
-from gui import BaseTab, apply_error_handler
 from functools import wraps
+
+from gui import BaseTab, apply_error_handler
 
 
 def update_config(func):

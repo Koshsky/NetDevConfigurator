@@ -1,8 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
+
 from sqlalchemy import create_engine
-from gui.decorators import apply_error_handler
+
 from config import config
+from gui.decorators import apply_error_handler
 
 
 @apply_error_handler

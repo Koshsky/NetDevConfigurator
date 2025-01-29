@@ -1,7 +1,8 @@
-import serial
-from config import config
-
 from functools import wraps
+
+import serial
+
+from config import config
 
 from ..core import get_core
 
@@ -35,7 +36,6 @@ class COMBaseDriver:
 
     @check_port_open
     def send_command(self, command):
-        print("COM send:", command)
         self.ser.write(f"{command}\n".encode())
         return self._get_response()
 

@@ -2,11 +2,11 @@ import tkinter as tk
 
 from gui.base_app import App
 from gui.tabs.manager import (
-    InfoTab,
     AddTab,
-    UpdateTab,
-    DeleteTab,
     CommonConfigTab,
+    DeleteTab,
+    InfoTab,
+    UpdateTab,
 )
 
 

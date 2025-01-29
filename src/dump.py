@@ -1,8 +1,8 @@
-import subprocess
-import contextlib
-import os
 import argparse
+import contextlib
 import glob
+import os
+import subprocess
 from datetime import datetime
 
 from config import config
