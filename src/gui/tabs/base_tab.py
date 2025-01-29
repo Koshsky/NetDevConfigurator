@@ -22,6 +22,15 @@ class BaseTab:
         for widget in self.frame.winfo_children():
             widget.destroy()
 
+    def check_role_name(self, role):
+        if not (role := role.strip()):
+            raise ValueError("Role name cannot be empty")
+
+        if role not in self.app.entity_collections["role"]:
+            raise EntityNotFoundError(f"Invalid device role: {role}")
+
+        return role
+
     def __getattr__(self, name):
         if name.startswith("check_") and name.endswith("_name"):
             entity_type = name[6:-5]  # Extract entity type from method name

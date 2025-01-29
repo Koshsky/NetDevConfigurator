@@ -1,10 +1,12 @@
 from sqlalchemy.orm import Session
 
-from database.models import Presets, DevicePresets, Templates, Devices
+from database.models import DevicePresets, Devices, Presets, Templates
+
 from .base_service import BaseService
-from .device_service import DeviceService
-from .family_service import FamilyService
 from .device_preset_service import DevicePresetService
+from .device_service import DeviceService
+from .exceptions import EntityNotFoundError
+from .family_service import FamilyService
 from .template_service import TemplateService
 
 
@@ -16,12 +18,17 @@ class PresetService(BaseService, DevicePresetService):
         self.family_service = FamilyService(db)
 
     def get_by_device_and_role(self, device: Devices, role: str):
-        return (
-            self.db.query(Presets)
+        if (
+            preset := self.db.query(Presets)
             .join(DevicePresets, Presets.id == DevicePresets.preset_id)
             .filter(Presets.device_id == device.id, Presets.role == role)
             .first()
-        )
+        ):
+            return preset
+        else:
+            raise EntityNotFoundError(
+                f"Preset with device={device.name}, role={role} not found"
+            )
 
     def delete_by_device_and_role(self, device: Devices, role: str):
         self.delete(self.get_by_device_and_role(device, role))

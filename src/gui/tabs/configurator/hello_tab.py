@@ -24,9 +24,8 @@ class HelloTab(BaseTab):
 
     def update_tabs(self):
         device = self.check_device_name(self.fields["preset"]["device"].get())
-        preset = self.app.db_services["preset"].get_by_device_and_role(
-            device, self.fields["preset"]["role"].get()
-        )
+        role = self.check_role_name(self.fields["preset"]["role"].get())
+        preset = self.app.db_services["preset"].get_by_device_and_role(device, role)
 
         self.app.set_configuration_parameters(
             cert=self.fields["params"]["CERT"].get().strip(),
