@@ -1,5 +1,3 @@
-import logging_config  # модуль с конфигурациями
-import draft2
 import logging
 
 logger = logging.getLogger(__name__)

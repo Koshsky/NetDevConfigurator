@@ -1,11 +1,15 @@
 import argparse
 import contextlib
 import glob
+import logging
 import os
 import subprocess
 from datetime import datetime
 
+import logging_config  # noqa: F401
 from config import config
+
+logger = logging.getLogger(__name__)
 
 
 def get_most_recent_file(directory):
@@ -25,11 +29,11 @@ def run_postgres_command(command, env, error_context):
         _, error = process.communicate()
 
         if process.returncode != 0:
-            print(f"Error {error_context}: {error.decode()}")
+            logger.error(f"{error_context}: {error.decode()}")
             return False
         return True
     except Exception as e:
-        print(f"Error {error_context}: {e}")
+        logger.error(f"{error_context}: {e}")
         return False
 
 
@@ -56,14 +60,14 @@ def backup_postgres_db(db_params):
         env = {"PGPASSWORD": db_params["password"]}
         run_postgres_command(command, env, path)
 
-    print(f"Database backuped successfully to {path}")
+    logger.info(f"Database saved successfully to {os.path.abspath(path)}")
 
 
 def restore_postgres_db(db_params, path):
     env = {"PGPASSWORD": db_params["password"]}
 
     if not os.path.isfile(path):
-        print(f"Error: {path} doesn't exist.")
+        logger.error(f"{path} doesn't exist.")
         return
 
     def base_command(cmd):
@@ -99,7 +103,7 @@ def restore_postgres_db(db_params, path):
         and run_postgres_command(create_command, env, "when creating database")
         and run_postgres_command(restore_command, env, "when restoring db")
     ):
-        print(f"Database restored successfully from {path}")
+        logger.info(f"Database restored successfully from {os.path.abspath(path)}")
 
 
 if __name__ == "__main__":
