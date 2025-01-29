@@ -13,7 +13,7 @@ class ConfiguratorApp(App):
     def __init__(self, root, title, advanced, *args, **kwargs):
         self.config_params = {
             "CERT": config["default-cert"],
-            "OR": None,
+            "OR": None,  # only for tsh, or, raisa_or
         }
         self.device = None
         self.preset = None
