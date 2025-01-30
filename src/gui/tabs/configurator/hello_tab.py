@@ -8,8 +8,7 @@ from .decorators import prepare_config_file
 
 @apply_error_handler
 class HelloTab(BaseTab):
-    def refresh_widgets(self):
-        super().refresh_widgets()
+    def render_widgets(self):
         self.create_block(
             "preset",
             {

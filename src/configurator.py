@@ -9,7 +9,7 @@ from drivers.ssh import SSHDriver
 from gui.base_app import App
 from gui.tabs.configurator import HelloTab, TemplateTab
 
-logger = logging.getLogger("main")
+logger = logging.getLogger("gui")
 
 
 class ConfiguratorApp(App):
@@ -26,18 +26,15 @@ class ConfiguratorApp(App):
         super().__init__(root, title)
 
     def refresh_tabs(self):
-        logger.debug("Refreshing configurator tabs: ")
+        logger.debug("Refreshing configurator tabs:")
         for tab_name, tab in self.tabs.items():
-            if isinstance(tab, TemplateTab):
-                if self.device is not None and self.advanced:
-                    self.notebook.add(tab.frame)
-                    tab.refresh_widgets()
-                else:
-                    self.notebook.hide(tab.frame)
-                    logger.debug(f"{tab_name} tab is hidden")
+            if isinstance(tab, TemplateTab) and (
+                self.device is None or not self.advanced
+            ):
+                self.notebook.hide(tab.frame)
+                logger.debug(f"{tab_name} tab is hidden")
             else:
                 tab.refresh_widgets()
-                logger.debug(f"{tab_name} tab refreshed")
         logger.debug("Configurator tabs refreshed")
 
     def create_tabs(self):
@@ -83,11 +80,14 @@ class ConfiguratorApp(App):
 
     def set_configuration_parameters(self, cert, OR, device, preset):
         if not (cert and OR and device and preset):
+            logger.error(
+                "All parameters (CERT, OR, device name, preset name) must be set in MAIN tab"
+            )
             raise ValueError("All parameters must be set")
-        if preset.device_id != device.id:
+        if preset.device_id != device.id:  # unreachable code
+            logger.critical(f"Preset is not suitable for device {device.name}")
             raise ValueError("preset.device_id != device.id")
-        if cert:
-            self.config_params["CERT"] = cert
+        self.config_params["CERT"] = cert
         self.config_params["OR"] = OR
         self.device = device
         self.preset = preset

@@ -1,17 +1,27 @@
+import logging
 import tkinter as tk
-from tkinter import ttk
 
 from sqlalchemy import create_engine
 
 from config import config
 from gui.decorators import apply_error_handler
 
+from .base_tab import BaseTab
+
+logger = logging.getLogger("gui")
+
 
 @apply_error_handler
-class ConnectionTab:
-    def __init__(self, parent, app, on_success_callback, on_failure_callback):
-        self.frame = ttk.Frame(parent)
-        self.app = app
+class ConnectionTab(BaseTab):
+    def __init__(
+        self,
+        parent,
+        app,
+        on_success_callback,
+        on_failure_callback,
+        log_name="ConnectionTab",
+    ):
+        super().__init__(parent, app, log_name)
         self.on_success_callback = on_success_callback
         self.on_failure_callback = on_failure_callback
 
@@ -20,7 +30,7 @@ class ConnectionTab:
         self.entries = {}
         self.refresh_widgets()
 
-    def refresh_widgets(self):
+    def render_widgets(self):
         for label_text, default_value in self.fields.items():
             label = tk.Label(self.frame, text=label_text)
             label.pack(pady=5)
@@ -50,10 +60,12 @@ class ConnectionTab:
 
         try:
             engine = create_engine(connection_string)
-            connect = engine.connect()  # Checking the connection
+            connect = engine.connect()
             connect.close()
+            logger.info(f"Successful connection to the database {connection_string}")
 
             self.on_success_callback(engine)
         except Exception as error:
+            logger.error(f"Connection failed to {connection_string}")
             self.on_failure_callback(error)
             self.message_label.config(text=f"Error: {str(error)}", fg="red")

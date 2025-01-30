@@ -1,3 +1,4 @@
+import logging
 import tkinter as tk
 import tkinter.messagebox as messagebox
 from tkinter import IntVar, ttk
@@ -6,9 +7,12 @@ from ttkwidgets.autocomplete import AutocompleteCombobox
 
 from database.services import EntityNotFoundError
 
+logger = logging.getLogger("gui")
+
 
 class BaseTab:
-    def __init__(self, parent, app):
+    def __init__(self, parent, app, log_name="Unknown tab"):
+        self.__log_name = log_name
         self.frame = ttk.Frame(parent)
         self.frame.pack(padx=10, pady=10)
         self.app = app
@@ -16,11 +20,17 @@ class BaseTab:
         self.fields = {}
 
     def refresh_widgets(self):
-        self._clear_frame()
+        self.remove_widgets()
+        self.render_widgets()
+        logger.debug(f"{self.__log_name} tab refreshed")
 
-    def _clear_frame(self):
+    def render_widgets(self):
+        raise NotImplementedError("tab.render_widgets not implemented!")
+
+    def remove_widgets(self):
         for widget in self.frame.winfo_children():
             widget.destroy()
+        logger.debug(f"{self.__log_name} tab cleared")
 
     def check_role_name(self, role):
         if not (role := role.strip()):

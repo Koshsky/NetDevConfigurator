@@ -28,13 +28,12 @@ def preset_is_not_none(func):
 
 @apply_error_handler
 class CommonConfigTab(BaseTab):
-    def __init__(self, app, parent):
+    def __init__(self, app, parent, log_name="ConfigTab"):
+        super().__init__(app, parent, log_name)
         self._config = None
         self.preset = None
-        super().__init__(app, parent)
 
-    def refresh_widgets(self):
-        super().refresh_widgets()
+    def render_widgets(self):
         self.create_block(
             "preset",
             {

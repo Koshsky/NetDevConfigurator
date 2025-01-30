@@ -6,15 +6,21 @@ from gui import BaseTab, apply_error_handler
 @apply_error_handler
 class TemplateTab(BaseTab):
     def __init__(
-        self, parent, app, *, allow_none=False, width=6, template_filter=lambda x: True
+        self,
+        parent,
+        app,
+        log_name="TemplateTab",
+        *,
+        allow_none=False,
+        width=6,
+        template_filter=lambda x: True,
     ):
+        super().__init__(parent, app, log_name)
         self.width = width
         self.allow_none = allow_none
         self.template_filter = template_filter
-        super().__init__(parent, app)
 
-    def refresh_widgets(self):
-        super().refresh_widgets()
+    def render_widgets(self):
         self.templates = {}
         for k, v in self.app.config_template.items():
             if self.template_filter(v):

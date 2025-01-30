@@ -3,8 +3,7 @@ from gui import BaseTab, apply_error_handler
 
 @apply_error_handler
 class UpdateTab(BaseTab):
-    def refresh_widgets(self):
-        super().refresh_widgets()
+    def render_widgets(self):
         self.create_block(
             "",
             {

@@ -5,8 +5,7 @@ from gui import BaseTab, apply_error_handler
 
 @apply_error_handler
 class InfoTab(BaseTab):
-    def refresh_widgets(self):
-        super().refresh_widgets()
+    def render_widgets(self):
         entity_types = ["company", "family", "device", "template"]
         for entity_type in entity_types:
             self.create_block(
