@@ -6,7 +6,6 @@ import os
 import subprocess
 from datetime import datetime
 
-import logging_config  # noqa: F401
 from config import config
 
 logger = logging.getLogger(__name__)

@@ -1,6 +1,5 @@
 import tkinter as tk
 
-import logging_config  # noqa: F401
 from gui.base_app import App
 from gui.tabs.manager import (
     AddTab,

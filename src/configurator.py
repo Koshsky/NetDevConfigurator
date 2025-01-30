@@ -4,7 +4,6 @@ import os
 import tkinter as tk
 import uuid
 
-import logging_config  # noqa: F401
 from config import config
 from drivers.ssh import SSHDriver
 from gui.base_app import App

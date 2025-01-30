@@ -1,10 +1,12 @@
-import yaml
+import logging.config
 import os
 
+import yaml
 
 config = yaml.safe_load(open("./src/config/config.yml"))
+LOGGING = yaml.safe_load(open("./src/config/logging_config.yaml"))
+logging.config.dictConfig(LOGGING)
 
-# environment variables are used in drivers.core to form commands
 os.environ["TFTP_ADDRESS"] = config["tftp-server"]["address"]
 os.environ["TFTP_PORT"] = str(config["tftp-server"]["port"])
 os.environ["TFTP_FOLDER"] = config["tftp-server"]["folder"]
