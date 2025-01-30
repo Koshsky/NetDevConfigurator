@@ -58,11 +58,6 @@ class BaseTab:
                 f'{entity_type.capitalize()} "{entity_name}" not found in databases'
             )
 
-    def create_label(self, text):
-        label = ttk.Label(self.frame, text=text)
-        label.grid(row=self.cur_row, column=self.cur_col, padx=5, pady=5)
-        self.cur_row += 1
-
     def create_block(self, entity_name, parameters, button=None, width=None):
         if entity_name not in self.fields:
             self.fields[entity_name] = {}
@@ -107,7 +102,7 @@ class BaseTab:
 
         self.cur_row += 1
 
-    def create_feedback_area(self, width=150, height=35):
+    def create_feedback_area(self, width=150, height=25):
         self.feedback_text = tk.Text(
             self.frame, wrap="word", width=width, height=height
         )

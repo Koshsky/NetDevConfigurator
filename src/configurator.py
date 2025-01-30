@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import tkinter as tk
 import uuid
@@ -7,7 +8,9 @@ import logging_config  # noqa: F401
 from config import config
 from drivers.ssh import SSHDriver
 from gui.base_app import App
-from gui.tabs.configurator import HelloTab, TemplateTab, ViewTab
+from gui.tabs.configurator import HelloTab, TemplateTab
+
+logger = logging.getLogger("main")
 
 
 class ConfiguratorApp(App):
@@ -24,15 +27,19 @@ class ConfiguratorApp(App):
         super().__init__(root, title)
 
     def refresh_tabs(self):
-        for _, tab in self.tabs.items():
+        logger.debug("Refreshing configurator tabs: ")
+        for tab_name, tab in self.tabs.items():
             if isinstance(tab, TemplateTab):
                 if self.device is not None and self.advanced:
                     self.notebook.add(tab.frame)
                     tab.refresh_widgets()
                 else:
                     self.notebook.hide(tab.frame)
+                    logger.debug(f"{tab_name} tab is hidden")
             else:
                 tab.refresh_widgets()
+                logger.debug(f"{tab_name} tab refreshed")
+        logger.debug("Configurator tabs refreshed")
 
     def create_tabs(self):
         super().create_tabs()
@@ -51,7 +58,6 @@ class ConfiguratorApp(App):
             allow_none=config["app"]["interfaces"]["allow-none"],
             template_filter=lambda x: x["type"] == "interface",
         )
-        self.create_tab(ViewTab, "COMMANDS")
 
     @property
     def driver(self):
