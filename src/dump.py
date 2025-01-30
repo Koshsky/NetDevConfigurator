@@ -8,7 +8,7 @@ from datetime import datetime
 
 from config import config
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("dump")
 
 
 def get_most_recent_file(directory):
