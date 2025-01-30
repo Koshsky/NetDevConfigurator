@@ -11,7 +11,7 @@ class COMDriver(COMBaseDriver):
             "192.168.3.0/24",  # hardcode bc 192 in function name
             lambda ip: ip.packed[-1] >= 100 and ip.packed[-1] < 201,
         )
-        os.environ["DEV_ADDRESS"] = available_ip
+        os.environ["HOST_ADDRESS"] = available_ip
         return self.send_commands(self.core.base_configure_192)
 
     def show_run(self):

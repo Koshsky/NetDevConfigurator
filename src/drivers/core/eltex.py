@@ -12,7 +12,7 @@ class BaseMES:
     base_configure_192 = [
         "configure terminal",
         "interface vlan 1",
-        f"ip address {os.environ['DEV_ADDRESS']} 255.255.255.0",
+        f"ip address {os.environ['HOST_ADDRESS']} 255.255.255.0",
         "ssh enable",
         "end",
     ]

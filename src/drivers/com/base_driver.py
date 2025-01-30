@@ -1,3 +1,4 @@
+import logging
 from functools import wraps
 
 import serial
@@ -6,11 +7,14 @@ from config import config
 
 from ..core import get_core
 
+logger = logging.getLogger("COM")
+
 
 def check_port_open(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         if not self.ser.is_open:
+            logger.error("")
             raise Exception("Serial port is not open")
         return func(self, *args, **kwargs)
 
@@ -37,18 +41,25 @@ class COMBaseDriver:
     @check_port_open
     def send_command(self, command):
         self.ser.write(f"{command}\n".encode())
+        logger.info(f"Send: {command}")
         return self._get_response()
 
+    @check_port_open
     def send_commands(self, commands):
-        multi_response = []
         for command in commands:
-            multi_response.append(self.send_command(command))
-        return "\n".join(multi_response)
+            self.ser.write(f"{command}\n".encode())
+            logger.info(f"Send: {command}")
+        return self._get_response()
 
     @check_port_open
     def _get_response(self):
+        # TODO: can i union this two lines below?
         response = [line.decode().strip() for line in self.ser.readlines()]
-        return "\n".join(response)
+        output = "\n".join(response)
+        logger.info(
+            f"Read {len(output)} symbols. No more data to read.",
+        )
+        return output
 
     @check_port_open
     def _on_open(self):
@@ -60,8 +71,10 @@ class COMBaseDriver:
     def __enter__(self):
         if self.ser.is_open:
             self.__close_port()
-        self.ser.open()
-        if not self.ser.is_open:
+        try:
+            self.ser.open()
+        except serial.SerialException as e:
+            logger.error(f"Serial port cannot be open: {e}")
             raise Exception("Failed to open serial port")
         self._on_open()
         return self
@@ -72,17 +85,15 @@ class COMBaseDriver:
 
     def __close_port(self):
         if self.ser.is_open:
-            self.ser.setDTR(False)  # Сброс линии DTR
-            self.ser.setRTS(False)  # Сброс линии RTS
+            self.ser.setDTR(False)
+            self.ser.setRTS(False)
             self.ser.close()
 
     @check_port_open
-    def __is_logged(self):
-        self.ser.write(b"\n")
-        self.ser.write(b"\n")
-        self.ser.write(b"\n")
+    def __is_logged(self):  # TODO: простестировать, в случае провала вернуть как было.
+        self.ser.write(b"\n\n\n\n\n\n")
         response = [line.strip() for line in self.ser.readlines()]
-        return len(set(line.strip() for line in response[-3::])) == 1
+        return len(set(line.strip() for line in response[-5::])) == 1
 
     @check_port_open
     def __log_in(self):
@@ -92,10 +103,13 @@ class COMBaseDriver:
             self.ser.write(f"{self.password}\n".encode())
             response = self._get_response()
             if self.core.success_signs.intersection(response.lower().split()):
-                print("Successfully logged in")
+                logger.info("Logged in successfully")
                 return True
+            logger.error(
+                f"Login error: wrong credentials. username:{self.username} password:{self.password}"
+            )
             raise Exception(
-                f"failed to log in: wrong credentials: {self.username} {self.password}"
+                f"Login error: wrong credentials. username:{self.username} password:{self.password}"
             )
         else:
-            print("already logged in")
+            logger.info("No need to log in. Already logged in")

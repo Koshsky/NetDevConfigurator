@@ -28,5 +28,4 @@ host:
 default-cert: MVS
 serial-port: /dev/ttyUSB0
 mvs-network: 192.168.3.0/24
-ssh-config-file: ~/NetDevConfigurator/src/config/ssh.conf  # unused in last versions
 backup-folder: ./backups

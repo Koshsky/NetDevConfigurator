@@ -1,3 +1,4 @@
+import logging
 import socket
 from functools import wraps
 
@@ -5,11 +6,16 @@ import paramiko
 
 from drivers.core import get_core
 
+logger = logging.getLogger("ssh")
+
 
 def check_port_open(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         if self.ssh is None:
+            logger.critical(
+                "SSH port is not open. Please use context manager to manipulate with network device via SSH"
+            )
             raise Exception("SSH port is not open")
         return func(self, *args, **kwargs)
 
@@ -23,12 +29,24 @@ class SSHBaseDriver:
         self.address = driver["host"]
         self.username = driver["auth_username"]
         self.password = driver["auth_password"]
-        # self.port = 22
+        self.port = 22  # TODO: may be as parameter?
         self.ssh = None
+
+    @property
+    def __connection_string(self):
+        return f"{self.username}:{self.password}@{self.address}:{self.port}"
 
     @check_port_open
     def send_command(self, command: str) -> str:
         self.ssh.send(f"{command}\n")
+        logger.info(f"Send: {command}")
+        return self._get_response()
+
+    @check_port_open
+    def send_commands(self, commands):
+        for command in commands:
+            self.ssh.send(f"{command}\n")
+            logger.info(f"Send: {command}")
         return self._get_response()
 
     @check_port_open
@@ -41,29 +59,53 @@ class SSHBaseDriver:
             except socket.timeout:
                 break
 
+        logger.info(
+            f"Read {len(output)} symbols. No more data to read.",
+        )
         return output
 
     def __enter__(self):
         cl = paramiko.SSHClient()
         cl.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        cl.connect(
-            hostname=self.address,
-            username=self.username,
-            password=self.password,
-            look_for_keys=False,
-            allow_agent=False,
-        )
-        self.ssh = cl.invoke_shell()
-        self.ssh.settimeout(1)
+        try:
+            cl.connect(
+                hostname=self.address,
+                port=self.port,
+                username=self.username,
+                password=self.password,
+                look_for_keys=False,
+                allow_agent=False,
+                timeout=2,
+            )
+            self.ssh = cl.invoke_shell()
+            self.ssh.settimeout(1)
+        except TimeoutError as e:
+            logger.error(
+                f"Connection failed to {self.__connection_string} via ssh: timed out"
+            )
+            raise e
+        except paramiko.SSHException as e:
+            logger.error(
+                f"Connection failed to {self.__connection_string} via ssh: {e}"
+            )
+            raise e
+        except Exception as e:
+            logger.critical(f"Unknown error during connection: {type(e)} ({e})")
+            raise e
+        logger.info(f"Successful connection to {self.__connection_string} via ssh")
         self._on_open()
         return self
 
     def _on_open(self):
-        for command in self.core.open_sequence:
-            self.send_command(command)
-        return self._get_response()
+        return self.send_commands(self.core.open_sequence)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.ssh:
             self.ssh.close()
+            logger.info("SSH connection closed.")
             self.ssh = None
+
+        if exc_type is not None:
+            logger.error("An exception occurred: %s", exc_val)
+
+        return False  # Propagate the exception if one occurred
