@@ -51,7 +51,7 @@ class App:
         logger.debug(f"{CONNECTION_TAB_TITLE} is forgotten")
         for tab_name, tab in self.tabs.items():
             self.notebook.add(tab.frame)
-            logger.debug(f"{tab_name} is normal")
+            logger.debug(f"{tab_name} tab is normal")
 
         self.refresh_tabs()
 

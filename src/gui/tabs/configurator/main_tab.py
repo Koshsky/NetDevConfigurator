@@ -1,20 +1,49 @@
+import logging
+import os
+from functools import wraps
+
 from config import config
 from drivers import COMDriver, SSHDriver
 from gui import BaseTab, apply_error_handler
 
 
-from .decorators import prepare_config_file
+logger = logging.getLogger("gui")
+
+
+def prepare_config_file(func):
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        configuration = self.app.text_configuration
+        config_path = f"/srv/tftp/tmp/{self.app.config_filename}"
+        with open(config_path, "w") as f:
+            f.write(configuration)
+            logger.info(f"Configuration saved: {config_path}")
+
+        return func(self, *args, **kwargs)
+
+    return wrapper
 
 
 @apply_error_handler
 class HelloTab(BaseTab):
     def render_widgets(self):
         self.create_block(
+            "host",
+            {
+                "address": (config["host"]["address"],),
+                "port": (config["host"]["port"],),
+                "username": (config["host"]["username"],),
+                "password": (config["host"]["password"],),
+            },
+            ("SELECT", self.update_host_info),
+        )
+        self.create_block(
             "preset",
             {
                 "device": self.app.entity_collections["device"],
                 "role": self.app.entity_collections["role"],
             },
+            ("SELECT", self.register_preset),
         )
         self.create_block(
             "params",
@@ -31,6 +60,20 @@ class HelloTab(BaseTab):
         self.create_button_in_line(("UPDATE FIRMWARES", self.update_firmwares))
         self.create_button_in_line(("REBOOT", self.reboot))
         self.create_feedback_area()
+        self.update_host_info()
+
+    def update_host_info(self):
+        os.environ["HOST_ADDRESS"] = self.fields["host"]["address"].get().strip()
+        os.environ["HOST_PORT"] = self.fields["host"]["port"].get().strip()
+        os.environ["HOST_PASSWORD"] = self.fields["host"]["password"].get().strip()
+        os.environ["HOST_USERNAME"] = self.fields["host"]["username"].get().strip()
+        logger.info(
+            "Environmental variables set up: HOST_ADDRESS=%s, HOST_PORT=%s, HOST_USERNAME=%s, HOST_PASSWORD=%s",
+            os.environ["HOST_ADDRESS"],
+            os.environ["HOST_PORT"],
+            os.environ["HOST_USERNAME"],
+            os.environ["HOST_PASSWORD"],
+        )
 
     @prepare_config_file
     def load_by_ssh(self):
@@ -60,6 +103,20 @@ class HelloTab(BaseTab):
         device = self.check_device_name(self.fields["preset"]["device"].get())
         role = self.check_role_name(self.fields["preset"]["role"].get())
         preset = self.app.db_services["preset"].get_by_device_and_role(device, role)
+        try:
+            preset_info = self.app.db_services["preset"].get_info(preset)
+            logger.info(
+                "Preset selected. device=%s, role=%s, family=%s",
+                preset_info["target"],
+                preset_info["role"],
+                preset_info["family"],
+            )
+        except ValueError:
+            logger.error(
+                "Invalid preset configuration. Change config in manager.py app and try again. device=%s, role=%s",
+                device.name,
+                role,
+            )
 
         self.app.set_configuration_parameters(
             cert=self.fields["params"]["CERT"].get().strip(),

@@ -57,9 +57,11 @@ def backup_postgres_db(db_params):
 
     with contextlib.suppress(Exception):
         env = {"PGPASSWORD": db_params["password"]}
-        run_postgres_command(command, env, path)
-
-    logger.info(f"Database saved successfully to {os.path.abspath(path)}")
+        try:
+            run_postgres_command(command, env, path)
+            logger.info(f"Database saved successfully to {os.path.abspath(path)}")
+        except Exception as e:
+            logger.error(f"{type(e)}: {e}")
 
 
 def restore_postgres_db(db_params, path):

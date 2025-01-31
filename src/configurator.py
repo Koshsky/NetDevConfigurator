@@ -22,14 +22,14 @@ class ConfiguratorApp(App):
         self.preset = None
         self.config_template = None
         self.config_filename = None
-        self.advanced = advanced
+        self.advanced_mode = advanced
         super().__init__(root, title)
 
     def refresh_tabs(self):
         logger.debug("Refreshing configurator tabs:")
         for tab_name, tab in self.tabs.items():
             if isinstance(tab, TemplateTab) and (
-                self.device is None or not self.advanced
+                self.device is None or not self.advanced_mode
             ):
                 self.notebook.hide(tab.frame)
                 logger.debug(f"{tab_name} tab is hidden")

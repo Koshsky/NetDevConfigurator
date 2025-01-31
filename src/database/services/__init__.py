@@ -66,6 +66,7 @@ def prepare_entity_collections(entity_services):
         "role": (  # `common` suits for all
             "data",
             "ipmi",
+            "icu",
             "or",
             "tsh",
             "video",

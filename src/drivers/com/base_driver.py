@@ -64,9 +64,8 @@ class COMBaseDriver:
     @check_port_open
     def _on_open(self):
         self.__log_in()
-        for command in self.core.open_sequence:
-            self.ser.write(f"{command}\n".encode())
-        return self._get_response()
+        self.send_commands(self.core.open_sequence)
+        logger.info(f"On open sequence for {type(self.core)} was sent successfully")
 
     def __enter__(self):
         if self.ser.is_open:

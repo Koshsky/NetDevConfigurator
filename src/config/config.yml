@@ -28,4 +28,4 @@ host:
 default-cert: MVS
 serial-port: /dev/ttyUSB0
 mvs-network: 192.168.3.0/24
-backup-folder: /home/koshsky/.backups/netdev/
+backup-folder: ./.backups/

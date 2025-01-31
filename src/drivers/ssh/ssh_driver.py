@@ -19,7 +19,8 @@ class SSHDriver(SSHBaseDriver):
         return header + "!\n"
 
     def update_startup_config(self, filename):
-        command = self.core.update_startup_config.format(filename)
+        os.environ["NETDEV_CONFIG"] = filename
+        command = self.core.update_startup_config
         return self.send_command(command)
 
     def show_bootvar(self):

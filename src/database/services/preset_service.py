@@ -34,6 +34,10 @@ class PresetService(BaseService, DevicePresetService):
         self.delete(self.get_by_device_and_role(device, role))
 
     def get_info(self, preset, check=False):
+        if check and not self.validate(preset):
+            raise ValueError(
+                "Invalid preset configuration. See in Database Manager app"
+            )
         rows = (
             self.db.query(Presets, DevicePresets, Templates)
             .join(DevicePresets, Presets.id == DevicePresets.preset_id)
@@ -43,10 +47,6 @@ class PresetService(BaseService, DevicePresetService):
             .order_by(DevicePresets.ordered_number)
             .all()
         )
-        if check and not self.validate(preset):
-            raise ValueError(
-                "Invalid preset configuration. See in Database Manager app"
-            )
         interfaces = (
             port["interface"]
             for port in self.device_service.get_info_by_id(preset.device_id)["ports"]

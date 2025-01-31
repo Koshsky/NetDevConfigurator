@@ -65,9 +65,9 @@ class SSHBaseDriver:
         return output
 
     def __enter__(self):
-        cl = paramiko.SSHClient()
-        cl.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         try:
+            cl = paramiko.SSHClient()
+            cl.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             cl.connect(
                 hostname=self.address,
                 port=self.port,
