@@ -3,6 +3,11 @@ import ipaddress
 from scapy.all import ARP, Ether, srp
 
 
+# TODO: set up network interface with address 192.168.3.[free]/24 and 10.4.0.[free]/16
+def set_up_dev(dev: str):
+    pass
+
+
 def scan_network(network):
     arp = ARP(pdst=network)
     ether = Ether(dst="ff:ff:ff:ff:ff:ff")
