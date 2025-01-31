@@ -7,7 +7,7 @@ import yaml
 config = yaml.safe_load(open("./src/config/config.yml"))
 LOGGING = yaml.safe_load(open("./src/config/logging_config.yaml"))
 logging.config.dictConfig(LOGGING)
-
+logging.getLogger("paramiko").setLevel(logging.WARNING)
 
 os.environ["TFTP_ADDRESS"] = config["tftp-server"]["address"]
 os.environ["TFTP_PORT"] = str(config["tftp-server"]["port"])

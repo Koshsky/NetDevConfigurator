@@ -13,9 +13,8 @@ class SSHDriver(SSHBaseDriver):
         config = self.show_run()
         header = ""
         for line in config.split("\n"):
-            if not line.startswith("#"):
-                break
-            header += line + "\n"
+            if line.startswith("#"):
+                header += line + "\n"
         return header + "!\n"
 
     def update_startup_config(self, filename):
@@ -28,9 +27,9 @@ class SSHDriver(SSHBaseDriver):
 
     def reboot(self):
         if isinstance(self.core.reload, str):
-            self.send_command(self.core.reload)
+            self.send_command(self.core.reload, get_response=False)
         else:
-            self.send_commands(self.core.reload)
+            self.send_commands(self.core.reload, get_response=False)
 
     def update_boot(self):
         filename = find_most_recent_file(

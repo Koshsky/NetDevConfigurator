@@ -1,7 +1,7 @@
 import logging
 import socket
 from functools import wraps
-
+from wrapt_timeout_decorator import timeout
 import paramiko
 
 from drivers.core import get_core
@@ -37,18 +37,19 @@ class SSHBaseDriver:
         return f"{self.username}:{self.password}@{self.address}:{self.port}"
 
     @check_port_open
-    def send_command(self, command: str) -> str:
+    def send_command(self, command: str, get_response=True) -> str:
         self.ssh.send(f"{command}\n")
         logger.info(f"Send: {command}")
-        return self._get_response()
+        return self._get_response() if get_response else None
 
     @check_port_open
-    def send_commands(self, commands):
+    def send_commands(self, commands, get_response=True):
         for command in commands:
             self.ssh.send(f"{command}\n")
             logger.info(f"Send: {command}")
-        return self._get_response()
+        return self._get_response() if get_response else None
 
+    @timeout(2.5)
     @check_port_open
     def _get_response(self):
         output = ""

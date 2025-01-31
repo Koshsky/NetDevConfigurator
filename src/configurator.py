@@ -5,7 +5,6 @@ import tkinter as tk
 import uuid
 
 from config import config
-from drivers.ssh import SSHDriver
 from gui.base_app import App
 from gui.tabs.configurator import HelloTab, TemplateTab
 
@@ -67,8 +66,7 @@ class ConfiguratorApp(App):
 
     @property
     def text_configuration(self):
-        with SSHDriver(**self.driver) as conn:
-            template = conn.get_header()
+        template = ""
         for k, v in self.config_template.items():
             if v["text"]:
                 template += v["text"].replace("{INTERFACE_ID}", k) + "\n"

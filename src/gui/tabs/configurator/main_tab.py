@@ -13,7 +13,10 @@ logger = logging.getLogger("gui")
 def prepare_config_file(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
-        configuration = self.app.text_configuration
+        with SSHDriver(**self.app.driver) as conn:
+            header = conn.get_header()
+        configuration = header + self.app.text_configuration
+
         config_path = f"/srv/tftp/tmp/{self.app.config_filename}"
         with open(config_path, "w") as f:
             f.write(configuration)
