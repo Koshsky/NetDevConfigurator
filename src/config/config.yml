@@ -15,7 +15,7 @@ database:
   password: postgres         # by default ; rename to auth_password
 
 tftp-server:
-  address: 192.168.3.155
+  address: 192.168.3.105
   port: 69
   folder: /srv/tftp
 
