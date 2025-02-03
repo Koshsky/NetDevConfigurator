@@ -11,17 +11,17 @@ database:
   host: localhost            # by default
   port: 5432                 # by default
   database: device_registry  # by default
-  username: postgres         # by default
-  password: postgres         # by default
+  username: postgres         # by default ; rename to auth_username
+  password: postgres         # by default ; rename to auth_password
 
 tftp-server:
-  address: 10.4.1.144
+  address: 10.4.0.155
   port: 69
   folder: /srv/tftp
 
 host:
-  username: admin
-  password: admin
+  username: mvsadmin
+  password: MVS_admin
   address: 10.4.0.3
   port: 22
 

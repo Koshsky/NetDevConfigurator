@@ -2,7 +2,7 @@ import os
 
 
 class BaseMES:
-    comms_prompt_pattern = r"^(\n)?[a-z0-9_]+[>#\$]\s*$"
+    comms_prompt_pattern = r"^(\n)?[a-zA-Z0-9_-]+[>#\$]\s*$"
     success_signs = {"succeeded", "successful", "success"}
 
     reload = "reload\nyy"  # cause 'y' 'y' DOESN'T require '\n'
@@ -11,7 +11,7 @@ class BaseMES:
 
     @property
     def update_startup_config(self):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/tmp/{os.environ['NETDEV_CONFIG']} startup-config"
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/tmp/{os.environ['FILENAME']} startup-config"
 
     @property
     def base_configure_192(self):
@@ -29,11 +29,11 @@ class MES14xx24xx34xx37xx(BaseMES):
 
     @property
     def load_boot(self):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{0} boot"
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} boot"
 
     @property
     def load_firmware(self):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{0} image"
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} image"
 
 
 class MES23xx33xx35xx36xx53xx5400(BaseMES):
@@ -41,7 +41,7 @@ class MES23xx33xx35xx36xx53xx5400(BaseMES):
 
     @property
     def load_boot(self):
-        return f"boot system tftp://{os.environ['TFTP_ADDRESS']}/firmware/{0}"
+        return f"boot system tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']}"
 
 
 class MES11xx21xx20xx31xx(BaseMES):

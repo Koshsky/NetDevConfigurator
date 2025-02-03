@@ -1,8 +1,11 @@
+import logging
 import os
 
 from utils import find_most_recent_file
 
 from .base_driver import SSHBaseDriver
+
+logger = logging.getLogger("ssh")
 
 
 class SSHDriver(SSHBaseDriver):
@@ -18,7 +21,7 @@ class SSHDriver(SSHBaseDriver):
         return header + "!\n"
 
     def update_startup_config(self, filename):
-        os.environ["NETDEV_CONFIG"] = filename
+        os.environ["FILENAME"] = filename
         command = self.core.update_startup_config
         return self.send_command(command)
 
@@ -26,27 +29,25 @@ class SSHDriver(SSHBaseDriver):
         return self.send_command(self.core.show_bootvar)
 
     def reboot(self):
-        if isinstance(self.core.reload, str):
-            self.send_command(self.core.reload, get_response=False)
-        else:
-            self.send_commands(self.core.reload, get_response=False)
+        self.ssh.send(f"{self.core.reload}\n")
+        logger.info(f"Send: {self.core.reload}")
 
     def update_boot(self):
-        filename = find_most_recent_file(
+        os.environ["FILENAME"] = find_most_recent_file(
             f"{os.environ['TFTP_FOLDER']}/firmware", self.device["pattern"]["boot"]
         )
-        return self.send_command(self.core.load_boot.format(filename))
+        return self.send_command(self.core.load_boot)
 
     def update_uboot(self):
-        filename = find_most_recent_file(
+        os.environ["FILENAME"] = find_most_recent_file(
             f"{os.environ['TFTP_FOLDER']}/firmware",
             self.device["pattern"]["uboot"],
         )
-        return self.send_command(self.core.load_uboot.format(filename))
+        return self.send_command(self.core.load_uboot)
 
     def update_firmware(self):
-        filename = find_most_recent_file(
+        os.environ["FILENAME"] = find_most_recent_file(
             f"{os.environ['TFTP_FOLDER']}/firmware",
             self.device["pattern"]["firmware"],
         )
-        return self.send_command(self.core.load_firmware.format(filename))
+        return self.send_command(self.core.load_firmware)

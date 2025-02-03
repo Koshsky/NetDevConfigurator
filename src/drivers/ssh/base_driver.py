@@ -1,9 +1,9 @@
 import logging
 import socket
+import re
 from functools import wraps
-from wrapt_timeout_decorator import timeout
 import paramiko
-
+import time
 from drivers.core import get_core
 
 logger = logging.getLogger("ssh")
@@ -49,20 +49,29 @@ class SSHBaseDriver:
             logger.info(f"Send: {command}")
         return self._get_response() if get_response else None
 
-    @timeout(2.5)
     @check_port_open
     def _get_response(self):
         output = ""
+
         while True:
             try:
+                time.sleep(0.2)
                 part = self.ssh.recv(1024).decode("utf-8")
                 output += part
-            except socket.timeout:
-                break
 
-        logger.info(
-            f"Read {len(output)} symbols. No more data to read.",
-        )
+                last_line = output.strip().splitlines()[-1] if output.strip() else ""
+
+                if re.match(self.core.comms_prompt_pattern, last_line):
+                    logger.debug(f"The last line matches the pattern: '{last_line}'")
+                    break
+                else:
+                    logger.debug(
+                        f"The last line does not match the pattern: '{last_line}'"
+                    )
+
+            except socket.timeout:
+                logger.warning("Socket timeout occurred.")
+                continue
         return output
 
     def __enter__(self):
