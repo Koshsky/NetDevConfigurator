@@ -30,7 +30,7 @@ class UpdateTab(BaseTab):
             uboot=self.fields[""]["mask"]["uboot"].get().strip(),
             firmware=self.fields[""]["mask"]["firmware"].get().strip(),
         )
-        self.display_feedback("Linked device with firmware successfully.")
+        self.display_feedback("Linked device with MASKS successfully.")
 
     def update_ports(self):
         device = self.check_device_name(self.fields[""]["device"].get().strip())
@@ -39,6 +39,7 @@ class UpdateTab(BaseTab):
         self.app.db_services["device"].reset_ports(device.id)
         for port in ports:
             self.app.db_services["device"].add_port_by_id(device.id, port.id)
+        self.display_feedback("Linked device with PORTS successfully.")
 
     def update_protocols(self):
         device = self.check_device_name(self.fields[""]["device"].get().strip())
@@ -49,6 +50,7 @@ class UpdateTab(BaseTab):
                 self.app.db_services["device"].add_protocol_by_id(
                     device.id, protocol.id
                 )
+        self.display_feedback("Linked device with PROTOCOLS successfully.")
 
     def prepare_port_input(self, port_input):
         def strip_none(ports):
