@@ -15,7 +15,6 @@ class COMDriver(COMBaseDriver):
             lambda ip: ip.packed[-1] >= 100 and ip.packed[-1] < 201,
         )
         os.environ["HOST_ADDRESS"] = available_ip
-        os.environ["TFTP_ADDRESS"] = "192.168.3.144"  # TODO: this may be more гибким.
         logger.info(
             f"Environmental variable set up: HOST_ADDRESS={os.environ['HOST_ADDRESS']}"
         )

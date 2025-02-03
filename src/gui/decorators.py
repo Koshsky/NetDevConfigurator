@@ -1,8 +1,8 @@
 from functools import wraps
+import logging
 
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
-from database.services import EntityNotFoundError
+logger = logging.getLogger("app")
 
 
 def error_handler(func):
@@ -10,16 +10,10 @@ def error_handler(func):
     def wrapper(self, *args, **kwargs):
         try:
             return func(self, *args, **kwargs)
-        except EntityNotFoundError as e:
-            self.show_error("EntityNotFoundError", e)
-        except IntegrityError as e:
-            self.show_error("IntegrityError", e)
-            self.app.session.rollback()
-        except SQLAlchemyError as e:
-            self.show_error("SQLAlchemyError", e)
-            self.app.session.rollback()
         except Exception as e:
+            logger.error(f"{type(e)}: {e}")
             self.show_error(type(e).__name__, e)
+        finally:
             self.app.session.rollback()
 
     return wrapper

@@ -198,5 +198,3 @@ with SSHDriver(
     conn.update_uboot()
     conn.update_boot()
     conn.update_firmware()
-    config = conn.show_bootvar()
-    print(f"=======================\n{config}\n==================================")

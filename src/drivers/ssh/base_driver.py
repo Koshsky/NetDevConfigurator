@@ -72,7 +72,7 @@ class SSHBaseDriver:
             except socket.timeout:
                 logger.warning("Socket timeout occurred.")
                 continue
-        return "\n".join(output.split("\n")[1:-1])  # TODO: test this behavior
+        return "\n".join(output.split("\n")[1:-1])
 
     def __enter__(self):
         try:

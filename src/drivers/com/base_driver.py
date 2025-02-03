@@ -53,9 +53,7 @@ class COMBaseDriver:
 
     @check_port_open
     def _get_response(self):
-        # TODO: can i union this two lines below?
-        response = [line.decode().strip() for line in self.ser.readlines()]
-        output = "\n".join(response)
+        output = "\n".join(line.decode().strip() for line in self.ser.readlines())
         logger.info(
             f"Read {len(output)} symbols. No more data to read.",
         )
@@ -89,7 +87,7 @@ class COMBaseDriver:
             self.ser.close()
 
     @check_port_open
-    def __is_logged(self):  # TODO: простестировать, в случае провала вернуть как было.
+    def __is_logged(self):
         self.ser.write(b"\n\n\n\n\n\n")
         response = [line.strip() for line in self.ser.readlines()]
         return len(set(line.strip() for line in response[-5::])) == 1
