@@ -33,21 +33,46 @@ class SSHDriver(SSHBaseDriver):
         logger.info(f"Send: {self.core.reload}")
 
     def update_boot(self):
-        os.environ["FILENAME"] = find_most_recent_file(
+        filename = find_most_recent_file(
             f"{os.environ['TFTP_FOLDER']}/firmware", self.device["pattern"]["boot"]
         )
-        return self.send_command(self.core.load_boot)
+        if filename is None:
+            logger.error(
+                "There is no boot file for %s in %s matching %s",
+                self.device["name"],
+                os.environ["TFTP_FOLDER"],
+                self.device["pattern"]["boot"],
+            )
+        else:
+            os.environ["FILENAME"] = filename
+            return self.send_command(self.core.load_boot)
 
     def update_uboot(self):
-        os.environ["FILENAME"] = find_most_recent_file(
-            f"{os.environ['TFTP_FOLDER']}/firmware",
-            self.device["pattern"]["uboot"],
+        filename = find_most_recent_file(
+            f"{os.environ['TFTP_FOLDER']}/firmware", self.device["pattern"]["uboot"]
         )
-        return self.send_command(self.core.load_uboot)
+        if filename is None:
+            logger.error(
+                "There is no uboot file for %s in %s matching %s",
+                self.device["name"],
+                os.environ["TFTP_FOLDER"],
+                self.device["pattern"]["uboot"],
+            )
+        else:
+            os.environ["FILENAME"] = filename
+            return self.send_command(self.core.load_uboot)
 
     def update_firmware(self):
-        os.environ["FILENAME"] = find_most_recent_file(
-            f"{os.environ['TFTP_FOLDER']}/firmware",
-            self.device["pattern"]["firmware"],
+        filename = find_most_recent_file(
+            f"{os.environ['TFTP_FOLDER']}/firmware", self.device["pattern"]["firmware"]
         )
-        return self.send_command(self.core.load_firmware)
+        if filename is None:
+            logger.error(
+                "There is no firmware file for %s in %s matching %s",
+                self.device["name"],
+                os.environ["TFTP_FOLDER"],
+                self.device["pattern"]["firmware"],
+            )
+        else:
+            os.environ["FILENAME"] = filename
+            return self.send_command(self.core.load_firmware)

@@ -195,5 +195,8 @@ with SSHDriver(
     auth_username=config["host"]["username"],
     auth_password=config["host"]["password"],
 ) as conn:
-    bootvar = conn.update_firmware()
-    print(bootvar)
+    conn.update_uboot()
+    conn.update_boot()
+    conn.update_firmware()
+    config = conn.show_bootvar()
+    print(f"=======================\n{config}\n==================================")

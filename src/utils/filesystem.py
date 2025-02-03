@@ -1,5 +1,8 @@
 import fnmatch
 import os
+import logging
+
+logger = logging.getLogger("os")
 
 
 def find_most_recent_file(directory: str, pattern: str) -> str:
@@ -15,7 +18,7 @@ def find_most_recent_file(directory: str, pattern: str) -> str:
                 most_recent_time = file_mtime
                 most_recent_file = filename
     if most_recent_file is None:
-        raise FileNotFoundError(
-            f"No files found matching the pattern {pattern} in the directory {directory}"
+        logger.warning(
+            f"No files found matching the pattern r`{pattern}`   in the directory {directory}"
         )
     return most_recent_file

@@ -39,7 +39,7 @@ class SSHBaseDriver:
     @check_port_open
     def send_command(self, command: str, get_response=True) -> str:
         self.ssh.send(f"{command}\n")
-        logger.info(f"Send: {command}")
+        logger.info("Command sent: %s", command)
         return self._get_response() if get_response else None
 
     @check_port_open
@@ -72,7 +72,7 @@ class SSHBaseDriver:
             except socket.timeout:
                 logger.warning("Socket timeout occurred.")
                 continue
-        return output
+        return "\n".join(output.split("\n")[1:-1])  # TODO: test this behavior
 
     def __enter__(self):
         try:
