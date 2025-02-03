@@ -2,7 +2,9 @@ from functools import wraps
 import logging
 
 
-logger = logging.getLogger("app")
+logger = logging.getLogger(
+    "app"
+)  # TODO: create several loggers for db, gui, ssh, com...
 
 
 def error_handler(func):
@@ -11,10 +13,11 @@ def error_handler(func):
         try:
             return func(self, *args, **kwargs)
         except Exception as e:
-            logger.error(f"{type(e)}: {e}")
+            logger.error(f"{type(e).__name__}: {e}")
             self.show_error(type(e).__name__, e)
         finally:
-            self.app.session.rollback()
+            if self.app.session is not None:
+                self.app.session.rollback()
 
     return wrapper
 

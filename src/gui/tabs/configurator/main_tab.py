@@ -106,20 +106,13 @@ class HelloTab(BaseTab):
         device = self.check_device_name(self.fields["preset"]["device"].get())
         role = self.check_role_name(self.fields["preset"]["role"].get())
         preset = self.app.db_services["preset"].get_by_device_and_role(device, role)
-        try:
-            preset_info = self.app.db_services["preset"].get_info(preset)
-            logger.info(
-                "Preset selected. device=%s, role=%s, family=%s",
-                preset_info["target"],
-                preset_info["role"],
-                preset_info["family"],
-            )
-        except ValueError:
-            logger.error(
-                "Invalid preset configuration. Change config in manager.py app and try again. device=%s, role=%s",
-                device.name,
-                role,
-            )
+        preset_info = self.app.db_services["preset"].get_info(preset)
+        logger.info(
+            "Preset selected. device=%s, role=%s, family=%s",
+            preset_info["target"],
+            preset_info["role"],
+            preset_info["family"],
+        )
 
         self.app.set_configuration_parameters(
             cert=self.fields["params"]["CERT"].get().strip(),

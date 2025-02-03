@@ -34,8 +34,9 @@ class PresetService(BaseService, DevicePresetService):
 
     def get_info(self, preset, check=False):
         if check and not self.validate(preset):
+            device = self.device_service.get_by_id(preset.device_id)
             raise ValueError(
-                "Invalid preset configuration. See in Database Manager app"
+                f"Invalid preset configuration. device={device.name}, role={preset.role}"
             )
         rows = (
             self.db.query(Presets, DevicePresets, Templates)

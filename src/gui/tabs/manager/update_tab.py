@@ -65,7 +65,6 @@ class UpdateTab(BaseTab):
                 if port_name == "None":
                     res.append(res[-1])
                     continue
-                # may raise exception (invalid name)
                 port = self.app.db_services["port"].get_by_name(port_name)
                 if port.speed != 10000:
                     is1000mbps = True
