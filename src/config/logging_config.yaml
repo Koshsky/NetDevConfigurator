@@ -11,7 +11,7 @@ handlers:
     formatter: simple
   file:
     class: logging.FileHandler
-    filename: /home/koshsky/github/NetDevConfigurator/configurator.log
+    filename: ./configurator.log
     formatter: simple
     mode: a
 loggers:
