@@ -12,7 +12,7 @@ class UpdateTab(BaseTab):
                 "protocols": list(self.app.entity_collections["protocol"]),
                 "ports": {
                     f"{i}": (None,) + self.app.entity_collections["port"]
-                    for i in range(60)
+                    for i in range(1, 61)
                 },
             },
             width=12,

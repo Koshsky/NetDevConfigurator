@@ -77,14 +77,9 @@ class CommonConfigTab(BaseTab):
 
     @property
     def config_template(self):
-        return (
-            "\n".join(
-                f"{i}\t{v['name']}"
-                for i, (k, v) in enumerate(
-                    self._config["configuration"].items(), start=1
-                )
-            )
-            + "\nend\n"
+        return "\n".join(
+            f"{i}\t{v['name']}"
+            for i, (k, v) in enumerate(self._config["configuration"].items(), start=1)
         )
 
     @update_config
