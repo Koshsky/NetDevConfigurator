@@ -20,7 +20,6 @@ class PresetService(BaseService, DevicePresetService):
     def get_by_device_and_role(self, device: Devices, role: str):
         if (
             preset := self.db.query(Presets)
-            .join(DevicePresets, Presets.id == DevicePresets.preset_id)
             .filter(Presets.device_id == device.id, Presets.role == role)
             .first()
         ):
