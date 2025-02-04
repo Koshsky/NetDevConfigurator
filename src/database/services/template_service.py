@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
 
 from database.models import Templates
-from .family_service import FamilyService
+
 from .base_service import BaseService
 from .exceptions import EntityNotFoundError
+from .family_service import FamilyService
 
 
 class TemplateService(BaseService):
@@ -53,14 +54,23 @@ class TemplateService(BaseService):
         )
 
     def get_by_name_and_role(self, name: str, role: str):  # for unambiguous selection
-        return (
+        if entity := (
             self.db.query(Templates)
             .filter(
                 Templates.name == name,
                 Templates.role.in_(["common", role]),
             )
             .first()
-        )
+        ):
+            return entity
+        else:
+            raise EntityNotFoundError(
+                f"there is no template with name={name}, role={role}"
+            )
 
     def delete_by_name_and_role(self, name: str, role: str):
         self.delete(self.get_by_name_and_role(name, role))
+
+    def update_by_name_and_role(self, name: str, role: str, data: dict):
+        entity = self.get_by_name_and_role(name, role)
+        self.update(entity, data)

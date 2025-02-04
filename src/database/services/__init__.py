@@ -47,7 +47,6 @@ def prepare_entity_collections(entity_services):
             set({template.name for template in entity_services["template"].get_all()})
         ),
         "template_type": (
-            "header",
             "hostname",
             "VLAN",
             "ssh",

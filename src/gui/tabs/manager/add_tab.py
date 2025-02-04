@@ -1,4 +1,5 @@
 from gui import BaseTab, apply_error_handler
+from database.services.exceptions import EntityNotFoundError
 
 
 @apply_error_handler
@@ -57,18 +58,22 @@ class AddTab(BaseTab):
             raise ValueError("All parameters must be set")
 
         family = self.check_family_name(self.fields["template"]["family"].get())
-
-        self.app.db_services["template"].create(
-            {
-                "name": template_name,
-                "family_id": family.id,
-                "type": template_type,
-                "role": role,
-                "text": text,
-            }
+        data = {
+            "name": template_name,
+            "family_id": family.id,
+            "type": template_type,
+            "role": role,
+            "text": text,
+        }
+        try:
+            self.app.db_services["template"].update_by_name_and_role(
+                template_name, role, data
+            )
+        except EntityNotFoundError:
+            self.app.db_services["template"].create(data)
+        self.display_feedback(
+            f"name: {data['name']}:\nrole: {data['role']}\ntext:\n{data['text']}"
         )
-
-        self.display_feedback("Successfully added to the templates table.")
 
     def submit_protocol(self):
         protocol_name = self.fields["protocol"]["name"].get().strip()

@@ -1,4 +1,8 @@
+import logging
+
 from .exceptions import EntityNotFoundError
+
+logger = logging.getLogger("db")
 
 
 class BaseService:
@@ -22,15 +26,18 @@ class BaseService:
             )
 
     def get_by_name(self, entity_name: str):
-        if (
-            entity := self.db.query(self.model)
-            .filter(self.model.name == entity_name)
-            .first()
-        ):
-            return entity
-        else:
+        entities = (
+            self.db.query(self.model).filter(self.model.name == entity_name).all()
+        )
+        if len(entities) == 1:
+            return entities[0]
+        elif len(entities) == 0:
             raise EntityNotFoundError(
                 f"{self.model.__name__} with name {entity_name} not found"
+            )
+        else:
+            raise EntityNotFoundError(
+                f"Multiple {self.model.__name__} entities found with name {entity_name}"
             )
 
     def get_info(self, entity):
@@ -44,11 +51,22 @@ class BaseService:
         entity = self.get_by_id(entity_id)
         return self.get_info(entity)
 
-    def create(self, entity: dict):
-        entity = self.model(**entity)
+    def create(self, data: dict):
+        entity = self.model(**data)
         self.db.add(entity)
         self.db.commit()
         self.db.refresh(entity)
+        logger.info(f"create {self.model.__name__} successfully: {data}")
+        return entity
+
+    def update(self, entity, updated_data: dict):
+        for key, value in updated_data.items():
+            setattr(entity, key, value)
+        self.db.commit()
+        self.db.refresh(entity)
+        logger.info(
+            f"Updated {self.model.__name__} entities successfully: {updated_data}"
+        )
         return entity
 
     def delete(self, entity):
