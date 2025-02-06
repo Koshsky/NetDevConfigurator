@@ -55,7 +55,7 @@ class PresetService(BaseService, DevicePresetService):
         return {
             "id": preset.id,
             "target": device.name,
-            "family": self.family_service.get_by_id(device.family_id),
+            "family": self.family_service.get_info_by_id(device.family_id),
             "role": preset.role,
             "description": preset.description,
             "configuration": {

@@ -111,7 +111,7 @@ class HelloTab(BaseTab):
             "Preset selected. device=%s, role=%s, family=%s",
             preset_info["target"],
             preset_info["role"],
-            preset_info["family"],
+            preset_info["family"]["name"],
         )
 
         self.app.set_configuration_parameters(
