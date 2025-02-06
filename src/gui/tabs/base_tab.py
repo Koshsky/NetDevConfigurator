@@ -68,6 +68,19 @@ class BaseTab:
                 f'{entity_type.capitalize()} "{entity_name}" not found in databases'
             )
 
+    def create_large_input_field(self, field_name, width=75, height=12):
+        if field_name in self.fields:
+            raise ValueError(f"Field '{field_name}' already exists.")
+
+        text_field = tk.Text(self.frame, wrap="word", width=width, height=height)
+        text_field.grid(
+            row=self.cur_row, column=0, columnspan=100, padx=5, pady=5, sticky="w"
+        )
+
+        self.fields[field_name] = text_field
+
+        self.cur_row += 1
+
     def create_block(self, entity_name, parameters, button=None, width=None):
         if entity_name not in self.fields:
             self.fields[entity_name] = {}

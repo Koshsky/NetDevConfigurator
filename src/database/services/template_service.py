@@ -24,20 +24,10 @@ class TemplateService(BaseService):
         }
 
     def get_info_by_name(self, template_name):
-        templates = self.get_by_name(template_name)
+        templates = (
+            self.db.query(Templates).filter(Templates.name == template_name).all()
+        )
         return [self.get_info(template) for template in templates]
-
-    def get_by_name(self, template_name: str):
-        if (
-            template := self.db.query(Templates)
-            .filter(Templates.name == template_name)
-            .all()
-        ):
-            return template
-        else:
-            raise EntityNotFoundError(
-                f"{Templates.__name__} with name {template_name} not found"
-            )
 
     def get_by_family_id_and_role(
         self, family_id: int, role: str

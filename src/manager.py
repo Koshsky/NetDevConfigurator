@@ -7,6 +7,7 @@ from gui.tabs.manager import (
     DeleteTab,
     InfoTab,
     UpdateTab,
+    TemplatesTab,
 )
 
 
@@ -17,6 +18,7 @@ class DBManagerApp(App):
         self.create_tab(DeleteTab, "DELETE")
         self.create_tab(InfoTab, "INFO")
         self.create_tab(UpdateTab, "DEVICE")
+        self.create_tab(TemplatesTab, "TEMPLATE")
         self.create_tab(CommonConfigTab, "PRESET")
 
 

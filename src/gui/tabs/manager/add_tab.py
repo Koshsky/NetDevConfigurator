@@ -1,5 +1,4 @@
 from gui import BaseTab, apply_error_handler
-from database.services.exceptions import EntityNotFoundError
 
 
 @apply_error_handler
@@ -65,15 +64,7 @@ class AddTab(BaseTab):
             "role": role,
             "text": text,
         }
-        try:
-            self.app.db_services["template"].update_by_name_and_role(
-                template_name, role, data
-            )
-        except EntityNotFoundError:
-            self.app.db_services["template"].create(data)
-        self.display_feedback(
-            f"name: {data['name']}:\nrole: {data['role']}\ntext:\n{data['text']}"
-        )
+        self.app.db_services["template"].create(data)
 
     def submit_protocol(self):
         protocol_name = self.fields["protocol"]["name"].get().strip()

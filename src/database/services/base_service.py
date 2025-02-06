@@ -21,6 +21,7 @@ class BaseService:
         ):
             return entity
         else:
+            logger.error(f"{self.model.__name__} with id {entity_id} not found")
             raise EntityNotFoundError(
                 f"{self.model.__name__} with id {entity_id} not found"
             )
@@ -29,13 +30,24 @@ class BaseService:
         entities = (
             self.db.query(self.model).filter(self.model.name == entity_name).all()
         )
+        logger.debug(
+            "There %s %d entities found in %s table with name=%s",
+            "are" if len(entities) > 1 else "is",
+            len(entities),
+            self.model.__name__,
+            entity_name,
+        )
         if len(entities) == 1:
             return entities[0]
         elif len(entities) == 0:
+            logger.error(f"{self.model.__name__} with name {entity_name} not found")
             raise EntityNotFoundError(
                 f"{self.model.__name__} with name {entity_name} not found"
             )
         else:
+            logger.error(
+                f"Multiple {self.model.__name__} entities found with name {entity_name}"
+            )
             raise EntityNotFoundError(
                 f"Multiple {self.model.__name__} entities found with name {entity_name}"
             )
@@ -73,6 +85,9 @@ class BaseService:
         if entity:
             self.db.delete(entity)
             self.db.commit()
+            logger.info(
+                f"{self.model.__name__} with id {entity.id} deleted successfully"
+            )
 
     def delete_by_name(self, name: str):
         if db_entity := self.get_by_name(name):
