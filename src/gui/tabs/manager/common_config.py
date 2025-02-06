@@ -52,8 +52,19 @@ class CommonConfigTab(BaseTab):
         self.create_button_in_line(("PUSH BACK", self.push_back))
         self.create_button_in_line(("INSERT", self.insert))
         self.create_button_in_line(("REMOVE", self.remove))
+        self.create_button_in_line(("PREVIEW", self.preview))
         self.create_feedback_area()
         self.refresh_templates()
+
+    def preview(self):
+        self.display_feedback(
+            "\n".join(
+                v["text"]
+                for _, (_, v) in enumerate(
+                    self._config["configuration"].items(), start=1
+                )
+            )
+        )
 
     def config_meta(self):
         interfaces = len(
