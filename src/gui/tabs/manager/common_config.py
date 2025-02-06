@@ -54,7 +54,6 @@ class CommonConfigTab(BaseTab):
         self.create_button_in_line(("REMOVE", self.remove))
         self.create_button_in_line(("PREVIEW", self.preview))
         self.create_feedback_area()
-        self.refresh_templates()
 
     def preview(self):
         self.display_feedback(
