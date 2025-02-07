@@ -27,6 +27,15 @@ class BaseTab:
     def render_widgets(self):
         raise NotImplementedError("tab.render_widgets not implemented!")
 
+    def hide(self):
+        self.app.notebook.hide(self.frame)
+        logger.debug("%s tab is hidden", self.__log_name)
+
+    def show(self):
+        self.refresh_widgets()
+        self.app.notebook.add(self.frame)
+        logger.debug("%s tab is normal", self.__log_name)
+
     def remove_widgets(self):
         for widget in self.frame.winfo_children():
             widget.destroy()

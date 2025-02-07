@@ -10,13 +10,19 @@ logging.getLogger("paramiko").setLevel(logging.WARNING)
 logger = logging.getLogger("config")
 
 config = yaml.safe_load(open("./src/config/config.yml"))
-os.environ["TFTP_ADDRESS"] = config["tftp-server"]["address"]
-os.environ["TFTP_PORT"] = str(config["tftp-server"]["port"])
-os.environ["TFTP_FOLDER"] = config["tftp-server"]["folder"]
 
+os.environ["TFTP_ADDRESS"] = config["tftp-server"]["address"]
 logger.info(
-    "Environmental variables set up: TFTP_ADDRESS=%s, TFTP_PORT=%s, TFTP_FOLDER=%s",
+    "Environmental variables set up: TFTP_ADDRESS=%s",
     os.environ["TFTP_ADDRESS"],
+)
+os.environ["TFTP_PORT"] = str(config["tftp-server"]["port"])
+logger.info(
+    "Environmental variables set up: TFTP_PORT=%s",
     os.environ["TFTP_PORT"],
+)
+os.environ["TFTP_FOLDER"] = config["tftp-server"]["folder"]
+logger.info(
+    "Environmental variables set up: TFTP_FOLDER=%s",
     os.environ["TFTP_FOLDER"],
 )

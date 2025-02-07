@@ -6,7 +6,7 @@ import uuid
 
 from config import config
 from gui.base_app import App
-from gui.tabs.configurator import HelloTab, TemplateTab
+from gui.tabs.configurator import ControlTab, TemplateTab, HelloTab, RouterTab
 
 logger = logging.getLogger("gui")
 
@@ -19,22 +19,11 @@ class ConfiguratorApp(App):
         }
         self.device = None
         self.preset = None
+        self.mode = None  # com+ssh or pure ssh
         self.config_template = None
         self.config_filename = None
         self.advanced_mode = advanced
         super().__init__(root, title)
-
-    def refresh_tabs(self):
-        logger.debug("Refreshing configurator tabs:")
-        for tab_name, tab in self.tabs.items():
-            if isinstance(tab, TemplateTab) and (
-                self.device is None or not self.advanced_mode
-            ):
-                self.notebook.hide(tab.frame)
-                logger.debug(f"{tab_name} tab is hidden")
-            else:
-                tab.refresh_widgets()
-        logger.debug("Configurator tabs refreshed")
 
     def create_tabs(self):
         super().create_tabs()
@@ -53,6 +42,44 @@ class ConfiguratorApp(App):
             allow_none=config["app"]["interfaces"]["allow-none"],
             template_filter=lambda x: x["type"] == "interface",
         )
+        self.create_tab(RouterTab, "ROUTER")
+        self.create_tab(ControlTab, "CONTROL")
+
+    def refresh_tabs(self):
+        logger.debug("Refreshing configurator tabs (mode %s): ", self.mode)
+        if self.mode is None:
+            self.__refresh_tabs_none()
+        elif self.mode in ("ssh", "com+ssh"):
+            self.__refresh_tabs()
+        else:
+            logger.critical("Refreshing configurator tabs: unknown mode: %s", self.mode)
+        logger.debug("Configurator tabs refreshed successfully")
+
+    def __refresh_tabs_none(self):
+        for _, tab in self.tabs.items():
+            if isinstance(tab, HelloTab):
+                tab.show()
+            else:
+                tab.hide()
+        self.notebook.select(0)
+
+    def __refresh_tabs(self):
+        for _, tab in self.tabs.items():
+            if isinstance(tab, HelloTab):
+                pass
+            elif isinstance(tab, TemplateTab):
+                if self.device.dev_type == "switch" and self.advanced_mode:
+                    tab.show()
+                else:
+                    tab.hide()
+            elif isinstance(tab, ControlTab):
+                tab.show()
+            else:
+                logger.critical(
+                    "Unknown type of tab during refreshing ConfiguratorApp: %s",
+                    type(tab).__name__,
+                )
+        self.notebook.select(self.tabs["CONTROL"].frame)
 
     @property
     def driver(self):
@@ -77,14 +104,6 @@ class ConfiguratorApp(App):
         return template + "end\n"
 
     def set_configuration_parameters(self, cert, OR, device, preset):
-        if not (cert and OR and device and preset):
-            logger.error(
-                "All parameters (CERT, OR, device name, preset name) must be set in MAIN tab"
-            )
-            raise ValueError("All parameters must be set")
-        if preset.device_id != device.id:  # unreachable code
-            logger.critical(f"Preset is not suitable for device {device.name}")
-            raise ValueError("preset.device_id != device.id")
         self.config_params["CERT"] = cert
         self.config_params["OR"] = OR
         self.device = device
