@@ -1,8 +1,7 @@
 import logging
-import os
 from functools import wraps
 
-from config import config
+from config import config, router_params, set_env
 from drivers import COMDriver, SSHDriver
 from gui import BaseTab, apply_error_handler
 
@@ -95,7 +94,12 @@ class ControlTab(BaseTab):
         self.create_block(
             "params",
             {
-                "TYPE_COMPLEX": ("1", "2"),
+                "TYPE_COMPLEX": tuple(router_params["TYPE_COMPLEX"]),
+            }
+            if not self.app.advanced_mode
+            else {
+                "TYPE_COMPLEX": tuple(router_params["TYPE_COMPLEX"]),
+                "TRUEROOM_COUNT": tuple(map(str, range(25))),
             },
             ("UPDATE", self.update_params),
         )
@@ -107,31 +111,24 @@ class ControlTab(BaseTab):
                 self.app.device, role
             )
             self.app.register_preset(preset)
-            self.app.refresh_tabs()
-        pass
+        elif self.app.device.dev_type == "router":
+            type_complex = self.fields["params"]["TYPE_COMPLEX"].get().strip()
+            set_env("TYPE_COMPLEX", router_params["TYPE_COMPLEX"][type_complex])
+            trueroom_count = (
+                self.fields["params"]["TRUEROOM_COUNT"].get().strip()
+                if self.app.advanced_mode
+                else 1
+            )
+            set_env("TRUEROOM_COUNT", trueroom_count)
+        self.app.refresh_tabs()
 
     def update_host_info(self):
         if self.app.mode == "ssh":
-            os.environ["HOST_ADDRESS"] = self.fields["host"]["address"].get().strip()
-            logger.info(
-                "Environmental variable set up: HOST_ADDRESS=%s",
-                os.environ["HOST_ADDRESS"],
-            )
-            os.environ["HOST_PORT"] = self.fields["host"]["port"].get().strip()
-            logger.info(
-                "Environmental variable set up: HOST_PORT=%s",
-                os.environ["HOST_PORT"],
-            )
-        os.environ["HOST_PASSWORD"] = self.fields["host"]["password"].get().strip()
-        logger.info(
-            "Environmental variables set up: HOST_PASSWORD=%s",
-            os.environ["HOST_PASSWORD"],
-        )
-        os.environ["HOST_USERNAME"] = self.fields["host"]["username"].get().strip()
-        logger.info(
-            "Environmental variables set up: HOST_USERNAME=%s",
-            os.environ["HOST_USERNAME"],
-        )
+            # TODO: add validation of ip address
+            set_env("HOST_ADDRESS", self.fields["host"]["address"].get().strip())
+            set_env("HOST_PORT", self.fields["host"]["port"].get().strip())
+        set_env("HOST_PASSWORD", self.fields["host"]["password"].get().strip())
+        set_env("HOST_USERNAME", self.fields["host"]["username"].get().strip())
 
     def reboot(self):
         with SSHDriver(**self.app.driver) as conn:

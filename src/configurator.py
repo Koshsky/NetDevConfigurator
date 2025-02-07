@@ -47,10 +47,14 @@ class ConfiguratorApp(App):
 
     def register_preset(self, preset):
         self.preset = preset
+        logger.info(
+            "ConfiguratorApp.preset := (%s; %s)", self.device.name, self.preset.role
+        )
         self.config_template = self.db_services["preset"].get_info(preset, check=True)[
             "configuration"
         ]
         self.config_filename = f"config_{uuid.uuid4()}.conf"
+        logger.info("Create file for switch configuration: %s", self.config_filename)
 
     def refresh_tabs(self):
         logger.debug("Refreshing configurator tabs (mode %s): ", self.mode)
@@ -84,7 +88,11 @@ class ConfiguratorApp(App):
                 else:
                     tab.hide()
             elif isinstance(tab, RouterTab):
-                if self.device.dev_type == "router" and self.advanced_mode:
+                if (
+                    self.device.dev_type == "router"
+                    and self.advanced_mode
+                    and "TYPE_COMPLEX" in os.environ  # mandatory parameter
+                ):
                     tab.show()
                 else:
                     tab.hide()
@@ -114,8 +122,8 @@ class ConfiguratorApp(App):
         elif self.device.dev_type == "router":
             return self.__router_config()
 
-    def __router_config(self):  # TODO: РЕАЛИЗОВАТЬ ЭТО.
-        pass
+    def __router_config(self):  # TODO: РЕАЛИЗОВАТЬ ЭТО С ПОМОЩЬЮ БАШ-СКРИПТОВ
+        raise NotImplementedError("__router_config not implemented")
 
     def __switch_config(self):
         template = ""

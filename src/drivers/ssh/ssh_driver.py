@@ -1,6 +1,7 @@
 import logging
 import os
 
+from config import set_env
 from utils import find_most_recent_file
 
 from .base_driver import SSHBaseDriver
@@ -21,7 +22,7 @@ class SSHDriver(SSHBaseDriver):
         return header + "!\n"
 
     def update_startup_config(self, filename):
-        os.environ["FILENAME"] = filename
+        set_env("FILENAME", filename)
         command = self.core.update_startup_config
         return self.send_command(command)
 
@@ -41,7 +42,7 @@ class SSHDriver(SSHBaseDriver):
                 self.device["pattern"]["boot"],
             )
         else:
-            os.environ["FILENAME"] = filename
+            set_env("FILENAME", filename)
             return self.send_command(self.core.load_boot)
 
     def update_uboot(self):
@@ -56,7 +57,7 @@ class SSHDriver(SSHBaseDriver):
                 self.device["pattern"]["uboot"],
             )
         else:
-            os.environ["FILENAME"] = filename
+            set_env("FILENAME", filename)
             return self.send_command(self.core.load_uboot)
 
     def update_firmware(self):
@@ -71,5 +72,5 @@ class SSHDriver(SSHBaseDriver):
                 self.device["pattern"]["firmware"],
             )
         else:
-            os.environ["FILENAME"] = filename
+            set_env("FILENAME", filename)
             return self.send_command(self.core.load_firmware)
