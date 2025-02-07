@@ -27,7 +27,7 @@ class ConfiguratorApp(App):
 
     def create_tabs(self):
         super().create_tabs()
-        self.create_tab(HelloTab, "MAIN")
+        self.create_tab(HelloTab, "HOME")
         self.create_tab(
             TemplateTab,
             "TEMPLATES",
@@ -61,7 +61,7 @@ class ConfiguratorApp(App):
                 tab.show()
             else:
                 tab.hide()
-        self.notebook.select(0)
+        self.notebook.select(self.tabs["HOME"].frame)
 
     def __refresh_tabs(self):
         for _, tab in self.tabs.items():
@@ -69,6 +69,11 @@ class ConfiguratorApp(App):
                 pass
             elif isinstance(tab, TemplateTab):
                 if self.device.dev_type == "switch" and self.advanced_mode:
+                    tab.show()
+                else:
+                    tab.hide()
+            elif isinstance(tab, RouterTab):
+                if self.device.dev_type == "router" and self.advanced_mode:
                     tab.show()
                 else:
                     tab.hide()

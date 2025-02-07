@@ -99,13 +99,12 @@ class ControlTab(BaseTab):
         )
 
     def update_host_info(self):
-        if "address" in self.fields["host"]:
+        if self.app.mode == "ssh":
             os.environ["HOST_ADDRESS"] = self.fields["host"]["address"].get().strip()
             logger.info(
                 "Environmental variable set up: HOST_ADDRESS=%s",
                 os.environ["HOST_ADDRESS"],
             )
-        if "port" in self.fields["host"]:
             os.environ["HOST_PORT"] = self.fields["host"]["port"].get().strip()
             logger.info(
                 "Environmental variable set up: HOST_PORT=%s",
