@@ -25,9 +25,6 @@ class SSHDriver(SSHBaseDriver):
         command = self.core.update_startup_config
         return self.send_command(command)
 
-    def show_bootvar(self):
-        return self.send_command(self.core.show_bootvar)
-
     def reboot(self):
         self.ssh.send(f"{self.core.reload}\n")
         logger.info("Send: %s", self.core.reload)

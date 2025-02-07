@@ -1,12 +1,51 @@
 import os
 
 
+class ESR:
+    # TODO: протестировать success_signs и comms_prompt_pattern
+    comms_prompt_pattern = r"^(\n)?[a-zA-Z0-9_-]+[>#\$]\s*$"
+    success_signs = {
+        "succeeded",
+        "successful",
+        "success",
+    }
+    open_sequence = ["terminal datadump"]
+
+    show_run = "show running-config extended"
+    reload = "reload system"
+
+    @property
+    def update_startup_config(self):
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/tmp/{os.environ['FILENAME']} system:candidate-config"
+
+    @property
+    def load_boot(
+        self,
+    ):  # TODO:  НЕ НАШЕЛ В ДОКУМЕНТАЦИИ. ПО ИДЕЕ СВЯЗАНО С system:boot-1
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} boot"
+
+    @property
+    def load_uboot(
+        self,
+    ):  # TODO: в документации встречается system:boot2 system:boot-2...
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} system:boot2"
+
+    @property
+    def load_firmware(
+        self,
+    ):
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} system:firmware"
+
+
 class BaseMES:
     comms_prompt_pattern = r"^(\n)?[a-zA-Z0-9_-]+[>#\$]\s*$"
-    success_signs = {"succeeded", "successful", "success"}
+    success_signs = {
+        "succeeded",
+        "successful",
+        "success",
+    }
 
     reload = "reload\nyy"  # cause 'y' 'y' DOESN'T require '\n'
-    show_bootvar = "show bootvar"
     show_run = "show running-config"
 
     @property
