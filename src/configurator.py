@@ -45,6 +45,13 @@ class ConfiguratorApp(App):
         self.create_tab(RouterTab, "ROUTER")
         self.create_tab(ControlTab, "CONTROL")
 
+    def register_preset(self, preset):
+        self.preset = preset
+        self.config_template = self.db_services["preset"].get_info(preset, check=True)[
+            "configuration"
+        ]
+        self.config_filename = f"config_{uuid.uuid4()}.conf"
+
     def refresh_tabs(self):
         logger.debug("Refreshing configurator tabs (mode %s): ", self.mode)
         if self.mode is None:
@@ -68,7 +75,11 @@ class ConfiguratorApp(App):
             if isinstance(tab, HelloTab):
                 pass
             elif isinstance(tab, TemplateTab):
-                if self.device.dev_type == "switch" and self.advanced_mode:
+                if (
+                    self.device.dev_type == "switch"
+                    and self.advanced_mode
+                    and self.preset is not None
+                ):
                     tab.show()
                 else:
                     tab.hide()
@@ -107,16 +118,6 @@ class ConfiguratorApp(App):
         template = template.replace("{MODEL}", self.device.name)
         template = template.replace("{ROLE}", self.preset.role)
         return template + "end\n"
-
-    def set_configuration_parameters(self, cert, OR, device, preset):
-        self.config_params["CERT"] = cert
-        self.config_params["OR"] = OR
-        self.device = device
-        self.preset = preset
-        self.config_template = self.db_services["preset"].get_info(preset, check=True)[
-            "configuration"
-        ]
-        self.config_filename = f"config_{uuid.uuid4()}.conf"
 
 
 if __name__ == "__main__":

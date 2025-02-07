@@ -1,4 +1,4 @@
-from pprint import pformat
+from pprint import pformat, pprint
 
 from gui import BaseTab, apply_error_handler
 

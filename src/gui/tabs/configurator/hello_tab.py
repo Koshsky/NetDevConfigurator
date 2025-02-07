@@ -32,8 +32,10 @@ class HelloTab(BaseTab):
         self.app.refresh_tabs()
 
     def register_device(self):
-        device = self.check_device_name(self.fields["device"]["name"].get())
-        self.app.device = device
-        logger.info("Device selected. device=%s", device.name)
+        self.app.device = self.check_device_name(self.fields["device"]["name"].get())
+        logger.info("Device selected. device=%s", self.app.device.name)
+
+        self.app.preset = None
+        logger.info("Preset is set to None")
 
         self.app.config_params["CERT"] = self.fields["common"]["CERT"].get().strip()

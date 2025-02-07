@@ -88,6 +88,7 @@ class ControlTab(BaseTab):
                 "role": self.app.entity_collections["role"],
                 "or": tuple(str(i) for i in range(1, 26)),
             },
+            ("UPDATE", self.update_params),
         )
 
     def __render_widgets_router(self):
@@ -96,7 +97,18 @@ class ControlTab(BaseTab):
             {
                 "TYPE_COMPLEX": ("1", "2"),
             },
+            ("UPDATE", self.update_params),
         )
+
+    def update_params(self):
+        if self.app.device.dev_type == "switch":
+            role = self.check_role_name(self.fields["params"]["role"].get())
+            preset = self.app.db_services["preset"].get_by_device_and_role(
+                self.app.device, role
+            )
+            self.app.register_preset(preset)
+            self.app.refresh_tabs()
+        pass
 
     def update_host_info(self):
         if self.app.mode == "ssh":
