@@ -36,8 +36,8 @@ class TemplateTab(BaseTab):
             width=self.width,
         )
         self.actualize_values()
-        self.create_button_in_line(("UPDATE", self.update_config))
         self.create_button_in_line(("ACTUALIZE", self.actualize_values))
+        self.create_button_in_line(("UPDATE", self.update_config))
         self.create_feedback_area()
 
     def actualize_values(self):
