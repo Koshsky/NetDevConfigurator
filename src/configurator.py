@@ -109,6 +109,15 @@ class ConfiguratorApp(App):
 
     @property
     def text_configuration(self):
+        if self.device.dev_type == "switch":
+            return self.__switch_config()
+        elif self.device.dev_type == "router":
+            return self.__router_config()
+
+    def __router_config(self):  # TODO: РЕАЛИЗОВАТЬ ЭТО.
+        pass
+
+    def __switch_config(self):
         template = ""
         for k, v in self.config_template.items():
             if v["text"]:

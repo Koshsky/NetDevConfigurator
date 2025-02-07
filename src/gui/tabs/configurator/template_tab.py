@@ -1,4 +1,4 @@
-from pprint import pformat, pprint
+from pprint import pformat
 
 from gui import BaseTab, apply_error_handler
 
@@ -21,16 +21,16 @@ class TemplateTab(BaseTab):
         self.template_filter = template_filter
 
     def render_widgets(self):
-        self.templates = {}
+        filtered_templates = {}
         for k, v in self.app.config_template.items():
             if self.template_filter(v):
-                self.templates[k] = v
+                filtered_templates[k] = v
         self.create_block(
             "config",
             {
                 "templates": {
                     k: self._get_templates_by_type(v["type"])
-                    for k, v in self.templates.items()
+                    for k, v in filtered_templates.items()
                 }
             },
             width=self.width,
@@ -40,31 +40,32 @@ class TemplateTab(BaseTab):
         self.create_button_in_line(("ACTUALIZE", self.actualize_values))
         self.create_feedback_area()
 
-    def actualize_values(self):  # TODO: refactor (can I remove self.templates???)
-        for k, v in self.templates.items():
-            self.fields["config"]["templates"][k].set(v["name"])
+    def actualize_values(self):
+        for k, v in self.app.config_template.items():
+            if k in self.fields["config"]["templates"]:
+                self.fields["config"]["templates"][k].set(v["name"])
 
-    def update_config(self):  # TODO: refactor (can I remove self.templates???)
-        for k, v in self.templates.items():
-            actual_name = self.fields["config"]["templates"][k].get().strip()
-            if actual_name not in self._get_templates_by_type(v["type"]):
-                raise ValueError(f"Invalid template for {k}")
-            if actual_name == "None":
-                actual = {
-                    "name": "None",
-                    "id": -1,
-                    "family": "all",
-                    "type": "all",
-                    "role": "common",
-                    "text": "",
-                }
-            else:
-                actual_template = self.app.db_services["template"].get_by_name_and_role(
-                    actual_name, v["role"]
-                )
-                actual = self.app.db_services["template"].get_info(actual_template)
-            self.app.config_template[k] = actual
-            self.templates[k] = actual
+    def update_config(self):
+        for k, v in self.app.config_template.items():
+            if k in self.fields["config"]["templates"]:
+                new_template_name = self.fields["config"]["templates"][k].get().strip()
+                if new_template_name not in self._get_templates_by_type(v["type"]):
+                    raise ValueError(f"Invalid template for {k}")
+                if new_template_name == "None":
+                    template_info = {
+                        "name": "None",
+                        "id": -1,
+                        "family": "all",
+                        "type": "all",
+                        "role": "common",
+                        "text": "",
+                    }
+                else:
+                    template = self.app.db_services["template"].get_by_name_and_role(
+                        new_template_name, v["role"]
+                    )
+                    template_info = self.app.db_services["template"].get_info(template)
+                self.app.config_template[k] = template_info
         self.display_feedback(pformat(self.app.config_template, sort_dicts=False))
 
     def _get_templates_by_type(self, t):
