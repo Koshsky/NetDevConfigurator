@@ -36,6 +36,6 @@ class HelloTab(BaseTab):
         logger.info("Device selected. device=%s", self.app.device.name)
 
         self.app.preset = None
-        logger.info("Preset is set to None")
+        logger.info("ConfiguratorApp.preset is set to None")
 
         self.app.config_params["CERT"] = self.fields["common"]["CERT"].get().strip()

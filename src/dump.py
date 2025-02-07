@@ -28,11 +28,11 @@ def run_postgres_command(command, env, error_context):
         _, error = process.communicate()
 
         if process.returncode != 0:
-            logger.error(f"{error_context}: {error.decode()}")
+            logger.error("%s: %s", error_context, error.decode())
             return False
         return True
     except Exception as e:
-        logger.error(f"{error_context}: {e}")
+        logger.error("%s: %s", error_context, e)
         return False
 
 
@@ -59,16 +59,16 @@ def backup_postgres_db(db_params):
         env = {"PGPASSWORD": db_params["password"]}
         try:
             run_postgres_command(command, env, path)
-            logger.info(f"Database saved successfully to {os.path.abspath(path)}")
+            logger.info("Database saved successfully to %s", os.path.abspath(path))
         except Exception as e:
-            logger.error(f"{type(e)}: {e}")
+            logger.error("%s: %s", type(e), e)
 
 
 def restore_postgres_db(db_params, path):
     env = {"PGPASSWORD": db_params["password"]}
 
     if not os.path.isfile(path):
-        logger.error(f"{path} doesn't exist.")
+        logger.error("%s doesn't exist.", path)
         return
 
     def base_command(cmd):
@@ -104,7 +104,7 @@ def restore_postgres_db(db_params, path):
         and run_postgres_command(create_command, env, "when creating database")
         and run_postgres_command(restore_command, env, "when restoring db")
     ):
-        logger.info(f"Database restored successfully from {os.path.abspath(path)}")
+        logger.info("Database restored successfully from %s", os.path.abspath(path))
 
 
 if __name__ == "__main__":

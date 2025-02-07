@@ -62,10 +62,10 @@ class ConnectionTab(BaseTab):
             engine = create_engine(connection_string)
             connect = engine.connect()
             connect.close()
-            logger.info(f"Successful connection to the database {connection_string}")
+            logger.info("Successful connection to the database %s", connection_string)
 
             self.on_success_callback(engine)
         except Exception as error:
-            logger.error(f"Connection failed to {connection_string}")
+            logger.error("Connection failed to %s", connection_string)
             self.on_failure_callback(error)
             self.message_label.config(text=f"Error: {str(error)}", fg="red")

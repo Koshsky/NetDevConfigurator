@@ -22,7 +22,7 @@ class BaseTab:
     def refresh_widgets(self):
         self.remove_widgets()
         self.render_widgets()
-        logger.debug(f"{self.__log_name} tab refreshed")
+        logger.debug("%s tab refreshed", self.__log_name)
 
     def render_widgets(self):
         raise NotImplementedError("tab.render_widgets not implemented!")
@@ -39,7 +39,7 @@ class BaseTab:
     def remove_widgets(self):
         for widget in self.frame.winfo_children():
             widget.destroy()
-        logger.debug(f"{self.__log_name} tab cleared")
+        logger.debug("%s tab cleared", self.__log_name)
 
     def check_role_name(self, role):
         if not (role := role.strip()):

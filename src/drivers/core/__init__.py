@@ -13,9 +13,9 @@ def get_core(family: str):
     }
     core = cores.get(family, None)
     if core is None:
-        logger.error(f"Unsupported device family: {family}")
-        raise ValueError(f"Unsupported device family: {family}")
-    logger.info(f"Successfully retrieved core for device family: {family}")
+        logger.error("Unsupported device family: %s", family)
+        raise ValueError("Unsupported device family: %s", family)
+    logger.info("Successfully retrieved core for device family: %s", family)
     return core
 
 

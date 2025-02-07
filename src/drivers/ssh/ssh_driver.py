@@ -30,7 +30,7 @@ class SSHDriver(SSHBaseDriver):
 
     def reboot(self):
         self.ssh.send(f"{self.core.reload}\n")
-        logger.info(f"Send: {self.core.reload}")
+        logger.info("Send: %s", self.core.reload)
 
     def update_boot(self):
         filename = find_most_recent_file(

@@ -35,7 +35,7 @@ class App:
         tab = ClassTab(self.notebook, self, log_name=tab_name, *args, **kwargs)
         self.notebook.add(tab.frame, text=tab_name, state=state)
         self.tabs[tab_name] = tab
-        logger.debug(f"{tab_name} tab created ({state})")
+        logger.debug("%s tab created (%s)", tab_name, state)
 
     def refresh_tabs(self):
         for _, tab in self.tabs.items():
@@ -48,10 +48,10 @@ class App:
 
         self.notebook.forget(self.tabs[CONNECTION_TAB_TITLE].frame)
         del self.tabs[CONNECTION_TAB_TITLE]
-        logger.debug(f"{CONNECTION_TAB_TITLE} is forgotten")
+        logger.debug("%s is forgotten", CONNECTION_TAB_TITLE)
         for tab_name, tab in self.tabs.items():
             self.notebook.add(tab.frame)
-            logger.debug(f"{tab_name} tab is normal")
+            logger.debug("%s tab is normal", tab_name)
 
         self.refresh_tabs()
 

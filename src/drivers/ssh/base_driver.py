@@ -46,7 +46,7 @@ class SSHBaseDriver:
     def send_commands(self, commands, get_response=True):
         for command in commands:
             self.ssh.send(f"{command}\n")
-            logger.info(f"Send: {command}")
+            logger.info("Send: %s", command)
         return self._get_response() if get_response else None
 
     @check_port_open
@@ -62,11 +62,11 @@ class SSHBaseDriver:
                 last_line = output.strip().splitlines()[-1] if output.strip() else ""
 
                 if re.match(self.core.comms_prompt_pattern, last_line):
-                    logger.debug(f"The last line matches the pattern: '{last_line}'")
+                    logger.debug("The last line matches the pattern: '%s'", last_line)
                     break
                 else:
                     logger.debug(
-                        f"The last line does not match the pattern: '{last_line}'"
+                        "The last line does not match the pattern: '%s'", last_line
                     )
 
             except socket.timeout:
@@ -91,18 +91,18 @@ class SSHBaseDriver:
             self.ssh.settimeout(1)
         except TimeoutError as e:
             logger.error(
-                f"Connection failed to {self.__connection_string} via ssh: timed out"
+                "Connection failed to %s via ssh: timed out", self.__connection_string
             )
             raise e
         except paramiko.SSHException as e:
             logger.error(
-                f"Connection failed to {self.__connection_string} via ssh: {e}"
+                "Connection failed to %s via ssh: %s", self.__connection_string, e
             )
             raise e
         except Exception as e:
-            logger.critical(f"Unknown error during connection: {type(e)} ({e})")
+            logger.critical("Unknown error during connection: %s (%s)", type(e), e)
             raise e
-        logger.info(f"Successful connection to {self.__connection_string} via ssh")
+        logger.info("Successful connection to %s via ssh", self.__connection_string)
         self._on_open()
         return self
 

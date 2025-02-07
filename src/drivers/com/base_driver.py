@@ -14,7 +14,9 @@ def check_port_open(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         if not self.ser.is_open:
-            logger.error("")
+            logger.error(
+                "Attempted to call %s but the serial port is not open.", func.__name__
+            )
             raise Exception("Serial port is not open")
         return func(self, *args, **kwargs)
 
@@ -41,14 +43,14 @@ class COMBaseDriver:
     @check_port_open
     def send_command(self, command):
         self.ser.write(f"{command}\n".encode())
-        logger.info(f"Send: {command}")
+        logger.info("Send: %s", command)
         return self._get_response()
 
     @check_port_open
     def send_commands(self, commands):
         for command in commands:
             self.ser.write(f"{command}\n".encode())
-            logger.info(f"Send: {command}")
+            logger.info("Send: %s", command)
         return self._get_response()
 
     @check_port_open
@@ -63,7 +65,7 @@ class COMBaseDriver:
     def _on_open(self):
         self.__log_in()
         self.send_commands(self.core.open_sequence)
-        logger.info(f"On open sequence for {type(self.core)} was sent successfully")
+        logger.info("On open sequence for %s was sent successfully", type(self.core))
 
     def __enter__(self):
         if self.ser.is_open:
@@ -71,7 +73,7 @@ class COMBaseDriver:
         try:
             self.ser.open()
         except serial.SerialException as e:
-            logger.error(f"Serial port cannot be open: {e}")
+            logger.error("Serial port cannot be open: %s", e)
             raise Exception("Failed to open serial port")
         self._on_open()
         return self
@@ -102,11 +104,16 @@ class COMBaseDriver:
             if self.core.success_signs.intersection(response.lower().split()):
                 logger.info("Logged in successfully")
                 return True
+            # TODO: ЭТО ВЫЗВАНО НЕ ТОЛЬКО WRONG CREDENTIALS
             logger.error(
-                f"Login error: wrong credentials. username:{self.username} password:{self.password}"
+                "Login error: wrong credentials. username:%s password:%s",
+                self.username,
+                self.password,
             )
             raise Exception(
-                f"Login error: wrong credentials. username:{self.username} password:{self.password}"
+                "Login error: wrong credentials. username:%s password:%s",
+                self.username,
+                self.password,
             )
         else:
             logger.info("No need to log in. Already logged in")

@@ -21,10 +21,12 @@ class BaseService:
         ):
             return entity
         else:
-            logger.error(f"{self.model.__name__} with id {entity_id} not found")
-            raise EntityNotFoundError(
-                f"{self.model.__name__} with id {entity_id} not found"
+            logger.error(
+                "%s with id %d not found",
+                self.model.__name__,
+                entity_id,
             )
+            raise EntityNotFoundError(f"%s with id {entity_id} not found")
 
     def get_by_name(self, entity_name: str):
         entities = (
@@ -40,16 +42,20 @@ class BaseService:
         if len(entities) == 1:
             return entities[0]
         elif len(entities) == 0:
-            logger.error(f"{self.model.__name__} with name {entity_name} not found")
+            logger.error("%s with name %s not found", self.model.__name__, entity_name)
             raise EntityNotFoundError(
-                f"{self.model.__name__} with name {entity_name} not found"
+                "%s with name %s not found", self.model.__name__, entity_name
             )
         else:
             logger.error(
-                f"Multiple {self.model.__name__} entities found with name {entity_name}"
+                "Multiple %s entities found with name %s",
+                self.model.__name__,
+                entity_name,
             )
             raise EntityNotFoundError(
-                f"Multiple {self.model.__name__} entities found with name {entity_name}"
+                "Multiple %s entities found with name %s",
+                self.model.__name__,
+                entity_name,
             )
 
     def get_info(self, entity):
@@ -68,7 +74,7 @@ class BaseService:
         self.db.add(entity)
         self.db.commit()
         self.db.refresh(entity)
-        logger.info(f"create {self.model.__name__} successfully: {data}")
+        logger.info("create %s successfully: %s", self.model.__name__, data)
         return entity
 
     def update(self, entity, updated_data: dict):
@@ -77,7 +83,7 @@ class BaseService:
         self.db.commit()
         self.db.refresh(entity)
         logger.info(
-            f"Updated {self.model.__name__} entities successfully: {updated_data}"
+            "Updated %s entities successfully: %s", self.model.__name__, updated_data
         )
         return entity
 
@@ -86,7 +92,7 @@ class BaseService:
             self.db.delete(entity)
             self.db.commit()
             logger.info(
-                f"{self.model.__name__} with id {entity.id} deleted successfully"
+                "%s with id %d deleted successfully", self.model.__name__, entity.id
             )
 
     def delete_by_name(self, name: str):

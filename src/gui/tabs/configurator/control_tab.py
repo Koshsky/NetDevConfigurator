@@ -20,7 +20,7 @@ def prepare_config_file(func):
         config_path = f"/srv/tftp/tmp/{self.app.config_filename}"
         with open(config_path, "w") as f:
             f.write(configuration)
-            logger.info(f"Configuration saved: {config_path}")
+            logger.info("Configuration saved: %s", config_path)
 
         return func(self, *args, **kwargs)
 

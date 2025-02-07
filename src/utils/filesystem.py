@@ -19,6 +19,8 @@ def find_most_recent_file(directory: str, pattern: str) -> str:
                 most_recent_file = filename
     if most_recent_file is None:
         logger.warning(
-            f"No files found matching the pattern r`{pattern}`   in the directory {directory}"
+            "No files found matching the pattern r`%s`   in the directory %s",
+            pattern,
+            directory,
         )
     return most_recent_file
