@@ -14,7 +14,7 @@ def set_env(key: str, value: str):
     )
 
 
-router_params = {
+env_converter = {
     "TYPE_COMPLEX": {
         "Standard": "1",
         "All-in-one": "2",

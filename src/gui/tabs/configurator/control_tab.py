@@ -1,7 +1,7 @@
 import logging
 from functools import wraps
 
-from config import config, router_params, set_env
+from config import config, env_converter, set_env
 from drivers import COMDriver, SSHDriver
 from gui import BaseTab, apply_error_handler
 
@@ -94,11 +94,11 @@ class ControlTab(BaseTab):
         self.create_block(
             "params",
             {
-                "TYPE_COMPLEX": tuple(router_params["TYPE_COMPLEX"]),
+                "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
             }
             if not self.app.advanced_mode
             else {
-                "TYPE_COMPLEX": tuple(router_params["TYPE_COMPLEX"]),
+                "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
                 "TRUEROOM_COUNT": tuple(map(str, range(25))),
             },
             ("UPDATE", self.update_params),
@@ -113,7 +113,7 @@ class ControlTab(BaseTab):
             self.app.register_preset(preset)
         elif self.app.device.dev_type == "router":
             type_complex = self.fields["params"]["TYPE_COMPLEX"].get().strip()
-            set_env("TYPE_COMPLEX", router_params["TYPE_COMPLEX"][type_complex])
+            set_env("TYPE_COMPLEX", env_converter["TYPE_COMPLEX"][type_complex])
             trueroom_count = (
                 self.fields["params"]["TRUEROOM_COUNT"].get().strip()
                 if self.app.advanced_mode
