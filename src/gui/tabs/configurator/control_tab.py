@@ -1,10 +1,10 @@
 import logging
+import os
 from functools import wraps
 
 from config import config, env_converter, set_env
 from drivers import COMDriver, SSHDriver
 from gui import BaseTab, apply_error_handler
-
 
 logger = logging.getLogger("gui")
 
@@ -29,9 +29,9 @@ def prepare_config_file(func):
 @apply_error_handler
 class ControlTab(BaseTab):
     def render_widgets(self):
-        if self.app.mode == "com+ssh":
+        if os.environ["MODE"] == "com+ssh":
             self.__render_widgets_com()
-        elif self.app.mode == "ssh":
+        elif os.environ["MODE"] == "ssh":
             self.__render_widgets_ssh()
 
         if self.app.device.dev_type == "switch":
@@ -47,7 +47,7 @@ class ControlTab(BaseTab):
         self.update_host_info()
 
     def load(self):
-        if self.app.mode == "com+ssh":
+        if os.environ["MODE"] == "com+ssh":
             with COMDriver(**self.app.driver) as conn:
                 conn.base_configure_192()
         self._load_by_ssh()
@@ -91,18 +91,19 @@ class ControlTab(BaseTab):
         )
 
     def __render_widgets_router(self):
-        self.create_block(
-            "params",
-            {
-                "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
-            }
-            if not self.app.advanced_mode
-            else {
-                "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
-                "TRUEROOM_COUNT": tuple(map(str, range(25))),
-            },
-            ("UPDATE", self.update_params),
-        )
+        pass
+        # self.create_block(
+        #     "params",
+        #     {
+        #         "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
+        #     }
+        #     if not self.app.advanced_mode
+        #     else {
+        #         "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
+        #         "TRUEROOM_COUNT": tuple(map(str, range(25))),
+        #     },
+        #     ("UPDATE", self.update_params),
+        # )
 
     def update_params(self):
         if self.app.device.dev_type == "switch":
@@ -123,10 +124,14 @@ class ControlTab(BaseTab):
         self.app.refresh_tabs()
 
     def update_host_info(self):
-        if self.app.mode == "ssh":
+        set_env("HOST_ADDRESS", "NO")
+        set_env("HOST_PORT", "NO")
+
+        if os.environ["MODE"] == "ssh":
             # TODO: add validation of ip address
             set_env("HOST_ADDRESS", self.fields["host"]["address"].get().strip())
             set_env("HOST_PORT", self.fields["host"]["port"].get().strip())
+
         set_env("HOST_PASSWORD", self.fields["host"]["password"].get().strip())
         set_env("HOST_USERNAME", self.fields["host"]["username"].get().strip())
 

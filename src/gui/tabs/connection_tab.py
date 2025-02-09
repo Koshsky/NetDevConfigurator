@@ -25,13 +25,13 @@ class ConnectionTab(BaseTab):
         self.on_success_callback = on_success_callback
         self.on_failure_callback = on_failure_callback
 
-        self.fields = config["database"]
+        self._fields = config["database"]
 
         self.entries = {}
         self.refresh_widgets()
 
     def render_widgets(self):
-        for label_text, default_value in self.fields.items():
+        for label_text, default_value in self._fields.items():
             label = tk.Label(self.frame, text=label_text)
             label.pack(pady=5)
 

@@ -7,9 +7,9 @@ lang="bash"
 parse_config () {
 	COUNT=$(wc -l < $1)
 	for (( i=1;i<=$COUNT;i++ ))
-	do 
+	do
 		LINE=$(head -n $i $1| tail -n  1)
-		INF_LINE=$(echo $LINE | cut -d '-' -f 1) 
+		INF_LINE=$(echo $LINE | cut -d '-' -f 1)
 		PAR=$(echo $INF_LINE | cut -d ':' -f 1)
 		VOL=$(echo $INF_LINE | cut -d ':' -f 2)
 		PARAMS[$PAR]=$VOL
@@ -22,7 +22,7 @@ parse_conf () {
 }
 
 replace () {
-	sed -ri "s/<$1>/$2/g" $3	
+	sed -ri "s/<$1>/$2/g" $3
 }
 
 replace_multi () {
@@ -37,10 +37,10 @@ replace_multi () {
 }
 
 correct_rule () {
-	if [ $3 -eq "1" ]; then 
+	if [ $3 -eq "1" ]; then
 		sed -i "/<$1>/d" $2
 		sed -i "/<@$1>/d" $2
-	elif  [ $3 -eq "2" ]; then 
+	elif  [ $3 -eq "2" ]; then
 		sed -i "/<$1>/,/<@$1>/d" $2
 	fi
 }
@@ -58,7 +58,7 @@ count_items () {
 		  TMP_STR=$(echo "$TMP_STR"| tr ? $TMP_NUM)
 		fi
 		FIN_STR_ITER+=$(echo "$TMP_STR")$'\n'
-	done	
+	done
 	echo "$FIN_STR"| head -n -1 > $DIR/tmp/tmpstr
 	replace_multi $1 $2 $DIR/tmp/tmpstr 1
 }
@@ -67,7 +67,7 @@ ROOT_DIR=$PWD
 DIR=$(dirname ${BASH_SOURCE})
 
 declare -A PARAMS
-parse_config "$ROOT_DIR/env.param" 
+parse_config "$ROOT_DIR/env.param"
 
 CERT=${PARAMS["CERT"]}
 PUBLIC_IP=${PARAMS["PUBLIC_IP"]}
@@ -158,14 +158,14 @@ if [ $MODEL -eq 1 ]; then
 	echo "$INTERFACES" > $DIR/tmp/interfaces
 	replace "vlan_int1" 777 "$DIR/tmp/interfaces"
 	replace "vlan_int2" 2 "$DIR/tmp/interfaces"
-	if [ $RAISA -eq 1 ]; then 
+	if [ $RAISA -eq 1 ]; then
 		replace "vlan_int3" 3 "$DIR/tmp/interfaces"
 		replace "esr20_vlans_access" "3-5" "$DIR/tmp/interfaces"
 	else
 		replace "vlan_int3" 3 "$DIR/tmp/interfaces"
 		replace "esr20_vlans_access" "3-4" "$DIR/tmp/interfaces"
 	fi
-	replace "vlan_int4" 10 "$DIR/tmp/interfaces"	
+	replace "vlan_int4" 10 "$DIR/tmp/interfaces"
 	USERNAME_ESR=$(parse_conf "user_mvs_esr20" "$DIR/tmp/security")
 elif [ $MODEL -eq 2 ]; then
 	INTERFACES=$(parse_conf "esr20" "$DIR/tmp/interfaces")$'\n'$(parse_conf "esr21" "$DIR/tmp/interfaces")
@@ -175,7 +175,7 @@ elif [ $MODEL -eq 2 ]; then
 	replace "vlan_int3" 3 "$DIR/tmp/interfaces"
 	replace "vlan_int4" 4 "$DIR/tmp/interfaces"
 	correct_rule "esr20_vlans_access" "$DIR/tmp/interfaces" 1
-	if [ $RAISA -eq 1 ]; then 
+	if [ $RAISA -eq 1 ]; then
 		replace "vlan_int5" 5 "$DIR/tmp/interfaces"
 	else
 		replace "vlan_int5" 10 "$DIR/tmp/interfaces"
@@ -183,7 +183,7 @@ elif [ $MODEL -eq 2 ]; then
 	replace "vlan_int6" 10 "$DIR/tmp/interfaces"
 	replace "vlan_int7" 10 "$DIR/tmp/interfaces"
 	replace "vlan_int8" 10 "$DIR/tmp/interfaces"
-	USERNAME_ESR=$(parse_conf "user_mvs_esr21" "$DIR/tmp/security")	
+	USERNAME_ESR=$(parse_conf "user_mvs_esr21" "$DIR/tmp/security")
 else
 	exit 0
 fi
@@ -197,47 +197,47 @@ fi
 INTERFACES=$(cat $DIR/tmp/interfaces )
 
 SERVICES=$(parse_conf "service_std" "$DIR/tmp/services")
-if [ $TELEPORT -eq 1 ]; then 
+if [ $TELEPORT -eq 1 ]; then
 	declare -n SERVICES_PH=SERVICES
 	SERVICES_PH+=$'\n'$(parse_conf "service_ph" "$DIR/tmp/services")
 fi
-if [ $VPN -eq 1 ]; then 
+if [ $VPN -eq 1 ]; then
 	declare -n SERVICES_VPN=SERVICES
 	SERVICES_VPN+=$'\n'$(parse_conf "service_VPN" "$DIR/tmp/services")
 fi
-if [ $TRUECONF -eq 1 ]; then 
+if [ $TRUECONF -eq 1 ]; then
 	declare -n SERVICES_TRUECONF=SERVICES
 	SERVICES_TRUECONF+=$'\n'$(parse_conf "service_tc" "$DIR/tmp/services")
 fi
-if [ $TRUEROOM -eq 1 ]; then 
+if [ $TRUEROOM -eq 1 ]; then
 	declare -n SERVICES_TRUEROOM=SERVICES
 	SERVICES_TRUEROOM+=$'\n'$(parse_conf "service_tcroom" "$DIR/tmp/services")
 fi
 
 NETWORKS=$(parse_conf "network_std" "$DIR/tmp/networks")
-if [ $TELEPORT -eq 1 ]; then 
+if [ $TELEPORT -eq 1 ]; then
 	declare -n NETWORKS_PH=NETWORKS
 	NETWORKS_PH+=$'\n'$(parse_conf "network_ph" "$DIR/tmp/networks")
 fi
-if [ $VPN -eq 1 ]; then 
+if [ $VPN -eq 1 ]; then
 	declare -n NETWORKS_VPN=NETWORKS
 	NETWORKS_VPN+=$'\n'$(parse_conf "network_VPN" "$DIR/tmp/networks")
 fi
-if [ $RAISA -eq 1 ]; then 
+if [ $RAISA -eq 1 ]; then
 	declare -n NETWORKS_RAISA=NETWORKS
 	NETWORKS_RAISA+=$'\n'$(parse_conf "network_raisa" "$DIR/tmp/networks")
 fi
-if [ $TRUECONF -eq 1 ]; then 
+if [ $TRUECONF -eq 1 ]; then
 	declare -n NETWORKS_TRUECONF=NETWORKS
 	NETWORKS_TRUECONF+=$'\n'$(parse_conf "network_tc" "$DIR/tmp/networks")
 fi
-if [ $TRUEROOM -eq 1 ]; then 
+if [ $TRUEROOM -eq 1 ]; then
 	declare -n NETWORKS_TRUEROOM=NETWORKS
 	NETWORKS_TRUEROOM+=$'\n'$(parse_conf "network_tcroom" "$DIR/tmp/networks")
 fi
 
 VLANS=$(parse_conf "vlan_std" "$DIR/tmp/vlans")
-if [ $RAISA -eq 1 ]; then 
+if [ $RAISA -eq 1 ]; then
 	declare -n VLAN_RAISA=VLANS
 	VLAN_RAISA+=$'\n'$(parse_conf "vlan_raisa" "$DIR/tmp/vlans")
 fi
@@ -249,11 +249,11 @@ correct_rule "br_tcroom" "$DIR/tmp/vlans" $TRUEROOM
 BRS=$( cat $DIR/tmp/vlans )
 
 ZONES=$(parse_conf "zone_std" "$DIR/tmp/security")
-if [ $VPN -eq 1 ]; then 
+if [ $VPN -eq 1 ]; then
 	declare -n ZONE_VPN=ZONES
 	ZONE_VPN+=$'\n'$(parse_conf "zone_VPN" "$DIR/tmp/security")
 fi
-if [ $RAISA -eq 1 ]; then 
+if [ $RAISA -eq 1 ]; then
 	declare -n ZONE_RAISA=ZONES
 	ZONE_RAISA+=$'\n'$(parse_conf "zone_raisa" "$DIR/tmp/security")
 fi
@@ -265,14 +265,14 @@ correct_rule "secure_raisa" "$DIR/tmp/security" $RAISA
 correct_rule "secure_VPN" "$DIR/tmp/security" $VPN
 correct_rule "secure_tc" "$DIR/tmp/security" $TRUECONF
 correct_rule "secure_tcroom" "$DIR/tmp/security" $TRUEROOM
-if [[ $RAISA -eq 1 && $VPN -eq 1 ]]; then 
+if [[ $RAISA -eq 1 && $VPN -eq 1 ]]; then
 	correct_rule "secure_raisVPN" "$DIR/tmp/security" 1
 else
 	correct_rule "secure_raisVPN" "$DIR/tmp/security" 2
 fi
 SECURITY=$( cat $DIR/tmp/security )
 
-if [ $VPN -eq 1 ]; then 
+if [ $VPN -eq 1 ]; then
 	VPN_TUN=$(parse_conf "VPN_tun" "$DIR/tmp/vpn")
 	echo "$VPN_TUN" > $DIR/tmp/vpn
 	correct_rule "VPN_raisa" "$DIR/tmp/vpn" $RAISA
@@ -334,7 +334,7 @@ echo "$NAT" > $DIR/tmp/tmpstr
 replace_multi "nat" $DIR/tmp/main $DIR/tmp/tmpstr 2
 
 replace "pub_ip" $PUBLIC_IP "$DIR/tmp/main"
-if [ $RAISA -eq 1 ]; then 
+if [ $RAISA -eq 1 ]; then
 	replace "raisa_ip" $RAISA_IP "$DIR/tmp/main"
 
 else

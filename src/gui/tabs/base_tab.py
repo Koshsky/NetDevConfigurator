@@ -39,7 +39,12 @@ class BaseTab:
     def remove_widgets(self):
         for widget in self.frame.winfo_children():
             widget.destroy()
-        logger.debug("%s tab cleared", self.__log_name)
+        self.fields = {}
+        logger.debug(
+            "%s tab cleared. %s.fields set to empty dict",
+            self.__log_name,
+            self.__log_name,
+        )
 
     def check_role_name(self, role):
         if not (role := role.strip()):
@@ -171,6 +176,7 @@ class BaseTab:
     def __create_checkbox_group(
         self, entity_name, param_name, param_presets, width=None
     ):
+        print("__create_checkbox_group")
         self.fields[entity_name][param_name] = {}
         space = width
         first_row = self.cur_row
@@ -194,6 +200,7 @@ class BaseTab:
     def __create_combobox_group(
         self, entity_name, param_name, param_presets, width=None
     ):
+        print("__create_combobox_group")
         self.fields[entity_name][param_name] = {}
         space = width
         first_row = self.cur_row

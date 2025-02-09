@@ -1,6 +1,10 @@
-from pprint import pformat
+import logging
+import os
 
+from config import config, env_converter, set_env
 from gui import BaseTab, apply_error_handler
+
+logger = logging.getLogger("tab")
 
 
 # TODO: наполнить этот класс ЛОГИКОЙ. КОРРЕКТНОЙ
@@ -11,67 +15,76 @@ class RouterTab(BaseTab):
         parent,
         app,
         log_name="RouterTab",
-        *,
-        allow_none=False,
-        width=6,
-        template_filter=lambda x: True,
     ):
         super().__init__(parent, app, log_name)
-        self.width = width
-        self.allow_none = allow_none
-        self.template_filter = template_filter
+        self.width = 6
 
     def render_widgets(self):
-        self.templates = {}
-        for k, v in self.app.config_template.items():
-            if self.template_filter(v):
-                self.templates[k] = v
         self.create_block(
-            "config",
-            {
-                "templates": {
-                    k: self._get_templates_by_type(v["type"])
-                    for k, v in self.templates.items()
-                }
-            },
-            width=self.width,
+            "env",
+            self.__get_configuration(),
         )
-        self.actualize_values()
-        self.create_button_in_line(("UPDATE", self.update_config))
-        self.create_button_in_line(("ACTUALIZE", self.actualize_values))
+        self.create_button_in_line(("UPDATE", self.update))
         self.create_feedback_area()
+        self.actualize()
 
-    def actualize_values(self):  # TODO: refactor (can I remove self.templates???)
-        for k, v in self.templates.items():
-            self.fields["config"]["templates"][k].set(v["name"])
-
-    def update_config(self):  # TODO: refactor (can I remove self.templates???)
-        for k, v in self.templates.items():
-            actual_name = self.fields["config"]["templates"][k].get().strip()
-            if actual_name not in self._get_templates_by_type(v["type"]):
-                raise ValueError(f"Invalid template for {k}")
-            if actual_name == "None":
-                actual = {
-                    "name": "None",
-                    "id": -1,
-                    "family": "all",
-                    "type": "all",
-                    "role": "common",
-                    "text": "",
-                }
+    def actualize(self):
+        for env_name, field in self.fields["env"].items():
+            if env_name.startswith("TRUEROOM_IP") and env_name not in os.environ:
+                field.set("MUST BE SET")
             else:
-                actual_template = self.app.db_services["template"].get_by_name_and_role(
-                    actual_name, v["role"]
-                )
-                actual = self.app.db_services["template"].get_info(actual_template)
-            self.app.config_template[k] = actual
-            self.templates[k] = actual
-        self.display_feedback(pformat(self.app.config_template, sort_dicts=False))
+                field.set(os.environ[env_name])
 
-    def _get_templates_by_type(self, t):
-        entities = self.app.db_services["template"].get_by_family_id_and_role(
-            self.app.device.family_id,
-            self.app.preset.role,
+    def update(self):
+        for env_name, field in self.fields["env"].items():
+            env_value = field.get()
+            set_env(env_name, env_value)
+        self.refresh_widgets()
+
+    def __get_configuration(self):
+        env_vars = {
+            "PUBLIC_IP": tuple(["1", "2"]),
+            "PUBLIC_MASK": tuple(["1", "2"]),
+            "GW": tuple(["1", "2"]),
+            "VERS": tuple(["1", "2"]),
+            "TYPE_COMPLEX": tuple(["1", "2"]),
+        }
+
+        if os.environ.get("TYPE_COMPLEX") == "1":
+            env_vars.update(
+                {
+                    "PH_COUNT": tuple(["1", "2"]),
+                    "STREAM_COUNT": tuple(["1", "2"]),
+                }
+            )
+
+        env_vars.update(
+            {
+                "VPN": tuple(["1", "2"]),
+                "TELEPORT": tuple(["1", "2"]),
+                "RAISA": tuple(["1", "2"]),
+            }
         )
-        tail = ("None",) if self.allow_none else tuple()
-        return tuple(entity.name for entity in entities if entity.type == t) + tail
+        if os.environ.get("RAISA") == "1":
+            env_vars["RAISA_IP"] = tuple(["1", "2"])
+        env_vars["TRUECONF"] = tuple(["1", "2"])
+
+        if os.environ.get("TRUECONF") == "1":
+            env_vars.update(
+                {
+                    "TRUEROOM": tuple(["1", "2"]),
+                }
+            )
+
+        if os.environ.get("TRUEROOM") == "1":
+            env_vars.update(
+                {
+                    "TRUEROOM_COUNT": tuple(range(1, 26)),
+                }
+            )
+
+            tr_room_count = int(os.environ["TRUEROOM_COUNT"])
+            for i in range(1, tr_room_count + 1):
+                env_vars[f"TRUEROOM_IP{i}"] = tuple(["1", "2"])
+
+        return env_vars

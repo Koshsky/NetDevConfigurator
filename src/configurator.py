@@ -4,7 +4,7 @@ import os
 import tkinter as tk
 import uuid
 
-from config import config
+from config import config, set_env
 from gui.base_app import App
 from gui.tabs.configurator import ControlTab, TemplateTab, HelloTab, RouterTab
 
@@ -19,11 +19,24 @@ class ConfiguratorApp(App):
         }
         self.device = None
         self.preset = None
-        self.mode = None  # com+ssh or pure ssh
         self.config_template = None
         self.config_filename = None
         self.advanced_mode = advanced
         super().__init__(root, title)
+
+    def register_device(self, device):
+        self.device = device
+        self.preset = None
+
+        if device.dev_type == "router":
+            set_env("DEV_TYPE", "router")
+            logger.info("setting router environmental variables to default:")
+            for env_param, env_value in config["router"].items():
+                set_env(env_param, env_value)
+        elif device.dev_type == "switch":
+            set_env("DEV_TYPE", "switch")
+
+        logger.info("Device selected. device=%s", device.name)
 
     def create_tabs(self):
         super().create_tabs()
@@ -53,17 +66,22 @@ class ConfiguratorApp(App):
         self.config_template = self.db_services["preset"].get_info(preset, check=True)[
             "configuration"
         ]
-        self.config_filename = f"config_{uuid.uuid4()}.conf"
+        self.config_filename = f"config_{uuid.uuid4()}.conf"  # TODO: TO ENV var
         logger.info("Create file for switch configuration: %s", self.config_filename)
 
     def refresh_tabs(self):
-        logger.debug("Refreshing configurator tabs (mode %s): ", self.mode)
-        if self.mode is None:
+        logger.debug(
+            "Refreshing configurator tabs (mode %s): ",
+            os.environ["MODE"] if "MODE" in os.environ else "None",
+        )
+        if "MODE" not in os.environ:
             self.__refresh_tabs_none()
-        elif self.mode in ("ssh", "com+ssh"):
+        elif os.environ["MODE"] in ("ssh", "com+ssh"):
             self.__refresh_tabs()
         else:
-            logger.critical("Refreshing configurator tabs: unknown mode: %s", self.mode)
+            logger.critical(
+                "Refreshing configurator tabs: unknown mode: %s", os.environ["MODE"]
+            )
         logger.debug("Configurator tabs refreshed successfully")
 
     def __refresh_tabs_none(self):
@@ -80,7 +98,7 @@ class ConfiguratorApp(App):
                 pass
             elif isinstance(tab, TemplateTab):
                 if (
-                    self.device.dev_type == "switch"
+                    os.environ["DEV_TYPE"] == "switch"
                     and self.advanced_mode
                     and self.preset is not None
                 ):
@@ -88,11 +106,7 @@ class ConfiguratorApp(App):
                 else:
                     tab.hide()
             elif isinstance(tab, RouterTab):
-                if (
-                    self.device.dev_type == "router"
-                    and self.advanced_mode
-                    and "TYPE_COMPLEX" in os.environ  # mandatory parameter
-                ):
+                if os.environ["DEV_TYPE"] == "router" and self.advanced_mode:
                     tab.show()
                 else:
                     tab.hide()
@@ -118,9 +132,9 @@ class ConfiguratorApp(App):
 
     @property
     def text_configuration(self):
-        if self.device.dev_type == "switch":
+        if os.environ["DEV_TYPE"] == "switch":
             return self.__switch_config()
-        elif self.device.dev_type == "router":
+        elif os.environ["DEV_TYPE"] == "router":
             return self.__router_config()
 
     def __router_config(self):  # TODO: РЕАЛИЗОВАТЬ ЭТО С ПОМОЩЬЮ БАШ-СКРИПТОВ

@@ -1,6 +1,6 @@
 import logging
 
-from config import config
+from config import config, set_env
 from gui import BaseTab, apply_error_handler
 
 
@@ -28,14 +28,11 @@ class HelloTab(BaseTab):
 
     def prepare(self, mode):
         self.register_device()
-        self.app.mode = mode
+        set_env("MODE", mode)
         self.app.refresh_tabs()
 
     def register_device(self):
-        self.app.device = self.check_device_name(self.fields["device"]["name"].get())
-        logger.info("Device selected. device=%s", self.app.device.name)
+        device = self.check_device_name(self.fields["device"]["name"].get())
+        self.app.register_device(device)
 
-        self.app.preset = None
-        logger.info("ConfiguratorApp.preset is set to None")
-
-        self.app.config_params["CERT"] = self.fields["common"]["CERT"].get().strip()
+        set_env("CERT", self.fields["common"]["CERT"].get().strip())
