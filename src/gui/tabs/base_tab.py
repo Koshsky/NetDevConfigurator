@@ -176,7 +176,6 @@ class BaseTab:
     def __create_checkbox_group(
         self, entity_name, param_name, param_presets, width=None
     ):
-        print("__create_checkbox_group")
         self.fields[entity_name][param_name] = {}
         space = width
         first_row = self.cur_row
@@ -200,7 +199,6 @@ class BaseTab:
     def __create_combobox_group(
         self, entity_name, param_name, param_presets, width=None
     ):
-        print("__create_combobox_group")
         self.fields[entity_name][param_name] = {}
         space = width
         first_row = self.cur_row

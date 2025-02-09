@@ -17,26 +17,29 @@ class RouterTab(BaseTab):
         log_name="RouterTab",
     ):
         super().__init__(parent, app, log_name)
-        self.width = 6
+        self.width = 10
 
     def render_widgets(self):
         self.create_block(
             "env",
-            self.__get_configuration(),
+            {
+                "vars": self.__get_configuration(),
+            },
+            width=self.width,
         )
         self.create_button_in_line(("UPDATE", self.update))
         self.create_feedback_area()
         self.actualize()
 
     def actualize(self):
-        for env_name, field in self.fields["env"].items():
+        for env_name, field in self.fields["env"]["vars"].items():
             if env_name.startswith("TRUEROOM_IP") and env_name not in os.environ:
                 field.set("MUST BE SET")
             else:
                 field.set(os.environ[env_name])
 
     def update(self):
-        for env_name, field in self.fields["env"].items():
+        for env_name, field in self.fields["env"]["vars"].items():
             env_value = field.get()
             set_env(env_name, env_value)
         self.refresh_widgets()
