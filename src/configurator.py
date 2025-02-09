@@ -111,6 +111,7 @@ class ConfiguratorApp(App):
             "auth_strict_key": False,  # important for unknown hosts
             "device": self.db_services["device"].get_info(self.device),
             "host": os.environ["HOST_ADDRESS"],
+            "port": os.environ["HOST_PORT"],
             "auth_username": os.environ["HOST_USERNAME"],
             "auth_password": os.environ["HOST_PASSWORD"],
         }
