@@ -36,7 +36,3 @@ logger = logging.getLogger("config")
 
 config = yaml.safe_load(open("./src/config/config.yml"))
 config["router"] = yaml.safe_load(open("./src/config/common_router.yml"))
-
-set_env("TFTP_ADDRESS", config["tftp-server"]["address"])
-set_env("TFTP_PORT", config["tftp-server"]["port"])
-set_env("TFTP_FOLDER", config["tftp-server"]["folder"])
