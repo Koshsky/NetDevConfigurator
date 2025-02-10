@@ -1,7 +1,7 @@
 import logging
 import os
 
-logger = logging.getLogger("os")
+logger = logging.getLogger("env")
 
 
 def set_env(key: str, value: str):
