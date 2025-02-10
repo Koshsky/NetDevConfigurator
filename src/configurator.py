@@ -4,7 +4,8 @@ import os
 import tkinter as tk
 import uuid
 
-from config import config, set_env
+from config import config
+from utils import set_env
 from gui.base_app import App
 from gui.tabs.configurator import ControlTab, TemplateTab, HelloTab, RouterTab
 

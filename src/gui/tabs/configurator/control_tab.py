@@ -2,9 +2,10 @@ import logging
 import os
 from functools import wraps
 
-from config import config, env_converter, set_env
+from config import config
 from drivers import COMDriver, SSHDriver
 from gui import BaseTab, apply_error_handler
+from utils import env_converter, set_env
 
 logger = logging.getLogger("gui")
 

@@ -1,13 +1,12 @@
 import logging
 import os
 
-from config import config, env_converter, set_env
 from gui import BaseTab, apply_error_handler
+from utils import env_converter, set_env
 
 logger = logging.getLogger("tab")
 
 
-# TODO: наполнить этот класс ЛОГИКОЙ. КОРРЕКТНОЙ
 @apply_error_handler
 class RouterTab(BaseTab):
     def __init__(
@@ -36,58 +35,72 @@ class RouterTab(BaseTab):
             if env_name.startswith("TRUEROOM_IP") and env_name not in os.environ:
                 field.set("MUST BE SET")
             else:
-                field.set(os.environ[env_name])
+                field.set(env_converter.to_human(env_name, os.environ[env_name]))
 
     def update(self):
         for env_name, field in self.fields["env"]["vars"].items():
-            env_value = field.get()
+            try:
+                env_value = env_converter.from_human(env_name, field.get())
+            except KeyError:
+                logger.error("Incorrect value for %s: %s", env_name, field.get())
             set_env(env_name, env_value)
         self.refresh_widgets()
 
     def __get_configuration(self):
         env_vars = {
-            "PUBLIC_IP": tuple(["1", "2"]),
-            "PUBLIC_MASK": tuple(["1", "2"]),
-            "GW": tuple(["1", "2"]),
-            "VERS": tuple(["1", "2"]),
-            "TYPE_COMPLEX": tuple(["1", "2"]),
+            "PUBLIC_IP": tuple(
+                [
+                    env_converter.get_human("PUBLIC_IP"),
+                ]
+            ),
+            "PUBLIC_MASK": tuple(
+                [
+                    env_converter.get_human("PUBLIC_MASK"),
+                ]
+            ),
+            "GW": tuple(
+                [
+                    env_converter.get_human("GW"),
+                ]
+            ),
+            "VERS": tuple(env_converter["VERS"]),
+            "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
         }
-
-        if os.environ.get("TYPE_COMPLEX") == "1":
+        if os.environ["TYPE_COMPLEX"] == "1":
             env_vars.update(
                 {
-                    "PH_COUNT": tuple(["1", "2"]),
-                    "STREAM_COUNT": tuple(["1", "2"]),
+                    "PH_COUNT": tuple(range(1, 26)),
+                    "STREAM_COUNT": tuple(range(1, 26)),
                 }
             )
 
         env_vars.update(
             {
-                "VPN": tuple(["1", "2"]),
-                "TELEPORT": tuple(["1", "2"]),
-                "RAISA": tuple(["1", "2"]),
+                "VPN": tuple(env_converter["VPN"]),
+                "TELEPORT": tuple(env_converter["VPN"]),
+                "RAISA": tuple(env_converter["VPN"]),
             }
         )
-        if os.environ.get("RAISA") == "1":
-            env_vars["RAISA_IP"] = tuple(["1", "2"])
-        env_vars["TRUECONF"] = tuple(["1", "2"])
-
-        if os.environ.get("TRUECONF") == "1":
-            env_vars.update(
-                {
-                    "TRUEROOM": tuple(["1", "2"]),
-                }
+        if os.environ["RAISA"] == "1":
+            env_vars["RAISA_IP"] = tuple(
+                [
+                    env_converter.get_human("RAISA_IP"),
+                ]
             )
+        env_vars["TRUECONF"] = tuple(env_converter["TRUECONF"])
 
-        if os.environ.get("TRUEROOM") == "1":
-            env_vars.update(
-                {
-                    "TRUEROOM_COUNT": tuple(range(1, 26)),
-                }
-            )
+        if os.environ["TRUECONF"] == "1":
+            env_vars["TRUEROOM"] = tuple(env_converter["TRUEROOM"])
+
+        if os.environ["TRUEROOM"] == os.environ["TRUECONF"] == "1":
+            env_vars["TRUEROOM_COUNT"] = tuple(range(1, 26))
 
             tr_room_count = int(os.environ["TRUEROOM_COUNT"])
             for i in range(1, tr_room_count + 1):
-                env_vars[f"TRUEROOM_IP{i}"] = tuple(["1", "2"])
+                env_vars[f"TRUEROOM_IP{i}"] = tuple(
+                    [
+                        "127.0.0.1",
+                    ]
+                )
 
         return env_vars
