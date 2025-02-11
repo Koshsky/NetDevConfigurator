@@ -18,11 +18,11 @@ class RouterTab(BaseTab):
         super().__init__(parent, app, log_name)
         self.width = 10
 
-    def _render_widgets(self):
+    def _create_widgets(self):
         self.create_block(
             "env",
             {
-                "vars": self.__get_configuration(),
+                "vars": self._get_configuration(),
             },
             width=self.width,
         )
@@ -46,7 +46,7 @@ class RouterTab(BaseTab):
             set_env(env_name, env_value)
         self.refresh_widgets()
 
-    def __get_configuration(self):
+    def _get_configuration(self):
         env_vars = {
             "PUBLIC_IP": tuple(
                 [

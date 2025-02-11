@@ -33,7 +33,7 @@ class CommonConfigTab(BaseTab):
         self._config = None
         self.preset = None
 
-    def _render_widgets(self):
+    def _create_widgets(self):
         self.create_block(
             "preset",
             {

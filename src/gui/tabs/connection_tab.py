@@ -30,7 +30,7 @@ class ConnectionTab(BaseTab):
         self.entries = {}
         self.refresh_widgets()
 
-    def _render_widgets(self):
+    def _create_widgets(self):
         for label_text, default_value in self._fields.items():
             label = tk.Label(self.frame, text=label_text)
             label.pack(pady=5)

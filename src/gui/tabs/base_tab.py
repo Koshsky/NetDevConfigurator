@@ -21,11 +21,11 @@ class BaseTab:
 
     def refresh_widgets(self):
         self._remove_widgets()
-        self._render_widgets()
+        self._create_widgets()
         logger.debug("%s tab refreshed", self.__log_name)
 
-    def _render_widgets(self):
-        raise NotImplementedError("tab.render_widgets not implemented!")
+    def _create_widgets(self):
+        raise NotImplementedError("tab._create_widgets not implemented!")
 
     def hide(self):
         self.app.notebook.hide(self.frame)

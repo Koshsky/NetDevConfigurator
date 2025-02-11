@@ -17,15 +17,18 @@ class TemplateTab(BaseTab):
         template_filter=lambda x: True,
     ):
         super().__init__(parent, app, log_name)
-        self.width = width
-        self.allow_none = allow_none
-        self.template_filter = template_filter
+        self._width = width
+        self._allow_none = allow_none
+        self._template_filter = template_filter
 
-    def _render_widgets(self):
-        filtered_templates = {}
-        for k, v in self.app.config_template.items():
-            if self.template_filter(v):
-                filtered_templates[k] = v
+    def _create_widgets(self):
+        filtered_templates = self._filter_templates(self.app.config_template)
+        self._create_config_block(filtered_templates)
+        self.actualize_values()
+        self._create_action_buttons()
+        self.create_feedback_area()
+
+    def _create_config_block(self, filtered_templates):
         self.create_block(
             "config",
             {
@@ -34,12 +37,12 @@ class TemplateTab(BaseTab):
                     for k, v in filtered_templates.items()
                 }
             },
-            width=self.width,
+            width=self._width,
         )
-        self.actualize_values()
+
+    def _create_action_buttons(self):
         self.create_button_in_line(("ACTUALIZE", self.actualize_values))
         self.create_button_in_line(("UPDATE", self.update_config))
-        self.create_feedback_area()
 
     def actualize_values(self):
         for k, v in self.app.config_template.items():
@@ -74,5 +77,8 @@ class TemplateTab(BaseTab):
             self.app.device_info["family"]["id"],
             os.environ["DEV_ROLE"],
         )
-        tail = ("None",) if self.allow_none else tuple()
+        tail = ("None",) if self._allow_none else tuple()
         return tuple(entity.name for entity in entities if entity.type == t) + tail
+
+    def _filter_templates(self, templates):
+        return {k: v for k, v in templates.items() if self._template_filter(v)}

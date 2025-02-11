@@ -29,9 +29,9 @@ def prepare_config_file(func):
 
 @apply_error_handler
 class ControlTab(BaseTab):
-    def _render_widgets(self):
-        self._render_connection_widgets()
-        self._render_device_widgets()
+    def _create_widgets(self):
+        self._create_connection_widgets()
+        self._create_device_widgets()
         self._create_action_buttons()
         self.create_feedback_area()
         self.update_host_info()
@@ -96,19 +96,19 @@ class ControlTab(BaseTab):
         else:
             self.display_feedback(self.app.text_configuration)
 
-    def _render_connection_widgets(self):
+    def _create_connection_widgets(self):
         connection_type = os.environ["CONNECTION_TYPE"]
         if connection_type == "com+ssh":
-            self._render_widgets_com()
+            self._create_widgets_com()
         elif connection_type == "ssh":
-            self._render_widgets_ssh()
+            self._create_widgets_ssh()
 
-    def _render_device_widgets(self):
+    def _create_device_widgets(self):
         device_type = os.environ["DEV_TYPE"]
         if device_type == "switch":
-            self._render_widgets_switch()
+            self._create_widgets_switch()
         elif device_type == "router":
-            self._render_widgets_router()
+            self._create_widgets_router()
 
     def _create_action_buttons(self):
         actions = [
@@ -120,7 +120,7 @@ class ControlTab(BaseTab):
         for action in actions:
             self.create_button_in_line(action)
 
-    def _render_widgets_com(self):
+    def _create_widgets_com(self):
         self.create_block(
             "host",
             {
@@ -130,7 +130,7 @@ class ControlTab(BaseTab):
             ("SELECT", self.update_host_info),
         )
 
-    def _render_widgets_ssh(self):
+    def _create_widgets_ssh(self):
         self.create_block(
             "host",
             {
@@ -142,7 +142,7 @@ class ControlTab(BaseTab):
             ("SELECT", self.update_host_info),
         )
 
-    def _render_widgets_switch(self):
+    def _create_widgets_switch(self):
         self.create_block(
             "params",
             {
@@ -154,7 +154,7 @@ class ControlTab(BaseTab):
             ("UPDATE", self.update_params),
         )
 
-    def _render_widgets_router(self):
+    def _create_widgets_router(self):
         self.create_block(
             "params",
             {
