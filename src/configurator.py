@@ -51,13 +51,16 @@ class ConfiguratorApp(App):
         set_env("DEV_TYPE", device.dev_type)
 
         if os.environ["DEV_TYPE"] == "router":
-            logger.info("setting router environmental variables to default:")
             for env_param, env_value in config["router"].items():
                 set_env(env_param, env_value)
 
         logger.info("Device selected. device=%s", os.environ["DEV_NAME"])
 
-    def register_preset(self, preset):
+    def register_preset(self, role: str):
+        preset = self.db_services["preset"].get_by_device_name_and_role(
+            os.environ["DEV_NAME"],
+            role,
+        )
         set_env("DEV_ROLE", preset.role)
         set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")
         logger.info(
@@ -70,21 +73,19 @@ class ConfiguratorApp(App):
         ]
 
     def refresh_tabs(self):
-        logger.debug(
-            "Refreshing configurator tabs (mode %s): ",
-            os.environ["MODE"] if "MODE" in os.environ else "None",
-        )
-        if "MODE" not in os.environ:
+        if "CONNECTION_TYPE" not in os.environ:
             self.__refresh_tabs_none()
-        elif os.environ["MODE"] in ("ssh", "com+ssh"):
+        elif os.environ["CONNECTION_TYPE"] in ("ssh", "com+ssh"):
             self.__refresh_tabs()
         else:
             logger.critical(
-                "Refreshing configurator tabs: unknown mode: %s", os.environ["MODE"]
+                "Refreshing configurator tabs: unknown CONNECTION_TYPE: %s",
+                os.environ["CONNECTION_TYPE"],
             )
         logger.debug("Configurator tabs refreshed successfully")
 
     def __refresh_tabs_none(self):
+        logger.debug("Refreshing configurator tabs (CONNECTION_TYPE None): ")
         for _, tab in self.tabs.items():
             if isinstance(tab, HelloTab):
                 tab.show()
@@ -93,6 +94,10 @@ class ConfiguratorApp(App):
         self.notebook.select(self.tabs["HOME"].frame)
 
     def __refresh_tabs(self):
+        logger.debug(
+            "Refreshing configurator tabs (CONNECTION_TYPE %s): ",
+            os.environ["CONNECTION_TYPE"],
+        )
         for _, tab in self.tabs.items():
             if isinstance(tab, HelloTab):
                 pass

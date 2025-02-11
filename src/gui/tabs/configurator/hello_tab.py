@@ -26,9 +26,9 @@ class HelloTab(BaseTab):
         self.create_button_in_line(("COM+SSH", lambda: self.prepare("com+ssh")))
         self.create_button_in_line(("SSH", lambda: self.prepare("ssh")))
 
-    def prepare(self, mode):
+    def prepare(self, connection_type):
         self.register_device()
-        set_env("MODE", mode)
+        set_env("CONNECTION_TYPE", connection_type)
         self.app.refresh_tabs()
 
     def register_device(self):

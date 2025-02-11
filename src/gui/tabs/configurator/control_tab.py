@@ -5,7 +5,7 @@ from functools import wraps
 from config import config
 from drivers import COMDriver, SSHDriver
 from gui import BaseTab, apply_error_handler
-from utils import env_converter, set_env
+from utils import set_env
 
 logger = logging.getLogger("gui")
 
@@ -30,9 +30,9 @@ def prepare_config_file(func):
 @apply_error_handler
 class ControlTab(BaseTab):
     def render_widgets(self):
-        if os.environ["MODE"] == "com+ssh":
+        if os.environ["CONNECTION_TYPE"] == "com+ssh":
             self.__render_widgets_com()
-        elif os.environ["MODE"] == "ssh":
+        elif os.environ["CONNECTION_TYPE"] == "ssh":
             self.__render_widgets_ssh()
 
         if os.environ["DEV_TYPE"] == "switch":
@@ -48,7 +48,7 @@ class ControlTab(BaseTab):
         self.update_host_info()
 
     def load(self):
-        if os.environ["MODE"] == "com+ssh":
+        if os.environ["CONNECTION_TYPE"] == "com+ssh":
             with COMDriver(**self.app.driver) as conn:
                 conn.base_configure_192()
         self._load_by_ssh()
@@ -108,31 +108,16 @@ class ControlTab(BaseTab):
 
     def update_params(self):
         if os.environ["DEV_TYPE"] == "switch":
-            preset = self.app.db_services["preset"].get_by_device_name_and_role(
-                os.environ["DEV_NAME"],
-                self.check_role_name(self.fields["params"]["role"].get()),
+            self.app.register_preset(
+                self.check_role_name(self.fields["params"]["role"].get())
             )
-            self.app.register_preset(preset)
-        elif os.environ["DEV_TYPE"] == "router":
-            set_env(
-                "TYPE_COMPLEX",
-                env_converter.from_human(
-                    "TYPE_COMPLEX", self.fields["params"]["TYPE_COMPLEX"].get().strip()
-                ),
-            )
-            trueroom_count = (
-                self.fields["params"]["TRUEROOM_COUNT"].get().strip()
-                if self.app.advanced_mode
-                else 1
-            )
-            set_env("TRUEROOM_COUNT", trueroom_count)
         self.app.refresh_tabs()
 
     def update_host_info(self):
         set_env("HOST_ADDRESS", "NO")
         set_env("HOST_PORT", "NO")
 
-        if os.environ["MODE"] == "ssh":
+        if os.environ["CONNECTION_TYPE"] == "ssh":
             # TODO: add validation of ip address
             set_env("HOST_ADDRESS", self.fields["host"]["address"].get().strip())
             set_env("HOST_PORT", self.fields["host"]["port"].get().strip())
