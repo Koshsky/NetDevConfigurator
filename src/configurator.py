@@ -25,6 +25,26 @@ class ConfiguratorApp(App):
         else:
             return None
 
+    @property
+    def driver(self):
+        return {
+            "auth_strict_key": False,  # important for unknown hosts
+            "device": self.device_info,
+            "host": os.environ["HOST_ADDRESS"],
+            "port": os.environ["HOST_PORT"],
+            "auth_username": os.environ["HOST_USERNAME"],
+            "auth_password": os.environ["HOST_PASSWORD"],
+        }
+
+    @property
+    def text_configuration(self):
+        if os.environ["DEV_TYPE"] == "switch":
+            if "DEV_ROLE" not in os.environ:
+                return
+            return self.__switch_config()
+        elif os.environ["DEV_TYPE"] == "router":
+            return self.__router_config()
+
     def create_tabs(self):
         super().create_tabs()
         self.create_tab(HelloTab, "HOME")
@@ -123,24 +143,6 @@ class ConfiguratorApp(App):
                     type(tab).__name__,
                 )
         self.notebook.select(self.tabs["CONTROL"].frame)
-
-    @property
-    def driver(self):
-        return {
-            "auth_strict_key": False,  # important for unknown hosts
-            "device": self.device_info,
-            "host": os.environ["HOST_ADDRESS"],
-            "port": os.environ["HOST_PORT"],
-            "auth_username": os.environ["HOST_USERNAME"],
-            "auth_password": os.environ["HOST_PASSWORD"],
-        }
-
-    @property
-    def text_configuration(self):
-        if os.environ["DEV_TYPE"] == "switch":
-            return self.__switch_config()
-        elif os.environ["DEV_TYPE"] == "router":
-            return self.__router_config()
 
     def __router_config(self):  # TODO: РЕАЛИЗОВАТЬ ЭТО С ПОМОЩЬЮ БАШ-СКРИПТОВ
         raise NotImplementedError("__router_config not implemented")

@@ -30,89 +30,23 @@ def prepare_config_file(func):
 @apply_error_handler
 class ControlTab(BaseTab):
     def _render_widgets(self):
-        self.render_connection_widgets()
-        self.render_device_widgets()
-        self.create_action_buttons()
+        self._render_connection_widgets()
+        self._render_device_widgets()
+        self._create_action_buttons()
         self.create_feedback_area()
         self.update_host_info()
-
-    def render_connection_widgets(self):
-        connection_type = os.environ["CONNECTION_TYPE"]
-        if connection_type == "com+ssh":
-            self.__render_widgets_com()
-        elif connection_type == "ssh":
-            self.__render_widgets_ssh()
-
-    def render_device_widgets(self):
-        device_type = os.environ["DEV_TYPE"]
-        if device_type == "switch":
-            self.__render_widgets_switch()
-        elif device_type == "router":
-            self.__render_widgets_router()
-
-    def create_action_buttons(self):
-        actions = [
-            ("SHOW TEMPLATE", self.show_template),
-            ("LOAD TEMPLATE", self.load),
-            ("UPDATE FIRMWARES", self.update_firmwares),
-            ("REBOOT DEVICE", self.reboot),
-        ]
-        for action in actions:
-            self.create_button_in_line(action)
 
     def load(self):
         if os.environ["CONNECTION_TYPE"] == "com+ssh":
             with COMDriver(**self.app.driver) as conn:
                 conn.base_configure_192()
-        self._load_by_ssh()
+        self.load_by_ssh()
 
     @prepare_config_file
-    def _load_by_ssh(self):
+    def load_by_ssh(self):
         with SSHDriver(**self.app.driver) as conn:
             resp = conn.update_startup_config()
             self.display_feedback(resp)
-
-    def __render_widgets_com(self):
-        self.create_block(
-            "host",
-            {
-                "username": (config["host"]["username"],),
-                "password": (config["host"]["password"],),
-            },
-            ("SELECT", self.update_host_info),
-        )
-
-    def __render_widgets_ssh(self):
-        self.create_block(
-            "host",
-            {
-                "address": (config["host"]["address"],),
-                "port": (config["host"]["port"],),
-                "username": (config["host"]["username"],),
-                "password": (config["host"]["password"],),
-            },
-            ("SELECT", self.update_host_info),
-        )
-
-    def __render_widgets_switch(self):
-        self.create_block(
-            "params",
-            {
-                "role": self.app.db_services["device"].get_roles_by_name(
-                    os.environ["DEV_NAME"]
-                ),
-                "or": tuple(str(i) for i in range(1, 26)),
-            },
-            ("UPDATE", self.update_params),
-        )
-
-    def __render_widgets_router(self):
-        self.create_block(
-            "params",
-            {
-                "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
-            },
-        )
 
     def actualize(self):
         self.fields["params"]["role"].set(os.environ["DEV_ROLE"])
@@ -155,4 +89,75 @@ class ControlTab(BaseTab):
             conn.update_firmware()
 
     def show_template(self):
-        self.display_feedback(self.app.text_configuration)
+        if self.app.text_configuration is None:
+            self.display_feedback(
+                "There is no configuration. Please select device role"
+            )
+        else:
+            self.display_feedback(self.app.text_configuration)
+
+    def _render_connection_widgets(self):
+        connection_type = os.environ["CONNECTION_TYPE"]
+        if connection_type == "com+ssh":
+            self._render_widgets_com()
+        elif connection_type == "ssh":
+            self._render_widgets_ssh()
+
+    def _render_device_widgets(self):
+        device_type = os.environ["DEV_TYPE"]
+        if device_type == "switch":
+            self._render_widgets_switch()
+        elif device_type == "router":
+            self._render_widgets_router()
+
+    def _create_action_buttons(self):
+        actions = [
+            ("SHOW TEMPLATE", self.show_template),
+            ("LOAD TEMPLATE", self.load),
+            ("UPDATE FIRMWARES", self.update_firmwares),
+            ("REBOOT DEVICE", self.reboot),
+        ]
+        for action in actions:
+            self.create_button_in_line(action)
+
+    def _render_widgets_com(self):
+        self.create_block(
+            "host",
+            {
+                "username": (config["host"]["username"],),
+                "password": (config["host"]["password"],),
+            },
+            ("SELECT", self.update_host_info),
+        )
+
+    def _render_widgets_ssh(self):
+        self.create_block(
+            "host",
+            {
+                "address": (config["host"]["address"],),
+                "port": (config["host"]["port"],),
+                "username": (config["host"]["username"],),
+                "password": (config["host"]["password"],),
+            },
+            ("SELECT", self.update_host_info),
+        )
+
+    def _render_widgets_switch(self):
+        self.create_block(
+            "params",
+            {
+                "role": self.app.db_services["device"].get_roles_by_name(
+                    os.environ["DEV_NAME"]
+                ),
+                "or": tuple(str(i) for i in range(1, 26)),
+            },
+            ("UPDATE", self.update_params),
+        )
+
+    def _render_widgets_router(self):
+        self.create_block(
+            "params",
+            {
+                "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
+            },
+        )
