@@ -13,6 +13,12 @@ def set_env(key: str, value: str):
     )
 
 
+def del_env(key: str):
+    if key in os.environ:
+        del os.environ[key]
+        logger.info("Environmental variables deleted: %s", key)
+
+
 class EnvConverter(dict):
     def get_human(self, env_name):
         return self.from_human(env_name, os.environ[env_name])
