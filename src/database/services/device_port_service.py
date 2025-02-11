@@ -11,7 +11,7 @@ class DevicePortService:
         self.db.query(DevicePorts).filter(DevicePorts.device_id == device_id).delete()
         self.db.commit()
 
-    def get_ports_by_device_id(self, device_id: int):
+    def get_ports_by_id(self, device_id: int):
         return [
             {
                 "interface": device_port.interface,

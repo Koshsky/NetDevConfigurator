@@ -10,10 +10,10 @@ class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
     def __init__(self, db: Session):
         super().__init__(db, Devices)
 
-    def get_all_by_company_id(self, company_id: int):
+    def get_by_company_id(self, company_id: int):
         return self.db.query(Devices).filter(Devices.company_id == company_id).all()
 
-    def get_all_by_family_id(self, family_id: int):
+    def get_by_family_id(self, family_id: int):
         return self.db.query(Devices).filter(Devices.family_id == family_id).all()
 
     def update_files(self, device: Devices, boot: str, uboot: str, firmware: str):
@@ -37,6 +37,6 @@ class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
                 "uboot": entity.uboot,
                 "firmware": entity.firmware,
             },
-            "protocols": self.get_protocols_by_device_id(entity.id),
-            "ports": self.get_ports_by_device_id(entity.id),
+            "protocols": self.get_protocols_by_id(entity.id),
+            "ports": self.get_ports_by_id(entity.id),
         }
