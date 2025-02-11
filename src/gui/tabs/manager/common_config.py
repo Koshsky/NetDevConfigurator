@@ -45,7 +45,7 @@ class CommonConfigTab(BaseTab):
         self.create_block(
             "template",
             {
-                "name": ("1", "2"),  # TODO: исправить этот костыль.
+                "name": ("1", "2"),
                 "ordered_number": None,
             },
         )
