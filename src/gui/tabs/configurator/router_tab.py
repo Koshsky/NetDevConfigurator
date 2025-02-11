@@ -18,7 +18,7 @@ class RouterTab(BaseTab):
         super().__init__(parent, app, log_name)
         self.width = 10
 
-    def render_widgets(self):
+    def _render_widgets(self):
         self.create_block(
             "env",
             {

@@ -29,7 +29,7 @@ def prepare_config_file(func):
 
 @apply_error_handler
 class ControlTab(BaseTab):
-    def render_widgets(self):
+    def _render_widgets(self):
         self.render_connection_widgets()
         self.render_device_widgets()
         self.create_action_buttons()

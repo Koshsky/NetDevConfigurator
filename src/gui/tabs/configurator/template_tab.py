@@ -21,7 +21,7 @@ class TemplateTab(BaseTab):
         self.allow_none = allow_none
         self.template_filter = template_filter
 
-    def render_widgets(self):
+    def _render_widgets(self):
         filtered_templates = {}
         for k, v in self.app.config_template.items():
             if self.template_filter(v):

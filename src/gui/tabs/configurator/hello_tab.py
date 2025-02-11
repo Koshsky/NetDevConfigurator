@@ -9,7 +9,7 @@ logger = logging.getLogger("gui")
 
 @apply_error_handler
 class HelloTab(BaseTab):
-    def render_widgets(self):
+    def _render_widgets(self):
         self.create_block(
             "device",
             {
