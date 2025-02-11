@@ -5,7 +5,7 @@ import tkinter as tk
 import uuid
 
 from config import config
-from utils import set_env
+from utils import set_env, del_env
 from gui.base_app import App
 from gui.tabs.configurator import ControlTab, TemplateTab, HelloTab, RouterTab
 
@@ -14,30 +14,16 @@ logger = logging.getLogger("gui")
 
 class ConfiguratorApp(App):
     def __init__(self, root, title, advanced, *args, **kwargs):
-        self.config_params = {
-            "CERT": config["default-cert"],
-            "OR": None,  # only for tsh, or, raisa_or
-        }
-        self.device = None
-        self.preset = None
         self.config_template = None
-        self.config_filename = None
         self.advanced_mode = advanced
         super().__init__(root, title)
 
-    def register_device(self, device):
-        self.device = device
-        self.preset = None
-
-        if device.dev_type == "router":
-            set_env("DEV_TYPE", "router")
-            logger.info("setting router environmental variables to default:")
-            for env_param, env_value in config["router"].items():
-                set_env(env_param, env_value)
-        elif device.dev_type == "switch":
-            set_env("DEV_TYPE", "switch")
-
-        logger.info("Device selected. device=%s", device.name)
+    @property
+    def device_info(self):
+        if "DEV_NAME" in os.environ:
+            return self.db_services["device"].get_info_by_name(os.environ["DEV_NAME"])
+        else:
+            return None
 
     def create_tabs(self):
         super().create_tabs()
@@ -59,16 +45,29 @@ class ConfiguratorApp(App):
         self.create_tab(RouterTab, "ROUTER")
         self.create_tab(ControlTab, "CONTROL")
 
+    def register_device(self, device):
+        del_env("DEV_ROLE")
+        set_env("DEV_NAME", device.name)
+        set_env("DEV_TYPE", device.dev_type)
+
+        if os.environ["DEV_TYPE"] == "router":
+            logger.info("setting router environmental variables to default:")
+            for env_param, env_value in config["router"].items():
+                set_env(env_param, env_value)
+
+        logger.info("Device selected. device=%s", os.environ["DEV_NAME"])
+
     def register_preset(self, preset):
-        self.preset = preset
+        set_env("DEV_ROLE", preset.role)
+        set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")
         logger.info(
-            "ConfiguratorApp.preset := (%s; %s)", self.device.name, self.preset.role
+            "ConfiguratorApp.preset := (%s; %s)",
+            os.environ["DEV_NAME"],
+            os.environ["DEV_ROLE"],
         )
         self.config_template = self.db_services["preset"].get_info(preset, check=True)[
             "configuration"
         ]
-        self.config_filename = f"config_{uuid.uuid4()}.conf"  # TODO: TO ENV var
-        logger.info("Create file for switch configuration: %s", self.config_filename)
 
     def refresh_tabs(self):
         logger.debug(
@@ -101,7 +100,7 @@ class ConfiguratorApp(App):
                 if (
                     os.environ["DEV_TYPE"] == "switch"
                     and self.advanced_mode
-                    and self.preset is not None
+                    and "DEV_ROLE" in os.environ
                 ):
                     tab.show()
                 else:
@@ -124,7 +123,7 @@ class ConfiguratorApp(App):
     def driver(self):
         return {
             "auth_strict_key": False,  # important for unknown hosts
-            "device": self.db_services["device"].get_info(self.device),
+            "device": self.device_info,
             "host": os.environ["HOST_ADDRESS"],
             "port": os.environ["HOST_PORT"],
             "auth_username": os.environ["HOST_USERNAME"],
@@ -146,14 +145,17 @@ class ConfiguratorApp(App):
         for k, v in self.config_template.items():
             if v["text"]:
                 template += v["text"].replace("{INTERFACE_ID}", k) + "\n"
-        template = template.replace("{CERT}", self.config_params["CERT"])
-        template = template.replace("{OR}", self.config_params["OR"])
-        template = template.replace("{MODEL}", self.device.name)
-        template = template.replace("{ROLE}", self.preset.role)
+        template = template.replace("{CERT}", os.environ["CERT"])
+        template = template.replace("{OR}", os.environ["OR"])
+        template = template.replace("{MODEL}", os.environ["DEV_NAME"])
+        template = template.replace("{ROLE}", os.environ["DEV_ROLE"])
         return template + "end\n"
 
 
 if __name__ == "__main__":
+    set_env("CERT", config["default-cert"])
+    set_env("OR", "1")
+
     parser = argparse.ArgumentParser(
         description="Upload configurations and manage network devices"
     )

@@ -20,8 +20,7 @@ class SSHDriver(SSHBaseDriver):
                 header += line + "\n"
         return header + "!\n"
 
-    def update_startup_config(self, filename):
-        set_env("FILENAME", filename)
+    def update_startup_config(self):
         command = self.core.update_startup_config
         return self.send_command(command)
 
@@ -34,7 +33,7 @@ class SSHDriver(SSHBaseDriver):
             f"{os.environ['TFTP_FOLDER']}/firmware", self.device["pattern"]["boot"]
         )
         if filename is None:
-            logger.error(
+            logger.warning(
                 "There is no boot file for %s in %s matching %s",
                 self.device["name"],
                 os.environ["TFTP_FOLDER"],
@@ -49,7 +48,7 @@ class SSHDriver(SSHBaseDriver):
             f"{os.environ['TFTP_FOLDER']}/firmware", self.device["pattern"]["uboot"]
         )
         if filename is None:
-            logger.error(
+            logger.warning(
                 "There is no uboot file for %s in %s matching %s",
                 self.device["name"],
                 os.environ["TFTP_FOLDER"],
@@ -64,7 +63,7 @@ class SSHDriver(SSHBaseDriver):
             f"{os.environ['TFTP_FOLDER']}/firmware", self.device["pattern"]["firmware"]
         )
         if filename is None:
-            logger.error(
+            logger.warning(
                 "There is no firmware file for %s in %s matching %s",
                 self.device["name"],
                 os.environ["TFTP_FOLDER"],

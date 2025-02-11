@@ -29,8 +29,27 @@ class PresetService(BaseService, DevicePresetService):
                 f"Preset with device={device.name}, role={role} not found"
             )
 
+    def get_by_device_name_and_role(self, device_name: str, role: str):
+        if (
+            preset := self.db.query(Presets)
+            .join(Devices, Presets.device_id == Devices.id)
+            .filter(Devices.name == device_name, Presets.role == role)
+            .first()
+        ):
+            return preset
+        else:
+            raise EntityNotFoundError(
+                f"Preset with device={device_name}, role={role} not found"
+            )
+
     def delete_by_device_and_role(self, device: Devices, role: str):
         self.delete(self.get_by_device_and_role(device, role))
+
+    def get_info_by_device_name_and_role(
+        self, device_name: str, role: str, check=False
+    ):
+        preset = self.get_by_device_name_and_role(device_name, role)
+        return self.get_info(preset, check=check)
 
     def get_info(self, preset, check=False):
         if check and not self.validate(preset):

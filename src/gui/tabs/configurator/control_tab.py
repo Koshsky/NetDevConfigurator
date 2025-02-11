@@ -17,7 +17,7 @@ def prepare_config_file(func):
             header = conn.get_header()
         configuration = header + self.app.text_configuration
 
-        config_path = f"/srv/tftp/tmp/{self.app.config_filename}"
+        config_path = f"/srv/tftp/tmp/{os.environ['CFG_FILENAME']}"
         with open(config_path, "w") as f:
             f.write(configuration)
             logger.info("Configuration saved: %s", config_path)
@@ -35,9 +35,9 @@ class ControlTab(BaseTab):
         elif os.environ["MODE"] == "ssh":
             self.__render_widgets_ssh()
 
-        if self.app.device.dev_type == "switch":
+        if os.environ["DEV_TYPE"] == "switch":
             self.__render_widgets_switch()
-        elif self.app.device.dev_type == "router":
+        elif os.environ["DEV_TYPE"] == "router":
             self.__render_widgets_router()
 
         self.create_button_in_line(("SHOW TEMPLATE", self.show_template))
@@ -56,7 +56,7 @@ class ControlTab(BaseTab):
     @prepare_config_file
     def _load_by_ssh(self):
         with SSHDriver(**self.app.driver) as conn:
-            resp = conn.update_startup_config(self.app.config_filename)
+            resp = conn.update_startup_config()
             self.display_feedback(resp)
 
     def __render_widgets_com(self):
@@ -107,15 +107,19 @@ class ControlTab(BaseTab):
         # )
 
     def update_params(self):
-        if self.app.device.dev_type == "switch":
-            role = self.check_role_name(self.fields["params"]["role"].get())
-            preset = self.app.db_services["preset"].get_by_device_and_role(
-                self.app.device, role
+        if os.environ["DEV_TYPE"] == "switch":
+            preset = self.app.db_services["preset"].get_by_device_name_and_role(
+                os.environ["DEV_NAME"],
+                self.check_role_name(self.fields["params"]["role"].get()),
             )
             self.app.register_preset(preset)
-        elif self.app.device.dev_type == "router":
-            type_complex = self.fields["params"]["TYPE_COMPLEX"].get().strip()
-            set_env("TYPE_COMPLEX", env_converter["TYPE_COMPLEX"][type_complex])
+        elif os.environ["DEV_TYPE"] == "router":
+            set_env(
+                "TYPE_COMPLEX",
+                env_converter.from_human(
+                    "TYPE_COMPLEX", self.fields["params"]["TYPE_COMPLEX"].get().strip()
+                ),
+            )
             trueroom_count = (
                 self.fields["params"]["TRUEROOM_COUNT"].get().strip()
                 if self.app.advanced_mode

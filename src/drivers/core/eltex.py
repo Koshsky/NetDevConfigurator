@@ -16,25 +16,25 @@ class ESR:
 
     @property
     def update_startup_config(self):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/tmp/{os.environ['FILENAME']} system:candidate-config"
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/tmp/{os.environ['CFG_FILENAME']} system:candidate-config"
 
     @property
     def load_boot(
         self,
     ):  # TODO:  НЕ НАШЕЛ В ДОКУМЕНТАЦИИ. ПО ИДЕЕ СВЯЗАНО С system:boot-1
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} boot"
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['CFG_FILENAME']} boot"
 
     @property
     def load_uboot(
         self,
     ):  # TODO: в документации встречается system:boot2 system:boot-2...
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} system:boot2"
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['CFG_FILENAME']} system:boot2"
 
     @property
     def load_firmware(
         self,
     ):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} system:firmware"
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['CFG_FILENAME']} system:firmware"
 
 
 class BaseMES:
@@ -50,7 +50,7 @@ class BaseMES:
 
     @property
     def update_startup_config(self):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/tmp/{os.environ['FILENAME']} startup-config"
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/tmp/{os.environ['CFG_FILENAME']} startup-config"
 
     @property
     def base_configure_192(self):
@@ -68,11 +68,11 @@ class MES14xx24xx34xx37xx(BaseMES):
 
     @property
     def load_boot(self):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} boot"
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['CFG_FILENAME']} boot"
 
     @property
     def load_firmware(self):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} image"
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['CFG_FILENAME']} image"
 
 
 class MES23xx33xx35xx36xx53xx5400(BaseMES):
@@ -80,7 +80,7 @@ class MES23xx33xx35xx36xx53xx5400(BaseMES):
 
     @property
     def load_boot(self):
-        return f"boot system tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']}"
+        return f"boot system tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['CFG_FILENAME']}"
 
 
 class MES11xx21xx20xx31xx(BaseMES):

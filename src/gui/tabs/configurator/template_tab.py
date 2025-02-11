@@ -1,3 +1,4 @@
+import os
 from pprint import pformat
 
 from gui import BaseTab, apply_error_handler
@@ -70,8 +71,8 @@ class TemplateTab(BaseTab):
 
     def _get_templates_by_type(self, t):
         entities = self.app.db_services["template"].get_by_family_id_and_role(
-            self.app.device.family_id,
-            self.app.preset.role,
+            self.app.device_info["family"]["id"],
+            os.environ["DEV_ROLE"],
         )
         tail = ("None",) if self.allow_none else tuple()
         return tuple(entity.name for entity in entities if entity.type == t) + tail
