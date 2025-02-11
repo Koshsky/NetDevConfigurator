@@ -30,22 +30,35 @@ def prepare_config_file(func):
 @apply_error_handler
 class ControlTab(BaseTab):
     def render_widgets(self):
-        if os.environ["CONNECTION_TYPE"] == "com+ssh":
-            self.__render_widgets_com()
-        elif os.environ["CONNECTION_TYPE"] == "ssh":
-            self.__render_widgets_ssh()
-
-        if os.environ["DEV_TYPE"] == "switch":
-            self.__render_widgets_switch()
-        elif os.environ["DEV_TYPE"] == "router":
-            self.__render_widgets_router()
-
-        self.create_button_in_line(("SHOW TEMPLATE", self.show_template))
-        self.create_button_in_line(("LOAD TEMPLATE", self.load))
-        self.create_button_in_line(("UPDATE FIRMWARES", self.update_firmwares))
-        self.create_button_in_line(("REBOOT DEVICE", self.reboot))
+        self.render_connection_widgets()
+        self.render_device_widgets()
+        self.create_action_buttons()
         self.create_feedback_area()
         self.update_host_info()
+
+    def render_connection_widgets(self):
+        connection_type = os.environ["CONNECTION_TYPE"]
+        if connection_type == "com+ssh":
+            self.__render_widgets_com()
+        elif connection_type == "ssh":
+            self.__render_widgets_ssh()
+
+    def render_device_widgets(self):
+        device_type = os.environ["DEV_TYPE"]
+        if device_type == "switch":
+            self.__render_widgets_switch()
+        elif device_type == "router":
+            self.__render_widgets_router()
+
+    def create_action_buttons(self):
+        actions = [
+            ("SHOW TEMPLATE", self.show_template),
+            ("LOAD TEMPLATE", self.load),
+            ("UPDATE FIRMWARES", self.update_firmwares),
+            ("REBOOT DEVICE", self.reboot),
+        ]
+        for action in actions:
+            self.create_button_in_line(action)
 
     def load(self):
         if os.environ["CONNECTION_TYPE"] == "com+ssh":
@@ -85,14 +98,15 @@ class ControlTab(BaseTab):
         self.create_block(
             "params",
             {
-                "role": self.app.entity_collections["role"],
+                "role": self.app.db_services["device"].get_roles_by_name(
+                    os.environ["DEV_NAME"]
+                ),
                 "or": tuple(str(i) for i in range(1, 26)),
             },
             ("UPDATE", self.update_params),
         )
 
     def __render_widgets_router(self):
-        pass
         self.create_block(
             "params",
             {
@@ -100,12 +114,15 @@ class ControlTab(BaseTab):
             },
         )
 
+    def actualize(self):
+        self.fields["params"]["role"].set(os.environ["DEV_ROLE"])
+
     def update_params(self):
         if os.environ["DEV_TYPE"] == "switch":
             self.app.register_preset(
                 self.check_role_name(self.fields["params"]["role"].get())
             )
-        if os.environ["DEV_TYPE"] == "router":
+        elif os.environ["DEV_TYPE"] == "router":
             set_env(
                 "TYPE_COMPLEX",
                 env_converter.from_human[
@@ -113,13 +130,14 @@ class ControlTab(BaseTab):
                 ],
             )
         self.app.refresh_tabs()
+        self.actualize()
 
     def update_host_info(self):
         set_env("HOST_ADDRESS", "NO")
         set_env("HOST_PORT", "NO")
 
         if os.environ["CONNECTION_TYPE"] == "ssh":
-            # TODO: add validation of ip address
+            # TODO: add validation of IP address
             set_env("HOST_ADDRESS", self.fields["host"]["address"].get().strip())
             set_env("HOST_PORT", self.fields["host"]["port"].get().strip())
 

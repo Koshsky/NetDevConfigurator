@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from database.models import Devices
+from database.models import Devices, Presets
 from .device_port_service import DevicePortService
 from .device_protocol_service import DeviceProtocolService
 from .base_service import BaseService
@@ -9,6 +9,15 @@ from .base_service import BaseService
 class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
     def __init__(self, db: Session):
         super().__init__(db, Devices)
+
+    def get_roles_by_name(self, device_name: str):
+        presets = (
+            self.db.query(Presets)
+            .join(Devices, Presets.device_id == Devices.id)
+            .filter(Devices.name == device_name)
+            .all()
+        )
+        return tuple(preset.role for preset in presets)
 
     def get_by_company_id(self, company_id: int):
         return self.db.query(Devices).filter(Devices.company_id == company_id).all()
