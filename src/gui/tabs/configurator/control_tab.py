@@ -5,7 +5,7 @@ from functools import wraps
 from config import config
 from drivers import COMDriver, SSHDriver
 from gui import BaseTab, apply_error_handler
-from utils import set_env
+from utils import set_env, env_converter
 
 logger = logging.getLogger("gui")
 
@@ -93,23 +93,24 @@ class ControlTab(BaseTab):
 
     def __render_widgets_router(self):
         pass
-        # self.create_block(
-        #     "params",
-        #     {
-        #         "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
-        #     }
-        #     if not self.app.advanced_mode
-        #     else {
-        #         "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
-        #         "TRUEROOM_COUNT": tuple(map(str, range(25))),
-        #     },
-        #     ("UPDATE", self.update_params),
-        # )
+        self.create_block(
+            "params",
+            {
+                "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
+            },
+        )
 
     def update_params(self):
         if os.environ["DEV_TYPE"] == "switch":
             self.app.register_preset(
                 self.check_role_name(self.fields["params"]["role"].get())
+            )
+        if os.environ["DEV_TYPE"] == "router":
+            set_env(
+                "TYPE_COMPLEX",
+                env_converter.from_human[
+                    self.fields["params"]["TYPE_COMPLEX"].get().strip()
+                ],
             )
         self.app.refresh_tabs()
 
