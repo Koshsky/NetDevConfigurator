@@ -4,19 +4,6 @@
 
 lang="bash"
 
-parse_config () {
-	COUNT=$(wc -l < $1)
-	for (( i=1;i<=$COUNT;i++ ))
-	do
-		LINE=$(head -n $i $1| tail -n  1)
-		INF_LINE=$(echo $LINE | cut -d '-' -f 1)
-		PAR=$(echo $INF_LINE | cut -d ':' -f 1)
-		VOL=$(echo $INF_LINE | cut -d ':' -f 2)
-		PARAMS[$PAR]=$VOL
-	done
-
-}
-
 parse_conf () {
 	cat "$2" | sed -n "/<$1>/,/<@$1>/p"| tail -n +2|head -n -1| cut -f2
 }
@@ -63,56 +50,64 @@ count_items () {
 	replace_multi $1 $2 $DIR/tmp/tmpstr 1
 }
 
-ROOT_DIR=$PWD
 DIR=$(dirname ${BASH_SOURCE})
 
-declare -A PARAMS
-parse_config "$ROOT_DIR/env.param"
 
-CERT=${PARAMS["CERT"]}
-PUBLIC_IP=${PARAMS["PUBLIC_IP"]}
-PUBLIC_MASK=${PARAMS["PUBLIC_MASK"]}
-GW=${PARAMS["GW"]}
-MODEL=${PARAMS["MODEL"]}
-VERS=2
-TYPE_COMPLEX=${PARAMS["TYPE_COMPLEX"]}
-if [ $TYPE_COMPLEX -eq 1 ]; then
-	PH_COUNT=${PARAMS["PH_COUNT"]}
-	STREAM_COUNT=${PARAMS["STREAM_COUNT"]}
-else
+if [ $TYPE_COMPLEX -ne 1 ]; then
 	PH_COUNT=1
 	STREAM_COUNT=1
 fi
-VPN=${PARAMS["VPN"]}
-TELEPORT=${PARAMS["TELEPORT"]}
-RAISA=${PARAMS["RAISA"]}
-if [ $RAISA -eq 1 ]; then
-	RAISA_IP=${PARAMS["RAISA_IP"]}
-fi
-TRUECONF=${PARAMS["TRUECONF"]}
-if [ $TRUECONF -eq 1 ]; then
-	TRUEROOM=${PARAMS["TRUEROOM"]}
-else
+if [ $TRUECONF -ne 1 ]; then
 	TRUEROOM=2
 fi
-if [ $TRUEROOM -eq 1 ]; then
-	TRUEROOM_COUNT=${PARAMS["TRUEROOM_COUNT"]}
-	declare -a TRUEROOM_IP
-	for ((i=1;i<=$TRUEROOM_COUNT;i++))
-	do
-		TRUEROOM_IP[$i] = ${PARAMS["TRUEROOM_IP$i"]}
-	done
+
+
+# Регулярные выражения для проверки значений
+correct_model="([123]{1})"  # Для MODEL: 1, 2 или 3
+correct_other="([12]{1})"    # Для остальных переменных: 1 или 2
+
+error_messages=()
+
+if ! [[ "$VERS" =~ $correct_other ]]; then
+    error_messages+=("VERS: некорректное значение (ожидалось 1 или 2)")
 fi
 
-correct="([12]{1})"
-if [[ "$VERS" =~ $correct && "$MODEL" =~ $correct && "$VPN" =~ $correct && "$TELEPORT" =~ $correct && "$RAISA" =~ $correct && "$TRUECONF" =~ $correct && "$TRUEROOM" =~ $correct ]]; then
-	echo "Формируется файл конфигурации..."
+if ! [[ "$MODEL" =~ $correct_model ]]; then
+    error_messages+=("MODEL: некорректное значение (ожидалось 1, 2 или 3)")
+fi
+
+if ! [[ "$VPN" =~ $correct_other ]]; then
+    error_messages+=("VPN: некорректное значение (ожидалось 1 или 2)")
+fi
+
+if ! [[ "$TELEPORT" =~ $correct_other ]]; then
+    error_messages+=("TELEPORT: некорректное значение (ожидалось 1 или 2)")
+fi
+
+if ! [[ "$RAISA" =~ $correct_other ]]; then
+    error_messages+=("RAISA: некорректное значение (ожидалось 1 или 2)")
+fi
+
+if ! [[ "$TRUECONF" =~ $correct_other ]]; then
+    error_messages+=("TRUECONF: некорректное значение (ожидалось 1 или 2)")
+fi
+
+if ! [[ "$TRUEROOM" =~ $correct_other ]]; then
+    error_messages+=("TRUEROOM: некорректное значение (ожидалось 1 или 2)")
+fi
+
+# Проверка наличия ошибок
+if [ ${#error_messages[@]} -eq 0 ]; then
+    echo "Формируется файл конфигурации..."
 else
-	echo "Некорректные ответы"
-	exit 0
+    echo "Некорректные ответы:"
+    for message in "${error_messages[@]}"; do
+        echo " - $message"
+    done
+    exit 0
 fi
 
-mkdir $DIR/tmp
+mkdir -p $DIR/tmp
 touch $DIR/tmp/tmpstr
 
 cat $DIR/templates/main.txt| col -b > $DIR/tmp/main

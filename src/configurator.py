@@ -4,10 +4,11 @@ import os
 import tkinter as tk
 import uuid
 
+from bash import get_esr_configuration
 from config import config
-from utils import set_env, del_env
 from gui.base_app import App
-from gui.tabs.configurator import ControlTab, TemplateTab, HelloTab, RouterTab
+from gui.tabs.configurator import ControlTab, HelloTab, RouterTab, TemplateTab
+from utils import del_env, set_env, env_converter
 
 logger = logging.getLogger("gui")
 
@@ -73,7 +74,7 @@ class ConfiguratorApp(App):
         if os.environ["DEV_TYPE"] == "router":
             for env_param, env_value in config["router"].items():
                 set_env(env_param, env_value)
-
+            set_env("MODEL", env_converter.from_human("MODEL", device.name))
         logger.info("Device selected. device=%s", os.environ["DEV_NAME"])
 
     def register_preset(self, role: str):
@@ -145,7 +146,7 @@ class ConfiguratorApp(App):
         self.notebook.select(self.tabs["CONTROL"].frame)
 
     def __router_config(self):  # TODO: РЕАЛИЗОВАТЬ ЭТО С ПОМОЩЬЮ БАШ-СКРИПТОВ
-        raise NotImplementedError("__router_config not implemented")
+        return get_esr_configuration()
 
     def __switch_config(self):
         template = ""
