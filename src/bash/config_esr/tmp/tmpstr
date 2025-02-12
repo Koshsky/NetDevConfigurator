@@ -1,0 +1,7 @@
+    rule 61
+      match protocol tcp
+      match destination-address Public_IP
+      match destination-port ph_nat1
+      action destination-nat pool PH_1
+      enable
+    exit

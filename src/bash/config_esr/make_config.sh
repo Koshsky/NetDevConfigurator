@@ -107,7 +107,11 @@ else
     exit 0
 fi
 
-mkdir -p $DIR/tmp
+if [ ! -d "./src/bash/config_esr/tmp" ]; then
+    mkdir -p ./src/bash/config_esr/tmp
+fi
+rm -rf ./src/bash/config_esr/tmp/*
+
 touch $DIR/tmp/tmpstr
 
 cat $DIR/templates/main.txt| col -b > $DIR/tmp/main
@@ -337,9 +341,10 @@ else
 fi
 replace "pub_msk" $PUBLIC_MASK "$DIR/tmp/main"
 replace "gate_ip" $GW "$DIR/tmp/main"
+
 FIN_CONFIG=$( cat $DIR/tmp/main )
 rm -R $DIR/tmp
 touch $DIR/config.cfg
-echo "$FIN_CONFIG"| tail -n +2 > $DIR/config.cfg
-touch $DIR/tmp
-echo "$PUBLIC_IP" >> $DIR/tmp
+echo "$FIN_CONFIG" | tail -n +2 > $DIR/config.cfg
+touch $DIR/public_ip
+echo "$PUBLIC_IP" >> $DIR/public_ip

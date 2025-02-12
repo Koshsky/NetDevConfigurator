@@ -89,7 +89,9 @@ class ControlTab(BaseTab):
             conn.update_firmware()
 
     def show_template(self):
-        if self.app.text_configuration is None:
+        if (
+            configuration := self.app.text_configuration is None
+        ):  # TODO: использовать перемемнную в дисплей.
             self.display_feedback(
                 "There is no configuration. Please select device role"
             )

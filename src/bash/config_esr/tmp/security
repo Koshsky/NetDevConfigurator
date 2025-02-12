@@ -1,0 +1,550 @@
+<user_mvs_esr20>
+username mvsadmin
+  password encrypted $6$7kqzJKFJPL3x3N4Z$bMmA5A6Mp2g9FkDi2zh.LIdFkky6sHZIRIuoNzv2P9EbqgHD.wtx0GGiZtsoLr7HNdksxivtHje/ndOpKPSXb0
+  privilege 15
+exit
+<@user_mvs_esr20>
+
+<user_mvs_esr21>
+username mvsadmin
+  password encrypted $6$DM.Muyl8xNp9Sti.$HDg.1MwKaEbc0D27gNaSfLCQiO4j/kQa04coq8yyQt.2xIzARjwk5jC3ZAJRxWAcjZDMA1fXjWylawCuno85o.
+  privilege 15
+exit
+<@user_mvs_esr21>
+
+
+<zone_std>
+security zone trusted
+exit
+security zone untrusted
+exit
+security zone DMZ
+exit
+<@zone_std>
+<zone_VPN>
+security zone VPN
+exit
+<@zone_VPN>
+<zone_raisa>
+security zone RAISA
+exit
+<@zone_raisa>
+
+<secure_all>
+security zone-pair trusted untrusted
+  rule 1
+    action permit
+    match source-address INT_NET
+    enable
+  exit
+exit
+security zone-pair trusted trusted
+  rule 1
+    action permit
+    enable
+  exit
+exit
+security zone-pair trusted self
+  rule 10
+    action permit
+    match protocol tcp
+    match destination-port ssh
+    enable
+  exit
+  rule 20
+    action permit
+    match protocol icmp
+    enable
+  exit
+exit
+security zone-pair untrusted self
+  rule 10
+    action permit
+    match protocol icmp
+    enable
+  exit
+  <secure_VPN>
+  rule 30
+    action permit
+    match protocol udp
+    match destination-port L2TP
+    enable
+  exit
+  rule 40
+    action permit
+    match protocol udp
+    match destination-port IKE
+    enable
+  exit
+  rule 50
+    action permit
+    match protocol esp
+    enable
+  exit
+  rule 60
+    action permit
+    match protocol udp
+    match destination-port NATT
+    enable
+  exit
+  rule 70
+    action permit
+    match protocol tcp
+    match destination-port ssh
+    enable
+  exit
+  <@secure_VPN>
+exit
+security zone-pair untrusted trusted
+  rule 1
+    action permit
+    match destination-address HP
+    match destination-nat
+    enable
+  exit
+  rule 2
+    action permit
+    match destination-address STREAM
+    match destination-nat
+    enable
+  exit
+  <secure_ph>
+  rule 3
+    action permit
+    match destination-address packhaus
+    match destination-nat
+    enable
+  exit
+  <@secure_ph>
+  <secure_tcroom>
+  rule 4
+    action permit
+    match destination-address TRCONF_ROOM
+    match destination-nat
+    enable
+  exit
+  <@secure_tcroom>
+exit
+security zone-pair untrusted DMZ
+  rule 1
+    action permit
+    match destination-address CONF
+    match destination-nat
+    enable
+  exit
+  rule 2
+    action permit
+    match protocol tcp
+    match destination-port KMS
+    enable
+  exit
+  <secure_tc>
+  rule 3
+    action permit
+    match destination-address TR_CONF
+    match destination-nat
+    enable
+  exit
+  <@secure_tc>
+exit
+security zone-pair trusted DMZ
+  rule 10
+    action permit
+    match protocol icmp
+    enable
+  exit
+  rule 20
+    action permit
+    match protocol tcp
+    match destination-port ssh
+    enable
+  exit
+  rule 30
+    action permit
+    match protocol tcp
+    match destination-port KMS
+    enable
+  exit
+  <secure_tc>
+  rule 40
+    action permit
+    match protocol tcp
+    match destination-port trueconf
+    enable
+  exit
+  <@secure_tc>
+  rule 41
+    action permit
+    match protocol tcp
+    match destination-port http
+    enable
+  exit
+  rule 42
+    action permit
+    match protocol tcp
+    match destination-port node_exporter
+    enable
+  exit
+  rule 50
+    action permit
+    match protocol udp
+    match destination-port WRTC
+    enable
+  exit
+exit
+security zone-pair DMZ untrusted
+  rule 1
+    action permit
+    match source-address DMZ_NET
+    enable
+  exit
+exit
+security zone-pair DMZ trusted
+  rule 10
+    action permit
+    match protocol tcp
+    match destination-port HP_services
+    enable
+  exit
+  rule 20
+    action permit
+    match protocol udp
+    match destination-port dns_clients
+    enable
+  exit
+  rule 30
+    action permit
+    match protocol udp
+    match destination-port ntp
+    enable
+  exit
+  rule 40
+    action permit
+    match protocol tcp
+    match destination-port minio_ports
+    enable
+  exit
+exit
+
+<secure_VPN>
+security zone-pair VPN self
+  rule 1
+    action permit
+    match protocol icmp
+    enable
+  exit
+  rule 10
+    action permit
+    match protocol tcp
+    match destination-port ssh
+    enable
+  exit
+exit
+security zone-pair VPN trusted
+  rule 1
+    action permit
+    match protocol icmp
+    enable
+  exit
+  rule 10
+    action permit
+    match protocol udp
+    match destination-port dns_clients
+    enable
+  exit
+  rule 11
+    action permit
+    match protocol tcp
+    match destination-port ssh
+    enable
+  exit
+  rule 12
+    action permit
+    match protocol udp
+    match destination-port tftp
+    enable
+  exit
+  rule 13
+    action permit
+    match protocol tcp
+    match destination-port http
+    enable
+  exit
+  rule 14
+    action permit
+    match protocol tcp
+    match destination-port https
+    enable
+  exit
+  rule 15
+    action permit
+    match protocol udp
+    match destination-port ntp
+    enable
+  exit
+  rule 17
+    action permit
+    match protocol tcp
+    match destination-port vnc_server
+    enable
+  exit
+  rule 18
+    action permit
+    match protocol tcp
+    match destination-port grafana
+    enable
+  exit
+  rule 19
+    action permit
+    match protocol tcp
+    match destination-port HP_https
+    enable
+  exit
+  rule 20
+    action permit
+    match protocol tcp
+    match destination-port DMZ_stream
+    enable
+  exit
+  rule 21
+    action permit
+    match protocol tcp
+    match destination-port extconf
+    enable
+  exit
+  rule 22
+    action permit
+    match protocol tcp
+    match destination-port Streamer_service1
+    enable
+  exit
+  rule 23
+    action permit
+    match protocol tcp
+    match destination-port KMS
+    enable
+  exit
+  rule 24
+    action permit
+    match protocol tcp
+    match destination-port HP_services
+    enable
+  exit
+  rule 25
+    action permit
+    match protocol tcp
+    match destination-port minio_ports
+    enable
+  exit
+  rule 26
+    action permit
+    match protocol tcp
+    match destination-port HP_master
+    enable
+  exit
+  rule 27
+    action permit
+    match protocol tcp
+    match destination-port rtsp
+    enable
+  exit
+  rule 28
+    action permit
+    match protocol udp
+    match destination-port dhcp_client
+  exit
+  rule 29
+    action permit
+    match protocol udp
+    match destination-port dhcp_server
+  exit
+  rule 30
+    action permit
+    match protocol tcp
+    match destination-port OR_http
+    enable
+  exit
+  rule 31
+    action permit
+    match protocol tcp
+    match destination-port prometheus
+    enable
+  exit
+  rule 32
+    action permit
+    match protocol tcp
+    match destination-port snmp_exporter
+    enable
+  exit
+  rule 33
+    action permit
+    match protocol tcp
+    match destination-port node_exporter
+    enable
+  exit
+exit
+security zone-pair VPN DMZ
+  rule 1
+    action permit
+    match protocol icmp
+    enable
+  exit
+  rule 10
+    action permit
+    match protocol udp
+    match destination-port dns_clients
+    enable
+  exit
+  rule 11
+    action permit
+    match protocol tcp
+    match destination-port ssh
+    enable
+  exit
+  rule 12
+    action permit
+    match protocol udp
+    match destination-port tftp
+    enable
+  exit
+  rule 13
+    action permit
+    match protocol tcp
+    match destination-port http
+    enable
+  exit
+  rule 14
+    action permit
+    match protocol tcp
+    match destination-port https
+    enable
+  exit
+  rule 15
+    action permit
+    match protocol udp
+    match destination-port ntp
+    enable
+  exit
+  rule 17
+    action permit
+    match protocol tcp
+    match destination-port vnc_server
+    enable
+  exit
+  rule 18
+    action permit
+    match protocol tcp
+    match destination-port grafana
+    enable
+  exit
+  rule 19
+    action permit
+    match protocol tcp
+    match destination-port HP_https
+    enable
+  exit
+  rule 20
+    action permit
+    match protocol tcp
+    match destination-port DMZ_stream
+    enable
+  exit
+  rule 21
+    action permit
+    match protocol tcp
+    match destination-port extconf
+    enable
+  exit
+  rule 22
+    action permit
+    match protocol tcp
+    match destination-port Streamer_service1
+    enable
+  exit
+  rule 23
+    action permit
+    match protocol tcp
+    match destination-port KMS
+    enable
+  exit
+  rule 24
+    action permit
+    match protocol tcp
+    match destination-port HP_services
+    enable
+  exit
+  rule 25
+    action permit
+    match protocol tcp
+    match destination-port minio_ports
+    enable
+  exit
+  rule 26
+    action permit
+    match protocol tcp
+    match destination-port HP_master
+    enable
+  exit
+  rule 27
+    action permit
+    match protocol tcp
+    match destination-port rtsp
+    enable
+  exit
+  rule 28
+    action permit
+    match protocol udp
+    match destination-port dhcp_client
+  exit
+  rule 29
+    action permit
+    match protocol udp
+    match destination-port dhcp_server
+  exit
+exit
+<@secure_VPN>
+<secure_raisVPN>
+security zone-pair VPN RAISA
+  rule 1
+    action permit
+    enable
+  exit
+exit
+<@secure_raisVPN>
+<secure_raisa>
+security zone-pair RAISA RAISA
+  rule 1
+    action permit
+    enable
+  exit
+exit
+security zone-pair RAISA untrusted
+  rule 1
+    action permit
+    match source-address RAISA_NET
+    enable
+  exit
+exit
+security zone-pair trusted RAISA
+  rule 1
+    action permit
+    enable
+  exit
+exit
+security zone-pair RAISA trusted
+  rule 1
+    action permit
+    match protocol udp
+    match destination-port dns_clients
+    enable
+  exit
+  rule 2
+    action permit
+    match protocol icmp
+    match destination-address HP
+    enable
+  exit
+exit
+<@secure_raisa>
+<@secure_all>
+
