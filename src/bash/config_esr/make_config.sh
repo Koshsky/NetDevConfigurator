@@ -9,7 +9,12 @@ parse_conf () {
 }
 
 replace () {
-	sed -ri "s/<$1>/$2/g" $3
+    if [[ -z "$3" ]]; then
+        echo "replace; Ошибка: входной файл не указан."
+        return 0
+    fi
+    echo "Заменяем <$1> на $2 в файле $3"
+    sed -ri "s|<$1>|$2|g" "$3"
 }
 
 replace_multi () {
@@ -52,7 +57,6 @@ count_items () {
 
 DIR=$(dirname ${BASH_SOURCE})
 
-
 if [ $TYPE_COMPLEX -ne 1 ]; then
 	PH_COUNT=1
 	STREAM_COUNT=1
@@ -60,7 +64,6 @@ fi
 if [ $TRUECONF -ne 1 ]; then
 	TRUEROOM=2
 fi
-
 
 # Регулярные выражения для проверки значений
 correct_model="([123]{1})"  # Для MODEL: 1, 2 или 3
@@ -107,6 +110,7 @@ else
     exit 0
 fi
 
+
 if [ ! -d "./src/bash/config_esr/tmp" ]; then
     mkdir -p ./src/bash/config_esr/tmp
 fi
@@ -147,8 +151,8 @@ if [ $TRUEROOM -eq 1 ]; then
 	count_items "count_tcroom_pub" "$DIR/tmp/networks" $TRUEROOM_COUNT
 	for ((i=1;i<=$TRUEROOM_COUNT;i++))
 	do
-		replace "tcroom_ip$i" ${TRUEROOM_IP[$i]} "$DIR/tmp/networks"
-		replace "tcroom_ip$i" ${TRUEROOM_IP[$i]} "$DIR/tmp/vlans"
+		replace "tcroom_ip$i" "${TRUEROOM_IP[$i]}" "$DIR/tmp/networks"
+		replace "tcroom_ip$i" "${TRUEROOM_IP[$i]}" "$DIR/tmp/vlans"
 	done
 fi
 
@@ -344,7 +348,7 @@ replace "gate_ip" $GW "$DIR/tmp/main"
 
 FIN_CONFIG=$( cat $DIR/tmp/main )
 rm -R $DIR/tmp
+
 touch $DIR/config.cfg
 echo "$FIN_CONFIG" | tail -n +2 > $DIR/config.cfg
-touch $DIR/public_ip
-echo "$PUBLIC_IP" >> $DIR/public_ip
+
