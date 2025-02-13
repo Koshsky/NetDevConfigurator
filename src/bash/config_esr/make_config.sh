@@ -2,68 +2,189 @@
 
 #set -x
 
+
 lang="bash"
+DIR=$(dirname ${BASH_SOURCE})
+LOGS="$DIR/.log"
+> $LOGS
+
 
 parse_conf () {
 	cat "$2" | sed -n "/<$1>/,/<@$1>/p"| tail -n +2|head -n -1| cut -f2
 }
 
-replace () {
-    if [[ -z "$3" ]]; then
-        echo "replace; Ошибка: входной файл не указан."
-        return 0
+replace() {
+    # Проверка на наличие всех необходимых аргументов
+    if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
+        echo "replace; Ошибка: Необходимые аргументы не указаны. Использование: replace <шаблон> <замена> <файл>" >> $LOGS
+        return 1
     fi
-    echo "Заменяем <$1> на $2 в файле $3"
-    sed -ri "s|<$1>|$2|g" "$3"
+
+    # Проверка существования файла
+    if [[ ! -f "$3" ]]; then
+        echo "replace; Ошибка: Файл '$3' не существует." >> $LOGS
+        return 1
+    fi
+
+    # Проверка на доступность записи в файл
+    if [[ ! -w "$3" ]]; then
+        echo "replace; Ошибка: Нет прав на запись в файл '$3'." >> $LOGS
+        return 1
+    fi
+
+    echo "Заменяем <$1> на <$2> в файле '$3'" >> $LOGS
+
+    # Выполнение замены с обработкой ошибок
+    if sed -ri "s|<$1>|$2|g" "$3"; then
+        echo "replace; Успех: Замена завершена." >> $LOGS
+    else
+        echo "replace; Ошибка: Не удалось выполнить замену в файле '$3'." >> $LOGS
+        return 1
+    fi
 }
 
-replace_multi () {
-	local STR_NUM=$(grep -n "<$1>" $2 | cut -f1 -d ":")
-	if [ $4 -eq 1 ]; then
-		correct_rule $1 $2 2
-		STR_NUM=$((STR_NUM-1))
-	elif [ $4 -eq 2 ]; then
-		correct_rule $1 $2 1
-	fi
-	sed -i "$STR_NUM r $3" $2
+replace_multi() {
+    # Проверка на наличие всех необходимых аргументов
+    if [[ -z "$1" || -z "$2" || -z "$3" || -z "$4" ]]; then
+        echo "replace_multi; Ошибка: Необходимые аргументы не указаны. Использование: replace_multi <шаблон> <файл> <файл_для_вставки> <режим>" >> $LOGS
+        return 1
+    fi
+
+    # Проверка существования файла для замены
+    if [[ ! -f "$2" ]]; then
+        echo "replace_multi; Ошибка: Файл '$2' не существует." >> $LOGS
+        return 1
+    fi
+
+    # Проверка существования файла для вставки
+    if [[ ! -f "$3" ]]; then
+        echo "replace_multi; Ошибка: Файл для вставки '$3' не существует." >> $LOGS
+        return 1
+    fi
+
+    # Проверка на допустимость значения режима
+    if [[ "$4" -ne 1 && "$4" -ne 2 ]]; then
+        echo "replace_multi; Ошибка: Неверный режим '$4'. Допустимые значения: 1 или 2." >> $LOGS
+        return 1
+    fi
+
+    # Поиск строк с шаблоном
+    local STR_NUM=$(grep -n "<$1>" "$2" | cut -f1 -d ":")
+
+    # Проверка, найден ли шаблон
+    if [[ -z "$STR_NUM" ]]; then
+        echo "replace_multi; Ошибка: Шаблон '<$1>' не найден в файле '$2'." >> $LOGS
+        return 1
+    fi
+
+    # Корректировка правила в зависимости от режима
+    if [ "$4" -eq 1 ]; then
+        correct_rule "$1" "$2" 2
+        STR_NUM=$((STR_NUM-1))
+    elif [ "$4" -eq 2 ]; then
+        correct_rule "$1" "$2" 1
+    fi
+
+    # Выполнение вставки с обработкой ошибок
+    if sed -i "${STR_NUM}r $3" "$2"; then
+        echo "replace_multi; Успех: Вставка из '$3' в файл '$2' на строку $STR_NUM завершена." >> $LOGS
+    else
+        echo "replace_multi; Ошибка: Не удалось выполнить вставку из '$3' в файл '$2'." >> $LOGS
+        return 1
+    fi
 }
 
-correct_rule () {
-	if [ $3 -eq "1" ]; then
-		sed -i "/<$1>/d" $2
-		sed -i "/<@$1>/d" $2
-	elif  [ $3 -eq "2" ]; then
-		sed -i "/<$1>/,/<@$1>/d" $2
-	fi
+correct_rule() {
+    # Проверка на наличие всех необходимых аргументов
+    if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
+        echo "correct_rule; Ошибка: Необходимые аргументы не указаны. Использование: correct_rule <шаблон> <файл> <режим>" >> $LOGS
+        return 1
+    fi
+
+    # Проверка существования файла
+    if [[ ! -f "$2" ]]; then
+        echo "correct_rule; Ошибка: Файл '$2' не существует." >> $LOGS
+        return 1
+    fi
+
+    # Проверка на допустимость значения режима
+    if [[ "$3" -ne 1 && "$3" -ne 2 ]]; then
+        echo "correct_rule; Ошибка: Неверный режим '$3'. Допустимые значения: 1 или 2." >> $LOGS
+        return 1
+    fi
+
+    # Выполнение удаления строк в зависимости от режима
+    if [ "$3" -eq 1 ]; then
+        if sed -i "/<$1>/d" "$2" && sed -i "/<@$1>/d" "$2"; then
+            echo "correct_rule; Успех: Удалены строки с шаблоном '<$1>' и '<@$1>' из файла '$2'." >> $LOGS
+        else
+            echo "correct_rule; Ошибка: Не удалось удалить строки с шаблоном '<$1>' и '<@$1>' из файла '$2'." >> $LOGS
+            return 1
+        fi
+    elif [ "$3" -eq 2 ]; then
+        if sed -i "/<$1>/,/<@$1>/d" "$2"; then
+            echo "correct_rule; Успех: Удалены строки с шаблоном '<$1>' до '<@$1>' из файла '$2'." >> $LOGS
+        else
+            echo "correct_rule; Ошибка: Не удалось удалить строки с шаблоном '<$1>' до '<@$1>' из файла '$2'." >> $LOGS
+            return 1
+        fi
+    fi
 }
 
-count_items () {
-	local PARSE_STR=$( parse_conf $1 $2 )
-	local TMP_STR=""
-	local FIN_STR=""
-	for ((i=1;i<=$3;i++))
-	do
-		declare -n FIN_STR_ITER=FIN_STR
-		TMP_STR=$(echo "$PARSE_STR"| tr ! $i)
-		if [[ ! -z "$4" ]]; then
-		  TMP_NUM=$(( ${i}+${4} ))
-		  TMP_STR=$(echo "$TMP_STR"| tr ? $TMP_NUM)
-		fi
-		FIN_STR_ITER+=$(echo "$TMP_STR")$'\n'
-	done
-	echo "$FIN_STR"| head -n -1 > $DIR/tmp/tmpstr
-	replace_multi $1 $2 $DIR/tmp/tmpstr 1
+count_items() {
+    # Проверка на наличие всех необходимых аргументов
+    if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
+        echo "count_items; Ошибка: Необходимые аргументы не указаны. Использование: count_items <конфигурация> <файл> <количество> [дополнительное_число]" >> $LOGS
+        return 1
+    fi
+
+    # Проверка существования конфигурации
+    if [[ ! -f "$1" ]]; then
+        echo "count_items; Ошибка: Конфигурационный файл '$1' не существует." >> $LOGS
+        return 1
+    fi
+
+    # Проверка существования файла
+    if [[ ! -f "$2" ]]; then
+        echo "count_items; Ошибка: Файл '$2' не существует." >> $LOGS
+        return 1
+    fi
+
+    # Проверка существования директории для временного файла
+    if [[ ! -d "$DIR/tmp" ]]; then
+        echo "count_items; Ошибка: Директория '$DIR/tmp' не существует." >> $LOGS
+        return 1
+    fi
+
+    # Парсинг строки конфигурации
+    local PARSE_STR=$(parse_conf "$1" "$2")
+    local TMP_STR=""
+    local FIN_STR=""
+
+    # Цикл для подсчета элементов
+    for ((i=1; i<=$3; i++)); do
+        declare -n FIN_STR_ITER=FIN_STR
+        TMP_STR=$(echo "$PARSE_STR" | tr '!' "$i")
+
+        if [[ ! -z "$4" ]]; then
+            TMP_NUM=$((i + $4))
+            TMP_STR=$(echo "$TMP_STR" | tr '?' "$TMP_NUM")
+        fi
+
+        FIN_STR_ITER+=$(echo "$TMP_STR")$'\n'
+    done
+
+    # Запись результата во временный файл
+    echo "$FIN_STR" | head -n -1 > "$DIR/tmp/tmpstr"
+
+    # Выполнение замены с обработкой ошибок
+    if ! replace_multi "$1" "$2" "$DIR/tmp/tmpstr" 1; then
+        echo "count_items; Ошибка: Не удалось выполнить замену в файле '$2'." >> $LOGS
+        return 1
+    fi
+
+    echo "count_items; Успех: Элементы успешно подсчитаны и заменены в файле '$2'." >> $LOGS
 }
-
-DIR=$(dirname ${BASH_SOURCE})
-
-if [ $TYPE_COMPLEX -ne 1 ]; then
-	PH_COUNT=1
-	STREAM_COUNT=1
-fi
-if [ $TRUECONF -ne 1 ]; then
-	TRUEROOM=2
-fi
 
 # Регулярные выражения для проверки значений
 correct_model="([123]{1})"  # Для MODEL: 1, 2 или 3
@@ -74,6 +195,11 @@ error_messages=()
 if ! [[ "$VERS" =~ $correct_other ]]; then
     error_messages+=("VERS: некорректное значение (ожидалось 1 или 2)")
 fi
+
+if ! [[ "$TYPE_COMPLEX" =~ $correct_other ]]; then
+    error_messages+=("TYPE_COMPLEX: некорректное значение (ожидалось 1 или 2)")
+fi
+
 
 if ! [[ "$MODEL" =~ $correct_model ]]; then
     error_messages+=("MODEL: некорректное значение (ожидалось 1, 2 или 3)")
@@ -97,6 +223,14 @@ fi
 
 if ! [[ "$TRUEROOM" =~ $correct_other ]]; then
     error_messages+=("TRUEROOM: некорректное значение (ожидалось 1 или 2)")
+fi
+
+if [ $TYPE_COMPLEX -ne 1 ]; then
+	PH_COUNT=1
+	STREAM_COUNT=1
+fi
+if [ $TRUECONF -ne 1 ]; then
+	TRUEROOM=2
 fi
 
 # Проверка наличия ошибок

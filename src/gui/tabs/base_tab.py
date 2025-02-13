@@ -40,11 +40,7 @@ class BaseTab:
         for widget in self.frame.winfo_children():
             widget.destroy()
         self.fields = {}
-        logger.debug(
-            "%s tab cleared",
-            self.__log_name,
-            self.__log_name,
-        )
+        logger.debug("%s tab cleared", self.__log_name)
 
     def check_role_name(self, role):
         if not (role := role.strip()):

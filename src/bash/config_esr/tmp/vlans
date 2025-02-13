@@ -3,21 +3,9 @@ bridge 1
   security-zone untrusted
   ip address <pub_ip>/<pub_msk>
   ip address <raisa_ip>/<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
-  ip address /<pub_msk>
+  <count_tcroom_pub>
+  ip address <tcroom_ip!>/<pub_msk>
+  <@count_tcroom_pub>
   enable
 exit
 bridge 2

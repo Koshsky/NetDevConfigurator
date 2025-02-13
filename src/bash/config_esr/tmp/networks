@@ -15,41 +15,17 @@ object-group network HP
   ip address-range 10.3.0.250
 exit
 object-group network STREAM
-  ip address-range 10.3.0.11
-  ip address-range 10.3.0.12
-  ip address-range 10.3.0.13
-  ip address-range 10.3.0.14
-  ip address-range 10.3.0.15
-  ip address-range 10.3.0.16
-  ip address-range 10.3.0.17
-  ip address-range 10.3.0.18
-  ip address-range 10.3.0.19
-  ip address-range 10.3.0.11
-  ip address-range 10.3.0.11
-  ip address-range 10.3.0.11
-  ip address-range 10.3.0.11
-  ip address-range 10.3.0.11
-  ip address-range 10.3.0.11
+  <count_stream>
+  ip address-range 10.3.0.1!
+  <@count_stream>
 exit
 <@network_std>
 
 <network_ph>
 object-group network packhaus
-  ip address-range 10.2.0.111
-  ip address-range 10.2.0.112
-  ip address-range 10.2.0.113
-  ip address-range 10.2.0.114
-  ip address-range 10.2.0.115
-  ip address-range 10.2.0.116
-  ip address-range 10.2.0.117
-  ip address-range 10.2.0.118
-  ip address-range 10.2.0.119
-  ip address-range 10.2.0.111
-  ip address-range 10.2.0.111
-  ip address-range 10.2.0.111
-  ip address-range 10.2.0.111
-  ip address-range 10.2.0.111
-  ip address-range 10.2.0.111
+  <count_ph>
+  ip address-range 10.2.0.11!
+  <@count_ph>
 exit
 <@network_ph>
 
@@ -69,67 +45,15 @@ exit
 <@network_tc>
 
 <network_tcroom>
-object-group network TCRoom1_Public_IP
-  ip address-range 
+<count_tcroom_pub>
+object-group network TCRoom!_Public_IP
+  ip address-range <tcroom_ip!>
 exit
-object-group network TCRoom2_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom3_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom4_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom5_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom6_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom7_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom8_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom9_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom1_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom1_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom1_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom1_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom1_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom1_Public_IP
-  ip address-range 
-exit
+<@count_tcroom_pub>
 object-group network TRCONF_ROOM
-  ip address-range 10.3.1.10
-  ip address-range 10.3.2.10
-  ip address-range 10.3.3.10
-  ip address-range 10.3.4.10
-  ip address-range 10.3.5.10
-  ip address-range 10.3.6.10
-  ip address-range 10.3.7.10
-  ip address-range 10.3.8.10
-  ip address-range 10.3.9.10
-  ip address-range 10.3.1.10
-  ip address-range 10.3.1.10
-  ip address-range 10.3.1.10
-  ip address-range 10.3.1.10
-  ip address-range 10.3.1.10
-  ip address-range 10.3.1.10
+  <count_tcroom>
+  ip address-range 10.3.!.10
+  <@count_tcroom>
 exit
 <@network_tcroom>
 
