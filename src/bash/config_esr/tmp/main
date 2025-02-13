@@ -1,3 +1,4 @@
+
 #!/usr/bin/clish
 #20
 #1.14.0
@@ -146,32 +147,83 @@ object-group network l2tp_dns
   ip address-range 8.8.8.8
   ip address-range 10.3.0.250
 exit
-object-group network TCRoom1_Public_IP
-  ip address-range
+object-group network TR_CONF
+  ip address-range 10.10.10.11
 exit
 object-group network TCRoom1_Public_IP
-  ip address-range
+  ip address-range 
+exit
+object-group network TCRoom2_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom3_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom4_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom5_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom6_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom7_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom8_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom9_Public_IP
+  ip address-range 
 exit
 object-group network TCRoom1_Public_IP
-  ip address-range
+  ip address-range 
+exit
+object-group network TCRoom1_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom1_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom1_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom1_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom1_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom1_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom1_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom1_Public_IP
+  ip address-range 
+exit
+object-group network TCRoom1_Public_IP
+  ip address-range 
 exit
 object-group network TCRoom2_Public_IP
-  ip address-range
+  ip address-range 
 exit
 object-group network TCRoom2_Public_IP
-  ip address-range
+  ip address-range 
 exit
 object-group network TCRoom2_Public_IP
-  ip address-range
+  ip address-range 
 exit
 object-group network TCRoom2_Public_IP
-  ip address-range
+  ip address-range 
 exit
 object-group network TCRoom2_Public_IP
-  ip address-range
+  ip address-range 
 exit
 object-group network TCRoom2_Public_IP
-  ip address-range
+  ip address-range 
 exit
 object-group network TRCONF_ROOM
   ip address-range 10.3.1.10

@@ -1,0 +1,17 @@
+remote-access l2tp remote-workers
+  authentication mode local
+  authentication method mschap-v2
+  local-address ip-address 10.20.20.1
+  remote-address address-range 10.20.20.5-10.20.20.15
+  outside-address ip-address <pub_ip>
+  dns-servers object-group l2tp_dns
+  security-zone VPN
+  ipsec authentication method pre-shared-key
+  ipsec authentication pre-shared-key ascii-text encrypted B1823052900B45F291FD23AD94FC57EC9A1A
+  username remote_user
+    password ascii-text encrypted B1823052A51C4DE9C76D5DB212ED053B
+    enable
+  exit
+  enable
+exit
+

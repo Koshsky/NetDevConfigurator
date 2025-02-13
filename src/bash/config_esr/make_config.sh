@@ -347,7 +347,7 @@ replace "pub_msk" $PUBLIC_MASK "$DIR/tmp/main"
 replace "gate_ip" $GW "$DIR/tmp/main"
 
 FIN_CONFIG=$( cat $DIR/tmp/main )
-rm -R $DIR/tmp
+# rm -R $DIR/tmp
 
 touch $DIR/config.cfg
 echo "$FIN_CONFIG" | tail -n +2 > $DIR/config.cfg

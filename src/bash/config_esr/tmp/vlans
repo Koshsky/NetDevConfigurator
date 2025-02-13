@@ -1,0 +1,56 @@
+bridge 1
+  vlan 777
+  security-zone untrusted
+  ip address <pub_ip>/<pub_msk>
+  ip address <raisa_ip>/<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  ip address /<pub_msk>
+  enable
+exit
+bridge 2
+  vlan 2
+  security-zone trusted
+  ip address 10.2.0.254/16
+  enable
+exit
+bridge 3
+  vlan 3
+  security-zone trusted
+  ip address 10.3.0.254/16
+  enable
+exit
+bridge 4
+  vlan 4
+  security-zone trusted
+  ip address 10.4.0.254/16
+  enable
+exit
+bridge 10
+  vlan 10
+  security-zone DMZ
+  ip address 10.10.10.9/29
+  enable
+exit
