@@ -11,7 +11,7 @@ def set_env(key: str, value: str):
     else:
         os.environ[key] = str(value)
         logger.info(
-            "Environmental variables set up: %s=%s",
+            "Environmental variable set up: %s=%s",
             key,
             os.environ[key],
         )
