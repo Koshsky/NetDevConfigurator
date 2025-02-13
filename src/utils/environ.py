@@ -5,12 +5,16 @@ logger = logging.getLogger("env")
 
 
 def set_env(key: str, value: str):
-    os.environ[key] = str(value)
-    logger.info(
-        "Environmental variables set up: %s=%s",
-        key,
-        os.environ[key],
-    )
+    if key in os.environ and value != os.environ[key]:
+        os.environ[key] = str(value)
+        logger.info("Environmental variable updated: %s=%s", key, os.environ[key])
+    else:
+        os.environ[key] = str(value)
+        logger.info(
+            "Environmental variables set up: %s=%s",
+            key,
+            os.environ[key],
+        )
 
 
 def del_env(key: str):
