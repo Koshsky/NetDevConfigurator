@@ -16,11 +16,39 @@ object-group network HP
 exit
 object-group network STREAM
   ip address-range 10.3.0.11
+  ip address-range 10.3.0.12
+  ip address-range 10.3.0.13
+  ip address-range 10.3.0.14
+  ip address-range 10.3.0.15
+  ip address-range 10.3.0.16
+  ip address-range 10.3.0.17
+  ip address-range 10.3.0.18
+  ip address-range 10.3.0.19
+  ip address-range 10.3.0.11
+  ip address-range 10.3.0.11
+  ip address-range 10.3.0.11
+  ip address-range 10.3.0.11
+  ip address-range 10.3.0.11
+  ip address-range 10.3.0.11
 exit
 <@network_std>
 
 <network_ph>
 object-group network packhaus
+  ip address-range 10.2.0.111
+  ip address-range 10.2.0.112
+  ip address-range 10.2.0.113
+  ip address-range 10.2.0.114
+  ip address-range 10.2.0.115
+  ip address-range 10.2.0.116
+  ip address-range 10.2.0.117
+  ip address-range 10.2.0.118
+  ip address-range 10.2.0.119
+  ip address-range 10.2.0.111
+  ip address-range 10.2.0.111
+  ip address-range 10.2.0.111
+  ip address-range 10.2.0.111
+  ip address-range 10.2.0.111
   ip address-range 10.2.0.111
 exit
 <@network_ph>
@@ -86,36 +114,6 @@ exit
 object-group network TCRoom1_Public_IP
   ip address-range 
 exit
-object-group network TCRoom1_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom1_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom1_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom1_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom2_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom2_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom2_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom2_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom2_Public_IP
-  ip address-range 
-exit
-object-group network TCRoom2_Public_IP
-  ip address-range 
-exit
 object-group network TRCONF_ROOM
   ip address-range 10.3.1.10
   ip address-range 10.3.2.10
@@ -132,16 +130,6 @@ object-group network TRCONF_ROOM
   ip address-range 10.3.1.10
   ip address-range 10.3.1.10
   ip address-range 10.3.1.10
-  ip address-range 10.3.1.10
-  ip address-range 10.3.1.10
-  ip address-range 10.3.1.10
-  ip address-range 10.3.1.10
-  ip address-range 10.3.2.10
-  ip address-range 10.3.2.10
-  ip address-range 10.3.2.10
-  ip address-range 10.3.2.10
-  ip address-range 10.3.2.10
-  ip address-range 10.3.2.10
 exit
 <@network_tcroom>
 

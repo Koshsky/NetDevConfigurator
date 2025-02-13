@@ -73,6 +73,12 @@ security zone-pair untrusted trusted
     match destination-nat
     enable
   exit
+  rule 3
+    action permit
+    match destination-address packhaus
+    match destination-nat
+    enable
+  exit
   rule 4
     action permit
     match destination-address TRCONF_ROOM
@@ -450,5 +456,44 @@ security zone-pair VPN DMZ
     action permit
     match protocol udp
     match destination-port dhcp_server
+  exit
+exit
+security zone-pair VPN RAISA
+  rule 1
+    action permit
+    enable
+  exit
+exit
+security zone-pair RAISA RAISA
+  rule 1
+    action permit
+    enable
+  exit
+exit
+security zone-pair RAISA untrusted
+  rule 1
+    action permit
+    match source-address RAISA_NET
+    enable
+  exit
+exit
+security zone-pair trusted RAISA
+  rule 1
+    action permit
+    enable
+  exit
+exit
+security zone-pair RAISA trusted
+  rule 1
+    action permit
+    match protocol udp
+    match destination-port dns_clients
+    enable
+  exit
+  rule 2
+    action permit
+    match protocol icmp
+    match destination-address HP
+    enable
   exit
 exit

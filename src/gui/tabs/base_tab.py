@@ -41,7 +41,7 @@ class BaseTab:
             widget.destroy()
         self.fields = {}
         logger.debug(
-            "%s tab cleared. %s.fields set to empty dict",
+            "%s tab cleared",
             self.__log_name,
             self.__log_name,
         )

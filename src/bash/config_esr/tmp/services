@@ -60,6 +60,48 @@ exit
 object-group service Streamer_service1
   port-range 6443
 exit
+object-group service Streamer_service2
+  port-range 6444
+exit
+object-group service Streamer_service3
+  port-range 6445
+exit
+object-group service Streamer_service4
+  port-range 6446
+exit
+object-group service Streamer_service5
+  port-range 6447
+exit
+object-group service Streamer_service6
+  port-range 6448
+exit
+object-group service Streamer_service7
+  port-range 6449
+exit
+object-group service Streamer_service8
+  port-range 6441
+exit
+object-group service Streamer_service9
+  port-range 6441
+exit
+object-group service Streamer_service1
+  port-range 6441
+exit
+object-group service Streamer_service1
+  port-range 6441
+exit
+object-group service Streamer_service1
+  port-range 6441
+exit
+object-group service Streamer_service1
+  port-range 6441
+exit
+object-group service Streamer_service1
+  port-range 6441
+exit
+object-group service Streamer_service1
+  port-range 6441
+exit
 object-group service SIP
   port-range 5060
 exit
@@ -93,6 +135,48 @@ exit
 <@service_std>
 
 <service_ph>
+object-group service ph_nat1
+  port-range 4001
+exit
+object-group service ph_nat2
+  port-range 4002
+exit
+object-group service ph_nat3
+  port-range 4003
+exit
+object-group service ph_nat4
+  port-range 4004
+exit
+object-group service ph_nat5
+  port-range 4005
+exit
+object-group service ph_nat6
+  port-range 4006
+exit
+object-group service ph_nat7
+  port-range 4007
+exit
+object-group service ph_nat8
+  port-range 4008
+exit
+object-group service ph_nat9
+  port-range 4009
+exit
+object-group service ph_nat1
+  port-range 4001
+exit
+object-group service ph_nat1
+  port-range 4001
+exit
+object-group service ph_nat1
+  port-range 4001
+exit
+object-group service ph_nat1
+  port-range 4001
+exit
+object-group service ph_nat1
+  port-range 4001
+exit
 object-group service ph_nat1
   port-range 4001
 exit

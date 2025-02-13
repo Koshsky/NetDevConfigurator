@@ -14,43 +14,11 @@ interface gigabitethernet 1/0/3
   switchport mode trunk
   switchport forbidden default-vlan
   switchport trunk allowed vlan add 3
+  switchport trunk allowed vlan add 3-5
 exit
 interface gigabitethernet 1/0/4
   mode switchport
   switchport mode trunk
   switchport forbidden default-vlan
-  switchport trunk allowed vlan add 4
-exit
-interface gigabitethernet 1/0/5
-  mode switchport
-  switchport forbidden default-vlan
-  switchport mode trunk
   switchport trunk allowed vlan add 10
-exit
-interface gigabitethernet 1/0/6
-  mode switchport
-  switchport forbidden default-vlan
-  switchport access vlan 10
-exit
-interface gigabitethernet 1/0/7
-  mode switchport
-  switchport forbidden default-vlan
-  switchport access vlan 10
-exit
-interface gigabitethernet 1/0/8
-  mode switchport
-  switchport forbidden default-vlan
-  switchport access vlan 10
-exit
-interface gigabitethernet 1/0/9
-  mode switchport
-exit
-interface gigabitethernet 1/0/10
-  mode switchport
-exit
-interface gigabitethernet 1/0/11
-  mode switchport
-exit
-interface gigabitethernet 1/0/12
-  mode switchport
 exit
