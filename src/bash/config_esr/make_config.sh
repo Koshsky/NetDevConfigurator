@@ -13,23 +13,26 @@ source $DIR/check_input.sh
 
 if [ $TYPE_COMPLEX -eq 2 ]; then
 	PH_COUNT=1
+    log_message "environmental variable update: PH_COUNT=$PH_COUNT"
 	STREAM_COUNT=1
+    log_message "environmental variable update: STREAM_COUNT=$STREAM_COUNT"
 fi
 if [ $TRUECONF -eq 2 ]; then
 	TRUEROOM=2
+    log_message "environmental variable update: TRUEROOM=$TRUEROOM"
 fi
 
-declare -A STREAM_IP
-declare -A PH_IP
-declare -A TRUEROOM_IP_PUB
-declare -A TRUEROOM_IP
 if [ $TRUEROOM -eq 1 ]; then
+    declare -A TRUEROOM_IP
+    declare -A TRUEROOM_IP_PUB
     LAST_OCTET=$(echo "$TRUEROOM_IP1" | awk -F. '{print $NF}')
     build_ip_array TRUEROOM_IP_PUB $LAST_OCTET $TRUEROOM_COUNT
+    build_ip_array TRUEROOM_IP 1 $TRUEROOM_COUNT
 fi
+declare -A STREAM_IP
 build_ip_array STREAM_IP 11 $STREAM_COUNT
+declare -A PH_IP
 build_ip_array PH_IP 111 $PH_COUNT
-build_ip_array TRUEROOM_IP 1 $TRUEROOM_COUNT
 
 if [ ! -d $DIR/tmp ]; then
     mkdir -p $DIR/tmp
