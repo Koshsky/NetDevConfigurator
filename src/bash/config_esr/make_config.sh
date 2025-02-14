@@ -39,6 +39,7 @@ replace() {
         return 1
     fi
 }
+
 replace_multi() {
     if [[ -z "$1" || -z "$2" || -z "$3" || -z "$4" ]]; then
         log_message "replace_multi; Ошибка: Необходимые аргументы не указаны. Использование: replace_multi <шаблон> <файл> <файл_для_вставки> <режим>"
@@ -78,6 +79,7 @@ replace_multi() {
         return 1
     fi
 }
+
 correct_rule() {
     if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
         log_message "correct_rule; Ошибка: Необходимые аргументы не указаны. Использование: correct_rule <шаблон> <файл> <режим>"
@@ -109,13 +111,10 @@ correct_rule() {
         fi
     fi
 }
+
 count_items() {
     if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
         log_message "count_items; Ошибка: Необходимые аргументы не указаны. Использование: count_items <конфигурация> <файл> <количество> [дополнительное_число]"
-        return 1
-    fi
-    if [[ ! -f "$1" ]]; then
-        log_message "count_items; Ошибка: Конфигурационный файл '$1' не существует."
         return 1
     fi
     if [[ ! -f "$2" ]]; then
@@ -213,10 +212,19 @@ if [ $TRUECONF -eq 2 ]; then
 	TRUEROOM=2
 fi
 
+if [ $TRUEROOM -eq 1 ]; then
+	declare -A TRUEROOM_IP
+	for ((i=1;i<=$TRUEROOM_COUNT;i++))
+	do
+        eval "TRUEROOM_IP[$i]=\${TRUEROOM_IP$i}"
+	done
+fi
+
+
 if [ ! -d $DIR/tmp ]; then
     mkdir -p $DIR/tmp
 fi
-rm -rf $DIR/tmp*
+rm -rf $DIR/tmp/*
 
 touch $DIR/tmp/tmpstr
 

@@ -1,3 +1,4 @@
+<VPN_tun>
 remote-access l2tp remote-workers
   authentication mode local
   authentication method mschap-v2
@@ -15,6 +16,7 @@ remote-access l2tp remote-workers
   enable
 exit
 
+<VPN_raisa>
 remote-access l2tp raisa-workers
   authentication mode local
   authentication method mschap-v2
@@ -31,3 +33,5 @@ remote-access l2tp raisa-workers
   exit
   enable
 exit
+<@VPN_raisa>
+<@VPN_tun>

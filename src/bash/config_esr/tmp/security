@@ -1,3 +1,36 @@
+<user_mvs_esr20>
+username mvsadmin
+  password encrypted $6$7kqzJKFJPL3x3N4Z$bMmA5A6Mp2g9FkDi2zh.LIdFkky6sHZIRIuoNzv2P9EbqgHD.wtx0GGiZtsoLr7HNdksxivtHje/ndOpKPSXb0
+  privilege 15
+exit
+<@user_mvs_esr20>
+
+<user_mvs_esr21>
+username mvsadmin
+  password encrypted $6$DM.Muyl8xNp9Sti.$HDg.1MwKaEbc0D27gNaSfLCQiO4j/kQa04coq8yyQt.2xIzARjwk5jC3ZAJRxWAcjZDMA1fXjWylawCuno85o.
+  privilege 15
+exit
+<@user_mvs_esr21>
+
+
+<zone_std>
+security zone trusted
+exit
+security zone untrusted
+exit
+security zone DMZ
+exit
+<@zone_std>
+<zone_VPN>
+security zone VPN
+exit
+<@zone_VPN>
+<zone_raisa>
+security zone RAISA
+exit
+<@zone_raisa>
+
+<secure_all>
 security zone-pair trusted untrusted
   rule 1
     action permit
@@ -30,6 +63,7 @@ security zone-pair untrusted self
     match protocol icmp
     enable
   exit
+  <secure_VPN>
   rule 30
     action permit
     match protocol udp
@@ -59,6 +93,7 @@ security zone-pair untrusted self
     match destination-port ssh
     enable
   exit
+  <@secure_VPN>
 exit
 security zone-pair untrusted trusted
   rule 1
@@ -73,18 +108,22 @@ security zone-pair untrusted trusted
     match destination-nat
     enable
   exit
+  <secure_ph>
   rule 3
     action permit
     match destination-address packhaus
     match destination-nat
     enable
   exit
+  <@secure_ph>
+  <secure_tcroom>
   rule 4
     action permit
     match destination-address TRCONF_ROOM
     match destination-nat
     enable
   exit
+  <@secure_tcroom>
 exit
 security zone-pair untrusted DMZ
   rule 1
@@ -99,12 +138,14 @@ security zone-pair untrusted DMZ
     match destination-port KMS
     enable
   exit
+  <secure_tc>
   rule 3
     action permit
     match destination-address TR_CONF
     match destination-nat
     enable
   exit
+  <@secure_tc>
 exit
 security zone-pair trusted DMZ
   rule 10
@@ -124,12 +165,14 @@ security zone-pair trusted DMZ
     match destination-port KMS
     enable
   exit
+  <secure_tc>
   rule 40
     action permit
     match protocol tcp
     match destination-port trueconf
     enable
   exit
+  <@secure_tc>
   rule 41
     action permit
     match protocol tcp
@@ -183,6 +226,7 @@ security zone-pair DMZ trusted
   exit
 exit
 
+<secure_VPN>
 security zone-pair VPN self
   rule 1
     action permit
@@ -458,12 +502,16 @@ security zone-pair VPN DMZ
     match destination-port dhcp_server
   exit
 exit
+<@secure_VPN>
+<secure_raisVPN>
 security zone-pair VPN RAISA
   rule 1
     action permit
     enable
   exit
 exit
+<@secure_raisVPN>
+<secure_raisa>
 security zone-pair RAISA RAISA
   rule 1
     action permit
@@ -497,3 +545,6 @@ security zone-pair RAISA trusted
     enable
   exit
 exit
+<@secure_raisa>
+<@secure_all>
+
