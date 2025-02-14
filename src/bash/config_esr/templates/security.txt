@@ -56,6 +56,11 @@ security zone-pair trusted self
     match protocol icmp
     enable
   exit
+  rule 30
+    action permit
+    match protocol udp
+    match destination-port snmp
+    enable
 exit
 security zone-pair untrusted self
   rule 10

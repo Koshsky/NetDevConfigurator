@@ -47,6 +47,16 @@ no spanning-tree
 
 <interfaces>
 
+snmp-server
+snmp-server user mvssnmpuser
+  access ro
+  authentication algorithm sha1
+  authentication access priv
+  authentication key ascii-text Auth_Snmp_Mvsadmin
+  privacy algorithm aes128
+  privacy key ascii-text Priv_Snmp_Mvsadmin
+  enable
+exit
 
 <security>
 

@@ -92,6 +92,9 @@ exit
 object-group service snmp_exporter
   port-range 9116
 exit
+object-group service snmp
+  port-range 161
+exit
 <@service_std>
 
 <service_ph>
