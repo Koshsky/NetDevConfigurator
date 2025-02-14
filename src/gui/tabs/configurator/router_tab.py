@@ -32,10 +32,9 @@ class RouterTab(BaseTab):
 
     def actualize(self):
         for env_name, field in self.fields["env"]["vars"].items():
-            if env_name.startswith("TRUEROOM_IP") and env_name not in os.environ:
-                field.set("MUST BE SET")
-            else:
-                field.set(env_converter.to_human(env_name, os.environ[env_name]))
+            if env_name not in os.environ:
+                set_env(env_name, field.get().strip())
+            field.set(env_converter.to_human(env_name, os.environ[env_name]))
 
     def update(self):
         for env_name, field in self.fields["env"]["vars"].items():
@@ -99,7 +98,8 @@ class RouterTab(BaseTab):
             for i in range(1, tr_room_count + 1):
                 env_vars[f"TRUEROOM_IP{i}"] = tuple(
                     [
-                        "127.0.0.1",
+                        "192.168.3."
+                        + str(232 + i),  # TODO: помни об этом слабом месте.
                     ]
                 )
 
