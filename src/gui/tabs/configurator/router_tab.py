@@ -43,6 +43,11 @@ class RouterTab(BaseTab):
             except KeyError:
                 logger.error("Incorrect value for %s: %s", env_name, field.get())
             set_env(env_name, env_value)
+
+        octet4 = int(os.environ["TRUEROOM_IP1"].split(".")[-1])
+        net = ".".join(os.environ["TRUEROOM_IP1"].split(".")[:-1])
+        for i in range(2, int(os.environ["TRUEROOM_COUNT"]) + 1):
+            set_env(f"TRUEROOM_IP{i}", f"{net}.{str(octet4 + i - 1)}")
         self.refresh_widgets()
 
     def _get_configuration(self):
@@ -93,14 +98,5 @@ class RouterTab(BaseTab):
 
         if os.environ["TRUEROOM"] == os.environ["TRUECONF"] == "1":
             env_vars["TRUEROOM_COUNT"] = tuple(range(1, 26))
-
-            tr_room_count = int(os.environ["TRUEROOM_COUNT"])
-            for i in range(1, tr_room_count + 1):
-                env_vars[f"TRUEROOM_IP{i}"] = tuple(
-                    [
-                        "192.168.3."
-                        + str(232 + i),  # TODO: помни об этом слабом месте.
-                    ]
-                )
-
+            env_vars["TRUEROOM_IP1"] = tuple([env_converter.get_human("TRUEROOM_IP1")])
         return env_vars
