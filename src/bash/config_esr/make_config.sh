@@ -482,4 +482,5 @@ FIN_CONFIG=$( cat $DIR/tmp/main )
 
 touch $DIR/config.cfg
 echo "$FIN_CONFIG"| tail -n +2 > $DIR/config.cfg
+log_message "Configuration saved in $DIR/config.cfg"
 # rm -R $DIR/tmp

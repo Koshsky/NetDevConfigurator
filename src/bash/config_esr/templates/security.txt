@@ -357,12 +357,12 @@ security zone-pair VPN trusted
     action permit
     match protocol udp
     match destination-port dhcp_client
-  exit  
+  exit
   rule 29
     action permit
     match protocol udp
     match destination-port dhcp_server
-  exit 
+  exit
   rule 30
     action permit
     match protocol tcp
@@ -500,7 +500,7 @@ security zone-pair VPN DMZ
     action permit
     match protocol udp
     match destination-port dhcp_client
-  exit  
+  exit
   rule 29
     action permit
     match protocol udp

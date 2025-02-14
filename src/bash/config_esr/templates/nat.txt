@@ -17,12 +17,12 @@ nat destination
   exit
   <@count_stream_pool>
   <nat_dest_ph>
-  <count_ph_pool>	
+  <count_ph_pool>
   pool PH_!
     ip address 10.2.0.11!
     ip port 3316
   exit
-  <@count_ph_pool>	
+  <@count_ph_pool>
   <@nat_dest_ph>
   <nat_dest_tcroom>
   <count_tcroom_pool>
@@ -150,7 +150,7 @@ nat destination
       action destination-nat pool CONF
       enable
     exit
-    <count_stream>	
+    <count_stream>
     rule 4!
       match protocol tcp
       match destination-address Public_IP
@@ -158,7 +158,7 @@ nat destination
       action destination-nat pool STREAM_!
       enable
     exit
-    <@count_stream>	
+    <@count_stream>
     <nat_dest_tcroom>
     <count_tcroom>
     rule 4!
@@ -180,7 +180,7 @@ nat destination
     <@count_tcroom_rdp>
     <@nat_dest_tcroom>
     <nat_dest_ph>
-    <count_ph>	
+    <count_ph>
     rule 6!
       match protocol tcp
       match destination-address Public_IP
@@ -188,7 +188,7 @@ nat destination
       action destination-nat pool PH_!
       enable
     exit
-    <@count_ph>	
+    <@count_ph>
     <@nat_dest_ph>
     <nat_dest_raisa>
     rule 70
