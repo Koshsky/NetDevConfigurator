@@ -16,7 +16,7 @@ object-group network HP
 exit
 object-group network STREAM
   <count_stream>
-  ip address-range 10.3.0.1!
+  ip address-range <ip-address>
   <@count_stream>
 exit
 <@network_std>

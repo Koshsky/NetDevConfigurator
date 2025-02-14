@@ -43,11 +43,6 @@ class RouterTab(BaseTab):
             except KeyError:
                 logger.error("Incorrect value for %s: %s", env_name, field.get())
             set_env(env_name, env_value)
-
-        octet4 = int(os.environ["TRUEROOM_IP1"].split(".")[-1])
-        net = ".".join(os.environ["TRUEROOM_IP1"].split(".")[:-1])
-        for i in range(2, int(os.environ["TRUEROOM_COUNT"]) + 1):
-            set_env(f"TRUEROOM_IP{i}", f"{net}.{str(octet4 + i - 1)}")
         self.refresh_widgets()
 
     def _get_configuration(self):

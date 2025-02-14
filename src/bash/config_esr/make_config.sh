@@ -3,13 +3,94 @@
 #set -x
 
 lang="bash"
-
 DIR=$(dirname ${BASH_SOURCE})
+declare -A STREAM_IP
+declare -A PH_IP
+declare -A TRUEROOM_IP_PUB
+declare -A TRUEROOM_IP
+
 LOGS="$DIR/config.log"
 > $LOGS
 
 log_message() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOGS"
+}
+
+build_ip_array() {
+    local -n ip_array=$1
+    local start_ip=$2
+    local count=$3
+    for i in $(seq 0 $((count - 1))); do
+        local octet_value=$((start_ip + i))
+
+        if [ "$octet_value" -le 254 ]; then
+            case $1 in
+                "STREAM_IP")
+                    ip_array[$((i + 1))]="10.3.0.$octet_value"  # first is 11
+                    ;;
+                "PH_IP")
+                    ip_array[$((i + 1))]="10.2.0.$octet_value"  # first is 111
+                    ;;
+                "TRUEROOM_IP_PUB")
+                    ip_array[$((i + 1))]="192.168.3.$octet_value"
+                    ;;
+                "TRUEROOM_IP")
+                    ip_array[$((i + 1))]="10.3.$octet_value.10"  # first is 1
+                    ;;
+                *)
+                    log_message "Ошибка: неизвестный тип айпи адреса: $ip_array"
+                    ;;
+            esac
+        else
+            log_message "Ошибка: последний октет $octet_value превышает 254. Прекращение заполнения массива."
+            break
+        fi
+    done
+}
+
+
+count_items() {
+    if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
+        log_message "count_items; Ошибка: Необходимые аргументы не указаны. Использование: count_items <конфигурация> <файл> <количество> [дополнительное_число]"
+        return 1
+    fi
+    if [[ ! -f "$2" ]]; then
+        log_message "count_items; Ошибка: Файл '$2' не существует."
+        return 1
+    fi
+    if [[ ! -d "$DIR/tmp" ]]; then
+        log_message "count_items; Ошибка: Директория '$DIR/tmp' не существует."
+        return 1
+    fi
+
+    # Парсинг строки конфигурации
+    local PARSE_STR=$(parse_conf $1 $2)
+    local TMP_STR=""
+    local FIN_STR=""
+
+    # Цикл для подсчета элементов
+    for ((i=1; i<=$3; i++)); do
+        declare -n FIN_STR_ITER=FIN_STR
+        TMP_STR=$(echo "$PARSE_STR" | tr ! $i)
+
+        if [[ ! -z "$4" ]]; then
+            TMP_NUM=$(( ${i}+${4} ))  # TODO: TMP_NUM=$((i + $4))
+            TMP_STR=$(echo "$TMP_STR" | tr ? $TMP_NUM)
+        fi
+
+        FIN_STR_ITER+=$(echo "$TMP_STR")$'\n'
+    done
+
+    # Запись результата во временный файл
+    echo "$FIN_STR" | head -n -1 > "$DIR/tmp/tmpstr"
+
+    # Выполнение замены с обработкой ошибок
+    if ! replace_multi $1 $2 $DIR/tmp/tmpstr 1; then
+        log_message "count_items; Ошибка: Не удалось выполнить замену в файле '$2'."
+        return 1
+    fi
+
+    log_message "count_items; Успех: Элементы успешно подсчитаны и заменены в файле '$2'."
 }
 
 parse_conf () {
@@ -112,50 +193,6 @@ correct_rule() {
     fi
 }
 
-count_items() {
-    if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
-        log_message "count_items; Ошибка: Необходимые аргументы не указаны. Использование: count_items <конфигурация> <файл> <количество> [дополнительное_число]"
-        return 1
-    fi
-    if [[ ! -f "$2" ]]; then
-        log_message "count_items; Ошибка: Файл '$2' не существует."
-        return 1
-    fi
-    if [[ ! -d "$DIR/tmp" ]]; then
-        log_message "count_items; Ошибка: Директория '$DIR/tmp' не существует."
-        return 1
-    fi
-
-    # Парсинг строки конфигурации
-    local PARSE_STR=$(parse_conf $1 $2)
-    local TMP_STR=""
-    local FIN_STR=""
-
-    # Цикл для подсчета элементов
-    for ((i=1; i<=$3; i++)); do
-        declare -n FIN_STR_ITER=FIN_STR
-        TMP_STR=$(echo "$PARSE_STR" | tr ! $i)
-
-        if [[ ! -z "$4" ]]; then
-            TMP_NUM=$(( ${i}+${4} ))  # TODO: TMP_NUM=$((i + $4))
-            TMP_STR=$(echo "$TMP_STR" | tr ? $TMP_NUM)
-        fi
-
-        FIN_STR_ITER+=$(echo "$TMP_STR")$'\n'
-    done
-
-    # Запись результата во временный файл
-    echo "$FIN_STR" | head -n -1 > "$DIR/tmp/tmpstr"
-
-    # Выполнение замены с обработкой ошибок
-    if ! replace_multi $1 $2 $DIR/tmp/tmpstr 1; then
-        log_message "count_items; Ошибка: Не удалось выполнить замену в файле '$2'."
-        return 1
-    fi
-
-    log_message "count_items; Успех: Элементы успешно подсчитаны и заменены в файле '$2'."
-}
-
 if [ $TYPE_COMPLEX -eq 2 ]; then
 	PH_COUNT=1
 	STREAM_COUNT=1
@@ -164,12 +201,13 @@ if [ $TRUECONF -eq 2 ]; then
 	TRUEROOM=2
 fi
 if [ $TRUEROOM -eq 1 ]; then
-	declare -A TRUEROOM_IP
-	for ((i=1;i<=$TRUEROOM_COUNT;i++))
-	do
-        eval "TRUEROOM_IP[$i]=\${TRUEROOM_IP$i}"
-	done
+    LAST_OCTET=$(echo "$TRUEROOM_IP1" | awk -F. '{print $NF}')
+    build_ip_array TRUEROOM_IP_PUB $LAST_OCTET $TRUEROOM_COUNT
 fi
+build_ip_array STREAM_IP 11 $STREAM_COUNT
+build_ip_array PH_IP 111 $PH_COUNT
+build_ip_array TRUEROOM_IP 1 $TRUEROOM_COUNT
+
 
 correct_model="([123]{1})"
 correct_other="([12]{1})"
@@ -219,7 +257,6 @@ else
     exit 0
 fi
 
-
 if [ ! -d $DIR/tmp ]; then
     mkdir -p $DIR/tmp
 fi
@@ -264,8 +301,8 @@ if [ $TRUEROOM -eq 1 ]; then
         count_items "count_tcroom_pub" "$DIR/tmp/networks" $TRUEROOM_COUNT
         for ((i=1;i<=$TRUEROOM_COUNT;i++))
         do
-                replace "tcroom_ip$i" ${TRUEROOM_IP[$i]} "$DIR/tmp/networks"
-                replace "tcroom_ip$i" ${TRUEROOM_IP[$i]} "$DIR/tmp/vlans"
+                replace "tcroom_ip$i" ${TRUEROOM_IP_PUB[$i]} "$DIR/tmp/networks"
+                replace "tcroom_ip$i" ${TRUEROOM_IP_PUB[$i]} "$DIR/tmp/vlans"
         done
 fi
 
