@@ -79,20 +79,20 @@ class ConfiguratorApp(App):
             for env_param, env_value in config["router"].items():
                 set_env(env_param, env_value)
             set_env("MODEL", env_converter.from_human("MODEL", device.name))
-        logger.info("Device selected. device=%s", os.environ["DEV_NAME"])
+        logger.debug("Device selected. device=%s", os.environ["DEV_NAME"])
 
     def register_preset(self, role: str, OR: str):
         preset = self.db_services["preset"].get_by_device_name_and_role(
             os.environ["DEV_NAME"],
             role,
         )
-        self.config_template = self.db_services["preset"].get_info(preset, check=True)[
-            "configuration"
-        ]
         if set_env("DEV_ROLE", preset.role):
+            set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")
+            self.config_template = self.db_services["preset"].get_info(
+                preset, check=True
+            )["configuration"]
             self.refresh_tabs()
         set_env("OR", OR)
-        set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")
         logger.info(
             "ConfiguratorApp.preset := (%s; %s)",
             os.environ["DEV_NAME"],
