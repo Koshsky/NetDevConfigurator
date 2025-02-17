@@ -70,7 +70,7 @@ class SSHBaseDriver:
                     )
 
             except socket.timeout:
-                logger.debugs("Socket timeout occurred.")
+                logger.debug("Socket timeout occurred.")
                 continue
         return "\n".join(output.split("\n")[1:-1])
 

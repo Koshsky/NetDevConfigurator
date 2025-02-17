@@ -2,7 +2,6 @@ import logging
 import os
 from functools import wraps
 
-from config import config
 from drivers import COMDriver, SSHDriver
 from gui import BaseTab, apply_error_handler
 from utils import set_env, env_converter
@@ -50,11 +49,13 @@ class ControlTab(BaseTab):
 
     def actualize(self):
         self.fields["params"]["role"].set(os.environ["DEV_ROLE"])
+        self.fields["params"]["or"].set(os.environ["OR"])
 
     def update_params(self):
         if os.environ["DEV_TYPE"] == "switch":
             self.app.register_preset(
-                self.check_role_name(self.fields["params"]["role"].get())
+                self.check_role_name(self.fields["params"]["role"].get()),
+                self.fields["params"]["or"].get().strip(),
             )
         elif os.environ["DEV_TYPE"] == "router":
             set_env(
@@ -67,9 +68,6 @@ class ControlTab(BaseTab):
         self.actualize()
 
     def update_host_info(self):
-        set_env("HOST_ADDRESS", "NO")
-        set_env("HOST_PORT", "NO")
-
         if os.environ["CONNECTION_TYPE"] == "ssh":
             # TODO: add validation of IP address
             set_env("HOST_ADDRESS", self.fields["host"]["address"].get().strip())
@@ -89,7 +87,7 @@ class ControlTab(BaseTab):
             conn.update_firmware()
 
     def show_template(self):
-        if configuration := self.app.text_configuration is None:
+        if (configuration := self.app.text_configuration) is None:
             self.display_feedback(
                 "There is no configuration. Please select device role"
             )
@@ -124,8 +122,8 @@ class ControlTab(BaseTab):
         self.create_block(
             "host",
             {
-                "username": (config["host"]["username"],),
-                "password": (config["host"]["password"],),
+                "username": (os.environ["HOST_USERNAME"],),
+                "password": (os.environ["HOST_PASSWORD"],),
             },
             ("SELECT", self.update_host_info),
         )
@@ -134,10 +132,10 @@ class ControlTab(BaseTab):
         self.create_block(
             "host",
             {
-                "address": (config["host"]["address"],),
-                "port": (config["host"]["port"],),
-                "username": (config["host"]["username"],),
-                "password": (config["host"]["password"],),
+                "address": (os.environ["HOST_ADDRESS"],),
+                "port": (os.environ["HOST_PORT"],),
+                "username": (os.environ["HOST_USERNAME"],),
+                "password": (os.environ["HOST_PASSWORD"],),
             },
             ("SELECT", self.update_host_info),
         )

@@ -50,7 +50,7 @@ class BaseMES:
 
     @property
     def update_startup_config(self):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/tmp/{os.environ['FILENAME']} startup-config"
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/tmp/{os.environ['CFG_FILENAME']} startup-config"
 
     @property
     def base_configure_192(self):
@@ -59,6 +59,13 @@ class BaseMES:
             "interface vlan 1",
             f"ip address {os.environ['HOST_ADDRESS']} 255.255.255.0",
             "ssh enable",
+            "!",
+            "interface gigabitethernet 0/1",
+            "no switchport general allowed vlan",
+            "switchport mode access",
+            "no switchport forbidden default-vlan",
+            "switchport access vlan 1",
+            "!",
             "end",
         ]
 

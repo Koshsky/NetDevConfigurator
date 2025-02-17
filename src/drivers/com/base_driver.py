@@ -65,7 +65,9 @@ class COMBaseDriver:
     def _on_open(self):
         self.__log_in()
         self.send_commands(self.core.open_sequence)
-        logger.info("On open sequence for %s was sent successfully", type(self.core))
+        logger.info(
+            "On open sequence for %s was sent successfully", type(self.core).__name__
+        )
 
     def __enter__(self):
         if self.ser.is_open:

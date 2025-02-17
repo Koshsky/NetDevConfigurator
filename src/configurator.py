@@ -17,6 +17,10 @@ class ConfiguratorApp(App):
     def __init__(self, root, title, advanced, *args, **kwargs):
         self.config_template = None
         self.advanced_mode = advanced
+        set_env("HOST_ADDRESS", config["host"]["address"])
+        set_env("HOST_PORT", config["host"]["port"])
+        set_env("HOST_USERNAME", config["host"]["username"])
+        set_env("HOST_PASSWORD", config["host"]["password"])
         super().__init__(root, title)
 
     @property
@@ -41,7 +45,7 @@ class ConfiguratorApp(App):
     def text_configuration(self):
         if os.environ["DEV_TYPE"] == "switch":
             if "DEV_ROLE" not in os.environ:
-                return
+                raise Exception("Please set up switch role")
             return self.__switch_config()
         elif os.environ["DEV_TYPE"] == "router":
             return self.__router_config()
@@ -77,7 +81,7 @@ class ConfiguratorApp(App):
             set_env("MODEL", env_converter.from_human("MODEL", device.name))
         logger.info("Device selected. device=%s", os.environ["DEV_NAME"])
 
-    def register_preset(self, role: str):
+    def register_preset(self, role: str, OR: str):
         preset = self.db_services["preset"].get_by_device_name_and_role(
             os.environ["DEV_NAME"],
             role,
@@ -92,6 +96,7 @@ class ConfiguratorApp(App):
         self.config_template = self.db_services["preset"].get_info(preset, check=True)[
             "configuration"
         ]
+        set_env("OR", OR)
 
     def refresh_tabs(self):
         if "CONNECTION_TYPE" not in os.environ:
