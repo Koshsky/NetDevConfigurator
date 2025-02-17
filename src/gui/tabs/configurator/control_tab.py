@@ -34,6 +34,7 @@ class ControlTab(BaseTab):
         self._create_action_buttons()
         self.create_feedback_area()
         self.update_host_info()
+        self.update_params()
 
     def load(self):
         if os.environ["CONNECTION_TYPE"] == "com+ssh":
@@ -64,7 +65,6 @@ class ControlTab(BaseTab):
                     self.fields["params"]["TYPE_COMPLEX"].get().strip()
                 ],
             )
-        self.app.refresh_tabs()
         self.actualize()
 
     def update_host_info(self):

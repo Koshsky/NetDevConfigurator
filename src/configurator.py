@@ -86,17 +86,18 @@ class ConfiguratorApp(App):
             os.environ["DEV_NAME"],
             role,
         )
-        set_env("DEV_ROLE", preset.role)
+        self.config_template = self.db_services["preset"].get_info(preset, check=True)[
+            "configuration"
+        ]
+        if set_env("DEV_ROLE", preset.role):
+            self.refresh_tabs()
+        set_env("OR", OR)
         set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")
         logger.info(
             "ConfiguratorApp.preset := (%s; %s)",
             os.environ["DEV_NAME"],
             os.environ["DEV_ROLE"],
         )
-        self.config_template = self.db_services["preset"].get_info(preset, check=True)[
-            "configuration"
-        ]
-        set_env("OR", OR)
 
     def refresh_tabs(self):
         if "CONNECTION_TYPE" not in os.environ:
