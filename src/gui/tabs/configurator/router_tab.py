@@ -39,7 +39,7 @@ class RouterTab(BaseTab):
     def update(self):
         for env_name, field in self.fields["env"]["vars"].items():
             try:
-                env_value = env_converter.from_human(env_name, field.get())
+                env_value = env_converter.to_machine(env_name, field.get())
             except KeyError:
                 logger.error("Incorrect value for %s: %s", env_name, field.get())
             set_env(env_name, env_value)

@@ -29,9 +29,9 @@ def del_env(key: str):
 
 class EnvConverter(dict):
     def get_human(self, env_name):
-        return self.from_human(env_name, os.environ[env_name])
+        return self.to_human(env_name, os.environ[env_name])
 
-    def from_human(self, env_name, human_value):
+    def to_machine(self, env_name, human_value):
         if env_name in self:
             return self[env_name][human_value]
         return human_value

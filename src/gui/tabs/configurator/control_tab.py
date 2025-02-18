@@ -49,8 +49,9 @@ class ControlTab(BaseTab):
             self.display_feedback(resp)
 
     def actualize(self):
-        self.fields["params"]["role"].set(os.environ["DEV_ROLE"])
-        self.fields["params"]["or"].set(os.environ["OR"])
+        if os.environ["DEV_TYPE"] == "switch":
+            self.fields["params"]["role"].set(os.environ["DEV_ROLE"])
+            self.fields["params"]["or"].set(os.environ["OR"])
 
     def update_params(self):
         if os.environ["DEV_TYPE"] == "switch":
@@ -61,9 +62,9 @@ class ControlTab(BaseTab):
         elif os.environ["DEV_TYPE"] == "router":
             set_env(
                 "TYPE_COMPLEX",
-                env_converter.from_human[
-                    self.fields["params"]["TYPE_COMPLEX"].get().strip()
-                ],
+                env_converter.to_machine(
+                    "TYPE_COMPLEX", self.fields["params"]["TYPE_COMPLEX"].get().strip()
+                ),
             )
         self.actualize()
 

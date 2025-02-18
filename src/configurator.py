@@ -78,7 +78,7 @@ class ConfiguratorApp(App):
         if os.environ["DEV_TYPE"] == "router":
             for env_param, env_value in config["router"].items():
                 set_env(env_param, env_value)
-            set_env("MODEL", env_converter.from_human("MODEL", device.name))
+            set_env("MODEL", env_converter.to_machine("MODEL", device.name))
         logger.debug("Device selected. device=%s", os.environ["DEV_NAME"])
 
     def register_preset(self, role: str, OR: str):
