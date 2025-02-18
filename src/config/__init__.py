@@ -9,4 +9,4 @@ logging.getLogger("paramiko").setLevel(logging.WARNING)
 logger = logging.getLogger("config")
 
 config = yaml.safe_load(open("./src/config/config.yml"))
-config["router"] = yaml.safe_load(open("./src/config/common_router.yml"))
+config["router"] = yaml.safe_load(open("./src/config/router.yml"))
