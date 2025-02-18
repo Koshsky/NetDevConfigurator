@@ -59,7 +59,7 @@ object-group service DMZ_stream
 exit
 <count_stream>
 object-group service Streamer_service!
-  port-range 644?
+  port-range ?
 exit
 <@count_stream>
 object-group service SIP
@@ -100,7 +100,7 @@ exit
 <service_ph>
 <count_ph>
 object-group service ph_nat!
-  port-range 400!
+  port-range ?
 exit
 <@count_ph>
 <@service_ph>

@@ -24,7 +24,7 @@ exit
 <network_ph>
 object-group network packhaus
   <count_ph>
-  ip address-range 10.2.0.11!
+  ip address-range <ip-address>
   <@count_ph>
 exit
 <@network_ph>
@@ -47,12 +47,12 @@ exit
 <network_tcroom>
 <count_tcroom_pub>
 object-group network TCRoom!_Public_IP
-  ip address-range <tcroom_ip!>
+  ip address-range <ip-address>
 exit
 <@count_tcroom_pub>
 object-group network TRCONF_ROOM
   <count_tcroom>
-  ip address-range 10.3.!.10
+  ip address-range <ip-address>
   <@count_tcroom>
 exit
 <@network_tcroom>

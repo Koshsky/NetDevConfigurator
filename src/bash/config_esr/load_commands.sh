@@ -1,3 +1,5 @@
+LOGS="$DIR/config.log"
+> $LOGS
 
 log_message() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOGS"
@@ -33,8 +35,69 @@ build_ip_array() {
             break
         fi
     done
+    log_message "$1: builded. count=$count"
 }
 
+count_items_new() {
+    if [[ -z "$1" || -z "$2" || -z "$3" ]]; then
+        log_message "count_items; Ошибка: Необходимые аргументы не указаны. Использование: count_items <конфигурация> <файл> <имя_массива>"
+        return 1
+    fi
+    if [[ ! -f "$2" ]]; then
+        log_message "count_items; Ошибка: Файл '$2' не существует."
+        return 1
+    fi
+    if [[ ! -d "$DIR/tmp" ]]; then
+        log_message "count_items; Ошибка: Директория '$DIR/tmp' не существует."
+        return 1
+    fi
+    # Проверяем, что переданный аргумент является массивом
+    if ! declare -p "$3" &>/dev/null; then
+        log_message "count_items; Ошибка: '$3' не является массивом."
+        return 1
+    fi
+
+    # Создаем ссылку на массив
+    local -n array_ref="$3"
+    local count=${#array_ref[@]}
+    if (( count == 0 )); then
+        log_message "count_items; Ошибка: Массив '$3' пуст."
+        return 1
+    fi
+
+    # Извлекаем шаблон из файла
+    local PARSE_STR
+    PARSE_STR=$(parse_conf "$1" "$2")
+    if [[ -z "$PARSE_STR" ]]; then
+        log_message "count_items; Ошибка: Не удалось извлечь шаблон для '$1'."
+        return 1
+    fi
+
+    local FIN_STR=""
+    # Генерируем строки для каждого элемента массива
+    for ((i = 1; i <= count; i++)); do
+        local ip="${array_ref[$i]}"
+        # log_message $ip
+        # Заменяем <ip-address> на текущий IP и "!" на номер итерации (i + 1)
+        local tmp_str="${PARSE_STR/<ip-address>/$ip}"
+        tmp_str="${tmp_str//!/$i}"
+        # Если передан четвертый аргумент, заменяем "?" на (i + $4)
+        if [[ -n "$4" ]]; then
+            local TMP_NUM=$(( i + $4 ))  # Вычисляем новое значение
+            tmp_str="${tmp_str//\?/$TMP_NUM}"  # Заменяем "?" на TMP_NUM
+        fi
+        FIN_STR+="$tmp_str"$'\n'
+    done
+
+    # Удаляем последний символ перевода строки и записываем в файл
+    echo "${FIN_STR%$'\n'}" > "$DIR/tmp/tmpstr"
+
+    # Выполняем замену в целевом файле
+    if ! replace_multi "$1" "$2" "$DIR/tmp/tmpstr" 1; then
+        log_message "count_items; Ошибка при замене содержимого."
+        return 1
+    fi
+}
 
 count_items() {
     if [[ -z "$1" || -z "$2" || -z "$3" ]]; then

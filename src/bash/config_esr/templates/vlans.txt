@@ -29,7 +29,7 @@ bridge 1
   ip address <raisa_ip>/<pub_msk>
   <br_tcroom>
   <count_tcroom_pub>
-  ip address <tcroom_ip!>/<pub_msk>
+  ip address <ip-address>/<pub_msk>
   <@count_tcroom_pub>
   <@br_tcroom>
   enable

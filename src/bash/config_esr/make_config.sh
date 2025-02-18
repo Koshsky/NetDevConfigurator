@@ -1,11 +1,7 @@
 #!/bin/bash
-
 #set -x
 
-lang="bash"
 DIR=$(dirname ${BASH_SOURCE})
-LOGS="$DIR/config.log"
-> $LOGS
 
 source $DIR/load_commands.sh
 source $DIR/check_input.sh
@@ -34,19 +30,33 @@ build_ip_array STREAM_IP 11 $STREAM_COUNT
 declare -A PH_IP
 build_ip_array PH_IP 111 $PH_COUNT
 
-if [ ! -d $DIR/tmp ]; then
-    mkdir -p $DIR/tmp
-fi
-rm -rf $DIR/tmp/*
+rm -rf "$DIR/tmp"
+mkdir -p "$DIR/tmp"
 touch $DIR/tmp/tmpstr
-count_items "count_stream" "$DIR/tmp/networks" $STREAM_COUNT
-count_items "count_stream" "$DIR/tmp/services" $STREAM_COUNT 2
-count_items "count_stream_pool" "$DIR/tmp/nat" $STREAM_COUNT
-count_items "count_stream" "$DIR/tmp/nat" $STREAM_COUNT
-count_items "count_ph" "$DIR/tmp/services" $PH_COUNT
-count_items "count_ph" "$DIR/tmp/networks" $PH_COUNT
-count_items "count_ph_pool" "$DIR/tmp/nat" $PH_COUNT
-count_items "count_ph" "$DIR/tmp/nat" $PH_COUNT
+cat $DIR/templates/main.txt| col -b > $DIR/tmp/main
+cat $DIR/templates/version.txt| col -b > $DIR/tmp/version
+cat $DIR/templates/services.txt| col -b > $DIR/tmp/services
+cat $DIR/templates/networks.txt| col -b > $DIR/tmp/networks
+cat $DIR/templates/interfaces.txt| col -b > $DIR/tmp/interfaces
+cat $DIR/templates/vlans.txt| col -b > $DIR/tmp/vlans
+cat $DIR/templates/vpn.txt| col -b > $DIR/tmp/vpn
+if [ $VERS -eq 1 ]; then
+        cat $DIR/templates/security_new.txt| col -b > $DIR/tmp/security
+        cat $DIR/templates/nat_new.txt| col -b > $DIR/tmp/nat
+elif [ $VERS -eq 2 ]; then
+        cat $DIR/templates/security.txt| col -b > $DIR/tmp/security
+        cat $DIR/templates/nat.txt| col -b > $DIR/tmp/nat
+fi
+
+count_items_new "count_stream" "$DIR/tmp/networks" "STREAM_IP"
+count_items_new "count_stream" "$DIR/tmp/services" "STREAM_IP" 6442
+count_items_new "count_stream_pool" "$DIR/tmp/nat" "STREAM_IP"
+count_items_new "count_stream" "$DIR/tmp/nat" "STREAM_IP" 40
+count_items_new "count_ph" "$DIR/tmp/services" "PH_IP" 4000
+count_items_new "count_ph" "$DIR/tmp/networks" "PH_IP"
+count_items_new "count_ph_pool" "$DIR/tmp/nat" "PH_IP"
+count_items_new "count_ph" "$DIR/tmp/nat" "PH_IP" 60
+
 if [ $TYPE_COMPLEX -eq 2 ]; then
         sed -ri "s/10.3.0.11/10.3.0.250/g" $DIR/tmp/networks
         sed -ri "s/10.3.0.11/10.3.0.250/g" $DIR/tmp/nat
@@ -54,12 +64,12 @@ if [ $TYPE_COMPLEX -eq 2 ]; then
         sed -ri "s/10.3.0.111/10.3.0.250/g" $DIR/tmp/nat
 fi
 if [ $TRUEROOM -eq 1 ]; then
-        count_items "count_tcroom_pool" "$DIR/tmp/nat" $TRUEROOM_COUNT
-        count_items "count_tcroom" "$DIR/tmp/nat" $TRUEROOM_COUNT
-        count_items "count_tcroom_rdp" "$DIR/tmp/nat" $TRUEROOM_COUNT
-        count_items "count_tcroom" "$DIR/tmp/networks" $TRUEROOM_COUNT
-        count_items "count_tcroom_pub" "$DIR/tmp/vlans" $TRUEROOM_COUNT
-        count_items "count_tcroom_pub" "$DIR/tmp/networks" $TRUEROOM_COUNT
+        count_items_new "count_tcroom_pool" "$DIR/tmp/nat" "TRUEROOM_IP"
+        count_items_new "count_tcroom" "$DIR/tmp/nat" "TRUEROOM_IP" 40
+        count_items_new "count_tcroom_rdp" "$DIR/tmp/nat" "TRUEROOM_IP" 50
+        count_items_new "count_tcroom" "$DIR/tmp/networks" "TRUEROOM_IP"
+        count_items_new "count_tcroom_pub" "$DIR/tmp/vlans" "TRUEROOM_IP_PUB"
+        count_items_new "count_tcroom_pub" "$DIR/tmp/networks" "TRUEROOM_IP_PUB"
         for ((i=1;i<=$TRUEROOM_COUNT;i++))
         do
                 replace "tcroom_ip$i" ${TRUEROOM_IP_PUB[$i]} "$DIR/tmp/networks"

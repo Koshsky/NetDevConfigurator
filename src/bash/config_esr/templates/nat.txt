@@ -13,13 +13,13 @@ nat destination
   <@nat_dest_tc>
   <count_stream_pool>
   pool STREAM_!
-    ip address 10.3.0.1!
+    ip address <ip-address>
   exit
   <@count_stream_pool>
   <nat_dest_ph>
   <count_ph_pool>
   pool PH_!
-    ip address 10.2.0.11!
+    ip address <ip-address>
     ip port 3316
   exit
   <@count_ph_pool>
@@ -27,7 +27,7 @@ nat destination
   <nat_dest_tcroom>
   <count_tcroom_pool>
   pool TRCONF_ROOM!
-    ip address 10.3.!.10
+    ip address <ip-address>
     ip port 80
   exit
   <@count_tcroom_pool>
@@ -151,7 +151,7 @@ nat destination
       enable
     exit
     <count_stream>
-    rule 4!
+    rule ?
       match protocol tcp
       match destination-address Public_IP
       match destination-port Streamer_service!
@@ -161,7 +161,7 @@ nat destination
     <@count_stream>
     <nat_dest_tcroom>
     <count_tcroom>
-    rule 4!
+    rule ?
       match protocol tcp
       match destination-address TCRoom!_Public_IP
       match destination-port tc_room
@@ -170,7 +170,7 @@ nat destination
     exit
     <@count_tcroom>
     <count_tcroom_rdp>
-    rule 5!
+    rule ?
       match protocol tcp
       match destination-address TCRoom!_Public_IP
       match destination-port rdp
@@ -181,7 +181,7 @@ nat destination
     <@nat_dest_tcroom>
     <nat_dest_ph>
     <count_ph>
-    rule 6!
+    rule ?
       match protocol tcp
       match destination-address Public_IP
       match destination-port ph_nat!
