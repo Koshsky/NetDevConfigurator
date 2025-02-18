@@ -31,7 +31,7 @@ build_ip_array() {
                     ;;
             esac
         else
-            log_message "build_ip_array; Ошибка: последний октет $octet_value превышает 254. Прекращение заполнения массива."
+            log_message "build_ip_array; Ошибка: последний октет $octet_value превышает 254. Прекращение заполнения массива $1."
             break
         fi
     done

@@ -70,11 +70,6 @@ if [ $TRUEROOM -eq 1 ]; then
         count_items "count_tcroom" "$DIR/tmp/networks" "TRUEROOM_IP"
         count_items "count_tcroom_pub" "$DIR/tmp/vlans" "TRUEROOM_IP_PUB"
         count_items "count_tcroom_pub" "$DIR/tmp/networks" "TRUEROOM_IP_PUB"
-        for ((i=1;i<=$TRUEROOM_COUNT;i++))
-        do
-                replace "tcroom_ip$i" ${TRUEROOM_IP_PUB[$i]} "$DIR/tmp/networks"
-                replace "tcroom_ip$i" ${TRUEROOM_IP_PUB[$i]} "$DIR/tmp/vlans"
-        done
 fi
 
 if [ $MODEL -eq 1 ]; then
