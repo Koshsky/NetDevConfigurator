@@ -48,14 +48,14 @@ elif [ $VERS -eq 2 ]; then
         cat $DIR/templates/nat.txt| col -b > $DIR/tmp/nat
 fi
 
-count_items_new "count_stream" "$DIR/tmp/networks" "STREAM_IP"
-count_items_new "count_stream" "$DIR/tmp/services" "STREAM_IP" 6442
-count_items_new "count_stream_pool" "$DIR/tmp/nat" "STREAM_IP"
-count_items_new "count_stream" "$DIR/tmp/nat" "STREAM_IP" 40
-count_items_new "count_ph" "$DIR/tmp/services" "PH_IP" 4000
-count_items_new "count_ph" "$DIR/tmp/networks" "PH_IP"
-count_items_new "count_ph_pool" "$DIR/tmp/nat" "PH_IP"
-count_items_new "count_ph" "$DIR/tmp/nat" "PH_IP" 60
+count_items "count_stream" "$DIR/tmp/networks" "STREAM_IP"
+count_items "count_stream" "$DIR/tmp/services" "STREAM_IP" 6442
+count_items "count_stream_pool" "$DIR/tmp/nat" "STREAM_IP"
+count_items "count_stream" "$DIR/tmp/nat" "STREAM_IP" 40
+count_items "count_ph" "$DIR/tmp/services" "PH_IP" 4000
+count_items "count_ph" "$DIR/tmp/networks" "PH_IP"
+count_items "count_ph_pool" "$DIR/tmp/nat" "PH_IP"
+count_items "count_ph" "$DIR/tmp/nat" "PH_IP" 60
 
 if [ $TYPE_COMPLEX -eq 2 ]; then
         sed -ri "s/10.3.0.11/10.3.0.250/g" $DIR/tmp/networks
@@ -64,12 +64,12 @@ if [ $TYPE_COMPLEX -eq 2 ]; then
         sed -ri "s/10.3.0.111/10.3.0.250/g" $DIR/tmp/nat
 fi
 if [ $TRUEROOM -eq 1 ]; then
-        count_items_new "count_tcroom_pool" "$DIR/tmp/nat" "TRUEROOM_IP"
-        count_items_new "count_tcroom" "$DIR/tmp/nat" "TRUEROOM_IP" 40
-        count_items_new "count_tcroom_rdp" "$DIR/tmp/nat" "TRUEROOM_IP" 50
-        count_items_new "count_tcroom" "$DIR/tmp/networks" "TRUEROOM_IP"
-        count_items_new "count_tcroom_pub" "$DIR/tmp/vlans" "TRUEROOM_IP_PUB"
-        count_items_new "count_tcroom_pub" "$DIR/tmp/networks" "TRUEROOM_IP_PUB"
+        count_items "count_tcroom_pool" "$DIR/tmp/nat" "TRUEROOM_IP"
+        count_items "count_tcroom" "$DIR/tmp/nat" "TRUEROOM_IP" 40
+        count_items "count_tcroom_rdp" "$DIR/tmp/nat" "TRUEROOM_IP" 50
+        count_items "count_tcroom" "$DIR/tmp/networks" "TRUEROOM_IP"
+        count_items "count_tcroom_pub" "$DIR/tmp/vlans" "TRUEROOM_IP_PUB"
+        count_items "count_tcroom_pub" "$DIR/tmp/networks" "TRUEROOM_IP_PUB"
         for ((i=1;i<=$TRUEROOM_COUNT;i++))
         do
                 replace "tcroom_ip$i" ${TRUEROOM_IP_PUB[$i]} "$DIR/tmp/networks"
