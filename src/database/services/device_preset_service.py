@@ -91,9 +91,8 @@ class DevicePresetService:
             .filter(Templates.type == "interface")
             .all()
         )
-        device_ports = len(
-            self.device_service.get_info_by_id(preset.device_id)["ports"]
-        )
+        device = self.device_service.get_one(id=preset.device_id)
+        device_ports = len(self.device_service.get_info(device)["ports"])
         if described_interfaces > device_ports:
             raise ValueError(
                 f"More interfaces are described in the preset than in the device: {described_interfaces}"

@@ -65,20 +65,21 @@ class TemplateTab(BaseTab):
                         "text": "",
                     }
                 else:
-                    template = self.app.db_services["template"].get_by_name_and_role(
-                        new_template_name, v["role"]
+                    template_info = self.app.db_services["template"].get_info_one(
+                        name=new_template_name, role=v["role"]
                     )
-                    template_info = self.app.db_services["template"].get_info(template)
                 self.app.config_template[k] = template_info
         self.display_feedback(pformat(self.app.config_template, sort_dicts=False))
 
     def _get_templates_by_type(self, t):
-        entities = self.app.db_services["template"].get_by_family_id_and_role(
-            self.app.device_info["family"]["id"],
-            os.environ["DEV_ROLE"],
+        templates = self.app.db_services[
+            "template"
+        ].get_all(  # TODO: проверить как работает список в фильтрах
+            family_id=self.app.device_info["family"]["id"],
+            role=[os.environ["DEV_ROLE"], "common"],
         )
         tail = ("None",) if self._allow_none else tuple()
-        return tuple(entity.name for entity in entities if entity.type == t) + tail
+        return tuple(entity.name for entity in templates if entity.type == t) + tail
 
     def _filter_templates(self, templates):
         return {k: v for k, v in templates.items() if self._template_filter(v)}

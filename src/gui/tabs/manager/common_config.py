@@ -1,5 +1,5 @@
 from functools import wraps
-
+from database.services import EntityNotFoundError
 from gui import BaseTab, apply_error_handler
 
 
@@ -74,7 +74,7 @@ class CommonConfigTab(BaseTab):
             ]
         )
         device_ports = len(
-            self.app.db_services["device"].get_info_by_name(self._config["target"])[
+            self.app.db_services["device"].get_info_one(name=self._config["target"])[
                 "ports"
             ]
         )
@@ -104,9 +104,8 @@ class CommonConfigTab(BaseTab):
     @update_config
     @preset_is_not_none
     def push_back(self) -> str:
-        template_name = self.fields["template"]["name"].get()
-        template = self.app.db_services["template"].get_by_name_and_role(
-            template_name, self.preset.role
+        template = self._get_template(
+            self.fields["template"]["name"].get(), self.preset.role
         )
         self.app.db_services["preset"].push_back(self.preset, template)
         return f"Template {template.name} successfully pushed back\n"
@@ -114,9 +113,8 @@ class CommonConfigTab(BaseTab):
     @update_config
     @preset_is_not_none
     def insert(self) -> str:
-        template_name = self.fields["template"]["name"].get()
-        template = self.app.db_services["template"].get_by_name_and_role(
-            template_name, self.preset.role
+        template = self._get_template(
+            self.fields["template"]["name"].get(), self.preset.role
         )
         ordered_number = self.fields["template"]["ordered_number"].get().strip()
         if ordered_number and ordered_number.isdigit():
@@ -129,15 +127,36 @@ class CommonConfigTab(BaseTab):
 
     @update_config
     def refresh_templates(self):
-        device = self.check_device_name(self.fields["preset"]["device"].get())
-        self.preset = self.app.db_services["preset"].get_by_device_and_role(
-            device, self.fields["preset"]["role"].get()
+        device = self.app.db_services["device"].get_one(
+            name=self.fields["preset"]["device"].get()
         )
-        templates = self.app.db_services["template"].get_by_family_id_and_role(
-            device.family_id, self.preset.role
+        self.preset = self.app.db_services["preset"].get_one(
+            device_id=device.id, role=self.fields["preset"]["role"].get()
         )
+        templates = self._get_templates(device.family_id, self.preset.role)
         template_names = [template.name for template in templates]
         if not template_names:
             raise ValueError("There are no suitable configuration templates")
         self.fields["template"]["name"]["values"] = template_names
         self.fields["template"]["name"].set(template_names[0])
+
+    # TODO: move to preset_service.
+    def _get_templates(self, family_id, role):
+        return self.app.db_services["template"].get_all(
+            family_id=family_id,
+            role=role,
+        ) + self.app.db_services["template"].get_all(
+            family_id=family_id,
+            role="common",
+        )
+
+    # TODO: move to preset_service.
+    def _get_template(self, template_name, role):
+        try:
+            return self.app.db_services["template"].get_one(
+                name=template_name, role=role
+            )
+        except EntityNotFoundError:
+            return self.app.db_services["template"].get_one(
+                name=template_name, role="common"
+            )

@@ -13,7 +13,7 @@ class DeviceProtocolService:
         ).delete()
         self.db.commit()
 
-    def get_protocols_by_id(self, device_id: int):
+    def get_protocols_by_id(self, device_id: int):  # TODO: смущает
         return [
             {
                 "id": protocol.id,

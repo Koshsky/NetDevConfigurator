@@ -11,7 +11,7 @@ class DevicePortService:
         self.db.query(DevicePorts).filter(DevicePorts.device_id == device_id).delete()
         self.db.commit()
 
-    def get_ports_by_id(self, device_id: int):
+    def get_ports_by_id(self, device_id: int):  # TODO: смущает
         return [
             {
                 "interface": device_port.interface,
@@ -27,7 +27,7 @@ class DevicePortService:
             )
         ]
 
-    def add_port_by_id(self, device_id: int, port_id: int):
+    def add_port_by_id(self, device_id: int, port_id: int):  # TODO: смущает
         company = (
             self.db.query(Companies)
             .join(Devices, Companies.id == Devices.company_id)
@@ -48,7 +48,7 @@ class DevicePortService:
         )
         self.db.commit()
 
-    def remove_port_by_id(self, device_id: int, port_id: int):
+    def remove_port_by_id(self, device_id: int, port_id: int):  # TODO: смущает
         self.db.query(DevicePorts).filter(
             DevicePorts.device_id == device_id, DevicePorts.port_id == port_id
         ).delete()

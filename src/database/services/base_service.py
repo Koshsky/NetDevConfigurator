@@ -11,8 +11,15 @@ class BaseService:
         self.db = db
         self.model = model
 
-    def get_all(self):
-        return self.db.query(self.model).all()
+    def get_all(self, **args):
+        entities = self.db.query(self.model).filter_by(**args).all()
+        logger.info(
+            "Found %d %s entities with filters: %s",
+            len(entities),
+            self.model.__name__,
+            json.dumps(args),
+        )
+        return entities
 
     def get_one(self, **args):
         if not args:
@@ -23,6 +30,11 @@ class BaseService:
         entity_count = len(entities)
 
         if entity_count == 1:
+            logger.debug(
+                "Successfully retrieved %s entity matching criteria: %s",
+                self.model.__name__,
+                json.dumps(args),
+            )
             return entities[0]
         elif entity_count == 0:
             logger.error("%s with %s not found", self.model.__name__, json.dumps(args))
@@ -42,21 +54,26 @@ class BaseService:
     def get_info(self, entity):
         raise NotImplementedError()
 
-    def get_info_by_name(self, entity_name: str):
-        entity = self.get_one(name=entity_name)
+    def get_info_one(self, **args):
+        entity = self.get_one(**args)
         return self.get_info(entity)
 
-    def get_info_by_id(self, entity_id: int):
-        entity = self.get_one(id=entity_id)
-        return self.get_info(entity)
+    def get_info_all(self, **args):
+        entities = self.get_all(**args)
+        return [self.get_info(entity) for entity in entities]
 
     def create(self, data: dict):
-        entity = self.model(**data)
-        self.db.add(entity)
-        self.db.commit()
-        self.db.refresh(entity)
-        logger.info("create %s successfully: %s", self.model.__name__, data)
-        return entity
+        try:
+            entity = self.model(**data)
+            self.db.add(entity)
+            self.db.commit()
+            self.db.refresh(entity)
+            logger.info("Created %s successfully: %s", self.model.__name__, data)
+            return entity
+        except Exception as e:
+            logger.error("Failed to create %s: %s", self.model.__name__, str(e))
+            self.db.rollback()
+            raise
 
     def update(self, entity, updated_data: dict):
         for key, value in updated_data.items():
@@ -68,6 +85,10 @@ class BaseService:
         )
         return entity
 
+    def delete_one(self, **args):
+        entity = self.get_one(**args)
+        self.delete(entity)
+
     def delete(self, entity):
         if entity:
             self.db.delete(entity)
@@ -75,11 +96,3 @@ class BaseService:
             logger.info(
                 "%s with id %d deleted successfully", self.model.__name__, entity.id
             )
-
-    def delete_by_name(self, entity_name: str):
-        if db_entity := self.get_one(name=entity_name):
-            self.delete(db_entity)
-
-    def delete_by_id(self, entity_id: int):
-        if db_entity := self.get_one(id=entity_id):
-            self.delete(db_entity)

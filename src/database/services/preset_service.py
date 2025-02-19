@@ -5,7 +5,6 @@ from database.models import DevicePresets, Devices, Presets, Templates
 from .base_service import BaseService
 from .device_preset_service import DevicePresetService
 from .device_service import DeviceService
-from .exceptions import EntityNotFoundError
 from .family_service import FamilyService
 from .template_service import TemplateService
 
@@ -16,40 +15,6 @@ class PresetService(BaseService, DevicePresetService):
         self.device_service = DeviceService(db)
         self.template_service = TemplateService(db)
         self.family_service = FamilyService(db)
-
-    def get_by_device_and_role(self, device: Devices, role: str):
-        if (
-            preset := self.db.query(Presets)
-            .filter(Presets.device_id == device.id, Presets.role == role)
-            .first()
-        ):
-            return preset
-        else:
-            raise EntityNotFoundError(
-                f"Preset with device={device.name}, role={role} not found"
-            )
-
-    def get_by_device_name_and_role(self, device_name: str, role: str):
-        if (
-            preset := self.db.query(Presets)
-            .join(Devices, Presets.device_id == Devices.id)
-            .filter(Devices.name == device_name, Presets.role == role)
-            .first()
-        ):
-            return preset
-        else:
-            raise EntityNotFoundError(
-                f"Preset with device={device_name}, role={role} not found"
-            )
-
-    def delete_by_device_and_role(self, device: Devices, role: str):
-        self.delete(self.get_by_device_and_role(device, role))
-
-    def get_info_by_device_name_and_role(
-        self, device_name: str, role: str, check=False
-    ):
-        preset = self.get_by_device_name_and_role(device_name, role)
-        return self.get_info(preset, check=check)
 
     def get_info(self, preset, check=False):
         if check and not self.validate(preset):
@@ -66,15 +31,14 @@ class PresetService(BaseService, DevicePresetService):
             .order_by(DevicePresets.ordered_number)
             .all()
         )
-        interfaces = (
-            port["interface"]
-            for port in self.device_service.get_info_by_id(preset.device_id)["ports"]
-        )  # generator
         device = self.device_service.get_one(id=preset.device_id)
+        interfaces = (
+            port["interface"] for port in self.device_service.get_info(device)["ports"]
+        )  # generator
         return {
             "id": preset.id,
             "target": device.name,
-            "family": self.family_service.get_info_by_id(device.family_id),
+            "family": self.family_service.get_info_one(id=device.family_id),
             "role": preset.role,
             "description": preset.description,
             "configuration": {

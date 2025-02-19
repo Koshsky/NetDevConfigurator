@@ -34,18 +34,24 @@ class InfoTab(BaseTab):
         return super().__getattr__(name)
 
     def show_preset_info(self):
-        device = self.check_device_name(self.fields["preset"]["device"].get())
+        device = self.app.db_services["device"].get_one(
+            name=self.fields["preset"]["device"].get()
+        )
         role = self.fields["preset"]["role"].get()
-        preset = self.app.db_services["preset"].get_by_device_and_role(device, role)
         self.display_feedback(
-            pformat(self.app.db_services["preset"].get_info(preset), sort_dicts=False)
+            pformat(
+                self.app.db_services["preset"].get_info_one(
+                    device_id=device.id, role=role
+                ),
+                sort_dicts=False,
+            )
         )
 
     def __show_info(self, entity_type: str):
         entity_name = self.fields[entity_type]["name"].get().strip()
         self.display_feedback(
             pformat(
-                self.app.db_services[entity_type].get_info_by_name(entity_name),
+                self.app.db_services[entity_type].get_info_all(name=entity_name),
                 sort_dicts=False,
             )
         )

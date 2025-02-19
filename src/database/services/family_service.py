@@ -11,7 +11,7 @@ class FamilyService(BaseService):
         super().__init__(db, Families)
 
     def get_info(self, family: Families):
-        associated_devices = self.device_service.get_by_family_id(family.id)
+        associated_devices = self.device_service.get_all(family_id=family.id)
         return {
             "id": family.id,
             "name": family.name,

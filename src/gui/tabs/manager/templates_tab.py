@@ -23,11 +23,12 @@ class TemplatesTab(BaseTab):
     def show_template(self):
         name = self.fields["template"]["name"].get().strip()
         try:
-            template = self.app.db_services["template"].get_one(name=name)
+            template_info = self.app.db_services["template"].get_info_one(name=name)
         except EntityNotFoundError:
             role = self.fields["template"]["role"].get().strip()
-            template = self.app.db_services["template"].get_by_name_and_role(name, role)
-        template_info = self.app.db_services["template"].get_info(template)
+            template_info = self.app.db_services["template"].get_info_one(
+                name=name, role=role
+            )
 
         self.display_feedback(pformat(template_info))
         self.fields["text"].delete(1.0, tk.END)
@@ -39,7 +40,7 @@ class TemplatesTab(BaseTab):
             template = self.app.db_services["template"].get_one(name=name)
         except EntityNotFoundError:
             role = self.fields["template"]["role"].get().strip()
-            template = self.app.db_services["template"].get_by_name_and_role(name, role)
+            template = self.app.db_services["template"].get_one(name=name, role=role)
 
         text = self.fields["text"].get("1.0", tk.END).strip()
         template = self.app.db_services["template"].update(template, {"text": text})

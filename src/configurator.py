@@ -26,7 +26,7 @@ class ConfiguratorApp(App):
     @property
     def device_info(self):
         if "DEV_NAME" in os.environ:
-            return self.db_services["device"].get_info_by_name(os.environ["DEV_NAME"])
+            return self.db_services["device"].get_info_one(name=os.environ["DEV_NAME"])
         else:
             return None
 
@@ -82,9 +82,10 @@ class ConfiguratorApp(App):
         logger.debug("Device selected. device=%s", os.environ["DEV_NAME"])
 
     def register_preset(self, role: str, OR: str):
-        preset = self.db_services["preset"].get_by_device_name_and_role(
-            os.environ["DEV_NAME"],
-            role,
+        device = self.db_services["device"].get_one(name=os.environ["DEV_NAME"])
+        preset = self.db_services["preset"].get_one(
+            device_id=device.id,
+            role=role,
         )
         if set_env("DEV_ROLE", preset.role):
             set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")
