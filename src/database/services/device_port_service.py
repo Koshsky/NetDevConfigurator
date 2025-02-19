@@ -64,6 +64,16 @@ class DevicePortService:
         )
         return f"{'ten' if port.speed == 10000 else ''}gigabitethernet 0/{q + 1}"
 
+    def _get_next_Zyxel_interface(self, device_id: int, port_id: int) -> str:
+        port = self.db.query(Ports).filter(Ports.id == port_id).first()
+        q = len(
+            self.db.query(DevicePorts)
+            .join(Ports, DevicePorts.port_id == Ports.id)
+            .filter(Ports.speed == port.speed, DevicePorts.device_id == device_id)
+            .all()
+        )
+        return f"port-channel {q + 1}"  # TODO: МНЕ НУЖЕН ПРИМЕР КОНФИГУРАЦИИ ДЛЯ УТОЧНЕНИЯ.
+
     def _default_get_next_interface(self, device_id: int, port_id: int) -> str:
         raise NotImplementedError(
             "There is no default method for getting next interface"
