@@ -12,7 +12,15 @@ class BaseService:
         self.model = model
 
     def get_all(self, **args):
-        entities = self.db.query(self.model).filter_by(**args).all()
+        entities = self.db.query(self.model)
+
+        for key, value in args.items():
+            column = getattr(self.model, key)
+            if isinstance(value, list):
+                entities = entities.filter(column.in_(value))
+            else:
+                entities = entities.filter(column == value)
+        entities = entities.all()
         logger.info(
             "Found %d %s entities with filters: %s",
             len(entities),

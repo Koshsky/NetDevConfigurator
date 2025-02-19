@@ -93,8 +93,8 @@ class CommonConfigTab(BaseTab):
         self.preset = self.app.db_services["preset"].get_one(
             device_id=self.device.id, role=self.fields["preset"]["role"].get()
         )
-        self.relevant_templates = self.app.db_services["template"].get_all_relevant(
-            self.device.family_id, self.preset.role
+        self.relevant_templates = self.app.db_services["template"].get_all(
+            family_id=self.device.family_id, role=["common", self.preset.role]
         )
         template_names = [template.name for template in self.relevant_templates]
         if not template_names:
