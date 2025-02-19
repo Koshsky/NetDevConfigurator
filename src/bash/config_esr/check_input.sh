@@ -1,16 +1,16 @@
 correct_model="([123]{1})"
 correct_count="^[0-9]+$"
 correct_other="([12]{1})"
-# TODO: может стоит ограничить как-то более жестко? например сетью 192.168.3.0/24
-correct_ip="^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])$"
+octet255="(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])"
+correct_ip="^(192\.168\.$octet255\.$octet255|10\.$octet255\.$octet255\.$octet255)$"
+correct_mask="^(255\.255\.255\.0|255\.255\.0\.0|255\.0\.0\.0)$"
 
 error_messages=()
-
 if ! [[ "$PUBLIC_IP" =~ $correct_ip ]]; then
     error_messages+=("PUBLIC_IP=$PUBLIC_IP: некорректное значение (ожидался IP-адрес)")
 fi
 
-if ! [[ "$PUBLIC_MASK" =~ $correct_ip ]]; then
+if ! [[ "$PUBLIC_MASK" =~ $correct_mask ]]; then
     error_messages+=("PUBLIC_MASK=$PUBLIC_MASK: некорректное значение (ожидался IP-адрес)")
 fi
 

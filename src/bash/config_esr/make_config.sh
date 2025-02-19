@@ -51,11 +51,11 @@ fi
 count_items "count_stream" "$DIR/tmp/networks" "STREAM_IP"
 count_items "count_stream" "$DIR/tmp/services" "STREAM_IP" 6442
 count_items "count_stream_pool" "$DIR/tmp/nat" "STREAM_IP"
-count_items "count_stream" "$DIR/tmp/nat" "STREAM_IP" 40
+count_items "count_stream" "$DIR/tmp/nat" "STREAM_IP" 39
 count_items "count_ph" "$DIR/tmp/services" "PH_IP" 4000
 count_items "count_ph" "$DIR/tmp/networks" "PH_IP"
 count_items "count_ph_pool" "$DIR/tmp/nat" "PH_IP"
-count_items "count_ph" "$DIR/tmp/nat" "PH_IP" 60
+count_items "count_ph" "$DIR/tmp/nat" "PH_IP" 59
 
 if [ $TYPE_COMPLEX -eq 2 ]; then
         sed -ri "s/10.3.0.11/10.3.0.250/g" $DIR/tmp/networks
@@ -65,8 +65,8 @@ if [ $TYPE_COMPLEX -eq 2 ]; then
 fi
 if [ $TRUEROOM -eq 1 ]; then
         count_items "count_tcroom_pool" "$DIR/tmp/nat" "TRUEROOM_IP"
-        count_items "count_tcroom" "$DIR/tmp/nat" "TRUEROOM_IP" 40
-        count_items "count_tcroom_rdp" "$DIR/tmp/nat" "TRUEROOM_IP" 50
+        count_items "count_tcroom" "$DIR/tmp/nat" "TRUEROOM_IP" 149
+        count_items "count_tcroom_rdp" "$DIR/tmp/nat" "TRUEROOM_IP" 174
         count_items "count_tcroom" "$DIR/tmp/networks" "TRUEROOM_IP"
         count_items "count_tcroom_pub" "$DIR/tmp/vlans" "TRUEROOM_IP_PUB"
         count_items "count_tcroom_pub" "$DIR/tmp/networks" "TRUEROOM_IP_PUB"
@@ -286,4 +286,5 @@ FIN_CONFIG=$( cat $DIR/tmp/main )
 touch $DIR/config.cfg
 echo "$FIN_CONFIG"| tail -n +2 > $DIR/config.cfg
 log_message "Configuration saved in $DIR/config.cfg"
+# log_message "Configuration file for app: $CFG_FILENAME"
 # rm -R $DIR/tmp
