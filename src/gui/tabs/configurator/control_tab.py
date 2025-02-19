@@ -159,4 +159,5 @@ class ControlTab(BaseTab):
             {
                 "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
             },
+            ("UPDATE", self.update_params),
         )

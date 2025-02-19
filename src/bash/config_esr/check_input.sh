@@ -3,7 +3,7 @@ correct_count="^[0-9]+$"
 correct_other="([12]{1})"
 octet255="(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])"
 correct_ip="^(192\.168\.$octet255\.$octet255|10\.$octet255\.$octet255\.$octet255)$"
-correct_mask="^(255\.255\.255\.0|255\.255\.0\.0|255\.0\.0\.0)$"
+correct_mask="^(3[01]|[12][0-9]|[1-9])$"
 
 error_messages=()
 if ! [[ "$PUBLIC_IP" =~ $correct_ip ]]; then
