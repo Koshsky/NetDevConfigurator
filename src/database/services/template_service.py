@@ -21,3 +21,12 @@ class TemplateService(BaseService):
             "role": template.role,
             "text": template.text,
         }
+
+    def get_all_relevant(self, family_id, role):
+        return self.get_all(
+            family_id=family_id,
+            role=role,
+        ) + self.get_all(
+            family_id=family_id,
+            role="common",
+        )
