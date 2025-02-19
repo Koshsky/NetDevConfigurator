@@ -53,7 +53,7 @@ class PresetService(BaseService, DevicePresetService):
 
     def get_info(self, preset, check=False):
         if check and not self.validate(preset):
-            device = self.device_service.get_by_id(preset.device_id)
+            device = self.device_service.get_one(id=preset.device_id)
             raise ValueError(
                 f"Invalid preset configuration. device={device.name}, role={preset.role}"
             )
@@ -70,7 +70,7 @@ class PresetService(BaseService, DevicePresetService):
             port["interface"]
             for port in self.device_service.get_info_by_id(preset.device_id)["ports"]
         )  # generator
-        device = self.device_service.get_by_id(preset.device_id)
+        device = self.device_service.get_one(id=preset.device_id)
         return {
             "id": preset.id,
             "target": device.name,

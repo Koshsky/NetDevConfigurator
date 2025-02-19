@@ -71,7 +71,7 @@ class BaseTab:
         if not service:
             raise EntityNotFoundError(f"Invalid entity type: {entity_type}")
 
-        if entity := service.get_by_name(entity_name):
+        if entity := service.get_one(name=entity_name):
             return entity
         else:
             raise EntityNotFoundError(

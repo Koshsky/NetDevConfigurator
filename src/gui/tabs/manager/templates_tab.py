@@ -23,7 +23,7 @@ class TemplatesTab(BaseTab):
     def show_template(self):
         name = self.fields["template"]["name"].get().strip()
         try:
-            template = self.app.db_services["template"].get_by_name(name)
+            template = self.app.db_services["template"].get_one(name=name)
         except EntityNotFoundError:
             role = self.fields["template"]["role"].get().strip()
             template = self.app.db_services["template"].get_by_name_and_role(name, role)
@@ -36,7 +36,7 @@ class TemplatesTab(BaseTab):
     def update_template(self):
         name = self.fields["template"]["name"].get().strip()
         try:
-            template = self.app.db_services["template"].get_by_name(name)
+            template = self.app.db_services["template"].get_one(name=name)
         except EntityNotFoundError:
             role = self.fields["template"]["role"].get().strip()
             template = self.app.db_services["template"].get_by_name_and_role(name, role)

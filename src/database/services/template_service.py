@@ -13,7 +13,7 @@ class TemplateService(BaseService):
         self.family_service = FamilyService(db)
 
     def get_info(self, template):
-        family = self.family_service.get_by_id(template.family_id)
+        family = self.family_service.get_one(id=template.family_id)
         return {
             "name": template.name,
             "id": template.id,
