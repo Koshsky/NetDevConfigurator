@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from database.models import DevicePresets, Devices, Presets, Templates
 
-from .base_service import BaseService
+from .base_service import BaseService, JsonType
 from .device_preset_service import DevicePresetService
 from .device_service import DeviceService
 from .family_service import FamilyService
@@ -10,13 +10,13 @@ from .template_service import TemplateService
 
 
 class PresetService(BaseService, DevicePresetService):
-    def __init__(self, db: Session):
+    def __init__(self, db: Session) -> None:
         super().__init__(db, Presets)
         self.device_service = DeviceService(db)
         self.template_service = TemplateService(db)
         self.family_service = FamilyService(db)
 
-    def get_info(self, preset, check=False):
+    def get_info(self, preset: Presets, check: bool = False) -> JsonType:
         if check and not self.validate(preset):
             device = self.device_service.get_one(id=preset.device_id)
             raise ValueError(

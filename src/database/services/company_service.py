@@ -1,16 +1,16 @@
 from sqlalchemy.orm import Session
 
 from database.models import Companies
-from .base_service import BaseService
+from .base_service import BaseService, JsonType
 from .device_service import DeviceService
 
 
 class CompanyService(BaseService):
-    def __init__(self, db: Session):
+    def __init__(self, db: Session) -> None:
         super().__init__(db, Companies)
         self.device_service = DeviceService(db)
 
-    def get_info(self, company: Companies):
+    def get_info(self, company: Companies) -> JsonType:
         associated_devices = self.device_service.get_all(company_id=company.id)
         return {
             "id": company.id,

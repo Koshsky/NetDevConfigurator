@@ -1,17 +1,28 @@
 import json
 import logging
+from typing import Dict, List, Type, Union, Any
+
+from sqlalchemy.ext.declarative import DeclarativeMeta
+from sqlalchemy.orm import Session
 
 from .exceptions import EntityNotFoundError
 
 logger = logging.getLogger("db")
 
 
+JsonType = Union[
+    List["JsonType"],
+    Dict[str, "JsonType"],
+]
+Model = Type[DeclarativeMeta]
+
+
 class BaseService:
-    def __init__(self, db, model):
+    def __init__(self, db: Session, model: Model) -> None:
         self.db = db
         self.model = model
 
-    def get_all(self, **args):
+    def get_all(self, **args) -> List[Model]:
         entities = self.db.query(self.model)
 
         for key, value in args.items():
@@ -29,7 +40,7 @@ class BaseService:
         )
         return entities
 
-    def get_one(self, **args):
+    def get_one(self, **args) -> Model:
         if not args:
             logger.error("No arguments provided for query.")
             raise ValueError("At least one argument must be provided.")
@@ -59,18 +70,18 @@ class BaseService:
                 f"Multiple {self.model.__name__} entities found with {json.dumps(args)}"
             )
 
-    def get_info(self, entity):
+    def get_info(self, entity: Model) -> JsonType:
         raise NotImplementedError()
 
-    def get_info_one(self, **args):
+    def get_info_one(self, **args) -> JsonType:
         entity = self.get_one(**args)
         return self.get_info(entity)
 
-    def get_info_all(self, **args):
+    def get_info_all(self, **args) -> List[JsonType]:
         entities = self.get_all(**args)
         return [self.get_info(entity) for entity in entities]
 
-    def create(self, data: dict):
+    def create(self, data: Dict[str, Any]) -> Model:
         try:
             entity = self.model(**data)
             self.db.add(entity)
@@ -83,7 +94,7 @@ class BaseService:
             self.db.rollback()
             raise
 
-    def update(self, entity, updated_data: dict):
+    def update(self, entity: Model, updated_data: Dict[str, Any]) -> Model:
         for key, value in updated_data.items():
             setattr(entity, key, value)
         self.db.commit()
@@ -93,11 +104,11 @@ class BaseService:
         )
         return entity
 
-    def delete_one(self, **args):
+    def delete_one(self, **args) -> None:
         entity = self.get_one(**args)
         self.delete(entity)
 
-    def delete(self, entity):
+    def delete(self, entity: Model) -> None:
         if entity:
             self.db.delete(entity)
             self.db.commit()

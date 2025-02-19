@@ -16,13 +16,13 @@ def check_template_role(func):
 
 
 class DevicePresetService:
-    def __init__(self, db: Session):
+    def __init__(self, db: Session) -> None:
         self.db = db
         self.device_service = DeviceService(db)
 
     @check_template_role
     @transactional
-    def push_back(self, preset: Presets, template: Templates):
+    def push_back(self, preset: Presets, template: Templates) -> DevicePresets:
         if self.validate(preset) and template.type == "interface":
             raise ValueError(
                 "Cannot insert interface template into preset:\n"
@@ -41,7 +41,9 @@ class DevicePresetService:
 
     @check_template_role
     @transactional
-    def insert(self, preset: Presets, template: Templates, ordered_number: int):
+    def insert(
+        self, preset: Presets, template: Templates, ordered_number: int
+    ) -> DevicePresets:
         if self.validate(preset) and template.type == "interface":
             raise ValueError(
                 "Cannot insert interface template into preset:\n"
@@ -69,7 +71,7 @@ class DevicePresetService:
         return new_device_preset
 
     @transactional
-    def remove(self, preset_id: int, ordered_number: int):
+    def remove(self, preset_id: int, ordered_number: int) -> None:
         self.db.query(DevicePresets).filter(
             DevicePresets.preset_id == preset_id,
             DevicePresets.ordered_number == ordered_number,
@@ -83,7 +85,7 @@ class DevicePresetService:
             synchronize_session=False,
         )
 
-    def validate(self, preset):
+    def validate(self, preset: Presets) -> bool:
         described_interfaces = len(
             self.db.query(DevicePresets)
             .join(Templates, DevicePresets.template_id == Templates.id)
@@ -108,7 +110,7 @@ class DevicePresetService:
             or 0
         )
 
-    def _clear(self, preset_id):
+    def _clear(self, preset_id: int) -> None:
         self.db.query(DevicePresets).filter(
             DevicePresets.preset_id == preset_id
         ).delete()

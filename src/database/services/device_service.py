@@ -1,16 +1,19 @@
+from typing import Tuple
+
 from sqlalchemy.orm import Session
 
 from database.models import Devices, Presets
+
+from .base_service import BaseService, JsonType
 from .device_port_service import DevicePortService
 from .device_protocol_service import DeviceProtocolService
-from .base_service import BaseService
 
 
 class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
-    def __init__(self, db: Session):
+    def __init__(self, db: Session) -> None:
         super().__init__(db, Devices)
 
-    def get_roles_by_name(self, device_name: str):  # TODO: rename
+    def get_roles_by_name(self, device_name: str) -> Tuple[str]:  # TODO: rename
         presets = (
             self.db.query(Presets)
             .join(Devices, Presets.device_id == Devices.id)
@@ -19,7 +22,9 @@ class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
         )
         return tuple(preset.role for preset in presets)
 
-    def update_files(self, device: Devices, boot: str, uboot: str, firmware: str):
+    def update_files(
+        self, device: Devices, boot: str, uboot: str, firmware: str
+    ) -> Devices:
         device.boot = boot
         device.uboot = uboot
         device.firmware = firmware
@@ -28,7 +33,7 @@ class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
 
         return device
 
-    def get_info(self, device: Devices):
+    def get_info(self, device: Devices) -> JsonType:
         return {
             "id": device.id,
             "name": device.name,

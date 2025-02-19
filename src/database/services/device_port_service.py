@@ -1,17 +1,22 @@
+from typing import List
+
 from sqlalchemy.orm import Session
 
-from database.models import DevicePorts, Devices, Ports, Companies
+from database.models import Companies, DevicePorts, Devices, Ports
+
+from .base_service import JsonType
 
 
 class DevicePortService:
     def __init__(self, db: Session):
         self.db = db
 
-    def reset_ports(self, device_id: int):
+    def reset_ports(self, device_id: int) -> None:  # TODO: смущает
         self.db.query(DevicePorts).filter(DevicePorts.device_id == device_id).delete()
         self.db.commit()
 
-    def get_ports_by_id(self, device_id: int):  # TODO: смущает
+    def get_ports_by_id(self, device_id: int) -> List[JsonType]:  # TODO: смущает
+        # TODO: реализовать get_info у device_port
         return [
             {
                 "interface": device_port.interface,
@@ -27,7 +32,7 @@ class DevicePortService:
             )
         ]
 
-    def add_port_by_id(self, device_id: int, port_id: int):  # TODO: смущает
+    def add_port_by_id(self, device_id: int, port_id: int) -> None:  # TODO: смущает
         company = (
             self.db.query(Companies)
             .join(Devices, Companies.id == Devices.company_id)
@@ -48,7 +53,7 @@ class DevicePortService:
         )
         self.db.commit()
 
-    def remove_port_by_id(self, device_id: int, port_id: int):  # TODO: смущает
+    def remove_port_by_id(self, device_id: int, port_id: int) -> None:  # TODO: смущает
         self.db.query(DevicePorts).filter(
             DevicePorts.device_id == device_id, DevicePorts.port_id == port_id
         ).delete()
