@@ -1,6 +1,5 @@
 import logging
 import logging.config
-from pprint import pprint
 
 import yaml
 
@@ -10,5 +9,4 @@ logging.getLogger("paramiko").setLevel(logging.WARNING)
 logger = logging.getLogger("config")
 
 config = yaml.safe_load(open("./src/config/config.yml"))
-pprint(config)
 config["router"] = yaml.safe_load(open("./src/config/router.yml"))
