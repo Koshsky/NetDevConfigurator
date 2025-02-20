@@ -21,7 +21,7 @@ tftp-server:
 
 host:
   username: [admin, mvsadmin]
-  password: [admin, password, '1234']
+  password: [admin, MVS_admin, password, '1234']
   address: [192.168.1.1, 192.168.0.1, 10.4.0.3]
   port: ['22']
 
