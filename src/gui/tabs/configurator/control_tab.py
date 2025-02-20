@@ -5,6 +5,8 @@ from functools import wraps
 from drivers import COMDriver, SSHDriver
 from gui import BaseTab, apply_error_handler
 from utils import set_env, env_converter
+from config import config
+
 
 logger = logging.getLogger("gui")
 
@@ -26,6 +28,8 @@ def prepare_config_file(func):
     return wrapper
 
 
+# TODO: separate logic on two classes: ControlSwitchTab ControlRouterTab и связать их в ControlTab.
+# TODO: это нужно для упрощения управления _create_xxxxx _actualize_xxxxx.....
 @apply_error_handler
 class ControlTab(BaseTab):
     def _create_widgets(self):
@@ -70,7 +74,6 @@ class ControlTab(BaseTab):
 
     def update_host_info(self):
         if os.environ["CONNECTION_TYPE"] == "ssh":
-            # TODO: add validation of IP address
             set_env("HOST_ADDRESS", self.fields["host"]["address"].get().strip())
             set_env("HOST_PORT", self.fields["host"]["port"].get().strip())
 
@@ -130,20 +133,20 @@ class ControlTab(BaseTab):
         self.create_block(
             "host",
             {
-                "username": (os.environ["HOST_USERNAME"],),
-                "password": (os.environ["HOST_PASSWORD"],),
+                "username": tuple(config["host"]["username"]),
+                "password": tuple(config["host"]["password"]),
             },
             ("SELECT", self.update_host_info),
         )
 
     def _create_widgets_ssh(self):
         self.create_block(
-            "host",
+            "host",  #  TODO: simplify!
             {
-                "address": (os.environ["HOST_ADDRESS"],),
-                "port": (os.environ["HOST_PORT"],),
-                "username": (os.environ["HOST_USERNAME"],),
-                "password": (os.environ["HOST_PASSWORD"],),
+                "address": tuple(config["host"]["address"]),
+                "port": tuple(config["host"]["port"]),
+                "username": tuple(config["host"]["username"]),
+                "password": tuple(config["host"]["password"]),
             },
             ("SELECT", self.update_host_info),
         )
