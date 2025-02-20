@@ -87,11 +87,11 @@ class ConfiguratorApp(App):
             device_id=device.id,
             role=role,
         )
+        self.config_template = self.db_services["preset"].get_info(preset, check=True)[
+            "configuration"
+        ]
         if set_env("DEV_ROLE", preset.role):
             set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")
-            self.config_template = self.db_services["preset"].get_info(
-                preset, check=True
-            )["configuration"]
             self.refresh_tabs()
         set_env("OR", OR)
         logger.info(

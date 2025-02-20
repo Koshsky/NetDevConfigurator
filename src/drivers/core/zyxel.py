@@ -6,7 +6,7 @@ class BaseZyxel:
     success_signs = {
         "Copyright",
     }
-    open_sequence = ["set cli pagination off"]  # TODO: not actual
+    open_sequence = []
 
     reload = "reload config 1\ny"
     show_run = "show running-config"
@@ -20,7 +20,7 @@ class BaseZyxel:
         return [
             "configure",
             "vlan 1",
-            "ip address default-management {ip} 255.255.255.0",
+            f"ip address default-management {os.environ['HOST_ADDRESS']} 255.255.255.0",
             "end",
         ]
 

@@ -66,15 +66,16 @@ class TemplateTab(BaseTab):
                     }
                 else:
                     template_info = self.app.db_services["template"].get_info_one(
-                        name=new_template_name, role=v["role"]
+                        name=new_template_name,
+                        role=["common", v["role"]],
+                        family_id=int(self.app.device_info["family"]["id"]),
                     )
+                    print(111111111111111111111)
                 self.app.config_template[k] = template_info
         self.display_feedback(pformat(self.app.config_template, sort_dicts=False))
 
     def _get_templates_by_type(self, t):
-        templates = self.app.db_services[
-            "template"
-        ].get_all(  # TODO: проверить как работает список в фильтрах
+        templates = self.app.db_services["template"].get_all(
             family_id=self.app.device_info["family"]["id"],
             role=[os.environ["DEV_ROLE"], "common"],
         )

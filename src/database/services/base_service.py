@@ -45,7 +45,7 @@ class BaseService:
             logger.error("No arguments provided for query.")
             raise ValueError("At least one argument must be provided.")
 
-        entities = self.db.query(self.model).filter_by(**args).all()
+        entities = self.get_all(**args)
         entity_count = len(entities)
 
         if entity_count == 1:
