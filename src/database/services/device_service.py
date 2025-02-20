@@ -1,5 +1,3 @@
-from typing import Tuple
-
 from sqlalchemy.orm import Session
 
 from database.models import Devices, Presets
@@ -13,15 +11,6 @@ class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
     def __init__(self, db: Session) -> None:
         super().__init__(db, Devices)
 
-    def get_roles_by_name(self, device_name: str) -> Tuple[str]:  # TODO: rename
-        presets = (
-            self.db.query(Presets)
-            .join(Devices, Presets.device_id == Devices.id)
-            .filter(Devices.name == device_name)
-            .all()
-        )
-        return tuple(preset.role for preset in presets)
-
     def update_files(
         self, device: Devices, boot: str, uboot: str, firmware: str
     ) -> Devices:
@@ -34,6 +23,12 @@ class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
         return device
 
     def get_info(self, device: Devices) -> JsonType:
+        presets = (
+            self.db.query(Presets)
+            .join(Devices, Presets.device_id == Devices.id)
+            .filter(Devices.name == device.name)
+            .all()
+        )
         return {
             "id": device.id,
             "name": device.name,
@@ -45,6 +40,7 @@ class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
                 "uboot": device.uboot,
                 "firmware": device.firmware,
             },
-            "protocols": self.get_protocols_by_id(device.id),
-            "ports": self.get_ports_by_id(device.id),
+            "protocols": self.get_protocols(device),
+            "ports": self._get_ports_by_id(device.id),
+            "roles": tuple(preset.role for preset in presets),
         }

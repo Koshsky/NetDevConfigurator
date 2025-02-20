@@ -18,23 +18,23 @@ if ! [[ "$GW" =~ $correct_ip ]]; then
     error_messages+=("GW=$GW: некорректное значение (ожидался IP-адрес)")
 fi
 
-if ! [[ "$RAISA_IP" =~ $correct_ip ]]; then  # TODO: проверка с пред-условием??
+if ! [[ "$RAISA_IP" =~ $correct_ip ]]; then
     error_messages+=("RAISA_IP=$RAISA_IP: некорректное значение (ожидался IP-адрес)")
 fi
 
-if ! [[ "$TRUEROOM_IP1" =~ $correct_ip ]]; then  # TODO: проверка с пред-условием??
+if ! [[ "$TRUEROOM_IP1" =~ $correct_ip ]]; then
     error_messages+=("TRUEROOM_IP1=$TRUEROOM_IP1: некорректное значение (ожидался IP-адрес)")
 fi
 
-if ! [[ "$PH_COUNT" =~ $correct_count ]]; then  # TODO: проверка с пред-условием??
+if ! [[ "$PH_COUNT" =~ $correct_count ]]; then
     error_messages+=("PH_COUNT=$PH_COUNT: некорректное значение (ожидалось число)")
 fi
 
-if ! [[ "$STREAM_COUNT" =~ $correct_count ]]; then  # TODO: проверка с пред-условием??
+if ! [[ "$STREAM_COUNT" =~ $correct_count ]]; then
     error_messages+=("STREAM_COUNT=$STREAM_COUNT: некорректное значение (ожидалось число)")
 fi
 
-if ! [[ "$TRUEROOM_COUNT" =~ $correct_count ]]; then  # TODO: проверка с пред-условием??
+if ! [[ "$TRUEROOM_COUNT" =~ $correct_count ]]; then
     error_messages+=("TRUEROOM_COUNT=$TRUEROOM_COUNT: некорректное значение (ожидалось число)")
 fi
 
@@ -66,7 +66,7 @@ if ! [[ "$TRUECONF" =~ $correct_other ]]; then
     error_messages+=("TRUECONF=$TRUECONF: некорректное значение (ожидалось 1 или 2)")
 fi
 
-if ! [[ "$TRUEROOM" =~ $correct_other ]]; then  # TODO: проверка с пред-условием??
+if ! [[ "$TRUEROOM" =~ $correct_other ]]; then
     error_messages+=("TRUEROOM=$TRUEROOM: некорректное значение (ожидалось 1 или 2)")
 fi
 

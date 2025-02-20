@@ -24,7 +24,7 @@ class ConfiguratorApp(App):
         super().__init__(root, title)
 
     @property
-    def device_info(self):
+    def device(self):
         if "DEV_NAME" in os.environ:
             return self.db_services["device"].get_info_one(name=os.environ["DEV_NAME"])
         else:
@@ -34,7 +34,7 @@ class ConfiguratorApp(App):
     def driver(self):
         return {
             "auth_strict_key": False,  # important for unknown hosts
-            "device": self.device_info,
+            "device": self.device,
             "host": os.environ["HOST_ADDRESS"],
             "port": os.environ["HOST_PORT"],
             "auth_username": os.environ["HOST_USERNAME"],
@@ -152,7 +152,7 @@ class ConfiguratorApp(App):
                 )
         self.notebook.select(self.tabs["CONTROL"].frame)
 
-    def __router_config(self):  # TODO: РЕАЛИЗОВАТЬ ЭТО С ПОМОЩЬЮ БАШ-СКРИПТОВ
+    def __router_config(self):
         return get_esr_configuration()
 
     def __switch_config(self):

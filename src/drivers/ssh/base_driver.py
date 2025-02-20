@@ -29,7 +29,7 @@ class SSHBaseDriver:
         self.address = driver["host"]
         self.username = driver["auth_username"]
         self.password = driver["auth_password"]
-        self.port = 22  # TODO: may be as parameter?
+        self.port = 22
         self.ssh = None
 
     @property

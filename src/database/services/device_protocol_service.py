@@ -17,7 +17,7 @@ class DeviceProtocolService:
         ).delete()
         self.db.commit()
 
-    def get_protocols_by_id(self, device_id: int) -> List[JsonType]:  # TODO: смущает
+    def get_protocols(self, device: Devices) -> List[JsonType]:
         return [
             {
                 "id": protocol.id,
@@ -26,7 +26,7 @@ class DeviceProtocolService:
             for protocol in (
                 self.db.query(Protocols)
                 .join(DeviceProtocols, DeviceProtocols.protocol_id == Protocols.id)
-                .filter(DeviceProtocols.device_id == device_id)
+                .filter(DeviceProtocols.device_id == device.id)
                 .all()
             )
         ]

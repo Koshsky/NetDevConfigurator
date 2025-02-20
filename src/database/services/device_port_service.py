@@ -31,9 +31,9 @@ class DevicePortService:
             logger.error(
                 "Failed to reset ports for device_id: %d, error: %s", device_id, str(e)
             )
-            self.db.rollback()  # Откат транзакции в случае ошибки
+            self.db.rollback()
 
-    def get_ports_by_id(self, device_id: int) -> List[JsonType]:
+    def _get_ports_by_id(self, device_id: int) -> List[JsonType]:
         try:
             ports = [
                 {
@@ -137,7 +137,7 @@ class DevicePortService:
             .filter(Ports.speed == port.speed, DevicePorts.device_id == device_id)
             .all()
         )
-        return f"port-channel {q + 1}"  # TODO: МНЕ НУЖЕН ПРИМЕР КОНФИГУРАЦИИ ДЛЯ УТОЧНЕНИЯ.
+        return f"port-channel {q + 1}"
 
     def _default_get_next_interface(self, device_id: int, port_id: int) -> str:
         raise NotImplementedError(

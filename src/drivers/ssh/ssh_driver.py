@@ -22,7 +22,12 @@ class SSHDriver(SSHBaseDriver):
 
     def update_startup_config(self):
         command = self.core.update_startup_config
-        return self.send_command(command)
+        if isinstance(command, str):
+            return self.send_command(command)
+        else:
+            return self.send_commands(
+                command
+            )  # for zyxel, they require command sequence
 
     def reboot(self):
         self.ssh.send(f"{self.core.reload}\n")

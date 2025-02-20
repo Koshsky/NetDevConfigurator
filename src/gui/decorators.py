@@ -2,9 +2,7 @@ from functools import wraps
 import logging
 
 
-logger = logging.getLogger(
-    "app"
-)  # TODO: create several loggers for db, gui, ssh, com...
+logger = logging.getLogger("app")
 
 
 def error_handler(func):

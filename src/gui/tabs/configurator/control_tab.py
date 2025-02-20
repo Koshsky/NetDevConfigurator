@@ -155,9 +155,7 @@ class ControlTab(BaseTab):
         self.create_block(
             "params",
             {
-                "role": self.app.db_services["device"].get_roles_by_name(
-                    os.environ["DEV_NAME"]
-                ),
+                "role": self.app.device["roles"],
                 "or": tuple(str(i) for i in range(1, 26)),
             },
             ("UPDATE", self.update_params),
