@@ -6,6 +6,7 @@ from .eltex import (
     MES23xx33xx35xx36xx53xx5400,
     ESRxx,
 )
+from .zyxel import BaseZyxel
 
 logger = logging.getLogger("core")
 
@@ -16,6 +17,7 @@ def get_core(family: str):
         "MES11xx/21xx/22xx/31xx": MES11xx21xx20xx31xx(),
         "MES23xx/33xx/35xx/36xx/53xx/5400": MES23xx33xx35xx36xx53xx5400(),
         "ESRxx": ESRxx(),
+        "BaseZyxel": BaseZyxel(),
     }
     core = cores.get(family, None)
     if core is None:
