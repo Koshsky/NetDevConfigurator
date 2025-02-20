@@ -16,19 +16,11 @@ class BaseZyxel:
         return f"copy tftp config 1 {os.environ['TFTP_ADDRESS']} tmp/{os.environ['CFG_FILENAME']}"
 
     @property
-    def base_configure_192(self):  # TODO: not actual
+    def base_configure_192(self):
         return [
-            "configure terminal",
-            "interface vlan 1",
-            f"ip address {os.environ['HOST_ADDRESS']} 255.255.255.0",
-            "ssh enable",
-            "!",
-            "interface gigabitethernet 0/1",
-            "no switchport general allowed vlan",
-            "switchport mode access",
-            "no switchport forbidden default-vlan",
-            "switchport access vlan 1",
-            "!",
+            "configure",
+            "vlan 1",
+            "ip address default-management {ip} 255.255.255.0",
             "end",
         ]
 
