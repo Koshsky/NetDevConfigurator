@@ -85,7 +85,7 @@ class SSHBaseDriver:
                 password=self.password,
                 look_for_keys=False,
                 allow_agent=False,
-                timeout=2,
+                timeout=4,
             )
             self.ssh = cl.invoke_shell()
             self.ssh.settimeout(1)

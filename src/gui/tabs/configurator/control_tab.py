@@ -81,6 +81,12 @@ class ControlTab(BaseTab):
         with SSHDriver(**self.app.driver) as conn:
             conn.reboot()
 
+    def show_run(self):
+        with SSHDriver(**self.app.driver) as conn:
+            conf = conn.show_run()
+            print(conf)
+        self.display_feedback(conf)
+
     def update_firmwares(self):
         with SSHDriver(**self.app.driver) as conn:
             conn.update_boot()
@@ -115,6 +121,7 @@ class ControlTab(BaseTab):
             ("LOAD TEMPLATE", self.load),
             ("UPDATE FIRMWARES", self.update_firmwares),
             ("REBOOT DEVICE", self.reboot),
+            ("SHOW RUN", self.show_run),
         ]
         for action in actions:
             self.create_button_in_line(action)

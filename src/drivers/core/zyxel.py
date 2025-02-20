@@ -2,7 +2,7 @@ import os
 
 
 class BaseZyxel:
-    comms_prompt_pattern = r"^(\n)?[a-zA-Z0-9_-]+[>#\$]\s*$"
+    comms_prompt_pattern = r"^(\n)?[a-zA-Z0-9_-]+[>#\$]\s*"
     success_signs = {
         "Copyright",
     }

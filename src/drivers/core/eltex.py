@@ -11,12 +11,14 @@ class ESRxx:
     }
     open_sequence = ["terminal datadump"]
 
-    show_run = "show running-config extended"
+    show_run = "show running-config extended"  # TODO: ????
     reload = "reload system"
 
     @property
     def update_startup_config(self):
         return f"copy tftp://{os.environ['TFTP_ADDRESS']}/tmp/{os.environ['CFG_FILENAME']} system:candidate-config"
+        # commit
+        # confirm  ?? y y
 
     @property
     def load_boot(
@@ -28,13 +30,15 @@ class ESRxx:
     def load_uboot(
         self,
     ):  # TODO: в документации встречается system:boot2 system:boot-2...
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} system:boot2"
+        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} system:boot-2"
 
     @property
     def load_firmware(
         self,
     ):
         return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} system:firmware"
+        # TODO: распарсить show bootvar и определить более новый образ
+        # boot system image-[12]
 
 
 class BaseMES:
