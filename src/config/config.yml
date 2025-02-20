@@ -20,9 +20,9 @@ tftp-server:
   folder: /srv/tftp
 
 host:
-  username: [admin, mvsadmin]  # admin
-  password: [admin, password, '1234']  # 123 admin password
-  address: [192.168.1.1, 192.168.0.1, 10.4.0.3]  # 192.168.0.1
+  username: [admin, mvsadmin]
+  password: [admin, password, '1234']
+  address: [192.168.1.1, 192.168.0.1, 10.4.0.3]
   port: ['22']
 
 default-cert: MVS
