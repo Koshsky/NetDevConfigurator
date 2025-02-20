@@ -32,5 +32,4 @@ class DeviceProtocolService:
         ]
 
     def add_protocol_by_id(self, device_id: int, protocol_id: int) -> None:
-        self.db.add(DeviceProtocols(device_id=device_id, protocol_id=protocol_id))
-        self.db.commit()
+        return self.create(device_id=device_id, protocol_id=protocol_id)

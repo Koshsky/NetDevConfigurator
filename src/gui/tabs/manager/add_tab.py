@@ -44,7 +44,7 @@ class AddTab(BaseTab):
         if role not in self.app.entity_collections["role"] or role == "common":
             raise ValueError("Invalid role.")
 
-        self.app.db_services["preset"].create({"role": role, "device_id": device.id})
+        self.app.db_services["preset"].create(role=role, device_id=device.id)
         self.display_feedback("successfully")
 
     def submit_template(self):
@@ -57,21 +57,20 @@ class AddTab(BaseTab):
             raise ValueError("All parameters must be set")
 
         family = self.check_family_name(self.fields["template"]["family"].get())
-        data = {
-            "name": template_name,
-            "family_id": family.id,
-            "type": template_type,
-            "role": role,
-            "text": text,
-        }
-        self.app.db_services["template"].create(data)
+        self.app.db_services["template"].create(
+            name=template_name,
+            family_id=family.id,
+            type=template_type,
+            role=role,
+            text=text,
+        )
 
     def submit_protocol(self):
         protocol_name = self.fields["protocol"]["name"].get().strip()
         if not protocol_name:
             raise ValueError("Protocol name cannot be empty.")
 
-        self.app.db_services["protocol"].create({"name": protocol_name})
+        self.app.db_services["protocol"].create(name=protocol_name)
         self.display_feedback("Successfully added to the protocols table.")
 
     def submit_family(self):
@@ -79,7 +78,7 @@ class AddTab(BaseTab):
         if not family_name:
             raise ValueError("Family name cannot be empty.")
 
-        self.app.db_services["family"].create({"name": family_name})
+        self.app.db_services["family"].create(name=family_name)
         self.display_feedback("Successfully added to the families table.")
 
     def submit_device(self):
@@ -93,14 +92,12 @@ class AddTab(BaseTab):
 
         company = self.check_company_name(self.fields["device"]["company"].get())
         family = self.check_family_name(self.fields["device"]["family"].get())
-        new_device = {
-            "name": device_name,
-            "company_id": company.id,
-            "family_id": family.id,
-            "dev_type": dev_type,
-        }
-
-        self.app.db_services["device"].create(new_device)
+        self.app.db_services["device"].create(
+            name=device_name,
+            company_id=company.id,
+            family_id=family.id,
+            dev_type=dev_type,
+        )
 
         self.display_feedback("Successfully added to the devices table.")
 
@@ -109,5 +106,5 @@ class AddTab(BaseTab):
         if not company_name:
             raise ValueError("Company name cannot be empty.")
 
-        self.app.db_services["company"].create({"name": company_name})
+        self.app.db_services["company"].create(name=company_name)
         self.display_feedback("Successfully added to the companies table.")

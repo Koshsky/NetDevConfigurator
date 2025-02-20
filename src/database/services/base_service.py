@@ -81,13 +81,13 @@ class BaseService:
         entities = self.get_all(**args)
         return [self.get_info(entity) for entity in entities]
 
-    def create(self, data: Dict[str, Any]) -> Model:
+    def create(self, **args) -> Model:
         try:
-            entity = self.model(**data)
+            entity = self.model(**args)
             self.db.add(entity)
             self.db.commit()
             self.db.refresh(entity)
-            logger.info("Created %s successfully: %s", self.model.__name__, data)
+            logger.info("Created %s successfully: %s", self.model.__name__, args)
             return entity
         except Exception as e:
             logger.error("Failed to create %s: %s", self.model.__name__, str(e))

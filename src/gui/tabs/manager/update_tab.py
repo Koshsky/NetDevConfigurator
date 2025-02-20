@@ -37,8 +37,9 @@ class UpdateTab(BaseTab):
         port_input = list(map(lambda x: x[1].get(), self.fields[""]["ports"].items()))
         ports = self.prepare_port_input(port_input)
         self.app.db_services["device"].reset_ports(device.id)
-        for port in ports:
-            self.app.db_services["device"].add_port_by_id(device.id, port.id)
+        if ports is not None:
+            for port in ports:
+                self.app.db_services["device"].add_port_by_id(device.id, port.id)
         self.display_feedback("Linked device with PORTS successfully.")
 
     def update_protocols(self):
@@ -54,7 +55,7 @@ class UpdateTab(BaseTab):
 
     def prepare_port_input(self, port_input):
         def strip_none(ports):
-            while ports[-1] == "None":
+            while ports and ports[-1] == "None":
                 ports.pop()
             return ports
 

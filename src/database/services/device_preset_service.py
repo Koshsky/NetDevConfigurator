@@ -109,9 +109,3 @@ class DevicePresetService:
             .scalar()
             or 0
         )
-
-    def _clear(self, preset_id: int) -> None:
-        self.db.query(DevicePresets).filter(
-            DevicePresets.preset_id == preset_id
-        ).delete()
-        self.db.commit()
