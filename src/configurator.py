@@ -17,10 +17,10 @@ class ConfiguratorApp(App):
     def __init__(self, root, title, advanced, *args, **kwargs):
         self.config_template = None
         self.advanced_mode = advanced
-        set_env("HOST_ADDRESS", config["host"]["address"])
-        set_env("HOST_PORT", config["host"]["port"])
-        set_env("HOST_USERNAME", config["host"]["username"])
-        set_env("HOST_PASSWORD", config["host"]["password"])
+        set_env("HOST_ADDRESS", config["host"]["address"][0])
+        set_env("HOST_PORT", config["host"]["port"][0])
+        set_env("HOST_USERNAME", config["host"]["username"][0])
+        set_env("HOST_PASSWORD", config["host"]["password"][0])
         super().__init__(root, title)
 
     @property
