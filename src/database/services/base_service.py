@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Dict, List, Type, Union, Any
+from typing import Dict, List, Type, Union
 
 from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy.orm import Session
@@ -94,7 +94,7 @@ class BaseService:
             self.db.rollback()
             raise
 
-    def update(self, entity: Model, updated_data: Dict[str, Any]) -> Model:
+    def update(self, entity: Model, **updated_data) -> Model:
         for key, value in updated_data.items():
             setattr(entity, key, value)
         self.db.commit()

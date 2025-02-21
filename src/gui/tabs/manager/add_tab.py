@@ -22,7 +22,7 @@ class AddTab(BaseTab):
             {
                 "name": None,
                 "family": self.app.entity_collections["family"],
-                "type": self.app.entity_collections["template_type"],
+                "type": self.app.entity_collections["type"],
                 "role": self.app.entity_collections["role"] + ("common",),
                 "text": None,
             },
