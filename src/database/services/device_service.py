@@ -33,14 +33,20 @@ class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
             "id": device.id,
             "name": device.name,
             "dev_type": device.dev_type,
-            "family": {"name": device.family.name, "id": device.family.id},
-            "company": {"name": device.company.name, "id": device.company.id},
+            "family": {
+                "name": device.family.name,
+                "id": device.family.id,
+            },  # TODO: replace with get_info
+            "company": {
+                "name": device.company.name,
+                "id": device.company.id,
+            },  # TODO: replace with get_info
             "pattern": {
                 "boot": device.boot,
                 "uboot": device.uboot,
                 "firmware": device.firmware,
             },
             "protocols": self.get_protocols(device),
-            "ports": self._get_ports_by_id(device.id),
+            "ports": self.get_ports(device),
             "roles": tuple(preset.role for preset in presets),
         }

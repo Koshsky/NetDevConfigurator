@@ -18,17 +18,6 @@ class AddTab(BaseTab):
             ("SUBMIT", self.submit_device),
         )
         self.create_block(
-            "template",
-            {
-                "name": None,
-                "family": self.app.entity_collections["family"],
-                "type": self.app.entity_collections["type"],
-                "role": self.app.entity_collections["role"] + ("common",),
-                "text": None,
-            },
-            ("SUBMIT", self.submit_template),
-        )
-        self.create_block(
             "preset",
             {
                 "device": self.app.entity_collections["device"],
@@ -46,24 +35,6 @@ class AddTab(BaseTab):
 
         self.app.db_services["preset"].create(role=role, device_id=device.id)
         self.display_feedback("successfully")
-
-    def submit_template(self):
-        template_name = self.fields["template"]["name"].get().strip()
-        template_type = self.fields["template"]["type"].get().strip()
-        role = self.fields["template"]["role"].get().strip()
-        text = self.fields["template"]["text"].get().strip()
-
-        if not (template_name and template_type and role):
-            raise ValueError("All parameters must be set")
-
-        family = self.check_family_name(self.fields["template"]["family"].get())
-        self.app.db_services["template"].create(
-            name=template_name,
-            family_id=family.id,
-            type=template_type,
-            role=role,
-            text=text,
-        )
 
     def submit_protocol(self):
         protocol_name = self.fields["protocol"]["name"].get().strip()

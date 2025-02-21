@@ -9,10 +9,9 @@ from .family_service import FamilyService
 class TemplateService(BaseService):
     def __init__(self, db: Session) -> None:
         super().__init__(db, Templates)
-        self.family_service = FamilyService(db)
 
     def get_info(self, template) -> JsonType:
-        family = self.family_service.get_one(id=template.family_id)
+        family = FamilyService(self.db).get_one(id=template.family_id)
         return {
             "name": template.name,
             "id": template.id,

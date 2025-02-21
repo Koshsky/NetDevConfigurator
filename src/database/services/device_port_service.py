@@ -33,7 +33,7 @@ class DevicePortService:
             )
             self.db.rollback()
 
-    def _get_ports_by_id(self, device_id: int) -> List[JsonType]:
+    def get_ports(self, device: Devices) -> List[JsonType]:
         try:
             ports = [
                 {
@@ -45,21 +45,21 @@ class DevicePortService:
                 for device_port, port in (
                     self.db.query(DevicePorts, Ports)
                     .join(Ports, DevicePorts.port_id == Ports.id)
-                    .filter(DevicePorts.device_id == device_id)
+                    .filter(DevicePorts.device_id == device.id)
                     .all()
                 )
             ]
             logger.info(
                 "Retrieved ports for device_id: %d, found %d ports",
-                device_id,
+                device.id,
                 len(ports),
             )
             return ports
         except Exception as e:
             logger.error(
-                "Failed to get ports for device_id: %d, error: %s", device_id, str(e)
+                "Failed to get ports for device_id: %d, error: %s", device.id, str(e)
             )
-            return []  # Возвращаем пустой список в случае ошибки
+            return []
 
     def add_port_by_id(self, device_id: int, port_id: int) -> DevicePorts:
         try:

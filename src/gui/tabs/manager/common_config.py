@@ -6,7 +6,7 @@ def update_config(func):
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         message = func(self, *args, **kwargs)
-        self._config = self.app.db_services["preset"].get_info(self.preset)
+        self.preset_info = self.app.db_services["preset"].get_info(self.preset)
         self.display_feedback(
             f"{message or ''}\n{self.config_meta()}\n\n{self.config_template}"
         )
@@ -29,7 +29,7 @@ def preset_is_not_none(func):
 class CommonConfigTab(BaseTab):
     def __init__(self, app, parent, log_name="ConfigTab"):
         super().__init__(app, parent, log_name)
-        self._config = None
+        self.preset_info = None
         self.preset = None
         self.device = None
         self.relevant_templates = None
@@ -103,7 +103,6 @@ class CommonConfigTab(BaseTab):
         self.fields["template"]["name"].set(template_names[0])
 
     def get_relevant_template(self, template_name):
-        # TODO: не гарантированно что common в последнюю очередь.
         return filter(
             lambda x: x.name == template_name, self.relevant_templates
         ).__next__()
@@ -113,7 +112,7 @@ class CommonConfigTab(BaseTab):
             "\n".join(
                 v["text"]
                 for _, (_, v) in enumerate(
-                    self._config["configuration"].items(), start=1
+                    self.preset_info["configuration"].items(), start=1
                 )
             )
         )
@@ -122,19 +121,19 @@ class CommonConfigTab(BaseTab):
         interfaces = len(
             [
                 i
-                for _, i in self._config["configuration"].items()
+                for _, i in self.preset_info["configuration"].items()
                 if i["type"] == "interface"
             ]
         )
         device_ports = len(
-            self.app.db_services["device"].get_info_one(name=self._config["target"])[
-                "ports"
-            ]
+            self.app.db_services["device"].get_info_one(
+                name=self.preset_info["device"]
+            )["ports"]
         )
         return (
-            f"Role: {self._config['role']}\n"
-            f"Device: {self._config['target']}\n"
-            f"Description: {self._config['description']}\n"
+            f"Role: {self.preset_info['role']}\n"
+            f"Device: {self.preset_info['device']}\n"
+            f"Description: {self.preset_info['description']}\n"
             f"Described interfaces/Physical ports: {interfaces}/{device_ports}\n"
         )
 
@@ -142,5 +141,7 @@ class CommonConfigTab(BaseTab):
     def config_template(self):
         return "\n".join(
             f"{i}\t{v['name']}"
-            for i, (k, v) in enumerate(self._config["configuration"].items(), start=1)
+            for i, (k, v) in enumerate(
+                self.preset_info["configuration"].items(), start=1
+            )
         )

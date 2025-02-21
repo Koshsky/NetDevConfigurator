@@ -18,7 +18,6 @@ def check_template_role(func):
 class DevicePresetService:
     def __init__(self, db: Session) -> None:
         self.db = db
-        self.device_service = DeviceService(db)
 
     @check_template_role
     @transactional
@@ -93,8 +92,9 @@ class DevicePresetService:
             .filter(Templates.type == "interface")
             .all()
         )
-        device = self.device_service.get_one(id=preset.device_id)
-        device_ports = len(self.device_service.get_info(device)["ports"])
+        device_ports = len(
+            DeviceService(self.db).get_info_on(id=preset.device_id)["ports"]
+        )
         if described_interfaces > device_ports:
             raise ValueError(
                 f"More interfaces are described in the preset than in the device: {described_interfaces}"

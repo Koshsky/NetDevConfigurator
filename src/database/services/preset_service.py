@@ -17,10 +17,10 @@ class PresetService(BaseService, DevicePresetService):
         self.family_service = FamilyService(db)
 
     def get_info(self, preset: Presets, check: bool = False) -> JsonType:
+        device = self.device_service.get_info_one(id=preset.device_id)
         if check and not self.validate(preset):
-            device = self.device_service.get_one(id=preset.device_id)
-            raise ValueError(
-                f"Invalid preset configuration. device={device.name}, role={preset.role}"
+            raise ValueError(  # TODO: mova raising to preset_service
+                f"Invalid preset configuration. device={device['name']}, role={preset.role}"
             )
         rows = (
             self.db.query(Presets, DevicePresets, Templates)
@@ -31,14 +31,11 @@ class PresetService(BaseService, DevicePresetService):
             .order_by(DevicePresets.ordered_number)
             .all()
         )
-        device = self.device_service.get_one(id=preset.device_id)
-        interfaces = (
-            port["interface"] for port in self.device_service.get_info(device)["ports"]
-        )  # generator
+        interfaces = (port["interface"] for port in device["ports"])  # generator
         return {
             "id": preset.id,
-            "target": device.name,
-            "family": self.family_service.get_info_one(id=device.family_id),
+            "device": device["name"],
+            "family": device["family"],
             "role": preset.role,
             "description": preset.description,
             "configuration": {

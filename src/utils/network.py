@@ -3,7 +3,7 @@ import ipaddress
 from scapy.all import ARP, Ether, srp
 
 
-# TODO: set up network interface with address 192.168.3.[free]/24 and 10.4.0.[free]/16
+# TODO: set up network interface with given netplan configuration
 def set_up_dev(dev: str):
     pass
 

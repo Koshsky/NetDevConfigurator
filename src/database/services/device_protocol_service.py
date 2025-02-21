@@ -3,6 +3,7 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from database.models import DeviceProtocols, Devices, Protocols
+from .protocol_service import ProtocolService
 
 from .base_service import JsonType
 
@@ -19,10 +20,7 @@ class DeviceProtocolService:
 
     def get_protocols(self, device: Devices) -> List[JsonType]:
         return [
-            {
-                "id": protocol.id,
-                "name": protocol.name,
-            }
+            ProtocolService(self.db).get_info(protocol)
             for protocol in (
                 self.db.query(Protocols)
                 .join(DeviceProtocols, DeviceProtocols.protocol_id == Protocols.id)
