@@ -93,7 +93,7 @@ class DevicePresetService:
             .all()
         )
         device_ports = len(
-            DeviceService(self.db).get_info_on(id=preset.device_id)["ports"]
+            DeviceService(self.db).get_info_one(id=preset.device_id)["ports"]
         )
         if described_interfaces > device_ports:
             raise ValueError(

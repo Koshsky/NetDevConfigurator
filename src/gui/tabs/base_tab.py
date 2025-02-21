@@ -122,6 +122,9 @@ class BaseTab:
             self.button = tk.Button(self.frame, text=button[0], command=button[1])
             self.button.grid(row=self._cur_row - 1, column=3, padx=5, pady=5)
 
+        ttk.Label(self.frame, text="").grid(row=self._cur_row, column=0, pady=0)
+        self._cur_row += 1
+
     def create_button_in_line(self, button):
         if not (
             isinstance(button, tuple)
