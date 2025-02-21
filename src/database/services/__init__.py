@@ -1,12 +1,11 @@
 from .company_service import CompanyService
 from .device_service import DeviceService
+from .exceptions import EntityNotFoundError
 from .family_service import FamilyService
 from .port_service import PortService
-from .preset_service import PresetService
+from .preset_service import PresetService, allowed_roles
 from .protocol_service import ProtocolService
-from .template_service import TemplateService
-
-from .exceptions import EntityNotFoundError
+from .template_service import TemplateService, allowed_types
 
 __all__ = [
     "CompanyService",
@@ -46,30 +45,6 @@ def prepare_entity_collections(entity_services):
         "template": tuple(
             set({template.name for template in entity_services["template"].get_all()})
         ),
-        "type": (
-            "hostname",
-            "VLAN",
-            "ssh",
-            "type-commutation",
-            "STP",
-            "credentials",
-            "addr-set",
-            "interface",
-            "GW",
-            "telnet",
-            "SNMP",
-            "ZTP",
-            "jumbo",
-            "priority",
-        ),
-        "role": (  # `common` suits for all
-            "data",
-            "ipmi",
-            "icu",
-            "or",
-            "tsh",
-            "video",
-            "raisa_or",
-            "raisa_agr",
-        ),
+        "template_type": allowed_types,
+        "role": allowed_roles,
     }
