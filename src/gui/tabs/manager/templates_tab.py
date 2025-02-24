@@ -20,7 +20,7 @@ class TemplatesTab(BaseTab):
         self.create_button_in_line(("SHOW", self.show_template))
         self.create_button_in_line(("UPDATE", self.update_template))
         self.create_button_in_line(("CREATE", self.create_template))
-        self.create_button_in_line(("CREATE", self.delete_template))
+        self.create_button_in_line(("DELETE", self.delete_template))
         self.create_feedback_area()
 
     @property

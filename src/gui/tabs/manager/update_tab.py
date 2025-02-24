@@ -17,43 +17,47 @@ class UpdateTab(BaseTab):
             },
             width=12,
         )
-        self.create_button_in_line(("UPDATE MASKS", self.write_mask))
+        self.create_button_in_line(("UPDATE MASKS", self.update_masks))
         self.create_button_in_line(("UPDATE PROTOCOLS", self.update_protocols))
         self.create_button_in_line(("UPDATE PORTS", self.update_ports))
-        self.create_feedback_area()
 
-    def write_mask(self):
-        device = self.check_device_name(self.fields[""]["device"].get().strip())
-        self.app.db_services["device"].update_files(
-            device,
+    def update_masks(self):
+        self.app.db_services["device"].update_masks(
+            self.selected_device,
             boot=self.fields[""]["mask"]["boot"].get().strip(),
             uboot=self.fields[""]["mask"]["uboot"].get().strip(),
             firmware=self.fields[""]["mask"]["firmware"].get().strip(),
         )
-        self.display_feedback("Linked device with MASKS successfully.")
 
     def update_ports(self):
-        device = self.check_device_name(self.fields[""]["device"].get().strip())
-        port_input = list(map(lambda x: x[1].get(), self.fields[""]["ports"].items()))
-        ports = self.prepare_port_input(port_input)
-        self.app.db_services["device"].reset_ports(device.id)
-        if ports is not None:
-            for port in ports:
-                self.app.db_services["device"].add_port_by_id(device.id, port.id)
-        self.display_feedback("Linked device with PORTS successfully.")
+        self.app.db_services["device"].update_ports(
+            self.selected_device, self.port_input
+        )
 
     def update_protocols(self):
-        device = self.check_device_name(self.fields[""]["device"].get().strip())
-        self.app.db_services["device"].reset_protocols(device)
+        self.app.db_services["device"].update_protocols(
+            self.selected_device, self.protocol_input
+        )
+
+    @property
+    def selected_device(self):
+        return self.app.db_services["device"].get_one(
+            name=self.fields[""]["device"].get().strip()
+        )
+
+    @property
+    def protocol_input(self):
+        res = []
         for protocol_name, checkbox in self.fields[""]["protocols"].items():
             if checkbox.get() == 1:
-                protocol = self.check_protocol_name(protocol_name)
-                self.app.db_services["device"].add_protocol_by_id(
-                    device.id, protocol.id
-                )
-        self.display_feedback("Linked device with PROTOCOLS successfully.")
+                protocol = self.app.db_services["protocol"].get_one(name=protocol_name)
+                res.append(protocol)
+        return res
 
-    def prepare_port_input(self, port_input):
+    @property
+    def port_input(self):
+        raw_input = list(map(lambda x: x[1].get(), self.fields[""]["ports"].items()))
+
         def strip_none(ports):
             while ports and ports[-1] == "None":
                 ports.pop()
@@ -74,4 +78,4 @@ class UpdateTab(BaseTab):
                 res.append(port)
             return res[::-1]
 
-        return check_mixed_speeds(strip_none(port_input))
+        return check_mixed_speeds(strip_none(raw_input))

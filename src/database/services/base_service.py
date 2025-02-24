@@ -32,7 +32,7 @@ class BaseService:
             else:
                 entities = entities.filter(column == value)
         entities = entities.all()
-        logger.info(
+        logger.debug(
             "Found %d %s entities with filters: %s",
             len(entities),
             self.model.__name__,
@@ -49,11 +49,6 @@ class BaseService:
         entity_count = len(entities)
 
         if entity_count == 1:
-            logger.debug(
-                "Successfully retrieved %s entity matching criteria: %s",
-                self.model.__name__,
-                json.dumps(kwargs),
-            )
             return entities[0]
         elif entity_count == 0:
             logger.error(

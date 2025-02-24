@@ -20,7 +20,6 @@ class DeleteTab(BaseTab):
             },
             ("delete", self.delete_preset),
         )
-        self.create_feedback_area()
 
     def delete_preset(self):
         device = self.check_device_name(self.fields["preset"]["device"].get())
