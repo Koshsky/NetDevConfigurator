@@ -17,23 +17,6 @@ class AddTab(BaseTab):
             },
             ("SUBMIT", self.submit_device),
         )
-        self.create_block(
-            "preset",
-            {
-                "device": self.app.entity_collections["device"],
-                "role": self.app.entity_collections["role"],
-            },
-            ("SUBMIT", self.submit_preset),
-        )
-
-    def submit_preset(self):
-        device = self.check_device_name(self.fields["preset"]["device"].get())
-        role = self.fields["preset"]["role"].get().strip()
-        if role not in self.app.entity_collections["role"] or role == "common":
-            raise ValueError("Invalid role.")
-
-        self.app.db_services["preset"].create(role=role, device_id=device.id)
-        self.display_feedback("successfully")
 
     def submit_protocol(self):
         protocol_name = self.fields["protocol"]["name"].get().strip()

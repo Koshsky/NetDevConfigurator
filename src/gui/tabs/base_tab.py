@@ -138,14 +138,14 @@ class BaseTab:
 
         self._cur_row += 1
 
-    def create_feedback_area(self, width=150, height=25):
+    def create_feedback_area(self, message="DATABASE STORAGE", width=150, height=25):
         self.feedback_text = tk.Text(
             self.frame, wrap="word", width=width, height=height
         )
         self.feedback_text.grid(
             row=self._cur_row, column=0, columnspan=100, padx=5, pady=5
         )
-        self.feedback_text.insert(tk.END, "Feedback will be here...\n")
+        self.feedback_text.insert(tk.END, message)
         self.feedback_text.config(state=tk.DISABLED)
 
         self._cur_row += 1

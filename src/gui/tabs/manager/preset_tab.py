@@ -30,9 +30,6 @@ class CommonConfigTab(BaseTab):
     def __init__(self, app, parent, log_name="ConfigTab"):
         super().__init__(app, parent, log_name)
         self.preset_info = None
-        self.preset = None
-        self.device = None
-        self.relevant_templates = None
 
     def _create_widgets(self):
         self.create_block(
@@ -42,7 +39,9 @@ class CommonConfigTab(BaseTab):
                 "role": self.app.entity_collections["role"],
             },
         )
-        self.create_button_in_line(("REFRESH", self.refresh_templates))
+        self.create_button_in_line(("CREATE", self.create_preset))
+        self.create_button_in_line(("DELETE", self.delete_preset))
+        self.create_button_in_line(("REFRESH TEMPLATES", self.refresh_templates))
         self.create_block(
             "template",
             {
@@ -56,12 +55,42 @@ class CommonConfigTab(BaseTab):
         self.create_button_in_line(("PREVIEW", self.preview))
         self.create_feedback_area()
 
+    def create_preset(self):
+        self.app.db_services["preset"].create(
+            role=self.fields["preset"]["role"].get().strip(),
+            device_id=self.selected_device.id,
+        )
+
+    def delete_preset(self):
+        self.app.db_services["preset"].delete(self.selected_preset)
+
+    @property
+    def selected_device(self):
+        return self.app.db_services["device"].get_one(
+            name=self.fields["preset"]["device"].get().strip(),
+        )
+
+    @property
+    def selected_preset(self):
+        return self.app.db_services["preset"].get_one(
+            device_id=self.selected_device.id,
+            role=self.fields["preset"]["role"].get().strip(),
+        )
+
+    @property
+    def relevant_templates(self):
+        return self.app.db_services["template"].get_all(
+            family_id=self.selected_device.family_id,
+            role=["common", self.selected_preset.role],
+        )
+
     @update_config
     @preset_is_not_none
     def remove(self) -> str:
         ordered_number = self.fields["template"]["ordered_number"].get().strip()
         if ordered_number and ordered_number.isdigit():
-            self.app.db_services["preset"].remove(self.preset.id, int(ordered_number))
+            preset = self.app.db_services["preset"].get_one(self.selected_preset)
+            self.app.db_services["preset"].remove(preset.id, int(ordered_number))
         else:
             raise ValueError("Invalid ordered number")
 
@@ -69,7 +98,7 @@ class CommonConfigTab(BaseTab):
     @preset_is_not_none
     def push_back(self) -> str:
         template = self.get_relevant_template(self.fields["template"]["name"].get())
-        self.app.db_services["preset"].push_back(self.preset, template)
+        self.app.db_services["preset"].push_back(self.selected_preset, template)
         return f"Template {template.name} successfully pushed back\n"
 
     @update_config
@@ -79,7 +108,7 @@ class CommonConfigTab(BaseTab):
         ordered_number = self.fields["template"]["ordered_number"].get().strip()
         if ordered_number and ordered_number.isdigit():
             self.app.db_services["preset"].insert(
-                self.preset, template, int(ordered_number)
+                self.selected_preset, template, int(ordered_number)
             )
         else:
             raise ValueError("Invalid ordered number")
@@ -87,15 +116,6 @@ class CommonConfigTab(BaseTab):
 
     @update_config
     def refresh_templates(self):
-        self.device = self.app.db_services["device"].get_one(
-            name=self.fields["preset"]["device"].get()
-        )
-        self.preset = self.app.db_services["preset"].get_one(
-            device_id=self.device.id, role=self.fields["preset"]["role"].get()
-        )
-        self.relevant_templates = self.app.db_services["template"].get_all(
-            family_id=self.device.family_id, role=["common", self.preset.role]
-        )
         template_names = [template.name for template in self.relevant_templates]
         if not template_names:
             raise ValueError("There are no suitable configuration templates")
