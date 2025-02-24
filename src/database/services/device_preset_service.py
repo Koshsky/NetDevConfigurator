@@ -6,10 +6,20 @@ from .device_service import DeviceService
 from .decorators import transactional
 
 
-def check_template_role(func):
+def check_template(func):
     def wrapper(self, preset: Presets, template: Templates, *args, **kwargs):
         if template.role not in ["common", preset.role]:
             raise ValueError("Template and preset have different roles")
+        if self.validate(preset) and template.type == "interface":
+            raise ValueError(
+                "Cannot insert interface template into preset:\n"
+                "the number of interface templates has reached the limit for the preset"
+            )
+        for _, t in self.get_info(preset)["configuration"].items():
+            if t["type"] != "interface" and t["type"] == template.type:
+                raise TypeError(
+                    f"Cannot insert {template.name}. Template with type={template.type} already in preset"
+                )
         return func(self, preset, template, *args, **kwargs)
 
     return wrapper
@@ -19,14 +29,9 @@ class DevicePresetService:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    @check_template_role
+    @check_template
     @transactional
     def push_back(self, preset: Presets, template: Templates) -> DevicePresets:
-        if self.validate(preset) and template.type == "interface":
-            raise ValueError(
-                "Cannot insert interface template into preset:\n"
-                "the number of interface templates has reached the limit for the preset"
-            )
         max_ordered_number = self._get_max_ordered_number(preset.id)
 
         device_preset = DevicePresets(
@@ -38,16 +43,11 @@ class DevicePresetService:
         self.db.add(device_preset)
         return device_preset
 
-    @check_template_role
+    @check_template
     @transactional
     def insert(
         self, preset: Presets, template: Templates, ordered_number: int
     ) -> DevicePresets:
-        if self.validate(preset) and template.type == "interface":
-            raise ValueError(
-                "Cannot insert interface template into preset:\n"
-                "the number of interface templates has reached the limit for the preset"
-            )
         max_ordered_number = self._get_max_ordered_number(preset.id)
         if ordered_number > max_ordered_number + 1:
             raise ValueError(
