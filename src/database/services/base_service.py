@@ -84,7 +84,7 @@ class BaseService:
             self.db.add(entity)
             self.db.commit()
             self.db.refresh(entity)
-            logger.info("Created %s successfully: %s", self.model.__name__, kwargs)
+            logger.debug("Created %s successfully: %s", self.model.__name__, kwargs)
             return entity
         except Exception as e:
             logger.error("Failed to create %s: %s", self.model.__name__, str(e))
@@ -96,7 +96,7 @@ class BaseService:
             setattr(entity, key, value)
         self.db.commit()
         self.db.refresh(entity)
-        logger.info(
+        logger.debug(
             "Updated %s entities successfully: %s", self.model.__name__, updated_data
         )
         return entity
@@ -109,6 +109,6 @@ class BaseService:
         if entity:
             self.db.delete(entity)
             self.db.commit()
-            logger.info(
+            logger.debug(
                 "%s with id %d deleted successfully", self.model.__name__, entity.id
             )

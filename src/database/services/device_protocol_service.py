@@ -32,7 +32,7 @@ class DeviceProtocolService:
             .delete()
         )
         self.db.commit()
-        logger.info(
+        logger.debug(
             'Successfully reset protocols for device: {"name": "%s"}, deleted %d protocols',
             device.name,
             deleted_count,
