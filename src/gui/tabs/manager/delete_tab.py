@@ -20,14 +20,6 @@ class DeleteTab(BaseTab):
             },
             ("delete", self.delete_preset),
         )
-        self.create_block(
-            "template",
-            {
-                "name": self.app.entity_collections["template"],
-                "role": self.app.entity_collections["role"] + ("common",),
-            },
-            ("delete", self.delete_template),
-        )
         self.create_feedback_area()
 
     def delete_preset(self):
@@ -35,12 +27,6 @@ class DeleteTab(BaseTab):
         role = self.fields["template"]["role"].get().strip()
         self.app.db_services["preset"].delete_one(device_id=device.id, role=role)
         self.display_feedback("Successfully deleted from the presets table.")
-
-    def delete_template(self):
-        name = self.fields["template"]["name"].get().strip()
-        role = self.fields["template"]["role"].get().strip()
-        self.app.db_services["template"].delete_one(name=name, role=role)
-        self.display_feedback("Successfully deleted from the templates table.")
 
     def delete_entity(self, entity_type):
         self.app.db_services[entity_type].delete_one(

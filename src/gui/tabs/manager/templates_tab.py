@@ -20,6 +20,7 @@ class TemplatesTab(BaseTab):
         self.create_button_in_line(("SHOW", self.show_template))
         self.create_button_in_line(("UPDATE", self.update_template))
         self.create_button_in_line(("CREATE", self.create_template))
+        self.create_button_in_line(("CREATE", self.delete_template))
         self.create_feedback_area()
 
     @property
@@ -33,6 +34,10 @@ class TemplatesTab(BaseTab):
             "family_id": family.id,
             "role": self.fields["template"]["role"].get().strip(),
         }
+
+    def delete_template(self):
+        self.app.db_services["template"].delete_one(**self.selected_template)
+        self.display_feedback("Successfully deleted from the templates table.")
 
     def create_template(self):
         self.app.db_services["template"].create(
