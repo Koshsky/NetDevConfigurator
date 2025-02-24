@@ -1,32 +1,8 @@
-from functools import wraps
 from gui import BaseTab, apply_error_handler
 
 
-def update_config(func):
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        message = func(self, *args, **kwargs)
-        self.preset_info = self.app.db_services["preset"].get_info(self.preset)
-        self.display_feedback(
-            f"{message or ''}\n{self.config_meta()}\n\n{self.config_template}"
-        )
-        return message
-
-    return wrapper
-
-
-def preset_is_not_none(func):
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        if self.preset is None:
-            raise ValueError("No preset selected")
-        return func(self, *args, **kwargs)
-
-    return wrapper
-
-
 @apply_error_handler
-class CommonConfigTab(BaseTab):
+class PresetTab(BaseTab):
     def __init__(self, app, parent, log_name="ConfigTab"):
         super().__init__(app, parent, log_name)
         self.preset_info = None
@@ -72,60 +48,62 @@ class CommonConfigTab(BaseTab):
 
     @property
     def selected_preset(self):
-        return self.app.db_services["preset"].get_one(
+        preset = self.app.db_services["preset"].get_one(
             device_id=self.selected_device.id,
             role=self.fields["preset"]["role"].get().strip(),
         )
+        self.preset_info = self.app.db_services["preset"].get_info(preset)
+        return preset
 
     @property
-    def relevant_templates(self):
-        return self.app.db_services["template"].get_all(
+    def selected_template(self):
+        return self.app.db_services["template"].get_one(
+            name=self.fields["template"]["name"].get().strip(),
             family_id=self.selected_device.family_id,
             role=["common", self.selected_preset.role],
         )
 
-    @update_config
-    @preset_is_not_none
+    @property
+    def relevant_templates(self):
+        return [
+            template.name
+            for template in self.app.db_services["template"].get_all(
+                family_id=self.selected_device.family_id,
+                role=["common", self.selected_preset.role],
+            )
+        ]
+
     def remove(self) -> str:
         ordered_number = self.fields["template"]["ordered_number"].get().strip()
-        if ordered_number and ordered_number.isdigit():
-            preset = self.app.db_services["preset"].get_one(self.selected_preset)
-            self.app.db_services["preset"].remove(preset.id, int(ordered_number))
-        else:
-            raise ValueError("Invalid ordered number")
+        self.app.db_services["preset"].remove(
+            self.selected_preset.id, int(ordered_number)
+        )
+        self._display_configuration_status(
+            f"Template in {ordered_number} successfully removed\n"
+        )
 
-    @update_config
-    @preset_is_not_none
     def push_back(self) -> str:
-        template = self.get_relevant_template(self.fields["template"]["name"].get())
-        self.app.db_services["preset"].push_back(self.selected_preset, template)
-        return f"Template {template.name} successfully pushed back\n"
+        self.app.db_services["preset"].push_back(
+            self.selected_preset, self.selected_template
+        )
+        self._display_configuration_status(
+            f"Template {self.selected_template.name} successfully pushed back\n"
+        )
 
-    @update_config
-    @preset_is_not_none
     def insert(self) -> str:
-        template = self.get_relevant_template(self.fields["template"]["name"].get())
         ordered_number = self.fields["template"]["ordered_number"].get().strip()
-        if ordered_number and ordered_number.isdigit():
-            self.app.db_services["preset"].insert(
-                self.selected_preset, template, int(ordered_number)
-            )
-        else:
-            raise ValueError("Invalid ordered number")
-        return f"Template {template.name} successfully inserted at position {ordered_number}\n"
+        self.app.db_services["preset"].insert(
+            self.selected_preset, self.selected_template, int(ordered_number)
+        )
+        self._display_configuration_status(
+            f"Template {self.selected_template.name} successfully inserted at position {ordered_number}\n"
+        )
 
-    @update_config
     def refresh_templates(self):
-        template_names = [template.name for template in self.relevant_templates]
-        if not template_names:
+        if not self.relevant_templates:
             raise ValueError("There are no suitable configuration templates")
-        self.fields["template"]["name"]["values"] = template_names
-        self.fields["template"]["name"].set(template_names[0])
-
-    def get_relevant_template(self, template_name):
-        return filter(
-            lambda x: x.name == template_name, self.relevant_templates
-        ).__next__()
+        self.fields["template"]["name"]["values"] = self.relevant_templates
+        self.fields["template"]["name"].set(self.relevant_templates[0])
 
     def preview(self):
         self.display_feedback(
@@ -137,7 +115,13 @@ class CommonConfigTab(BaseTab):
             )
         )
 
-    def config_meta(self):
+    def _display_configuration_status(self, message):
+        status_message = (
+            f"{message or ''}\n{self._config_meta()}\n\n{self._config_template()}"
+        )
+        self.display_feedback(status_message)
+
+    def _config_meta(self):
         interfaces = len(
             [
                 i
@@ -157,8 +141,7 @@ class CommonConfigTab(BaseTab):
             f"Described interfaces/Physical ports: {interfaces}/{device_ports}\n"
         )
 
-    @property
-    def config_template(self):
+    def _config_template(self):
         return "\n".join(
             f"{i}\t{v['name']}"
             for i, (k, v) in enumerate(

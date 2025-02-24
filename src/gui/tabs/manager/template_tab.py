@@ -5,7 +5,7 @@ from gui import BaseTab, apply_error_handler
 
 
 @apply_error_handler
-class TemplatesTab(BaseTab):
+class TemplateTab(BaseTab):
     def _create_widgets(self):
         self.create_block(
             "template",

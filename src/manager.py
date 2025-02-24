@@ -3,11 +3,11 @@ import tkinter as tk
 from gui.base_app import App
 from gui.tabs.manager import (
     AddTab,
-    CommonConfigTab,
+    PresetTab,
     DeleteTab,
     InfoTab,
     UpdateTab,
-    TemplatesTab,
+    TemplateTab,
 )
 
 
@@ -18,8 +18,8 @@ class DBManagerApp(App):
         self.create_tab(DeleteTab, "DELETE")
         self.create_tab(InfoTab, "INFO")
         self.create_tab(UpdateTab, "DEVICE")
-        self.create_tab(TemplatesTab, "TEMPLATE")
-        self.create_tab(CommonConfigTab, "PRESET")
+        self.create_tab(TemplateTab, "TEMPLATE")
+        self.create_tab(PresetTab, "PRESET")
 
 
 if __name__ == "__main__":
