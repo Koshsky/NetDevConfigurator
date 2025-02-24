@@ -8,6 +8,12 @@ class PresetTab(BaseTab):
         self.preset_info = None
 
     def _create_widgets(self):
+        self._create_preset_block()
+        self._create_configuration_block()
+        self.create_feedback_area()
+        self.refresh_templates()
+
+    def _create_preset_block(self):
         self.create_block(
             "preset",
             {
@@ -18,18 +24,19 @@ class PresetTab(BaseTab):
         self.create_button_in_line(("CREATE", self.create_preset))
         self.create_button_in_line(("DELETE", self.delete_preset))
         self.create_button_in_line(("REFRESH TEMPLATES", self.refresh_templates))
+
+    def _create_configuration_block(self):
         self.create_block(
             "template",
             {
                 "name": ("1", "2"),
-                "ordered_number": None,
+                "ordered_number": tuple(map(str, range(1, 101))),
             },
         )
         self.create_button_in_line(("PUSH BACK", self.push_back))
         self.create_button_in_line(("INSERT", self.insert))
         self.create_button_in_line(("REMOVE", self.remove))
         self.create_button_in_line(("PREVIEW", self.preview))
-        self.create_feedback_area()
 
     def create_preset(self):
         self.app.db_services["preset"].create(
