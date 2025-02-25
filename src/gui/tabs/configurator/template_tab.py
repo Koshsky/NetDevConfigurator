@@ -22,7 +22,7 @@ class TemplateTab(BaseTab):
         self._template_filter = template_filter
 
     def _create_widgets(self):
-        filtered_templates = self._filter_templates(self.app.config_template)
+        filtered_templates = self._filter_templates(self.app.json_config)
         self._create_config_block(filtered_templates)
         self.actualize_values()
         self._create_action_buttons()
@@ -45,12 +45,12 @@ class TemplateTab(BaseTab):
         self.create_button_in_line(("UPDATE", self.update_config))
 
     def actualize_values(self):
-        for k, v in self.app.config_template.items():
+        for k, v in self.app.json_config.items():
             if k in self.fields["config"]["templates"]:
                 self.fields["config"]["templates"][k].set(v["name"])
 
     def update_config(self):
-        for k, v in self.app.config_template.items():
+        for k, v in self.app.json_config.items():
             if k in self.fields["config"]["templates"]:
                 new_template_name = self.fields["config"]["templates"][k].get().strip()
                 if new_template_name not in self._get_templates_by_type(v["type"]):
@@ -70,8 +70,9 @@ class TemplateTab(BaseTab):
                         role=["common", v["role"]],
                         family_id=int(self.app.device["family"]["id"]),
                     )
-                self.app.config_template[k] = template_info
-        self.display_feedback(pformat(self.app.config_template, sort_dicts=False))
+                self.app.json_config[k] = template_info
+        self.app.prepare_configuration()
+        self.display_feedback(pformat(self.app.json_config, sort_dicts=False))
 
     def _get_templates_by_type(self, t):
         templates = self.app.db_services["template"].get_all(

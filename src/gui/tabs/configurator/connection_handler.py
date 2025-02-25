@@ -1,27 +1,13 @@
 import logging
 import os
-from functools import wraps
+
 from config import config
 from drivers import COMDriver, SSHDriver
 from utils import set_env
 
+from ..base_tab import BaseTab
+
 logger = logging.getLogger("gui")
-
-
-def prepare_config_file(func):
-    @wraps(func)
-    def wrapper(self, *args, **kwargs):
-        with SSHDriver(**self.app.driver) as conn:
-            header = conn.get_header()
-        config_path = f"/srv/tftp/tmp/{os.environ['CFG_FILENAME']}"
-
-        with open(config_path, "w") as f:
-            f.write(header + self.app.text_configuration)
-            logger.info("Configuration saved: %s", config_path)
-
-        return func(self, *args, **kwargs)
-
-    return wrapper
 
 
 class BaseConnectionHandler:
@@ -72,7 +58,6 @@ class COMSSHConnectionHandler(BaseConnectionHandler):
         self.fields_config = ["username", "password"]
         self.env_vars = [("HOST_USERNAME", "username"), ("HOST_PASSWORD", "password")]
 
-    @prepare_config_file
     def load(self):
         self._execute_with_driver(COMDriver, "base_configure_192")
         self._load_via_ssh()
@@ -93,6 +78,16 @@ class SSHConnectionHandler(BaseConnectionHandler):
             ("HOST_PASSWORD", "password"),
         ]
 
-    @prepare_config_file
     def load(self):
         self._execute_with_driver(SSHDriver, "update_startup_config")
+
+
+def get_connection_handler(tab: BaseTab) -> BaseConnectionHandler:
+    handlers = {
+        "com+ssh": COMSSHConnectionHandler,
+        "ssh": SSHConnectionHandler,
+    }
+    conn_type = os.environ["CONNECTION_TYPE"]
+    if conn_type not in handlers:
+        raise ValueError(f"Unknown connection type: {conn_type}")
+    return handlers[conn_type](tab)

@@ -15,12 +15,12 @@ class HelloTab(BaseTab):
         self._create_connection_buttons()
 
     def prepare(self, connection_type):
-        device = self.check_device_name(self.fields["device"]["name"].get())
-        self.app.register_device(device)
-
-        set_env("CERT", self.fields["common"]["CERT"].get().strip())
         set_env("CONNECTION_TYPE", connection_type)
-        self.app.refresh_tabs()
+        set_env("CERT", self.fields["common"]["CERT"].get().strip())
+        device = self.app.db_services["device"].get_one(
+            name=self.fields["device"]["name"].get().strip()
+        )
+        self.app.register_device(device)
 
     def _create_device_block(self):
         self.create_block(

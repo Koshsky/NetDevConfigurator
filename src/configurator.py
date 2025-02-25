@@ -8,14 +8,15 @@ from config import config
 from gui.base_app import App
 from gui.tabs.configurator import ControlTab, HelloTab, RouterTab, TemplateTab
 from utils import del_env, set_env, env_converter
-from utils.preset import render_configuration
+from utils.preset import save_configuration
+
 
 logger = logging.getLogger("gui")
 
 
 class ConfiguratorApp(App):
     def __init__(self, root, title, advanced, *args, **kwargs):
-        self.config_template = None
+        self.json_config = None
         self.advanced_mode = advanced
         set_env("HOST_ADDRESS", config["host"]["address"][0])
         set_env("HOST_PORT", config["host"]["port"][0])
@@ -43,7 +44,13 @@ class ConfiguratorApp(App):
 
     @property
     def text_configuration(self):
-        return render_configuration(self.config_template)
+        with open(
+            f"{os.environ['TFTP_FOLDER']}/tmp/{os.environ['CFG_FILENAME']}", "r"
+        ) as f:
+            return f.read()
+
+    def prepare_configuration(self):
+        save_configuration(self.json_config)
 
     def create_tabs(self):
         super().create_tabs()
@@ -81,23 +88,28 @@ class ConfiguratorApp(App):
             set_env("MODEL", env_converter.to_machine("MODEL", device.name))
         logger.debug("Device selected. device=%s", os.environ["DEV_NAME"])
 
+        self.refresh_tabs()
+
     def register_preset(self, role: str, OR: str):
+        if "DEV_ROLE" in os.environ and os.environ["DEV_ROLE"] == role:
+            return
         device = self.db_services["device"].get_one(name=os.environ["DEV_NAME"])
         preset = self.db_services["preset"].get_one(
             device_id=device.id,
             role=role,
         )
-        self.config_template = self.db_services["preset"].get_info(preset, check=True)[
+        self.json_config = self.db_services["preset"].get_info(preset, check=True)[
             "configuration"
         ]
-        if set_env("DEV_ROLE", preset.role):
-            self.refresh_tabs()
+        set_env("DEV_ROLE", preset.role)
         set_env("OR", OR)
         logger.info(
-            "ConfiguratorApp.preset := (%s; %s)",
+            "Preset selected. preset=(%s:%s)",
             os.environ["DEV_NAME"],
             os.environ["DEV_ROLE"],
         )
+
+        self.refresh_tabs()
 
     def refresh_tabs(self):
         if "CONNECTION_TYPE" not in os.environ:

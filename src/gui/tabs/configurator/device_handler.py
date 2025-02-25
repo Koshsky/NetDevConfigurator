@@ -2,6 +2,8 @@ import os
 
 from utils import env_converter, set_env
 
+from ..base_tab import BaseTab
+
 
 class BaseDeviceHandler:
     def __init__(self, control_tab):
@@ -33,13 +35,12 @@ class SwitchHandler(BaseDeviceHandler):
         self.tab.fields["params"]["role"].set(os.environ["DEV_ROLE"])
         self.tab.fields["params"]["or"].set(os.environ["OR"])
 
-    # TODO: это может вызвать исключение, которое не перехватить декоратором.
     def update_params(self):
-        # стоит повесить декоратор на ConfiguratorApp?
         self.app.register_preset(
-            self.tab.check_role_name(self.tab.fields["params"]["role"].get()),
+            self.tab.fields["params"]["role"].get(),
             self.tab.fields["params"]["or"].get().strip(),
         )
+        self.app.prepare_configuration()
 
 
 class RouterHandler(BaseDeviceHandler):
@@ -65,3 +66,14 @@ class RouterHandler(BaseDeviceHandler):
                 self.tab.fields["params"]["TYPE_COMPLEX"].get().strip(),
             ),
         )
+
+
+def get_device_handler(tab: BaseTab) -> BaseDeviceHandler:
+    handlers = {
+        "switch": SwitchHandler,
+        "router": RouterHandler,
+    }
+    device_type = os.environ["DEV_TYPE"]
+    if device_type not in handlers:
+        raise ValueError(f"Unknown device type: {device_type}")
+    return handlers[device_type](tab)

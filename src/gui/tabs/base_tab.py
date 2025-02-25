@@ -5,8 +5,6 @@ from tkinter import IntVar, ttk
 
 from ttkwidgets.autocomplete import AutocompleteCombobox
 
-from database.services import EntityNotFoundError
-
 logger = logging.getLogger("gui")
 
 
@@ -41,42 +39,6 @@ class BaseTab:
             widget.destroy()
         self.fields = {}
         logger.debug("%s tab cleared", self.__log_name)
-
-    def check_role_name(self, role):
-        if not (role := role.strip()):
-            raise ValueError("Role name cannot be empty")
-
-        if role not in self.app.entity_collections["role"]:
-            raise EntityNotFoundError(f"Invalid device role: {role}")
-
-        return role
-
-    def __getattr__(self, name):
-        if name.startswith("check_") and name.endswith("_name"):
-            entity_type = name[6:-5]  # Extract entity type from method name
-
-            def dynamic_validator(value):
-                return self.__validate_entity(entity_type, value)
-
-            return dynamic_validator
-        raise AttributeError(
-            f"'{type(self).__name__}' object has no attribute '{name}'"
-        )
-
-    def __validate_entity(self, entity_type: str, entity_name: str) -> int:
-        if not (entity_name := entity_name.strip()):
-            raise ValueError(f"{entity_type.capitalize()} name cannot be empty")
-
-        service = self.app.db_services.get(entity_type)
-        if not service:
-            raise EntityNotFoundError(f"Invalid entity type: {entity_type}")
-
-        if entity := service.get_one(name=entity_name):
-            return entity
-        else:
-            raise EntityNotFoundError(
-                f'{entity_type.capitalize()} "{entity_name}" not found in databases'
-            )
 
     def create_large_input_field(self, field_name, width=75, height=12):
         if field_name in self.fields:

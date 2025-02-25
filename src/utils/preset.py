@@ -5,7 +5,7 @@ import logging
 logger = logging.getLogger("bash")  # пусть так
 
 
-def check_environment_variables():
+def _check_environment_variables():
     required_vars = [
         "CERT",
         "OR",
@@ -18,11 +18,11 @@ def check_environment_variables():
     for var in required_vars:
         if var not in os.environ:
             raise EnvironmentError(f"Missing required environment variable: {var}")
-    if os.environ["DEV_TYPE"] == "switch" and "ROLE" not in os.environ:
-        raise EnvironmentError("Missing required environment variable: ROLE")
+    if os.environ["DEV_TYPE"] == "switch" and "DEV_ROLE" not in os.environ:
+        raise EnvironmentError("Missing required environment variable: DEV_ROLE")
 
 
-def save_configuration(raw_config, device_company):
+def _save_config(raw_config, device_company):
     configuration = ""
     for k, v in raw_config.items():
         if v["text"]:
@@ -50,14 +50,14 @@ def save_configuration(raw_config, device_company):
     return configuration + "end\n"
 
 
-def render_configuration(raw_config) -> str:
-    check_environment_variables()
+def save_configuration(raw_config) -> str:
+    _check_environment_variables()
 
     if os.environ["DEV_TYPE"] == "router":
         return save_ESR_configuration()
 
     elif os.environ["DEV_TYPE"] == "switch":
         if os.environ["DEV_COMPANY"] in ["Zyxel", "Eltex"]:
-            return save_configuration(raw_config, os.environ["DEV_COMPANY"])
+            return _save_config(raw_config, os.environ["DEV_COMPANY"])
         else:
             raise ValueError(f"Unsupported device company: {os.environ['DEV_COMPANY']}")

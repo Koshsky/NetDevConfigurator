@@ -87,11 +87,9 @@ class Devices(Base):
 class Templates(Base):
     __tablename__ = 'templates'
     __table_args__ = (
-        CheckConstraint("(role)::text = ANY (ARRAY['common'::text, 'data'::text, 'ipmi'::text, 'or'::text, 'tsh'::text, 'video'::text, 'raisa_or'::text, 'raisa_agr'::text])", name='check_role_value'),
-        CheckConstraint("(type)::text = ANY (ARRAY['hostname'::text, 'VLAN'::text, 'ssh'::text, 'type-commutation'::text, 'STP'::text, 'credentials'::text, 'addr-set'::text, 'interface'::text, 'GW'::text, 'telnet'::text, 'SNMP'::text, 'ZTP'::text, 'jumbo'::text, 'priority'::text])", name='check_type_value'),
         ForeignKeyConstraint(['family_id'], ['families.id'], name='template_pieces_family_id_fkey'),
         PrimaryKeyConstraint('id', name='template_pieces_pkey'),
-        UniqueConstraint('name', 'role', name='unique_name_role')
+        UniqueConstraint('family_id', 'role', 'name', name='unique_family_role_name')
     )
 
     id = Column(Integer, Sequence('template_pieces_id_seq'), primary_key=True)
@@ -141,9 +139,9 @@ class DeviceProtocols(Base):
 class Presets(Base):
     __tablename__ = 'presets'
     __table_args__ = (
-        CheckConstraint("(role)::text = ANY (ARRAY['data'::text, 'ipmi'::text, 'or'::text, 'tsh'::text, 'video'::text, 'raisa_or'::text, 'raisa_agr'::text])", name='check_role_value'),
         ForeignKeyConstraint(['device_id'], ['devices.id'], name='presets_device_id_fkey'),
-        PrimaryKeyConstraint('id', name='presets_pkey')
+        PrimaryKeyConstraint('id', name='presets_pkey'),
+        UniqueConstraint('device_id', 'role', name='unique_device_role')
     )
 
     id = Column(Integer, primary_key=True)

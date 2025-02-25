@@ -8,7 +8,9 @@ logger = logging.getLogger("bash")
 def save_ESR_configuration():
     SCRIPT_PATH = "./src/bash/config_esr/make_config.sh"
     logger.info("running make_config.sh")
-    config_path = f"{os.environ['TFTP_FOLDER']}/tmp/{os.environ['CFG_FILENAME']}"
+    config_path = os.path.join(
+        os.environ["TFTP_FOLDER"], "tmp", os.environ["CFG_FILENAME"]
+    )
     try:
         subprocess.run(
             ["bash", SCRIPT_PATH], check=True, text=True, capture_output=True

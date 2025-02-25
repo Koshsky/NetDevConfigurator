@@ -1,18 +1,9 @@
 import logging
-import os
 
 from gui import BaseTab, apply_error_handler
 
-from .device_handler import (
-    BaseDeviceHandler,
-    SwitchHandler,
-    RouterHandler,
-)
-from .connection_handler import (
-    BaseConnectionHandler,
-    COMSSHConnectionHandler,
-    SSHConnectionHandler,
-)
+from .connection_handler import get_connection_handler
+from .device_handler import get_device_handler
 
 logger = logging.getLogger("gui")
 
@@ -27,8 +18,8 @@ class ControlTab(BaseTab):
         print("init control tab")
 
     def _create_widgets(self):
-        self.connection_handler = self._get_connection_handler()
-        self.device_handler = self._get_device_handler()
+        self.connection_handler = get_connection_handler(self)
+        self.device_handler = get_device_handler(self)
 
         self.connection_handler.create_widgets()
         self.device_handler.create_widgets()
@@ -37,26 +28,7 @@ class ControlTab(BaseTab):
 
         self.connection_handler.update_host_info()
         self.device_handler.update_params()
-
-    def _get_connection_handler(self) -> BaseConnectionHandler:
-        handlers = {
-            "com+ssh": COMSSHConnectionHandler,
-            "ssh": SSHConnectionHandler,
-        }
-        conn_type = os.environ["CONNECTION_TYPE"]
-        if conn_type not in handlers:
-            raise ValueError(f"Unknown connection type: {conn_type}")
-        return handlers[conn_type](self)
-
-    def _get_device_handler(self) -> BaseDeviceHandler:
-        handlers = {
-            "switch": SwitchHandler,
-            "router": RouterHandler,
-        }
-        device_type = os.environ["DEV_TYPE"]
-        if device_type not in handlers:
-            raise ValueError(f"Unknown device type: {device_type}")
-        return handlers[device_type](self)
+        self.app.prepare_configuration()
 
     def _create_action_buttons(self):
         actions = [
@@ -70,10 +42,9 @@ class ControlTab(BaseTab):
             self.create_button_in_line(action)
 
     def show_template(self):
-        # TODO: move self.app.text_configuration to DeviceHandlers
-        if (configuration := self.app.text_configuration) is None:
+        if self.app.text_configuration is None:
             self.display_feedback(
                 "There is no configuration. Please select device role"
             )
         else:
-            self.display_feedback(configuration)
+            self.display_feedback(self.app.text_configuration)

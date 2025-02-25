@@ -43,8 +43,12 @@ class AddTab(BaseTab):
         if not dev_type:
             raise ValueError("Select device type")
 
-        company = self.check_company_name(self.fields["device"]["company"].get())
-        family = self.check_family_name(self.fields["device"]["family"].get())
+        company = self.app.db_services["company"].get_one(
+            name=self.fields["device"]["company"].get()
+        )
+        family = self.app.db_services["family"].get_one(
+            name=self.fields["device"]["family"].get()
+        )
         self.app.db_services["device"].create(
             name=device_name,
             company_id=company.id,
