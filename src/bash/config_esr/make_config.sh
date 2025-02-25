@@ -286,5 +286,7 @@ FIN_CONFIG=$( cat $DIR/tmp/main )
 touch $DIR/config.cfg
 echo "$FIN_CONFIG"| tail -n +2 > $DIR/config.cfg
 log_message "Configuration saved in $DIR/config.cfg"
-# log_message "Configuration file for app: $CFG_FILENAME"
+log_message "Configuration file for app: $CFG_FILENAME"
+# TODO: set CFG_FILENAME before calling bash script
+# TODO: save config in CFG_FILENAME
 # rm -R $DIR/tmp

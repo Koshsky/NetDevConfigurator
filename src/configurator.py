@@ -4,11 +4,11 @@ import os
 import tkinter as tk
 import uuid
 
-from bash import get_esr_configuration
 from config import config
 from gui.base_app import App
 from gui.tabs.configurator import ControlTab, HelloTab, RouterTab, TemplateTab
 from utils import del_env, set_env, env_converter
+from utils.preset import render_configuration
 
 logger = logging.getLogger("gui")
 
@@ -43,12 +43,7 @@ class ConfiguratorApp(App):
 
     @property
     def text_configuration(self):
-        if os.environ["DEV_TYPE"] == "switch":
-            if "DEV_ROLE" not in os.environ:
-                raise Exception("Please set up switch role")
-            return self.__switch_config()
-        elif os.environ["DEV_TYPE"] == "router":
-            return self.__router_config()
+        return render_configuration(self.config_template)
 
     def create_tabs(self):
         super().create_tabs()
@@ -74,6 +69,10 @@ class ConfiguratorApp(App):
         del_env("DEV_ROLE")
         set_env("DEV_NAME", device.name)
         set_env("DEV_TYPE", device.dev_type)
+        set_env(
+            "DEV_COMPANY",
+            self.db_services["company"].get_one(id=device.company_id).name,
+        )
 
         if os.environ["DEV_TYPE"] == "router":
             for env_param, env_value in config["router"].items():
@@ -151,20 +150,6 @@ class ConfiguratorApp(App):
                     type(tab).__name__,
                 )
         self.notebook.select(self.tabs["CONTROL"].frame)
-
-    def __router_config(self):
-        return get_esr_configuration()
-
-    def __switch_config(self):
-        template = ""
-        for k, v in self.config_template.items():
-            if v["text"]:
-                template += v["text"].replace("{INTERFACE_ID}", k) + "\n"
-        template = template.replace("{CERT}", os.environ["CERT"])
-        template = template.replace("{OR}", os.environ["OR"])
-        template = template.replace("{MODEL}", os.environ["DEV_NAME"])
-        template = template.replace("{ROLE}", os.environ["DEV_ROLE"])
-        return template + "end\n"
 
 
 if __name__ == "__main__":

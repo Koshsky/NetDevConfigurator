@@ -16,3 +16,4 @@ def get_esr_configuration():
         logger.error("src.bash.get_esr_configuration: %s", e)
 
     return "./src/bash/config_esr/config.cfg"
+    # TODO: return text configuration, not path
