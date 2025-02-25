@@ -282,10 +282,7 @@ replace "pub_msk" $PUBLIC_MASK "$DIR/tmp/main"
 replace "gate_ip" $GW "$DIR/tmp/main"
 FIN_CONFIG=$( cat $DIR/tmp/main )
 
-
-touch $DIR/config.cfg
-echo "$FIN_CONFIG"| tail -n +2 > $DIR/config.cfg
+# TODO: remove 5 first lines (comments)
 echo "$FIN_CONFIG"| tail -n +2 > "$TFTP_FOLDER/tmp/$CFG_FILENAME"
-log_message "Configuration saved in $DIR/config.cfg"
-log_message "Configuration file for app: $TFTP_FOLDER/tmp/$CFG_FILENAME"
+log_message "Configuration saved in $TFTP_FOLDER/tmp/$CFG_FILENAME"
 # rm -R $DIR/tmp

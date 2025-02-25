@@ -1,19 +1,21 @@
 import logging
+import os
 import subprocess
 
 logger = logging.getLogger("bash")
 
 
-def get_esr_configuration():
+def save_ESR_configuration():
     SCRIPT_PATH = "./src/bash/config_esr/make_config.sh"
     logger.info("running make_config.sh")
+    config_path = f"{os.environ['TFTP_FOLDER']}/tmp/{os.environ['CFG_FILENAME']}"
     try:
-        result = subprocess.run(
+        subprocess.run(
             ["bash", SCRIPT_PATH], check=True, text=True, capture_output=True
         )
-        logger.debug("src.basg.get_ser_configuration: %s", result)
+        logger.info("Configuration saved in %s", config_path)
     except subprocess.CalledProcessError as e:
         logger.error("src.bash.get_esr_configuration: %s", e)
 
-    return "./src/bash/config_esr/config.cfg"
-    # TODO: return text configuration, not path
+    with open(config_path, "r") as f:
+        return f.read()

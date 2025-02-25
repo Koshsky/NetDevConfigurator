@@ -66,6 +66,7 @@ class ConfiguratorApp(App):
         self.create_tab(ControlTab, "CONTROL")
 
     def register_device(self, device):
+        set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")
         del_env("DEV_ROLE")
         set_env("DEV_NAME", device.name)
         set_env("DEV_TYPE", device.dev_type)
@@ -90,7 +91,6 @@ class ConfiguratorApp(App):
             "configuration"
         ]
         if set_env("DEV_ROLE", preset.role):
-            set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")
             self.refresh_tabs()
         set_env("OR", OR)
         logger.info(
