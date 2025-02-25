@@ -1,5 +1,4 @@
 import os
-from pprint import pformat
 
 from gui import BaseTab, apply_error_handler
 
@@ -24,9 +23,7 @@ class TemplateTab(BaseTab):
     def _create_widgets(self):
         filtered_templates = self._filter_templates(self.app.json_config)
         self._create_config_block(filtered_templates)
-        self.actualize_values()
-        self._create_action_buttons()
-        self.create_feedback_area()
+        self._actualize_values()
 
     def _create_config_block(self, filtered_templates):
         self.create_block(
@@ -40,11 +37,7 @@ class TemplateTab(BaseTab):
             width=self._width,
         )
 
-    def _create_action_buttons(self):
-        self.create_button_in_line(("ACTUALIZE", self.actualize_values))
-        self.create_button_in_line(("UPDATE", self.update_config))
-
-    def actualize_values(self):
+    def _actualize_values(self):
         for k, v in self.app.json_config.items():
             if k in self.fields["config"]["templates"]:
                 self.fields["config"]["templates"][k].set(v["name"])
@@ -71,8 +64,6 @@ class TemplateTab(BaseTab):
                         family_id=int(self.app.device["family"]["id"]),
                     )
                 self.app.json_config[k] = template_info
-        self.app.prepare_configuration()
-        self.display_feedback(pformat(self.app.json_config, sort_dicts=False))
 
     def _get_templates_by_type(self, t):
         templates = self.app.db_services["template"].get_all(

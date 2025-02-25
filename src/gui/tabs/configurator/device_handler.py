@@ -13,10 +13,7 @@ class BaseDeviceHandler:
     def create_widgets(self):
         raise NotImplementedError
 
-    def actualize_params(self):
-        raise NotImplementedError
-
-    def update_params(self):
+    def update_device_info(self):
         raise NotImplementedError
 
 
@@ -28,19 +25,14 @@ class SwitchHandler(BaseDeviceHandler):
                 "role": self.app.device["roles"],
                 "or": tuple(str(i) for i in range(1, 26)),
             },
-            ("UPDATE", self.update_params),
+            ("UPDATE", self.update_device_info),
         )
 
-    def actualize_params(self):
-        self.tab.fields["params"]["role"].set(os.environ["DEV_ROLE"])
-        self.tab.fields["params"]["or"].set(os.environ["OR"])
-
-    def update_params(self):
+    def update_device_info(self):
         self.app.register_preset(
-            self.tab.fields["params"]["role"].get(),
+            self.tab.fields["params"]["role"].get().strip(),
             self.tab.fields["params"]["or"].get().strip(),
         )
-        self.app.prepare_configuration()
 
 
 class RouterHandler(BaseDeviceHandler):
@@ -50,15 +42,10 @@ class RouterHandler(BaseDeviceHandler):
             {
                 "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
             },
-            ("UPDATE", self.update_params),
+            ("UPDATE", self.update_device_info),
         )
 
-    def actualize_params(self):
-        self.tab.fields["params"]["TYPE_COMPLEX"].set(
-            env_converter.get_human("TYPE_COMPLEX")
-        )
-
-    def update_params(self):
+    def update_device_info(self):
         set_env(
             "TYPE_COMPLEX",
             env_converter.to_machine(

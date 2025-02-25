@@ -1,5 +1,4 @@
 import logging
-
 from gui import BaseTab, apply_error_handler
 
 from .connection_handler import get_connection_handler
@@ -12,10 +11,8 @@ logger = logging.getLogger("gui")
 class ControlTab(BaseTab):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print("init control tab")
         self.connection_handler = None
         self.device_handler = None
-        print("init control tab")
 
     def _create_widgets(self):
         self.connection_handler = get_connection_handler(self)
@@ -25,10 +22,6 @@ class ControlTab(BaseTab):
         self.device_handler.create_widgets()
         self._create_action_buttons()
         self.create_feedback_area()
-
-        self.connection_handler.update_host_info()
-        self.device_handler.update_params()
-        self.app.prepare_configuration()
 
     def _create_action_buttons(self):
         actions = [
@@ -42,9 +35,5 @@ class ControlTab(BaseTab):
             self.create_button_in_line(action)
 
     def show_template(self):
-        if self.app.text_configuration is None:
-            self.display_feedback(
-                "There is no configuration. Please select device role"
-            )
-        else:
-            self.display_feedback(self.app.text_configuration)
+        self.app.prepare_configuration()
+        self.display_feedback(self.app.text_configuration)

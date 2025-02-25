@@ -50,6 +50,11 @@ class ConfiguratorApp(App):
             return f.read()
 
     def prepare_configuration(self):
+        if os.environ["DEV_TYPE"] == "router":
+            self.tabs["ROUTER"].update_config()
+        else:
+            self.tabs["TEMPLATES"].update_config()
+            self.tabs["INTERFACES"].update_config()
         save_configuration(self.json_config)
 
     def create_tabs(self):
@@ -86,6 +91,8 @@ class ConfiguratorApp(App):
             for env_param, env_value in config["router"].items():
                 set_env(env_param, env_value)
             set_env("MODEL", env_converter.to_machine("MODEL", device.name))
+        else:
+            self.register_preset(self.device["roles"][0], 1)
         logger.debug("Device selected. device=%s", os.environ["DEV_NAME"])
 
         self.refresh_tabs()

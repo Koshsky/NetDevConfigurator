@@ -22,21 +22,19 @@ class RouterTab(BaseTab):
         self.create_block(
             "env",
             {
-                "vars": self._get_configuration(),
+                "vars": self._get_env_vars(),
             },
             width=self.width,
         )
-        self.create_button_in_line(("UPDATE", self.update))
-        self.create_feedback_area()
-        self.actualize()
+        self._actualize()
 
-    def actualize(self):
+    def _actualize(self):
         for env_name, field in self.fields["env"]["vars"].items():
             if env_name not in os.environ:
                 set_env(env_name, field.get().strip())
             field.set(env_converter.to_human(env_name, os.environ[env_name]))
 
-    def update(self):
+    def update_config(self):
         for env_name, field in self.fields["env"]["vars"].items():
             try:
                 env_value = env_converter.to_machine(env_name, field.get())
@@ -45,7 +43,7 @@ class RouterTab(BaseTab):
             set_env(env_name, env_value)
         self.refresh_widgets()
 
-    def _get_configuration(self):
+    def _get_env_vars(self):
         env_vars = {
             "PUBLIC_IP": tuple(
                 [
