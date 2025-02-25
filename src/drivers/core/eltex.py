@@ -3,12 +3,8 @@ import os
 
 class ESRxx:
     # TODO: протестировать success_signs и comms_prompt_pattern
-    comms_prompt_pattern = r"^(\n)?[a-zA-Z0-9_-]+[>#\$]\s*$"
-    success_signs = {
-        "succeeded",
-        "successful",
-        "success",
-    }
+    comms_prompt_pattern = r"^(\n)?[()a-zA-Z0-9_-]+[>#\$]\s*"
+    success_signs = {"Welcome"}
     open_sequence = ["terminal datadump"]
 
     show_run = "show running-config extended"  # TODO: нужен ли extended? что он делает?
@@ -18,7 +14,6 @@ class ESRxx:
     def update_startup_config(self):
         return [
             f"copy tftp://{os.environ['TFTP_ADDRESS']}/tmp/{os.environ['CFG_FILENAME']} system:candidate-config"
-            "commit",
             "confirm",  # ?? y y
         ]
 
