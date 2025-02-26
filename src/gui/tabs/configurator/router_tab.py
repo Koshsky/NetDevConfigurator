@@ -61,7 +61,6 @@ class RouterTab(BaseTab):
                 ]
             ),
             "VERS": tuple(env_converter["VERS"]),
-            "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
         }
         if os.environ["TYPE_COMPLEX"] == "1":
             env_vars.update(
