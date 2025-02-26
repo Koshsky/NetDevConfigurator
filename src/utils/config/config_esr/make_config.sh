@@ -284,4 +284,4 @@ FIN_CONFIG=$( cat $DIR/tmp/main )
 
 echo "$FIN_CONFIG"| tail -n +7 > "$TFTP_FOLDER/tmp/$CFG_FILENAME"  # +2 - с комментариями
 log_message "Configuration saved in $TFTP_FOLDER/tmp/$CFG_FILENAME"
-# rm -R $DIR/tmp
+rm -R $DIR/tmp
