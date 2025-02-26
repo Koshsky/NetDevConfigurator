@@ -8,7 +8,7 @@ from config import config
 from gui.base_app import App
 from gui.tabs.configurator import ControlTab, HelloTab, RouterTab, TemplateTab
 from utils.environ import del_env, set_env, env_converter
-from utils.preset import save_configuration
+from utils.config import save_configuration
 
 
 logger = logging.getLogger("gui")

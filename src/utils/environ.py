@@ -1,7 +1,40 @@
 import logging
 import os
+import re
 
 logger = logging.getLogger("env")
+
+
+def replace_env_vars(configuration: str) -> str:
+    env_vars = re.findall(r"{([A-Z0-9_]+)}", configuration)
+
+    missing_vars = [var for var in env_vars if var not in os.environ]
+    if missing_vars:
+        raise ValueError(f"Missing environment variables: {', '.join(missing_vars)}")
+
+    for var in env_vars:
+        configuration = configuration.replace(f"{{{var}}}", os.environ[var])
+
+    return configuration
+
+
+def check_environment_variables():
+    required_vars = [
+        "CERT",
+        "OR",
+        "DEV_NAME",
+        "TFTP_FOLDER",
+        "CFG_FILENAME",
+        "DEV_TYPE",
+        "DEV_COMPANY",
+    ]
+    for var in required_vars:
+        if var not in os.environ:
+            raise EnvironmentError(f"Missing required environment variable: {var}")
+    if os.environ["DEV_TYPE"] == "switch" and "DEV_ROLE" not in os.environ:
+        raise EnvironmentError("Missing required environment variable: DEV_ROLE")
+    if os.environ["DEV_COMPANY"] not in ["Zyxel", "Eltex"]:
+        raise ValueError(f"Unsupported device company: {os.environ['DEV_COMPANY']}")
 
 
 def set_env(key: str, value: str) -> bool:
