@@ -1,0 +1,24 @@
+interface gigabitethernet 1/0/1
+  mode switchport
+  switchport forbidden default-vlan
+  switchport access vlan 777
+exit
+interface gigabitethernet 1/0/2
+  mode switchport
+  switchport mode trunk
+  switchport forbidden default-vlan
+  switchport trunk allowed vlan add 2
+exit
+interface gigabitethernet 1/0/3
+  mode switchport
+  switchport mode trunk
+  switchport forbidden default-vlan
+  switchport trunk allowed vlan add 3
+  switchport trunk allowed vlan add 3-5
+exit
+interface gigabitethernet 1/0/4
+  mode switchport
+  switchport mode trunk
+  switchport forbidden default-vlan
+  switchport trunk allowed vlan add 10
+exit

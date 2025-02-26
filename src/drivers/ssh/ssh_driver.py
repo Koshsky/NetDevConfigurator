@@ -1,7 +1,8 @@
 import logging
 import os
 
-from utils import find_most_recent_file, set_env
+from utils.environ import set_env
+from utils.filesystem import find_most_recent_file
 
 from .base_driver import SSHBaseDriver
 

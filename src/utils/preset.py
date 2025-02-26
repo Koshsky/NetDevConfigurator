@@ -1,8 +1,26 @@
 import os
-from bash import save_ESR_configuration
 import logging
+import subprocess
 
-logger = logging.getLogger("bash")  # пусть так
+logger = logging.getLogger("bash")
+
+
+def _save_ESR_configuration():
+    SCRIPT_PATH = "./src/utils/config_esr/make_config.sh"
+    logger.debug("running make_config.sh")
+    config_path = os.path.join(
+        os.environ["TFTP_FOLDER"], "tmp", os.environ["CFG_FILENAME"]
+    )
+    try:
+        subprocess.run(
+            ["bash", SCRIPT_PATH], check=True, text=True, capture_output=True
+        )
+        logger.info("Configuration saved in %s", config_path)
+    except subprocess.CalledProcessError as e:
+        logger.error("src.utils.get_esr_configuration: %s", e)
+
+    with open(config_path, "r") as f:
+        return f.read()
 
 
 def _check_environment_variables():
@@ -54,7 +72,7 @@ def save_configuration(raw_config) -> str:
     _check_environment_variables()
 
     if os.environ["DEV_TYPE"] == "router":
-        return save_ESR_configuration()
+        return _save_ESR_configuration()
 
     elif os.environ["DEV_TYPE"] == "switch":
         if os.environ["DEV_COMPANY"] in ["Zyxel", "Eltex"]:

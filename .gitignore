@@ -4,5 +4,5 @@
 *mock*
 .pylintrc
 .vscode
-src/bash/config_esr/tmp
+*/config_esr/tmp
 *.cfg

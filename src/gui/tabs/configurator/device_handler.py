@@ -1,6 +1,6 @@
 import os
 
-from utils import env_converter, set_env
+from utils.environ import env_converter, set_env
 
 from ..base_tab import BaseTab
 

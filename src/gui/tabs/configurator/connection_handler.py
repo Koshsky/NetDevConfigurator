@@ -3,7 +3,7 @@ import os
 
 from config import config
 from drivers import COMDriver, SSHDriver
-from utils import set_env
+from utils.environ import set_env
 
 from ..base_tab import BaseTab
 

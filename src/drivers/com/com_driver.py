@@ -1,6 +1,7 @@
 import logging
 
-from utils import find_available_ip, set_env
+from utils.network import find_available_ip
+from utils.environ import set_env
 
 from .base_driver import COMBaseDriver
 

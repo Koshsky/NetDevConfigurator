@@ -7,7 +7,7 @@ import uuid
 from config import config
 from gui.base_app import App
 from gui.tabs.configurator import ControlTab, HelloTab, RouterTab, TemplateTab
-from utils import del_env, set_env, env_converter
+from utils.environ import del_env, set_env, env_converter
 from utils.preset import save_configuration
 
 

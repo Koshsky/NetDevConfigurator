@@ -2,7 +2,7 @@ import logging
 
 from config import config
 from gui import BaseTab, apply_error_handler
-from utils import set_env
+from utils.environ import set_env
 
 logger = logging.getLogger("gui")
 
