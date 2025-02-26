@@ -22,6 +22,15 @@ class ControlTab(BaseTab):
         self.device_handler.create_widgets()
         self._create_action_buttons()
         self.create_feedback_area()
+        self.actualize_values()
+
+    def update(self):
+        self.device_handler.update_device_info()
+        self.connection_handler.update_host_info()
+
+    def actualize_values(self):
+        self.connection_handler.actualize_values()
+        self.device_handler.actualize_values()
 
     def _create_action_buttons(self):
         actions = [

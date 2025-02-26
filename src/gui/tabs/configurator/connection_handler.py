@@ -21,13 +21,17 @@ class BaseConnectionHandler:
         self.tab.create_block(
             "host",
             {field: tuple(config["host"][field]) for field in self.fields_config},
-            ("SELECT", self.update_host_info),
         )
 
     def update_host_info(self):
         for var_name, field in self.env_vars:
             if field in self.tab.fields["host"]:
                 set_env(var_name, self.tab.fields["host"][field].get().strip())
+
+    def actualize_values(self):
+        for var_name, field in self.env_vars:
+            if field in self.tab.fields["host"]:
+                self.tab.fields["host"][field].set(os.environ[var_name])
 
     def _execute_with_driver(self, Driver, operation, *args):
         with Driver(**self.app.driver) as conn:
@@ -56,7 +60,10 @@ class COMSSHConnectionHandler(BaseConnectionHandler):
         super().__init__(control_tab)
         self.driver = COMDriver
         self.fields_config = ["username", "password"]
-        self.env_vars = [("HOST_USERNAME", "username"), ("HOST_PASSWORD", "password")]
+        self.env_vars = [
+            ("HOST_USERNAME", "username"),
+            ("HOST_PASSWORD", "password"),
+        ]
 
     def load(self):
         self._execute_with_driver(COMDriver, "base_configure_192")
