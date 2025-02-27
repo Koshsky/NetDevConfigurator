@@ -5,7 +5,13 @@ from utils.environ import set_env
 
 
 def prepare_zyxel_environs(json_config):
-    allowed_vlan = ["2", "3", "4"]
+    allowed_vlan = [
+        "2",
+        "3",
+        "4",
+        "5",
+        "30",
+    ]
     fixed = {vlan: [] for vlan in allowed_vlan}
     forbidden = {vlan: [] for vlan in allowed_vlan}
     untagged = {vlan: [] for vlan in allowed_vlan}
