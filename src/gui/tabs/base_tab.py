@@ -101,7 +101,6 @@ class BaseTab:
         self._cur_row += 1
 
     def create_feedback_area(self, message="DATABASE STORAGE", width=150, height=25):
-        # Создаем Text виджет
         self.feedback_text = tk.Text(
             self.frame, wrap="word", width=width, height=height
         )
@@ -109,24 +108,15 @@ class BaseTab:
             row=self._cur_row, column=0, columnspan=15, padx=5, pady=5, sticky="nsew"
         )
 
-        # Создаем Scrollbar и связываем его с Text виджетом
         scrollbar = ttk.Scrollbar(
             self.frame, orient="vertical", command=self.feedback_text.yview
         )
-        scrollbar.grid(
-            row=self._cur_row, column=15, sticky="ns"
-        )  # Размещаем Scrollbar справа от Text
-
-        # Настраиваем Text виджет для использования Scrollbar
+        scrollbar.grid(row=self._cur_row, column=15, sticky="ns")
         self.feedback_text.config(yscrollcommand=scrollbar.set)
 
-        # Вставляем сообщение в Text виджет
         self.feedback_text.insert(tk.END, message)
-        self.feedback_text.config(
-            state=tk.DISABLED
-        )  # Делаем Text виджет недоступным для редактирования
+        self.feedback_text.config(state=tk.DISABLED)
 
-        # Увеличиваем текущую строку для следующего виджета
         self._cur_row += 1
 
     def show_error(self, title, error):

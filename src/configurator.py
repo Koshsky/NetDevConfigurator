@@ -51,11 +51,12 @@ class ConfiguratorApp(App):
 
     def prepare_configuration(self):
         self.tabs["CONTROL"].device_handler.update_device_info()
-        if os.environ["DEV_TYPE"] == "router":
-            self.tabs["ROUTER"].update_config()
-        else:
-            self.tabs["TEMPLATES"].update_config()
-            self.tabs["INTERFACES"].update_config()
+        if self.advanced_mode:
+            if os.environ["DEV_TYPE"] == "router":
+                self.tabs["ROUTER"].update_config()
+            else:
+                self.tabs["TEMPLATES"].update_config()
+                self.tabs["INTERFACES"].update_config()
         save_configuration(self.json_config)
 
     def create_tabs(self):
