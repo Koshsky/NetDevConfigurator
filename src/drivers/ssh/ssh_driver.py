@@ -78,3 +78,8 @@ class SSHDriver(SSHBaseDriver):
         else:
             set_env("FILENAME", filename)
             return self.send_command(self.core.load_firmware)
+
+    def update_firmwares(self):
+        res = self.update_boot()
+        res += self.update_uboot()
+        return res + self.update_firmware()

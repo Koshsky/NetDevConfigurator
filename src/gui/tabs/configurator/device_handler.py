@@ -16,9 +16,6 @@ class BaseDeviceHandler:
     def update_device_info(self):
         raise NotImplementedError
 
-    def actualize_values(self):
-        raise NotImplementedError
-
 
 class SwitchHandler(BaseDeviceHandler):
     def create_widgets(self):
@@ -29,16 +26,17 @@ class SwitchHandler(BaseDeviceHandler):
                 "or": tuple(str(i) for i in range(1, 26)),
             },
         )
+        self._actualize_values()
+
+    def _actualize_values(self):
+        self.tab.fields["params"]["role"].set(os.environ["DEV_ROLE"])
+        self.tab.fields["params"]["or"].set(os.environ["OR"])
 
     def update_device_info(self):
         self.app.register_preset(
             self.tab.fields["params"]["role"].get().strip(),
             self.tab.fields["params"]["or"].get().strip(),
         )
-
-    def actualize_values(self):
-        self.tab.fields["params"]["role"].set(os.environ["DEV_ROLE"])
-        self.tab.fields["params"]["or"].set(os.environ["OR"])
 
 
 class RouterHandler(BaseDeviceHandler):
@@ -58,11 +56,6 @@ class RouterHandler(BaseDeviceHandler):
                 "TYPE_COMPLEX",
                 self.tab.fields["params"]["TYPE_COMPLEX"].get().strip(),
             ),
-        )
-
-    def actualize_values(self):
-        self.tab.fields["params"]["TYPE_COMPLEX"].set(
-            env_converter.get_human("TYPE_COMPLEX")
         )
 
 

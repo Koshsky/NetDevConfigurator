@@ -7,12 +7,16 @@ from .device_handler import get_device_handler
 logger = logging.getLogger("gui")
 
 
+# TODO:  подумать над механизмом онбовления параметров device and host handlers
+# TODO: перед любым действием. желательно так, чтобы лишний раз не обновлять приложение.
+# TODO: если необходимо обновить преложение, не обновлять CONTROL TAB - лучшее решение????
 @apply_error_handler
 class ControlTab(BaseTab):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.connection_handler = None
         self.device_handler = None
+        self.base_loaded = None
 
     def _create_widgets(self):
         self.connection_handler = get_connection_handler(self)
@@ -23,22 +27,15 @@ class ControlTab(BaseTab):
         self._create_action_buttons()
         self.create_feedback_area()
 
-        self.actualize_values()
-
-    def update(self):
         self.connection_handler.update_host_info()
-
-    def actualize_values(self):
-        self.connection_handler.actualize_values()
-        self.device_handler.actualize_values()
 
     def _create_action_buttons(self):
         actions = [
-            ("SHOW TEMPLATE", self.show_template),
-            ("LOAD TEMPLATE", self.connection_handler.load),
+            ("RUNNING CONFIG", self.connection_handler.show_run),
+            ("CANDIDATE CONFIG", self.show_template),
+            ("LOAD TEMPLATE", self.connection_handler.update_startup_config),
             ("UPDATE FIRMWARES", self.connection_handler.update_firmwares),
             ("REBOOT DEVICE", self.connection_handler.reboot),
-            ("SHOW RUNNING-CONFIG", self.connection_handler.show_run),
         ]
         for action in actions:
             self.create_button_in_line(action)

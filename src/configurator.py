@@ -18,10 +18,6 @@ class ConfiguratorApp(App):
     def __init__(self, root, title, advanced, *args, **kwargs):
         self.json_config = None
         self.advanced_mode = advanced
-        set_env("HOST_ADDRESS", config["host"]["address"][0])
-        set_env("HOST_PORT", config["host"]["port"][0])
-        set_env("HOST_USERNAME", config["host"]["username"][0])
-        set_env("HOST_PASSWORD", config["host"]["password"][0])
         super().__init__(root, title)
 
     @property
@@ -36,10 +32,10 @@ class ConfiguratorApp(App):
         return {
             "auth_strict_key": False,  # important for unknown hosts
             "device": self.device,
-            "host": os.environ["HOST_ADDRESS"],
-            "port": os.environ["HOST_PORT"],
-            "auth_username": os.environ["HOST_USERNAME"],
-            "auth_password": os.environ["HOST_PASSWORD"],
+            "host": os.environ.get("HOST_ADDRESS"),
+            "port": os.environ.get("HOST_PORT"),
+            "auth_username": os.environ["HOST_USERNAME"],  # required parameter
+            "auth_password": os.environ["HOST_PASSWORD"],  # required parameter
         }
 
     @property
@@ -51,6 +47,8 @@ class ConfiguratorApp(App):
             return f.read()
 
     def _prepare_configuration(self):
+        print(12312321)
+        self.tabs["CONTROL"].connection_handler.update_host_info()
         self.tabs["CONTROL"].device_handler.update_device_info()
         if self.advanced_mode:
             if os.environ["DEV_TYPE"] == "router":
@@ -59,7 +57,6 @@ class ConfiguratorApp(App):
                 self.tabs["TEMPLATES"].update_config()
                 self.tabs["INTERFACES"].update_config()
         header = self.tabs["CONTROL"].connection_handler.get_header()
-        print(header)
         save_configuration(header, self.json_config)
 
     def create_tabs(self):
@@ -91,7 +88,6 @@ class ConfiguratorApp(App):
             "DEV_COMPANY",
             self.db_services["company"].get_one(id=device.company_id).name,
         )
-
         if os.environ["DEV_TYPE"] == "router":
             for env_param, env_value in config["router"].items():
                 set_env(env_param, env_value)

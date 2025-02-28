@@ -99,6 +99,7 @@ class COMBaseDriver:
     @check_port_open
     def __log_in(self):
         if not self.__is_logged():
+            logger.info("Logging in...")
             self.ser.write(b"\n")
             self.ser.write(f"{self.username}\n".encode())
             self.ser.write(f"{self.password}\n".encode())
