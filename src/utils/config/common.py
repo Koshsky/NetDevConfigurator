@@ -25,14 +25,16 @@ def _process_json_config(json_config, device_company) -> str:
     return replace_env_vars(configuration) + "end\n"
 
 
-def save_configuration(json_config) -> str:
+def save_configuration(header, json_config) -> str:
     check_environment_variables()
 
     if os.environ["DEV_TYPE"] == "router":
         return save_ESR_configuration()
 
     elif os.environ["DEV_TYPE"] == "switch":
-        configuration = _process_json_config(json_config, os.environ["DEV_COMPANY"])
+        configuration = header + _process_json_config(
+            json_config, os.environ["DEV_COMPANY"]
+        )
 
     config_path = os.path.join(
         os.environ["TFTP_FOLDER"], "tmp", os.environ["CFG_FILENAME"]

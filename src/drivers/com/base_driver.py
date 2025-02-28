@@ -56,7 +56,7 @@ class COMBaseDriver:
     @check_port_open
     def _get_response(self):
         output = "\n".join(line.decode().strip() for line in self.ser.readlines())
-        logger.info(
+        logger.debug(
             f"Read {len(output)} symbols. No more data to read.",
         )
         return output
@@ -65,7 +65,7 @@ class COMBaseDriver:
     def _on_open(self):
         self.__log_in()
         self.send_commands(self.core.open_sequence)
-        logger.info(
+        logger.debug(
             "On open sequence for %s was sent successfully", type(self.core).__name__
         )
 

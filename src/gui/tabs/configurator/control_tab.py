@@ -24,7 +24,6 @@ class ControlTab(BaseTab):
         self.create_feedback_area()
 
         self.actualize_values()
-        self.show_template()
 
     def update(self):
         self.connection_handler.update_host_info()
@@ -39,7 +38,7 @@ class ControlTab(BaseTab):
             ("LOAD TEMPLATE", self.connection_handler.load),
             ("UPDATE FIRMWARES", self.connection_handler.update_firmwares),
             ("REBOOT DEVICE", self.connection_handler.reboot),
-            ("SHOW RUN", self.connection_handler.show_run),
+            ("SHOW RUNNING-CONFIG", self.connection_handler.show_run),
         ]
         for action in actions:
             self.create_button_in_line(action)

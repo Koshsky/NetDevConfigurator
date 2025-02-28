@@ -34,7 +34,6 @@ class BaseConnectionHandler:
                 self.tab.fields["host"][field].set(os.environ[var_name])
 
     def _execute_with_driver(self, Driver, operation, *args):
-        self.tab.show_template()
         self.update_host_info()
         with Driver(**self.app.driver) as conn:
             method = getattr(conn, operation)
@@ -44,6 +43,7 @@ class BaseConnectionHandler:
             return result
 
     def load(self):
+        self._execute_with_driver(self.driver, "update_startup_config")
         raise NotImplementedError
 
     def reboot(self):
@@ -56,23 +56,25 @@ class BaseConnectionHandler:
         for operation in ["update_boot", "update_uboot", "update_firmware"]:
             self._execute_with_driver(self.driver, operation)
 
+    def get_header(self):
+        return self._execute_with_driver(self.driver, "get_header")
+
 
 class COMSSHConnectionHandler(BaseConnectionHandler):
     def __init__(self, control_tab):
         super().__init__(control_tab)
-        self.driver = COMDriver
+        self.driver = SSHDriver
+        self.base_loaded = False
         self.fields_config = ["username", "password"]
         self.env_vars = [
             ("HOST_USERNAME", "username"),
             ("HOST_PASSWORD", "password"),
         ]
 
-    def load(self):
-        self._execute_with_driver(COMDriver, "base_configure_192")
-        self._load_via_ssh()
-
-    def _load_via_ssh(self):
-        self._execute_with_driver(SSHDriver, "update_startup_config")
+    def _execute_with_driver(self, Driver, operation, *args):
+        if not self.base_loaded:
+            super()._execute_with_driver(COMDriver, "base_configure_192", *args)
+        return super()._execute_with_driver(Driver, operation, *args)
 
 
 class SSHConnectionHandler(BaseConnectionHandler):
@@ -86,9 +88,6 @@ class SSHConnectionHandler(BaseConnectionHandler):
             ("HOST_USERNAME", "username"),
             ("HOST_PASSWORD", "password"),
         ]
-
-    def load(self):
-        self._execute_with_driver(SSHDriver, "update_startup_config")
 
 
 def get_connection_handler(tab: BaseTab) -> BaseConnectionHandler:

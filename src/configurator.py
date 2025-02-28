@@ -58,7 +58,9 @@ class ConfiguratorApp(App):
             else:
                 self.tabs["TEMPLATES"].update_config()
                 self.tabs["INTERFACES"].update_config()
-        save_configuration(self.json_config)
+        header = self.tabs["CONTROL"].connection_handler.get_header()
+        print(header)
+        save_configuration(header, self.json_config)
 
     def create_tabs(self):
         super().create_tabs()
@@ -98,7 +100,8 @@ class ConfiguratorApp(App):
             self.register_preset(self.device["roles"][0], 1)
         logger.debug("Device selected. device=%s", os.environ["DEV_NAME"])
 
-        self.refresh_tabs()
+        if os.environ["DEV_TYPE"] == "router":
+            self.refresh_tabs()
 
     def register_preset(self, role: str, OR: str):
         set_env("OR", OR)
@@ -114,7 +117,7 @@ class ConfiguratorApp(App):
         ]
         set_env("DEV_ROLE", preset.role)
         set_env("OR", OR)
-        logger.info(
+        logger.debug(
             "Preset selected. preset=(%s:%s)",
             os.environ["DEV_NAME"],
             os.environ["DEV_ROLE"],

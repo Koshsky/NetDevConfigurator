@@ -17,7 +17,7 @@ class SSHDriver(SSHBaseDriver):
         config = self.show_run()
         header = ""
         for line in config.split("\n"):
-            if line.startswith("#"):
+            if line.startswith(self.core.comment_symbol):
                 header += line + "\n"
         return header + "!\n"
 

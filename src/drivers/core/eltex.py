@@ -2,6 +2,7 @@ import os
 
 
 class ESRxx:
+    comment_symbol = "#"
     comms_prompt_pattern = r"^(\n)?[()a-zA-Z0-9_-]+[>#\$]\s*"
     success_signs = {"Welcome"}
     open_sequence = ["terminal datadump"]
@@ -38,6 +39,7 @@ class ESRxx:
 
 
 class BaseMES:
+    comment_symbol = "#"
     comms_prompt_pattern = r"^(\n)?[a-zA-Z0-9_-]+[>#\$]\s*$"
     success_signs = {
         "succeeded",

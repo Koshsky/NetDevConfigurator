@@ -39,7 +39,7 @@ class SSHBaseDriver:
     @check_port_open
     def send_command(self, command: str, get_response=True) -> str:
         self.ssh.send(f"{command}\n")
-        logger.info("Command sent: %s", command)
+        logger.info("Send: %s", command)
         return self._get_response() if get_response else None
 
     @check_port_open
@@ -107,7 +107,7 @@ class SSHBaseDriver:
         return self
 
     def _on_open(self):
-        return self.send_commands(self.core.open_sequence)
+        self.send_commands(self.core.open_sequence)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.ssh:

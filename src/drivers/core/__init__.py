@@ -12,6 +12,8 @@ logger = logging.getLogger("core")
 
 
 def get_core(family: str):
+    # TODO: искать ядро только один раз! при выборе устройства.
+    # TODO: сохранять его в configuratorApp и передавать вместе с драйвером
     cores = {
         "MES14xx/24xx/34xx/37xx": MES14xx24xx34xx37xx(),
         "MES11xx/21xx/22xx/31xx": MES11xx21xx20xx31xx(),
@@ -21,9 +23,8 @@ def get_core(family: str):
     }
     core = cores.get(family, None)
     if core is None:
-        logger.error("Unsupported device family: %s", family)
         raise ValueError("Unsupported device family: %s", family)
-    logger.info("Successfully retrieved core for device family: %s", family)
+    logger.debug("Successfully retrieved core for device family: %s", family)
     return core
 
 

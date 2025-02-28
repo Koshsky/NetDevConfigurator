@@ -1,6 +1,9 @@
 import ipaddress
 
 from scapy.all import ARP, Ether, srp
+import logging
+
+logger = logging.getLogger("utils")
 
 
 # TODO: set up network interface with given netplan configuration
@@ -21,12 +24,14 @@ def scan_network(network):
 
 
 def find_available_ip(network, filter=None):
+    logger.info("Searching for available IP-address in %s...", network)
     net = ipaddress.IPv4Network(network, strict=False)
     active_ips = scan_network(network)
     for ip in net.hosts():
         if str(ip) not in active_ips:
             if filter is not None and not filter(ip):
                 continue
+            logger.info("Find available IP-address: %s", ip)
             return str(ip)
 
 
