@@ -44,12 +44,13 @@ class ConfiguratorApp(App):
 
     @property
     def text_configuration(self):
+        self._prepare_configuration()
         with open(
             f"{os.environ['TFTP_FOLDER']}/tmp/{os.environ['CFG_FILENAME']}", "r"
         ) as f:
             return f.read()
 
-    def prepare_configuration(self):
+    def _prepare_configuration(self):
         self.tabs["CONTROL"].device_handler.update_device_info()
         if self.advanced_mode:
             if os.environ["DEV_TYPE"] == "router":
@@ -100,6 +101,7 @@ class ConfiguratorApp(App):
         self.refresh_tabs()
 
     def register_preset(self, role: str, OR: str):
+        set_env("OR", OR)
         if "DEV_ROLE" in os.environ and os.environ["DEV_ROLE"] == role:
             return
         device = self.db_services["device"].get_one(name=os.environ["DEV_NAME"])

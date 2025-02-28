@@ -45,5 +45,4 @@ class ControlTab(BaseTab):
             self.create_button_in_line(action)
 
     def show_template(self):
-        self.app.prepare_configuration()
         self.display_feedback(self.app.text_configuration)
