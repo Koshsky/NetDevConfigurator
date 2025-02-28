@@ -50,7 +50,7 @@ class ConfiguratorApp(App):
             return f.read()
 
     def prepare_configuration(self):
-        self.tabs["CONTROL"].update()
+        self.tabs["CONTROL"].device_handler.update_device_info()
         if os.environ["DEV_TYPE"] == "router":
             self.tabs["ROUTER"].update_config()
         else:

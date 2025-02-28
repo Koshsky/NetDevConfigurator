@@ -34,6 +34,8 @@ class BaseConnectionHandler:
                 self.tab.fields["host"][field].set(os.environ[var_name])
 
     def _execute_with_driver(self, Driver, operation, *args):
+        self.tab.show_template()
+        self.update_host_info()
         with Driver(**self.app.driver) as conn:
             method = getattr(conn, operation)
             result = method(*args)

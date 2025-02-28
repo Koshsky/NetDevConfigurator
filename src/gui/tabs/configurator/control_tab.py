@@ -22,10 +22,11 @@ class ControlTab(BaseTab):
         self.device_handler.create_widgets()
         self._create_action_buttons()
         self.create_feedback_area()
+
         self.actualize_values()
+        self.show_template()
 
     def update(self):
-        self.device_handler.update_device_info()
         self.connection_handler.update_host_info()
 
     def actualize_values(self):
