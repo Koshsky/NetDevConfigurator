@@ -39,7 +39,11 @@ class HelloTab(BaseTab):
         )
 
     def _create_connection_buttons(self):
-        connection_types = [("COM+SSH", "com+ssh"), ("SSH", "ssh")]
+        connection_types = [
+            ("COM+SSH", "com+ssh"),
+            ("SSH", "ssh"),
+            ("MOCK", "mock"),
+        ]  # TODO убрать этот кортеж в переменную
         for label, connection_type in connection_types:
             self.create_button_in_line(
                 (label, lambda ct=connection_type: self.prepare(ct))

@@ -2,7 +2,7 @@ import logging
 import os
 
 from config import config
-from drivers import COMDriver, SSHDriver
+from drivers import COMDriver, SSHDriver, MockDriver
 from utils.environ import set_env
 
 from ..base_tab import BaseTab
@@ -52,7 +52,7 @@ class BaseConnectionHandler:
         with Driver(**self.app.driver) as conn:
             method = getattr(conn, operation)
             result = method(*args)
-            if operation == "show_run":
+            if operation == "show_run":  # TODO: правильно ли это сделано.....
                 self.tab.display_feedback(result)
             self.tab.display_feedback(result)
             return result
@@ -74,6 +74,29 @@ class COMSSHConnectionHandler(BaseConnectionHandler):
         return super()._execute_with_driver(operation, *args)
 
 
+class MockConnectionHandler(BaseConnectionHandler):
+    def __init__(self, control_tab):
+        super().__init__(control_tab)
+        self.fields_config = ["address", "port", "username", "password"]
+        self.env_vars = [
+            ("HOST_ADDRESS", "address"),
+            ("HOST_PORT", "port"),
+            ("HOST_USERNAME", "username"),
+            ("HOST_PASSWORD", "password"),
+        ]
+
+    def _execute_with_driver(self, operation, *args):
+        self.update_host_info()
+
+        with MockDriver(**self.app.driver) as conn:
+            method = getattr(conn, operation)
+            result = method(*args)
+            if operation == "show_run":  # TODO: правильно ли это сделано.....
+                self.tab.display_feedback(result)
+            self.tab.display_feedback(result)
+            return result
+
+
 class SSHConnectionHandler(BaseConnectionHandler):
     def __init__(self, control_tab):
         super().__init__(control_tab)
@@ -90,6 +113,7 @@ def get_connection_handler(tab: BaseTab) -> BaseConnectionHandler:
     handlers = {
         "com+ssh": COMSSHConnectionHandler,
         "ssh": SSHConnectionHandler,
+        "mock": MockConnectionHandler,
     }
     conn_type = os.environ["CONNECTION_TYPE"]
     if conn_type not in handlers:

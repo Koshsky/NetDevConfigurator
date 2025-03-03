@@ -127,7 +127,11 @@ class ConfiguratorApp(App):
     def refresh_tabs(self):
         if "CONNECTION_TYPE" not in os.environ:
             self.__refresh_tabs_none()
-        elif os.environ["CONNECTION_TYPE"] in ("ssh", "com+ssh"):
+        elif os.environ["CONNECTION_TYPE"] in (
+            "ssh",
+            "com+ssh",
+            "mock",
+        ):  # TODO убрать этот кортеж в переменную
             self.__refresh_tabs()
         else:
             logger.critical(
