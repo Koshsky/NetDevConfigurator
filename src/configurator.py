@@ -7,18 +7,22 @@ import uuid
 from config import config
 from gui.base_app import App
 from gui.tabs.configurator import ControlTab, HelloTab, RouterTab, TemplateTab
-from utils.environ import del_env, set_env, env_converter
 from utils.config import save_configuration
-
+from utils.environ import del_env, env_converter, set_env
 
 logger = logging.getLogger("gui")
 
 
 class ConfiguratorApp(App):
     def __init__(self, root, title, advanced, *args, **kwargs):
+        super().__init__(root, title)
         self.json_config = None
         self.advanced_mode = advanced
-        super().__init__(root, title)
+
+        try:
+            self.root.wm_iconbitmap("@images/Icon.xbm")
+        except Exception as e:
+            print(f"Ошибка при загрузке иконки: {e}")
 
     @property
     def device(self):
@@ -47,7 +51,6 @@ class ConfiguratorApp(App):
             return f.read()
 
     def _prepare_configuration(self):
-        print(12312321)
         self.tabs["CONTROL"].connection_handler.update_host_info()
         self.tabs["CONTROL"].device_handler.update_device_info()
         if self.advanced_mode:
