@@ -17,6 +17,7 @@ paramiko = "^3.5.0"
 scapy = "^2.6.1"
 wrapt-timeout-decorator = "^1.5.1"
 pytest = "^8.3.4"
+pillow = "^11.1.0"
 
 
 [tool.poetry.group.dev.dependencies]

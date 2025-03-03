@@ -20,7 +20,7 @@ class ConfiguratorApp(App):
         self.advanced_mode = advanced
 
         try:
-            self.root.wm_iconbitmap("@images/Icon.xbm")
+            self.root.iconbitmap("images/Icon.ico")
         except Exception as e:
             print(f"Ошибка при загрузке иконки: {e}")
 
