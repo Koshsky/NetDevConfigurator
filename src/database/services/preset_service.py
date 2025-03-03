@@ -47,7 +47,7 @@ class PresetService(BaseService, DevicePresetService):
     def get_info(self, preset: Presets, check: bool = False) -> JsonType:
         device = self.device_service.get_info_one(id=preset.device_id)
         if check and not self.validate(preset):
-            raise ValueError(  # TODO: mova raising to preset_service
+            raise ValueError(
                 f"Invalid preset configuration. device={device['name']}, role={preset.role}"
             )
         rows = (

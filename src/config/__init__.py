@@ -3,8 +3,6 @@ import logging.config
 
 import yaml
 
-# TODO: add netplan configuration
-
 
 LOGGING = yaml.safe_load(open("./src/config/logging_config.yaml"))
 logging.config.dictConfig(LOGGING)

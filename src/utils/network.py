@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger("utils")
 
 
-# TODO: set up network interface with given netplan configuration
+# TODO: НЕВАЖНО set up network interface with given netplan configuration
 def set_up_dev(dev: str):
     pass
 

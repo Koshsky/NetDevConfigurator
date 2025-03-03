@@ -25,7 +25,6 @@ class TemplateTab(BaseTab):
 
     @property
     def selected_template(self):
-        # TODO: здесь можно добавить какой-нибудь валидации данных
         family = self.app.db_services["family"].get_one(
             name=self.fields["template"]["family"].get().strip()
         )

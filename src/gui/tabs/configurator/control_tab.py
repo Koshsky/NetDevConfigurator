@@ -7,9 +7,9 @@ from .device_handler import get_device_handler
 logger = logging.getLogger("gui")
 
 
-# TODO:  подумать над механизмом онбовления параметров device and host handlers
-# TODO: перед любым действием. желательно так, чтобы лишний раз не обновлять приложение.
-# TODO: если необходимо обновить преложение, не обновлять CONTROL TAB - лучшее решение????
+# TODO: ВАЖНО подумать над механизмом онбовления параметров device and host handlers
+# перед любым действием. желательно так, чтобы лишний раз не обновлять приложение.
+# если необходимо обновить преложение, не обновлять CONTROL TAB - лучшее решение????
 @apply_error_handler
 class ControlTab(BaseTab):
     def __init__(self, *args, **kwargs):

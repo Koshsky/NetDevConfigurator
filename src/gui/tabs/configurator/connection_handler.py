@@ -52,7 +52,7 @@ class BaseConnectionHandler:
         with Driver(**self.app.driver) as conn:
             method = getattr(conn, operation)
             result = method(*args)
-            if operation == "show_run":  # TODO: правильно ли это сделано.....
+            if isinstance(result, str):
                 self.tab.display_feedback(result)
             self.tab.display_feedback(result)
             return result
@@ -86,15 +86,7 @@ class MockConnectionHandler(BaseConnectionHandler):
         ]
 
     def _execute_with_driver(self, operation, *args):
-        self.update_host_info()
-
-        with MockDriver(**self.app.driver) as conn:
-            method = getattr(conn, operation)
-            result = method(*args)
-            if operation == "show_run":  # TODO: правильно ли это сделано.....
-                self.tab.display_feedback(result)
-            self.tab.display_feedback(result)
-            return result
+        super()._execute_with_driver(operation, Driver=MockDriver)
 
 
 class SSHConnectionHandler(BaseConnectionHandler):

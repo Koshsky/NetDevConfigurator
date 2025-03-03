@@ -131,7 +131,7 @@ class ConfiguratorApp(App):
             "ssh",
             "com+ssh",
             "mock",
-        ):  # TODO убрать этот кортеж в переменную
+        ):  # TODO ВАЖНО убрать этот кортеж в переменную
             self.__refresh_tabs()
         else:
             logger.critical(

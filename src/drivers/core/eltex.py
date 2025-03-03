@@ -7,7 +7,7 @@ class ESRxx:
     success_signs = {"Welcome"}
     open_sequence = ["terminal datadump"]
 
-    show_run = "show running-config extended"  # TODO: нужен ли extended? что он делает?
+    show_run = "show running-config extended"
     reload = "reload system"
 
     @property
@@ -25,13 +25,12 @@ class ESRxx:
 
     @property
     def load_uboot(self):
-        # TODO: в документации встречается system:boot2 system:boot-2...
         return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} system:boot-2"
 
     @property
     def load_firmware(self):
         return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} system:firmware"
-        # TODO: распарсить show bootvar и определить более новый образ
+        # TODO: БУДУЩЕЕ распарсить show bootvar и определить более новый образ
         # boot system image-[12]
 
     def show_bootvar(self):

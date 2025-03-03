@@ -107,7 +107,7 @@ class COMBaseDriver:
             if self.core.success_signs.intersection(response.lower().split()):
                 logger.info("Logged in successfully")
                 return True
-            # TODO: ЭТО ВЫЗВАНО НЕ ТОЛЬКО WRONG CREDENTIALS
+            # TODO: НЕВАЖНО ЭТО ВЫЗВАНО НЕ ТОЛЬКО WRONG CREDENTIALS
             logger.error(
                 "Login error: wrong credentials. username:%s password:%s",
                 self.username,

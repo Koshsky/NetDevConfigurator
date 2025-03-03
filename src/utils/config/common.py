@@ -15,7 +15,7 @@ def _process_json_config(json_config, device_company) -> str:
     #
     if device_company == "Zyxel":  # Zyxel need extra processing:
         configuration = prepare_zyxel_environs(json_config)
-    # TODO: what about ARUBA switches?
+    # TODO: БУДУЩЕЕ hat about ARUBA switches?
 
     configuration = ""
     for k, v in json_config.items():
