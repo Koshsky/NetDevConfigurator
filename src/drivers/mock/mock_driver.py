@@ -13,29 +13,32 @@ class MockDriver:
         self.core = get_core(device["family"]["name"])
         self.device = device
 
-    def _send_command(self, command):
+    def send_command(self, command):
         logger.info("Send: %s", command)
+        return f"<resp>{command}<@resp>\n"
 
-    def send_commands(self, commands):
+    def _execute(self, commands):
         if isinstance(commands, str):
-            self._send_command(commands)
+            return self.send_command(commands)
         elif isinstance(commands, list):
+            res = ""
             for command in commands:
-                self._send_command(command)
+                res += self.send_command(command)
+            return res
         else:
             raise TypeError(
                 f"send_commands: argument must be str or List[str]. Given: {type(command).__name__}"
             )
 
     def __enter__(self):
-        self.send_commands(self.core.open_sequence)
+        self._execute(self.core.open_sequence)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
     def show_run(self):
-        self.send_commands(self.core.show_run)
+        self._execute(self.core.show_run)
         return f"""{self.core.comment_symbol}Building configuration...
 {self.core.comment_symbol}ISS config ver. 9; SW ver. 10.3.6.6 (728c49ab) for MES2424 rev.B. Do not remove or edit this line
 !
@@ -201,14 +204,10 @@ end
         return header + "!\n"
 
     def update_startup_config(self):
-        command = self.core.update_startup_config
-        if isinstance(command, str):
-            self.send_commands(command)
-        else:
-            self.send_commands(command)
+        return self._execute(self.core.update_startup_config)
 
     def reboot(self):
-        self.send_commands(self.core.reload)
+        return self._execute(self.core.reload)
 
     def update_boot(self):
         filename = find_most_recent_file(
@@ -221,9 +220,10 @@ end
                 os.environ["TFTP_FOLDER"],
                 self.device["pattern"]["boot"],
             )
+            return f"There is no boot file for {self.device['name']}\n"
         else:
             set_env("FILENAME", filename)
-            return self.send_commands(self.core.load_boot)
+            return self._execute(self.core.load_boot)
 
     def update_uboot(self):
         filename = find_most_recent_file(
@@ -236,9 +236,10 @@ end
                 os.environ["TFTP_FOLDER"],
                 self.device["pattern"]["uboot"],
             )
+            return f"There is no uboot file for {self.device['name']}\n"
         else:
             set_env("FILENAME", filename)
-            return self.send_commands(self.core.load_uboot)
+            return self._execute(self.core.load_uboot)
 
     def update_firmware(self):
         filename = find_most_recent_file(
@@ -251,9 +252,10 @@ end
                 os.environ["TFTP_FOLDER"],
                 self.device["pattern"]["firmware"],
             )
+            return f"There is no firmware file for {self.device['name']}\n"
         else:
             set_env("FILENAME", filename)
-            return self.send_commands(self.core.load_firmware)
+            return self._execute(self.core.load_firmware)
 
     def update_firmwares(self):
         res = self.update_boot()
