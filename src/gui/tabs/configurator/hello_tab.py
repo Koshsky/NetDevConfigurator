@@ -4,6 +4,8 @@ from config import config
 from gui import BaseTab, apply_error_handler
 from utils.environ import set_env
 
+from .connection_handler import CONNECTION_TYPES
+
 logger = logging.getLogger("gui")
 
 
@@ -39,12 +41,7 @@ class HelloTab(BaseTab):
         )
 
     def _create_connection_buttons(self):
-        connection_types = [
-            ("COM+SSH", "com+ssh"),
-            ("SSH", "ssh"),
-            ("MOCK", "mock"),
-        ]  # TODO ВАЖНО убрать этот кортеж в переменную
-        for label, connection_type in connection_types:
+        for connection_type, label in CONNECTION_TYPES.items():
             self.create_button_in_line(
                 (label, lambda ct=connection_type: self.prepare(ct))
             )

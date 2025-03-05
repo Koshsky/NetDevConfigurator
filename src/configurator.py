@@ -7,6 +7,7 @@ import uuid
 from config import config
 from gui.base_app import App
 from gui.tabs.configurator import ControlTab, HelloTab, RouterTab, TemplateTab
+from gui.tabs.configurator.connection_handler import CONNECTION_TYPES
 from utils.config import save_configuration
 from utils.environ import del_env, env_converter, set_env
 
@@ -114,11 +115,7 @@ class ConfiguratorApp(App):
     def refresh_tabs(self):
         if "CONNECTION_TYPE" not in os.environ:
             self.__refresh_tabs_none()
-        elif os.environ["CONNECTION_TYPE"] in (
-            "ssh",
-            "com+ssh",
-            "mock",
-        ):  # TODO ВАЖНО убрать этот кортеж в переменную
+        elif os.environ["CONNECTION_TYPE"] in CONNECTION_TYPES:
             self.__refresh_tabs()
         else:
             logger.critical(

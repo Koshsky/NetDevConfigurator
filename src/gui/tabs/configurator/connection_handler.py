@@ -9,6 +9,12 @@ from ..base_tab import BaseTab
 
 logger = logging.getLogger("gui")
 
+CONNECTION_TYPES = {
+    "com+ssh": "COM+SSH",
+    "ssh": "SSH",
+    "mock": "MOCK",
+}
+
 
 class BaseConnectionHandler:
     def __init__(self, control_tab):
