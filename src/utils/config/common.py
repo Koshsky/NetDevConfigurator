@@ -30,12 +30,7 @@ def _process_json_config(json_config: Dict[str, Any], device_company: str) -> st
             for k, v in json_config.items()
             if v["text"]
         )
-    logger.debug("Raw configuration: %s", configuration)
-    final_configuration = replace_env_vars(configuration) + "end\n"
-    logger.debug(
-        "Final configuration after variable replacement: %s", final_configuration
-    )
-    return final_configuration
+    return replace_env_vars(configuration) + "end\n"
 
 
 def save_configuration(header: str, preset: Dict[str, Any]) -> str:

@@ -19,7 +19,7 @@ def replace_env_vars(configuration: str) -> str:
     Raises:
         ValueError: If any referenced environment variable is not set.
     """
-    logger.debug("Replacing environment variables in configuration: %s", configuration)
+    logger.debug("Replacing environment variables in configuration:")
     for match in re.finditer(r"{([A-Z0-9_]+)}", configuration):
         env_var = match.group(1)
         logger.debug("Found placeholder for environment variable: %s", env_var)
