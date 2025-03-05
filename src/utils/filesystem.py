@@ -1,26 +1,42 @@
 import fnmatch
-import os
 import logging
+from typing import Optional
+
+from pathlib import Path
 
 logger = logging.getLogger("os")
 
 
-def find_most_recent_file(directory: str, pattern: str) -> str:
-    most_recent_file = None
-    most_recent_time = float("inf")
+def find_most_recent_file(directory: str, pattern: str) -> Optional[str]:
+    """
+    Finds the most recent file in a directory matching a given pattern.
 
-    for filename in os.listdir(directory):
-        filename.strip()
-        if fnmatch.fnmatch(filename, pattern):
-            file_path = os.path.join(directory, filename)
-            file_mtime = os.path.getmtime(file_path)
-            if file_mtime < most_recent_time:
+    Args:
+        directory: The directory to search in.
+        pattern: The file pattern to match (e.g., "*.txt").
+
+    Returns:
+        The name of the most recent file, or None if no matching files are found.
+        Raises FileNotFoundError if the directory does not exist.
+    """
+
+    dir_path = Path(directory)
+    if not dir_path.exists():
+        raise FileNotFoundError(f"Directory not found: {directory}")
+
+    most_recent_file = None
+    most_recent_time = 0
+
+    for file_path in dir_path.iterdir():
+        if file_path.is_file() and fnmatch.fnmatch(file_path.name, pattern):
+            file_mtime = file_path.stat().st_mtime
+            if file_mtime > most_recent_time:
                 most_recent_time = file_mtime
-                most_recent_file = filename
+                most_recent_file = file_path.name
+
     if most_recent_file is None:
         logger.warning(
-            "No files found matching the pattern r`%s`   in the directory %s",
-            pattern,
-            directory,
+            "No files found matching pattern '%s' in directory '%s'", pattern, directory
         )
+
     return most_recent_file
