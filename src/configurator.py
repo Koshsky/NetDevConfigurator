@@ -62,7 +62,7 @@ class TabRefresher:
         )
 
         for name, tab in self.tabs.items():
-            if name == "TEMPLATES":
+            if name in ("TEMPLATES", "INTERFACES"):
                 tab.show_if(
                     dev_type == "switch" and self.advanced_mode and dev_role_present
                 )
@@ -129,15 +129,7 @@ class ConfiguratorApp(App):
     def text_configuration(self) -> str:
         """Returns the generated text configuration."""
         self._prepare_configuration()
-        config_filepath = os.path.join(
-            os.environ["TFTP_FOLDER"], "tmp", os.environ["CFG_FILENAME"]
-        )
-        try:
-            with open(config_filepath, "r") as f:
-                return f.read()
-        except FileNotFoundError:
-            self.logger.error("Configuration file not found: %s", config_filepath)
-            return ""  # Return empty string if file not found
+        return self._read_configuration_file()
 
     def _prepare_configuration(self) -> None:
         """Prepares the configuration by updating tabs and saving."""
@@ -155,6 +147,18 @@ class ConfiguratorApp(App):
 
         header = control_tab.connection_handler.get_header()
         save_configuration(header, self.preset)
+
+    def _read_configuration_file(self) -> str:
+        """Reads and returns the generated text configuration."""
+        config_filepath = os.path.join(
+            os.environ["TFTP_FOLDER"], "tmp", os.environ["CFG_FILENAME"]
+        )
+        try:
+            with open(config_filepath, "r") as f:
+                return f.read()
+        except FileNotFoundError:
+            self.logger.error("Configuration file not found: %s", config_filepath)
+            return ""
 
     def create_tabs(self) -> None:
         """Creates and adds tabs to the notebook."""
@@ -179,30 +183,32 @@ class ConfiguratorApp(App):
             for env_param, env_value in config["router"].items():
                 set_env(env_param, env_value)
             set_env("MODEL", env_converter.to_machine("MODEL", device.name))
-        elif (
-            self.device and "roles" in self.device and self.device["roles"]
-        ):  # Check if roles exist
-            self.register_preset(self.device["roles"][0], "1")  # Default OR to "1"
+        elif self.device and self.device["roles"]:
+            self.register_preset(self.device["roles"][0])
         else:
             self.logger.warning("No roles found for device: %s", device.name)
 
         self.logger.debug("Device registered: %s", device.name)
         self.refresh_tabs()
 
-    def register_preset(self, role: str, or_value: str) -> None:
+    def register_preset(self, role: str, or_value: str = "1") -> None:
         """Registers the selected preset and updates the environment."""
         set_env("OR", or_value)
         if "DEV_ROLE" in os.environ and os.environ["DEV_ROLE"] == role:
             return
 
         device = self.db_services["device"].get_one(name=os.environ["DEV_NAME"])
-        preset = self.db_services["preset"].get_one(device_id=device.id, role=role)
-        self.preset = self.db_services["preset"].get_info(preset, check=True)
-        set_env("DEV_ROLE", preset.role)
-        set_env("OR", or_value)
-        self.logger.debug("Preset registered: %s:%s", device.name, preset.role)
+        if preset := self.db_services["preset"].get_one(device_id=device.id, role=role):
+            self.preset = self.db_services["preset"].get_info(preset, check=True)
+            set_env("DEV_ROLE", preset.role)
+            set_env("OR", or_value)
+            self.logger.debug("Preset registered: %s:%s", device.name, preset.role)
 
-        self.refresh_tabs()
+            self.refresh_tabs()
+        else:
+            self.logger.error(
+                "Preset not found for device %s and role %s", device.name, role
+            )
 
 
 if __name__ == "__main__":

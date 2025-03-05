@@ -34,6 +34,12 @@ class BaseTab:
         self.app.notebook.add(self.frame)
         logger.debug("%s tab is normal", self.__log_name)
 
+    def show_if(self, condition: bool):
+        if condition:
+            self.show()
+        else:
+            self.hide()
+
     def _remove_widgets(self):
         for widget in self.frame.winfo_children():
             widget.destroy()

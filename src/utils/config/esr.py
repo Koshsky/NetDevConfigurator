@@ -32,7 +32,6 @@ def save_ESR_configuration(header: str) -> str:
             ["bash", script_path], check=True, text=True, capture_output=True
         )
         logger.debug("Script output: %s", result.stdout)
-        logger.info("Configuration generated at %s", config_path)
     except subprocess.CalledProcessError as e:
         logger.exception("Error generating ESR configuration: %s", e)
         raise
@@ -40,13 +39,11 @@ def save_ESR_configuration(header: str) -> str:
     try:
         with open(config_path, "r") as f:
             config = f.read()
-        logger.debug("Generated configuration: %s", config)
     except FileNotFoundError:
         logger.exception("Configuration file not found at %s", config_path)
         raise
 
     complete_config = header + config
-    logger.debug("Complete configuration with header: %s", complete_config)
 
     with open(config_path, "w") as f:
         f.write(complete_config)
