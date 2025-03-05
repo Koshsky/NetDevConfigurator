@@ -1023,4 +1023,4 @@ test = ["black", "codecov", "coloredlogs", "coverage", "flake8", "mypy", "pytest
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "b07e410ac5704d15a3dc5e8a6f1238fb9d626429b6a397ccb025d8f08f343810"
+content-hash = "61a74b5521450bf4801fb89501c3bfc96ecc91e739bfb0cff253ff46c3f7bf8d"
