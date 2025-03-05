@@ -3,15 +3,17 @@ import logging
 import os
 import tkinter as tk
 import uuid
+from typing import Dict
 
 from config import config
 from gui.base_app import App
+from gui.tabs import BaseTab
 from gui.tabs.configurator import (
     ControlTab,
     HelloTab,
+    InterfacesTab,
     RouterTab,
     TemplateTab,
-    InterfacesTab,
 )
 from gui.tabs.configurator.connection_handler import CONNECTION_TYPES
 from utils.config import save_configuration
@@ -21,62 +23,65 @@ logger = logging.getLogger("gui")
 
 
 class TabRefresher:
-    def __init__(self, app):
+    """Refreshes the visibility of tabs based on the application state."""
+
+    def __init__(self, app: "App") -> None:
         self.app = app
         self.notebook = app.notebook
-        self.tabs = app.tabs
+        self.tabs: Dict[str, BaseTab] = app.tabs
         self.advanced_mode = app.advanced_mode
+        self.logger = logging.getLogger("TabRefresher")
 
-    def refresh_tabs(self):
-        if "CONNECTION_TYPE" not in os.environ:
+    def refresh_tabs(self) -> None:
+        """Refreshes the tabs based on the current environment."""
+        connection_type = os.environ.get("CONNECTION_TYPE")
+        self.logger.debug(
+            "Refreshing configurator tabs. CONNECTION_TYPE=%s", connection_type
+        )
+
+        if connection_type is None:
             self._refresh_tabs_none()
-        elif os.environ["CONNECTION_TYPE"] in CONNECTION_TYPES:
+        elif connection_type in CONNECTION_TYPES:
             self._refresh_tabs()
         else:
-            logger.critical(
-                "Refreshing configurator tabs: unknown CONNECTION_TYPE: %s",
-                os.environ["CONNECTION_TYPE"],
-            )
-        logger.debug("Configurator tabs refreshed successfully")
+            self.logger.error("Unknown CONNECTION_TYPE: %s", connection_type)
 
-    def _refresh_tabs_none(self):
-        logger.debug("Refreshing configurator tabs (CONNECTION_TYPE None): ")
-        for _, tab in self.tabs.items():
+    def _refresh_tabs_none(self) -> None:
+        """Refreshes tabs when no connection type is selected."""
+        self.logger.debug("Refreshing tabs for no connection.")
+        for tab in self.tabs.values():
             if isinstance(tab, HelloTab):
                 tab.show()
             else:
                 tab.hide()
         self.notebook.select(self.tabs["HOME"].frame)
 
-    def _refresh_tabs(self):
-        logger.debug(
-            "Refreshing configurator tabs (CONNECTION_TYPE %s): ",
-            os.environ["CONNECTION_TYPE"],
+    def _refresh_tabs(self) -> None:
+        """Refreshes tabs when a connection type is selected."""
+        dev_type = os.environ.get("DEV_TYPE")
+        dev_role_present = "DEV_ROLE" in os.environ
+        self.logger.debug(
+            "Refreshing tabs for connection. DEV_TYPE=%s, DEV_ROLE present=%s",
+            dev_type,
+            dev_role_present,
         )
-        for _, tab in self.tabs.items():
-            if isinstance(tab, HelloTab):
-                pass
-            elif isinstance(tab, TemplateTab):
-                if (
-                    os.environ["DEV_TYPE"] == "switch"
-                    and self.advanced_mode
-                    and "DEV_ROLE" in os.environ
-                ):
+
+        for tab in self.tabs.values():
+            if isinstance(tab, TemplateTab):
+                if dev_type == "switch" and self.advanced_mode and dev_role_present:
                     tab.show()
                 else:
                     tab.hide()
             elif isinstance(tab, RouterTab):
-                if os.environ["DEV_TYPE"] == "router" and self.advanced_mode:
+                if dev_type == "router" and self.advanced_mode:
                     tab.show()
                 else:
                     tab.hide()
             elif isinstance(tab, ControlTab):
                 tab.show()
             else:
-                logger.critical(
-                    "Unknown type of tab during refreshing ConfiguratorApp: %s",
-                    type(tab).__name__,
-                )
+                self.logger.warning("Unknown tab type: %s", type(tab).__name__)
+
         self.notebook.select(self.tabs["CONTROL"].frame)
 
 

@@ -38,7 +38,9 @@ class App:
 
     def refresh_tabs(self):
         for _, tab in self.tabs.items():
-            tab.refresh_widgets()
+            tab.show()
+
+        self.notebook.select(0)
 
     def on_success_callback(self, engine):
         self.session = sessionmaker(bind=engine)()
