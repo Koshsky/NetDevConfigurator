@@ -18,7 +18,6 @@ class App:
         self.session = None
         self.tabs = {}
         self.create_tabs()
-        self.tabs[CONNECTION_TAB_TITLE].on_button_click()
 
     def create_tabs(self):
         self.create_tab(
@@ -49,16 +48,11 @@ class App:
         self.notebook.forget(self.tabs[CONNECTION_TAB_TITLE].frame)
         del self.tabs[CONNECTION_TAB_TITLE]
         logger.debug("%s is forgotten", CONNECTION_TAB_TITLE)
-        for tab_name, tab in self.tabs.items():
-            self.notebook.add(tab.frame)
-            logger.debug("%s tab is normal", tab_name)
 
         self.refresh_tabs()
 
-        self.notebook.select(0)
-        logger.debug("First tab selected as current for user experience")
-
     def on_failure_callback(self, error):
+        logger.error("an error occurred: %s", error)
         self.session = None
 
     def _init_root(self, root, title):

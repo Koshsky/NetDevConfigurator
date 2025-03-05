@@ -20,12 +20,77 @@ from utils.environ import del_env, env_converter, set_env
 logger = logging.getLogger("gui")
 
 
+class TabRefresher:
+    def __init__(self, app):
+        self.app = app
+        self.notebook = app.notebook
+        self.tabs = app.tabs
+        self.advanced_mode = app.advanced_mode
+
+    def refresh_tabs(self):
+        if "CONNECTION_TYPE" not in os.environ:
+            self._refresh_tabs_none()
+        elif os.environ["CONNECTION_TYPE"] in CONNECTION_TYPES:
+            self._refresh_tabs()
+        else:
+            logger.critical(
+                "Refreshing configurator tabs: unknown CONNECTION_TYPE: %s",
+                os.environ["CONNECTION_TYPE"],
+            )
+        logger.debug("Configurator tabs refreshed successfully")
+
+    def _refresh_tabs_none(self):
+        logger.debug("Refreshing configurator tabs (CONNECTION_TYPE None): ")
+        for _, tab in self.tabs.items():
+            if isinstance(tab, HelloTab):
+                tab.show()
+            else:
+                tab.hide()
+        self.notebook.select(self.tabs["HOME"].frame)
+
+    def _refresh_tabs(self):
+        logger.debug(
+            "Refreshing configurator tabs (CONNECTION_TYPE %s): ",
+            os.environ["CONNECTION_TYPE"],
+        )
+        for _, tab in self.tabs.items():
+            if isinstance(tab, HelloTab):
+                pass
+            elif isinstance(tab, TemplateTab):
+                if (
+                    os.environ["DEV_TYPE"] == "switch"
+                    and self.advanced_mode
+                    and "DEV_ROLE" in os.environ
+                ):
+                    tab.show()
+                else:
+                    tab.hide()
+            elif isinstance(tab, RouterTab):
+                if os.environ["DEV_TYPE"] == "router" and self.advanced_mode:
+                    tab.show()
+                else:
+                    tab.hide()
+            elif isinstance(tab, ControlTab):
+                tab.show()
+            else:
+                logger.critical(
+                    "Unknown type of tab during refreshing ConfiguratorApp: %s",
+                    type(tab).__name__,
+                )
+        self.notebook.select(self.tabs["CONTROL"].frame)
+
+
 class ConfiguratorApp(App):
     def __init__(self, root, title, advanced, *args, **kwargs):
         super().__init__(root, title)
         self.advanced_mode = advanced
         self.device = None
         self.preset = None
+        self.refresher = TabRefresher(self)
+        self.tabs["CONNECTION"].on_button_click()
+
+    def refresh_tabs(self):
+        self.refresher.refresh_tabs()
 
     @property
     def driver(self):
@@ -115,58 +180,6 @@ class ConfiguratorApp(App):
         )
 
         self.refresh_tabs()
-
-    def refresh_tabs(self):
-        if "CONNECTION_TYPE" not in os.environ:
-            self.__refresh_tabs_none()
-        elif os.environ["CONNECTION_TYPE"] in CONNECTION_TYPES:
-            self.__refresh_tabs()
-        else:
-            logger.critical(
-                "Refreshing configurator tabs: unknown CONNECTION_TYPE: %s",
-                os.environ["CONNECTION_TYPE"],
-            )
-        logger.debug("Configurator tabs refreshed successfully")
-
-    def __refresh_tabs_none(self):
-        logger.debug("Refreshing configurator tabs (CONNECTION_TYPE None): ")
-        for _, tab in self.tabs.items():
-            if isinstance(tab, HelloTab):
-                tab.show()
-            else:
-                tab.hide()
-        self.notebook.select(self.tabs["HOME"].frame)
-
-    def __refresh_tabs(self):
-        logger.debug(
-            "Refreshing configurator tabs (CONNECTION_TYPE %s): ",
-            os.environ["CONNECTION_TYPE"],
-        )
-        for _, tab in self.tabs.items():
-            if isinstance(tab, HelloTab):
-                pass
-            elif isinstance(tab, TemplateTab):
-                if (
-                    os.environ["DEV_TYPE"] == "switch"
-                    and self.advanced_mode
-                    and "DEV_ROLE" in os.environ
-                ):
-                    tab.show()
-                else:
-                    tab.hide()
-            elif isinstance(tab, RouterTab):
-                if os.environ["DEV_TYPE"] == "router" and self.advanced_mode:
-                    tab.show()
-                else:
-                    tab.hide()
-            elif isinstance(tab, ControlTab):
-                tab.show()
-            else:
-                logger.critical(
-                    "Unknown type of tab during refreshing ConfiguratorApp: %s",
-                    type(tab).__name__,
-                )
-        self.notebook.select(self.tabs["CONTROL"].frame)
 
 
 if __name__ == "__main__":
