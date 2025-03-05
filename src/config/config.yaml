@@ -2,10 +2,10 @@ app:
   geometry: "1500x900+300+85"
   templates:
     width: 6
-    allow-none: True
+    allow_none: True
   interfaces:
     width: 12
-    allow-none: False
+    allow_none: False
 
 database:
   host: localhost            # by default
