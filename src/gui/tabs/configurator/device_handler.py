@@ -1,24 +1,73 @@
+import logging
 import os
+from typing import Dict, Type
 
 from utils.environ import env_converter, set_env
 
 from ..base_tab import BaseTab
 
+logger = logging.getLogger("gui")
+
 
 class BaseDeviceHandler:
-    def __init__(self, control_tab):
-        self.tab = control_tab
-        self.app = control_tab.app
+    """Base class for device handlers."""
+
+    def __init__(self, tab: BaseTab):
+        self.tab = tab
+        self.app = tab.app
 
     def create_widgets(self):
+        """Creates the necessary widgets for the device type.
+
+        Raises:
+            NotImplementedError: This method should be implemented by subclasses.
+        """
         raise NotImplementedError
 
     def update_device_info(self):
+        """Updates the device information based on user input.
+
+        Raises:
+            NotImplementedError: This method should be implemented by subclasses.
+        """
         raise NotImplementedError
 
 
+class DeviceHandlerFactory:
+    """Factory class for creating device handlers based on device type."""
+
+    def __init__(self, tab: BaseTab):
+        self.tab = tab
+        self.handlers: Dict[str, Type[BaseDeviceHandler]] = {
+            "switch": SwitchHandler,
+            "router": RouterHandler,
+        }
+
+    def create_handler(self) -> BaseDeviceHandler:
+        """Creates and returns a device handler based on the environment variable DEV_TYPE.
+
+        Returns:
+            BaseDeviceHandler: An instance of a device handler.
+
+        Raises:
+            ValueError: If DEV_TYPE is not set or if the device type is unknown.
+        """
+        device_type = os.environ.get("DEV_TYPE")
+        if not device_type:
+            raise ValueError("DEV_TYPE environment variable not set.")
+        handler_class = self.handlers.get(device_type)
+        if not handler_class:
+            raise ValueError(f"Unknown device type: {device_type}")
+        logger.debug(f"Creating device handler for type: {device_type}")
+        return handler_class(self.tab)
+
+
 class SwitchHandler(BaseDeviceHandler):
+    """Device handler for switches."""
+
     def create_widgets(self):
+        """Creates widgets for switch parameters."""
+        logger.debug("Creating widgets for switch...")
         self.tab.create_block(
             "params",
             {
@@ -29,10 +78,14 @@ class SwitchHandler(BaseDeviceHandler):
         self._actualize_values()
 
     def _actualize_values(self):
-        self.tab.fields["params"]["role"].set(os.environ["DEV_ROLE"])
-        self.tab.fields["params"]["or"].set(os.environ["OR"])
+        """Sets initial values for switch parameters from environment variables."""
+        logger.debug("Actualizing values for switch...")
+        self.tab.fields["params"]["role"].set(os.environ.get("DEV_ROLE", ""))
+        self.tab.fields["params"]["or"].set(os.environ.get("OR", ""))
 
     def update_device_info(self):
+        """Updates switch information based on user input."""
+        logger.debug("Updating device info for switch...")
         self.app.register_preset(
             self.tab.fields["params"]["role"].get().strip(),
             self.tab.fields["params"]["or"].get().strip(),
@@ -40,7 +93,11 @@ class SwitchHandler(BaseDeviceHandler):
 
 
 class RouterHandler(BaseDeviceHandler):
+    """Device handler for routers."""
+
     def create_widgets(self):
+        """Creates widgets for router parameters."""
+        logger.debug("Creating widgets for router...")
         self.tab.create_block(
             "params",
             {
@@ -50,6 +107,8 @@ class RouterHandler(BaseDeviceHandler):
         )
 
     def update_device_info(self):
+        """Updates router information based on user input."""
+        logger.debug("Updating device info for router...")
         set_env(
             "TYPE_COMPLEX",
             env_converter.to_machine(
@@ -60,11 +119,13 @@ class RouterHandler(BaseDeviceHandler):
 
 
 def get_device_handler(tab: BaseTab) -> BaseDeviceHandler:
-    handlers = {
-        "switch": SwitchHandler,
-        "router": RouterHandler,
-    }
-    device_type = os.environ["DEV_TYPE"]
-    if device_type not in handlers:
-        raise ValueError(f"Unknown device type: {device_type}")
-    return handlers[device_type](tab)
+    """Creates and returns a device handler using the DeviceHandlerFactory.
+
+    Args:
+        tab: The current tab instance.
+
+    Returns:
+        A device handler instance.
+    """
+    factory = DeviceHandlerFactory(tab)
+    return factory.create_handler()

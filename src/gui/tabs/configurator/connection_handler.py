@@ -1,8 +1,9 @@
 import logging
 import os
+from typing import Dict, List, Tuple, Type
 
 from config import config
-from drivers import COMDriver, SSHDriver, MockDriver
+from drivers import COMDriver, MockDriver, SSHDriver
 from utils.environ import set_env
 
 from ..base_tab import BaseTab
@@ -16,14 +17,50 @@ CONNECTION_TYPES = {
 }
 
 
+class ConnectionHandlerFactory:
+    """Factory for creating connection handlers based on connection type."""
+
+    def __init__(self, tab: BaseTab):
+        self.tab = tab
+        self.handlers: Dict[str, Type[BaseConnectionHandler]] = {
+            "com+ssh": COMSSHConnectionHandler,
+            "ssh": SSHConnectionHandler,
+            "mock": MockConnectionHandler,
+        }
+
+    def create_handler(self) -> "BaseConnectionHandler":
+        """Creates and returns a connection handler based on the CONNECTION_TYPE environment variable.
+
+        Returns:
+            BaseConnectionHandler: The created connection handler.
+
+        Raises:
+            ValueError: If the connection type is unknown.
+        """
+        conn_type = os.environ.get("CONNECTION_TYPE")
+        if not conn_type:
+            raise ValueError("CONNECTION_TYPE environment variable not set.")
+
+        handler_class = self.handlers.get(conn_type)
+        if not handler_class:
+            raise ValueError(f"Unknown connection type: {conn_type}")
+
+        logger.debug(f"Creating connection handler of type: {conn_type}")
+        return handler_class(self.tab)
+
+
 class BaseConnectionHandler:
-    def __init__(self, control_tab):
+    """Base class for connection handlers."""
+
+    def __init__(self, control_tab: BaseTab):
         self.tab = control_tab
         self.app = control_tab.app
-        self.fields_config = []
-        self.env_vars = []
+        self.fields_config: List[str] = []
+        self.env_vars: List[Tuple[str, str]] = []
 
     def create_widgets(self):
+        """Creates widgets for connection parameters."""
+        logger.debug("Creating connection widgets...")
         self.tab.create_block(
             "host",
             {field: tuple(config["host"][field]) for field in self.fields_config},
@@ -31,18 +68,23 @@ class BaseConnectionHandler:
         self._actualize_values()
 
     def _actualize_values(self):
+        """Sets initial values for connection parameters from environment variables."""
+        logger.debug("Actualizing connection values...")
         for var_name, field in self.env_vars:
-            if field in self.tab.fields["host"] and var_name in os.environ:
-                self.tab.fields["host"][field].set(os.environ[var_name])
+            if field in self.tab.fields["host"] and (value := os.environ.get(var_name)):
+                self.tab.fields["host"][field].set(value)
 
     def update_host_info(self):
+        """Updates host information based on user input."""
+        logger.debug("Updating host info...")
         for var_name, field in self.env_vars:
-            if field in self.tab.fields["host"] and set_env(
-                var_name, self.tab.fields["host"][field].get().strip()
-            ):
-                set_env("BASE_LOADED", "false")
+            if field in self.tab.fields.get("host", {}):
+                value = self.tab.fields["host"][field].get().strip()
+                if set_env(var_name, value):
+                    set_env("BASE_LOADED", "false")
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str):
+        """Dynamically handles SSH driver methods."""
         if hasattr(SSHDriver, name):
 
             def dynamic_method(*args):
@@ -53,7 +95,18 @@ class BaseConnectionHandler:
             f"'{self.__class__.__name__}' object has no attribute '{name}'"
         )
 
-    def _execute_with_driver(self, operation, Driver=SSHDriver, *args):
+    def _execute_with_driver(
+        self, operation: str, Driver: Type[SSHDriver] = SSHDriver, *args
+    ):
+        """Executes an operation using the specified driver.
+
+        Args:
+            operation: The name of the operation to execute.
+            Driver: The driver class to use. Defaults to SSHDriver.
+
+        Raises:
+            Exception: Any exception raised by the driver.
+        """
         self.update_host_info()
 
         try:
@@ -62,15 +115,20 @@ class BaseConnectionHandler:
                 result = method(*args)
                 if isinstance(result, str):
                     self.tab.display_feedback(result)
-                self.tab.display_feedback(result)
+                self.tab.display_feedback(result)  # Display result even if not a string
                 return result
         except Exception as e:
+            logger.exception(
+                f"Error executing operation '{operation}' with driver: {e}"
+            )
             self.app.tabs["CONTROL"].show_error(type(e).__name__, e)
             raise
 
 
 class COMSSHConnectionHandler(BaseConnectionHandler):
-    def __init__(self, control_tab):
+    """Connection handler for COM+SSH connections."""
+
+    def __init__(self, control_tab: BaseTab):
         super().__init__(control_tab)
         self.fields_config = ["username", "password"]
         self.env_vars = [
@@ -78,11 +136,13 @@ class COMSSHConnectionHandler(BaseConnectionHandler):
             ("HOST_PASSWORD", "password"),
         ]
 
-    def _execute_with_driver(self, operation, *args):
-        if os.environ["BASE_LOADED"] == "false":
+    def _execute_with_driver(self, operation: str, *args):
+        """Executes an operation, configuring the base connection if necessary."""
+        if os.environ.get("BASE_LOADED") == "false":
             try:
                 super()._execute_with_driver("base_configure_192", Driver=COMDriver)
-            except:
+            except Exception:
+                logger.exception("Error during base configuration.")
                 raise
             else:
                 set_env("BASE_LOADED", "true")
@@ -90,7 +150,9 @@ class COMSSHConnectionHandler(BaseConnectionHandler):
 
 
 class MockConnectionHandler(BaseConnectionHandler):
-    def __init__(self, control_tab):
+    """Connection handler for mock connections."""
+
+    def __init__(self, control_tab: BaseTab):
         super().__init__(control_tab)
         self.fields_config = ["address", "port", "username", "password"]
         self.env_vars = [
@@ -100,12 +162,15 @@ class MockConnectionHandler(BaseConnectionHandler):
             ("HOST_PASSWORD", "password"),
         ]
 
-    def _execute_with_driver(self, operation, *args):
-        return super()._execute_with_driver(operation, Driver=MockDriver)
+    def _execute_with_driver(self, operation: str, *args):
+        """Executes an operation using the MockDriver."""
+        return super()._execute_with_driver(operation, Driver=MockDriver, *args)
 
 
 class SSHConnectionHandler(BaseConnectionHandler):
-    def __init__(self, control_tab):
+    """Connection handler for SSH connections."""
+
+    def __init__(self, control_tab: BaseTab):
         super().__init__(control_tab)
         self.fields_config = ["address", "port", "username", "password"]
         self.env_vars = [
@@ -116,13 +181,14 @@ class SSHConnectionHandler(BaseConnectionHandler):
         ]
 
 
-def get_connection_handler(tab: BaseTab) -> BaseConnectionHandler:
-    handlers = {
-        "com+ssh": COMSSHConnectionHandler,
-        "ssh": SSHConnectionHandler,
-        "mock": MockConnectionHandler,
-    }
-    conn_type = os.environ["CONNECTION_TYPE"]
-    if conn_type not in handlers:
-        raise ValueError(f"Unknown connection type: {conn_type}")
-    return handlers[conn_type](tab)
+def get_connection_handler(tab: BaseTab) -> "BaseConnectionHandler":
+    """Creates and returns a connection handler using the ConnectionHandlerFactory.
+
+    Args:
+        tab: The current tab instance.
+
+    Returns:
+        A connection handler instance.
+    """
+    factory = ConnectionHandlerFactory(tab)
+    return factory.create_handler()
