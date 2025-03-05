@@ -33,51 +33,48 @@ class TabRefresher:
         """Refreshes the tabs based on the current environment."""
         connection_type = os.environ.get("CONNECTION_TYPE")
         self.logger.debug(
-            "Refreshing configurator tabs. CONNECTION_TYPE=%s", connection_type
+            f"Refreshing configurator tabs. CONNECTION_TYPE={connection_type}"
         )
 
         if connection_type is None:
-            self._refresh_tabs_none()
+            self._show_only_tab("HOME")
         elif connection_type in CONNECTION_TYPES:
-            self._refresh_tabs()
+            self._refresh_connected_tabs()
         else:
-            self.logger.error("Unknown CONNECTION_TYPE: %s", connection_type)
+            self.logger.error(f"Unknown CONNECTION_TYPE: {connection_type}")
+            self._show_only_tab("HOME")
 
-    def _refresh_tabs_none(self) -> None:
-        """Refreshes tabs when no connection type is selected."""
-        self.logger.debug("Refreshing tabs for no connection.")
-        for tab in self.tabs.values():
-            if isinstance(tab, HelloTab):
+    def _show_only_tab(self, tab_name: str) -> None:
+        """Shows only the specified tab and hides all others."""
+        for name, tab in self.tabs.items():
+            if name == tab_name:
                 tab.show()
             else:
                 tab.hide()
-        self.notebook.select(self.tabs["HOME"].frame)
+        self.notebook.select(self.tabs[tab_name].frame)
 
-    def _refresh_tabs(self) -> None:
+    def _refresh_connected_tabs(self) -> None:
         """Refreshes tabs when a connection type is selected."""
         dev_type = os.environ.get("DEV_TYPE")
         dev_role_present = "DEV_ROLE" in os.environ
         self.logger.debug(
-            "Refreshing tabs for connection. DEV_TYPE=%s, DEV_ROLE present=%s",
-            dev_type,
-            dev_role_present,
+            f"Refreshing tabs for connection. DEV_TYPE={dev_type}, DEV_ROLE present={dev_role_present}"
         )
 
-        for tab in self.tabs.values():
-            if isinstance(tab, TemplateTab):
-                if dev_type == "switch" and self.advanced_mode and dev_role_present:
-                    tab.show()
-                else:
-                    tab.hide()
-            elif isinstance(tab, RouterTab):
-                if dev_type == "router" and self.advanced_mode:
-                    tab.show()
-                else:
-                    tab.hide()
-            elif isinstance(tab, ControlTab):
+        for name, tab in self.tabs.items():
+            if name == "TEMPLATES":
+                tab.show_if(
+                    dev_type == "switch" and self.advanced_mode and dev_role_present
+                )
+            elif name == "ROUTER":
+                tab.show_if(dev_type == "router" and self.advanced_mode)
+            elif name == "CONTROL":
                 tab.show()
-            else:
-                self.logger.warning("Unknown tab type: %s", type(tab).__name__)
+            elif name not in (
+                "HOME",
+                "CONNECTION",
+            ):  # these tabs are always hidden at this point
+                self.logger.warning(f"Unexpected tab: {name}")
 
         self.notebook.select(self.tabs["CONTROL"].frame)
 
