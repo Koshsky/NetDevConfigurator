@@ -13,12 +13,19 @@ class MockDriver:
         self.core = get_core(device["family"]["name"])
         self.device = device
 
-    def send_command(self, command):
+    def _send_command(self, command):
         logger.info("Send: %s", command)
 
     def send_commands(self, commands):
-        for command in commands:
-            self.send_command(command)
+        if isinstance(commands, str):
+            self._send_command(commands)
+        elif isinstance(commands, list):
+            for command in commands:
+                self._send_command(command)
+        else:
+            raise TypeError(
+                f"send_commands: argument must be str or List[str]. Given: {type(command).__name__}"
+            )
 
     def __enter__(self):
         self.send_commands(self.core.open_sequence)
@@ -28,7 +35,7 @@ class MockDriver:
         pass
 
     def show_run(self):
-        self.send_command(self.core.show_run)
+        self.send_commands(self.core.show_run)
         return f"""{self.core.comment_symbol}Building configuration...
 {self.core.comment_symbol}ISS config ver. 9; SW ver. 10.3.6.6 (728c49ab) for MES2424 rev.B. Do not remove or edit this line
 !
@@ -196,12 +203,12 @@ end
     def update_startup_config(self):
         command = self.core.update_startup_config
         if isinstance(command, str):
-            self.send_command(command)
+            self.send_commands(command)
         else:
             self.send_commands(command)
 
     def reboot(self):
-        self.send_command(self.core.reload)
+        self.send_commands(self.core.reload)
 
     def update_boot(self):
         filename = find_most_recent_file(
@@ -216,7 +223,7 @@ end
             )
         else:
             set_env("FILENAME", filename)
-            return self.send_command(self.core.load_boot)
+            return self.send_commands(self.core.load_boot)
 
     def update_uboot(self):
         filename = find_most_recent_file(
@@ -231,7 +238,7 @@ end
             )
         else:
             set_env("FILENAME", filename)
-            return self.send_command(self.core.load_uboot)
+            return self.send_commands(self.core.load_uboot)
 
     def update_firmware(self):
         filename = find_most_recent_file(
@@ -246,7 +253,7 @@ end
             )
         else:
             set_env("FILENAME", filename)
-            return self.send_command(self.core.load_firmware)
+            return self.send_commands(self.core.load_firmware)
 
     def update_firmwares(self):
         res = self.update_boot()

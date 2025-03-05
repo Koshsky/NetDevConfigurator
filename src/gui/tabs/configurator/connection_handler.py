@@ -86,7 +86,7 @@ class MockConnectionHandler(BaseConnectionHandler):
         ]
 
     def _execute_with_driver(self, operation, *args):
-        super()._execute_with_driver(operation, Driver=MockDriver)
+        return super()._execute_with_driver(operation, Driver=MockDriver)
 
 
 class SSHConnectionHandler(BaseConnectionHandler):
