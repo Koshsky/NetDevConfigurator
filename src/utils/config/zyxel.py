@@ -21,7 +21,7 @@ def prepare_zyxel_environs(json_config):
     )
     for interface_id, info in interfaces:  # interface_id - 'port-channel N'
         N = int(interface_id.split()[-1])
-        for _, L in forbidden.items():
+        for L in forbidden.values():
             L.append(N)
         for vlan_id in re.findall(r"pvid (\d+)", info["text"]):
             fixed[vlan_id].append(N)

@@ -37,9 +37,10 @@ class BaseConnectionHandler:
 
     def update_host_info(self):
         for var_name, field in self.env_vars:
-            if field in self.tab.fields["host"]:
-                if set_env(var_name, self.tab.fields["host"][field].get().strip()):
-                    set_env("BASE_LOADED", "false")
+            if field in self.tab.fields["host"] and set_env(
+                var_name, self.tab.fields["host"][field].get().strip()
+            ):
+                set_env("BASE_LOADED", "false")
 
     def __getattr__(self, name):
         if hasattr(SSHDriver, name):

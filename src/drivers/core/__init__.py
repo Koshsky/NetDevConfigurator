@@ -21,7 +21,7 @@ def get_core(family: str):
         "ESRxx": ESRxx(),
         "BaseZyxel": BaseZyxel(),
     }
-    core = cores.get(family, None)
+    core = cores.get(family)
     if core is None:
         raise ValueError("Unsupported device family: %s", family)
     logger.debug("Successfully retrieved core for device family: %s", family)

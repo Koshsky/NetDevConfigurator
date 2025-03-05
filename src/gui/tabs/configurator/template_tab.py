@@ -70,7 +70,7 @@ class TemplateTab(BaseTab):
             family_id=self.app.device["family"]["id"],
             role=[os.environ["DEV_ROLE"], "common"],
         )
-        tail = ("None",) if self._allow_none else tuple()
+        tail = ("None",) if self._allow_none else ()
         return tuple(entity.name for entity in templates if entity.type == t) + tail
 
     def _filter_templates(self, templates):

@@ -15,10 +15,11 @@ class SSHDriver(SSHBaseDriver):
 
     def get_header(self):
         config = self.show_run()
-        header = ""
-        for line in config.split("\n"):
-            if line.startswith(self.core.comment_symbol):
-                header += line + "\n"
+        header = "".join(
+            line + "\n"
+            for line in config.split("\n")
+            if line.startswith(self.core.comment_symbol)
+        )
         return header + "!\n"
 
     def update_startup_config(self):

@@ -94,7 +94,7 @@ class COMBaseDriver:
     def __is_logged(self):
         self.ser.write(b"\n\n\n\n\n\n")
         response = [line.strip() for line in self.ser.readlines()]
-        return len(set(line.strip() for line in response[-5::])) == 1
+        return len({line.strip() for line in response[-5::]}) == 1
 
     @check_port_open
     def __log_in(self):

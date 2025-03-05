@@ -21,13 +21,10 @@ class MockDriver:
         if isinstance(commands, str):
             return self.send_command(commands)
         elif isinstance(commands, list):
-            res = ""
-            for command in commands:
-                res += self.send_command(command)
-            return res
+            return "".join(self.send_command(command) for command in commands)
         else:
             raise TypeError(
-                f"send_commands: argument must be str or List[str]. Given: {type(command).__name__}"
+                f"send_commands: argument must be str or List[str]. Given: {type(commands).__name__}"
             )
 
     def __enter__(self):
@@ -197,10 +194,11 @@ end
 
     def get_header(self):
         config = self.show_run()
-        header = ""
-        for line in config.split("\n"):
-            if line.startswith(self.core.comment_symbol):
-                header += line + "\n"
+        header = "".join(
+            line + "\n"
+            for line in config.split("\n")
+            if line.startswith(self.core.comment_symbol)
+        )
         return header + "!\n"
 
     def update_startup_config(self):

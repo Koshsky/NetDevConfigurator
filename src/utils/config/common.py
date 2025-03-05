@@ -15,13 +15,12 @@ def _process_json_config(json_config, device_company) -> str:
     #
     if device_company == "Zyxel":  # Zyxel need extra processing:
         configuration = prepare_zyxel_environs(json_config)
-    # TODO: БУДУЩЕЕ what about ARUBA switches?
 
-    configuration = ""
-    for k, v in json_config.items():
-        if v["text"]:
-            configuration += f"{v['text'].replace('{INTERFACE_ID}', k)}\n"
-
+    configuration = "".join(
+        f"{v['text'].replace('{INTERFACE_ID}', k)}\n"
+        for k, v in json_config.items()
+        if v["text"]
+    )
     return replace_env_vars(configuration) + "end\n"
 
 

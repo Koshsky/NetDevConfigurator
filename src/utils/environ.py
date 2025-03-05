@@ -8,8 +8,7 @@ logger = logging.getLogger("env")
 def replace_env_vars(configuration: str) -> str:
     env_vars = re.findall(r"{([A-Z0-9_]+)}", configuration)
 
-    missing_vars = [var for var in env_vars if var not in os.environ]
-    if missing_vars:
+    if missing_vars := [var for var in env_vars if var not in os.environ]:
         raise ValueError(f"Missing environment variables: {', '.join(missing_vars)}")
 
     for var in env_vars:
@@ -38,6 +37,7 @@ def check_environment_variables():
 
 
 def set_env(key: str, value: str) -> bool:
+    # sourcery skip: extract-duplicate-method, remove-unnecessary-cast
     if key in os.environ:
         if str(value) != os.environ[key]:
             os.environ[key] = str(value)
@@ -65,9 +65,7 @@ class EnvConverter(dict):
         return self.to_human(env_name, os.environ[env_name])
 
     def to_machine(self, env_name, human_value):
-        if env_name in self:
-            return self[env_name][human_value]
-        return human_value
+        return self[env_name][human_value] if env_name in self else human_value
 
     def to_human(self, env_name, machine):
         try:
