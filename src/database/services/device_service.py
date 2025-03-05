@@ -44,11 +44,11 @@ class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
             "family": {
                 "name": device.family.name,
                 "id": device.family.id,
-            },  # TODO: НЕВАЖНО replace with get_info
+            },
             "company": {
                 "name": device.company.name,
                 "id": device.company.id,
-            },  # TODO: НЕВАЖНО replace with get_info
+            },
             "pattern": {
                 "boot": device.boot,
                 "uboot": device.uboot,

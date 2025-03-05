@@ -38,8 +38,6 @@ def prepare_zyxel_environs(json_config):
     return json_config
 
 
-# TODO: НЕАВЖНО стоит переместить эту функцию в другое место
-# если необходимо использовать ее где-то еще.
 def range_formatter(nums: List[int]) -> str:
     if not nums:
         return '""'
