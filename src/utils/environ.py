@@ -2,7 +2,7 @@ import logging
 import os
 import re
 
-logger = logging.getLogger("env")
+logger = logging.getLogger(__name__)
 
 
 def replace_env_vars(configuration: str) -> str:
@@ -19,12 +19,16 @@ def replace_env_vars(configuration: str) -> str:
     Raises:
         ValueError: If any referenced environment variable is not set.
     """
+    logger.debug("Replacing environment variables in configuration: %s", configuration)
     for match in re.finditer(r"{([A-Z0-9_]+)}", configuration):
         env_var = match.group(1)
+        logger.debug("Found placeholder for environment variable: %s", env_var)
         if env_var not in os.environ:
+            logger.error("Missing environment variable: %s", env_var)
             raise ValueError(f"Missing environment variable: {env_var}")
-        configuration = configuration.replace(f"{{{env_var}}}", os.environ[env_var])
-
+        value = os.environ[env_var]
+        logger.debug("Replacing placeholder with value: %s", value)
+        configuration = configuration.replace(f"{{{env_var}}}", value)
     return configuration
 
 
@@ -35,6 +39,7 @@ def check_environment_variables():
         EnvironmentError: If a required environment variable is missing.
         ValueError: If the device company is not supported.
     """
+    logger.debug("Checking environment variables...")
     required_vars = {
         "CERT": None,
         "OR": None,
@@ -46,15 +51,22 @@ def check_environment_variables():
     }
 
     if missing_vars := [var for var in required_vars if var not in os.environ]:
+        logger.error(
+            "Missing required environment variables: %s", ", ".join(missing_vars)
+        )
         raise EnvironmentError(
             f"Missing required environment variables: {', '.join(missing_vars)}"
         )
 
     if os.environ["DEV_TYPE"] == "switch" and "DEV_ROLE" not in os.environ:
+        logger.error("Missing required environment variable: DEV_ROLE")
         raise EnvironmentError("Missing required environment variable: DEV_ROLE")
 
     if os.environ["DEV_COMPANY"] not in required_vars["DEV_COMPANY"]:
+        logger.error("Unsupported device company: %s", os.environ["DEV_COMPANY"])
         raise ValueError(f"Unsupported device company: {os.environ['DEV_COMPANY']}")
+
+    logger.debug("All required environment variables are set.")
 
 
 def set_env(key: str, value: str | int) -> bool:
@@ -83,9 +95,12 @@ def del_env(key: str):
     Args:
         key: The name of the environment variable to delete.
     """
+    logger.debug("Deleting environment variable: %s", key)
     if key in os.environ:
         del os.environ[key]
         logger.info("Environmental variable deleted: %s", key)
+    else:
+        logger.debug("Environment variable %s not found.", key)
 
 
 class EnvConverter(dict):
@@ -100,7 +115,15 @@ class EnvConverter(dict):
         Returns:
             The human-readable value of the environment variable.
         """
-        return self.to_human(env_name, os.environ[env_name])
+        logger.debug("Getting human-readable value for %s", env_name)
+        try:
+            machine_value = os.environ[env_name]
+            human_value = self.to_human(env_name, machine_value)
+            logger.debug(f"Human-readable value for {env_name}: {human_value}")
+            return human_value
+        except KeyError:
+            logger.warning(f"Environment variable not found: {env_name}")
+            return ""
 
     def to_machine(self, env_name: str, human_value: str) -> str:
         """Converts a human-readable value to a machine-readable value.
@@ -112,7 +135,14 @@ class EnvConverter(dict):
         Returns:
             The machine-readable value.
         """
-        return self[env_name][human_value] if env_name in self else human_value
+        logger.debug(
+            "Converting human-readable value '%s' to machine-readable for %s",
+            human_value,
+            env_name,
+        )
+        machine_value = self.get(env_name, {}).get(human_value, human_value)
+        logger.debug(f"Machine-readable value for {env_name}: {machine_value}")
+        return machine_value
 
     def to_human(self, env_name: str, machine_value: str) -> str:
         """Converts a machine-readable value to a human-readable value.
@@ -122,10 +152,16 @@ class EnvConverter(dict):
             machine_value: The machine-readable value.
 
         Returns:
-            The human-readable value.
+            The human-readable value, or the original value if no conversion is found.
         """
+        logger.debug(
+            "Converting machine-readable value '%s' to human-readable for %s",
+            machine_value,
+            env_name,
+        )
+
         try:
-            return next(
+            human_value = next(
                 (
                     key
                     for key, value in self[env_name].items()
@@ -133,7 +169,12 @@ class EnvConverter(dict):
                 ),
                 machine_value,
             )
+            logger.debug(f"Human-readable value for {env_name}: {human_value}")
+            return human_value
         except KeyError:
+            logger.warning(
+                f"No conversion found for {env_name} with value {machine_value}"
+            )
             return machine_value
 
 

@@ -50,7 +50,7 @@ class ConfiguratorApp(App):
                 self.tabs["TEMPLATES"].update_config()
                 self.tabs["INTERFACES"].update_config()
         header = self.tabs["CONTROL"].connection_handler.get_header()
-        save_configuration(header, self.preset["configuration"])
+        save_configuration(header, self.preset)
 
     def create_tabs(self):
         super().create_tabs()

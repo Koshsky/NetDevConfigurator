@@ -2,22 +2,54 @@ import logging
 import os
 import subprocess
 
-logger = logging.getLogger("bash")
+logger = logging.getLogger(__name__)
 
 
-def save_ESR_configuration():
-    SCRIPT_PATH = "./src/utils/config/config_esr/make_config.sh"
-    logger.debug("running make_config.sh")
+def save_ESR_configuration(header: str) -> str:
+    """Saves the ESR configuration to a file and prepends a header.
+
+    Runs the `make_config.sh` script to generate the configuration,
+    then adds the provided header to the beginning of the file.
+
+    Args:
+        header: The header string to prepend to the configuration file.
+
+    Returns:
+        The complete configuration string with the header.
+
+    Raises:
+        subprocess.CalledProcessError: If the `make_config.sh` script fails.
+        FileNotFoundError: If the generated configuration file is not found.
+    """
+    script_path = "./src/utils/config/config_esr/make_config.sh"
     config_path = os.path.join(
         os.environ["TFTP_FOLDER"], "tmp", os.environ["CFG_FILENAME"]
     )
-    try:
-        subprocess.run(
-            ["bash", SCRIPT_PATH], check=True, text=True, capture_output=True
-        )
-        logger.info("Configuration saved in %s", config_path)
-    except subprocess.CalledProcessError as e:
-        logger.error("src.utils.get_esr_configuration: %s", e)
 
-    with open(config_path, "r") as f:
-        return f.read()
+    logger.debug("Running %s", script_path)
+    try:
+        result = subprocess.run(
+            ["bash", script_path], check=True, text=True, capture_output=True
+        )
+        logger.debug("Script output: %s", result.stdout)
+        logger.info("Configuration generated at %s", config_path)
+    except subprocess.CalledProcessError as e:
+        logger.exception("Error generating ESR configuration: %s", e)
+        raise
+
+    try:
+        with open(config_path, "r") as f:
+            config = f.read()
+        logger.debug("Generated configuration: %s", config)
+    except FileNotFoundError:
+        logger.exception("Configuration file not found at %s", config_path)
+        raise
+
+    complete_config = header + config
+    logger.debug("Complete configuration with header: %s", complete_config)
+
+    with open(config_path, "w") as f:
+        f.write(complete_config)
+    logger.debug("Configuration saved to %s", config_path)
+
+    return complete_config
