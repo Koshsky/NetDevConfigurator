@@ -21,7 +21,7 @@ class TemplateTab(BaseTab):
         self._template_filter = template_filter
 
     def _create_widgets(self):
-        filtered_templates = self._filter_templates(self.app.json_config)
+        filtered_templates = self._filter_templates(self.app.preset["configuration"])
         self._create_config_block(filtered_templates)
         self._actualize_values()
 
@@ -38,12 +38,12 @@ class TemplateTab(BaseTab):
         )
 
     def _actualize_values(self):
-        for k, v in self.app.json_config.items():
+        for k, v in self.app.preset["configuration"].items():
             if k in self.fields["config"]["templates"]:
                 self.fields["config"]["templates"][k].set(v["name"])
 
     def update_config(self):
-        for k, v in self.app.json_config.items():
+        for k, v in self.app.preset["configuration"].items():
             if k in self.fields["config"]["templates"]:
                 new_template_name = self.fields["config"]["templates"][k].get().strip()
                 if new_template_name not in self._get_templates_by_type(v["type"]):
@@ -63,7 +63,7 @@ class TemplateTab(BaseTab):
                         role=["common", v["role"]],
                         family_id=int(self.app.device["family"]["id"]),
                     )
-                self.app.json_config[k] = template_info
+                self.app.preset["configuration"][k] = template_info
 
     def _get_templates_by_type(self, t):
         templates = self.app.db_services["template"].get_all(

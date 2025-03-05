@@ -16,9 +16,9 @@ logger = logging.getLogger("gui")
 class ConfiguratorApp(App):
     def __init__(self, root, title, advanced, *args, **kwargs):
         super().__init__(root, title)
-        self.json_config = None
         self.advanced_mode = advanced
         self.device = None
+        self.preset = None
 
     @property
     def driver(self):
@@ -49,7 +49,7 @@ class ConfiguratorApp(App):
                 self.tabs["TEMPLATES"].update_config()
                 self.tabs["INTERFACES"].update_config()
         header = self.tabs["CONTROL"].connection_handler.get_header()
-        save_configuration(header, self.json_config)
+        save_configuration(header, self.preset["configuration"])
 
     def create_tabs(self):
         super().create_tabs()
@@ -101,9 +101,7 @@ class ConfiguratorApp(App):
             device_id=device.id,
             role=role,
         )
-        self.json_config = self.db_services["preset"].get_info(preset, check=True)[
-            "configuration"
-        ]
+        self.preset = self.db_services["preset"].get_info(preset, check=True)
         set_env("DEV_ROLE", preset.role)
         set_env("OR", OR)
         logger.debug(
