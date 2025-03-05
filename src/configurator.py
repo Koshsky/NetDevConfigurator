@@ -18,18 +18,7 @@ class ConfiguratorApp(App):
         super().__init__(root, title)
         self.json_config = None
         self.advanced_mode = advanced
-
-        try:
-            self.root.iconbitmap("images/Icon.ico")
-        except Exception as e:
-            print(f"Ошибка при загрузке иконки: {e}")
-
-    @property
-    def device(self):
-        if "DEV_NAME" in os.environ:
-            return self.db_services["device"].get_info_one(name=os.environ["DEV_NAME"])
-        else:
-            return None
+        self.device = None
 
     @property
     def driver(self):
@@ -83,6 +72,7 @@ class ConfiguratorApp(App):
         self.create_tab(ControlTab, "CONTROL")
 
     def register_device(self, device):
+        self.device = self.db_services["device"].get_info(device)
         set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")
         del_env("DEV_ROLE")
         set_env("DEV_NAME", device.name)
