@@ -89,8 +89,7 @@ class ConfiguratorApp(App):
             self.register_preset(self.device["roles"][0], 1)
         logger.debug("Device selected. device=%s", os.environ["DEV_NAME"])
 
-        if os.environ["DEV_TYPE"] == "router":
-            self.refresh_tabs()
+        self.refresh_tabs()
 
     def register_preset(self, role: str, OR: str):
         set_env("OR", OR)
