@@ -49,13 +49,17 @@ class BaseConnectionHandler:
     def _execute_with_driver(self, operation, Driver=SSHDriver, *args):
         self.update_host_info()
 
-        with Driver(**self.app.driver) as conn:
-            method = getattr(conn, operation)
-            result = method(*args)
-            if isinstance(result, str):
+        try:
+            with Driver(**self.app.driver) as conn:
+                method = getattr(conn, operation)
+                result = method(*args)
+                if isinstance(result, str):
+                    self.tab.display_feedback(result)
                 self.tab.display_feedback(result)
-            self.tab.display_feedback(result)
-            return result
+                return result
+        except Exception as e:
+            self.app.tabs["CONTROL"].show_error(type(e).__name__, e)
+            raise
 
 
 class COMSSHConnectionHandler(BaseConnectionHandler):
@@ -69,8 +73,12 @@ class COMSSHConnectionHandler(BaseConnectionHandler):
 
     def _execute_with_driver(self, operation, *args):
         if os.environ["BASE_LOADED"] == "false":
-            super()._execute_with_driver("base_configure_192", Driver=COMDriver)
-            set_env("BASE_LOADED", "true")
+            try:
+                super()._execute_with_driver("base_configure_192", Driver=COMDriver)
+            except:
+                raise
+            else:
+                set_env("BASE_LOADED", "true")
         return super()._execute_with_driver(operation, *args)
 
 
