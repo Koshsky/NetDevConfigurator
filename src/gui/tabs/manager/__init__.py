@@ -1,9 +1,9 @@
-from .add_tab import AddTab
-from .preset_tab import PresetTab
-from .delete_tab import DeleteTab
-from .info_tab import InfoTab
-from .device_tab import UpdateTab
-from .template_tab import TemplateTab
+from .add import AddTab
+from .preset import PresetTab
+from .delete import DeleteTab
+from .info import InfoTab
+from .device import UpdateTab
+from .template import TemplateTab
 
 __all__ = [
     "AddTab",
