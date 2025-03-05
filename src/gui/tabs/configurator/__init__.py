@@ -1,6 +1,7 @@
-from .control_tab import ControlTab
-from .template_tab import TemplateTab
-from .hello_tab import HelloTab
-from .router_tab import RouterTab
+from .control import ControlTab
+from .templates import TemplateTab
+from .hello import HelloTab
+from .router import RouterTab
+from .interfaces import InterfacesTab
 
-__all__ = ["ControlTab", "TemplateTab", "HelloTab", "RouterTab"]
+__all__ = ["ControlTab", "TemplateTab", "HelloTab", "RouterTab", "InterfacesTab"]

@@ -6,7 +6,13 @@ import uuid
 
 from config import config
 from gui.base_app import App
-from gui.tabs.configurator import ControlTab, HelloTab, RouterTab, TemplateTab
+from gui.tabs.configurator import (
+    ControlTab,
+    HelloTab,
+    RouterTab,
+    TemplateTab,
+    InterfacesTab,
+)
 from gui.tabs.configurator.connection_handler import CONNECTION_TYPES
 from utils.config import save_configuration
 from utils.environ import del_env, env_converter, set_env
@@ -60,14 +66,12 @@ class ConfiguratorApp(App):
             "TEMPLATES",
             width=config["app"]["templates"]["width"],
             allow_none=config["app"]["templates"]["allow-none"],
-            template_filter=lambda x: x["type"] != "interface",
         )
         self.create_tab(
-            TemplateTab,
+            InterfacesTab,
             "INTERFACES",
             width=config["app"]["interfaces"]["width"],
             allow_none=config["app"]["interfaces"]["allow-none"],
-            template_filter=lambda x: x["type"] == "interface",
         )
         self.create_tab(RouterTab, "ROUTER")
         self.create_tab(ControlTab, "CONTROL")
