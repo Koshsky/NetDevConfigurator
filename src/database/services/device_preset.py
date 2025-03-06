@@ -29,7 +29,7 @@ def check_template(func):
     ) -> "DevicePresets":
         logger.debug(
             "Checking template compatibility: preset=%s, template=%s",
-            preset.name,
+            preset.role,
             template.name,
         )
         if template.role not in ["common", preset.role]:
@@ -88,7 +88,7 @@ class DevicePresetService:
         Returns:
             The newly created DevicePresets instance.
         """
-        logger.info("Adding template %s to preset %s", template.name, preset.name)
+        logger.info("Adding template %s to preset %s", template.name, preset.role)
         max_ordered_number = self._get_max_ordered_number(preset.id)
 
         device_preset = DevicePresets(
@@ -98,7 +98,7 @@ class DevicePresetService:
         )
 
         self.db.add(device_preset)
-        logger.debug("Template %s added to preset %s", template.name, preset.name)
+        logger.debug("Template %s added to preset %s", template.name, preset.role)
         return device_preset
 
     @check_template
@@ -122,7 +122,7 @@ class DevicePresetService:
         logger.info(
             "Inserting template %s into preset %s at position %d",
             template.name,
-            preset.name,
+            preset.role,
             ordered_number,
         )
         max_ordered_number = self._get_max_ordered_number(preset.id)
@@ -149,7 +149,7 @@ class DevicePresetService:
         )
 
         self.db.add(new_device_preset)
-        logger.debug("Template %s inserted into preset %s", template.name, preset.name)
+        logger.debug("Template %s inserted into preset %s", template.name, preset.role)
         return new_device_preset
 
     @transactional
@@ -191,7 +191,7 @@ class DevicePresetService:
         Raises:
             ValueError: If more interfaces are described in the preset than in the device.
         """
-        logger.debug("Validating preset: %s", preset.name)
+        logger.debug("Validating preset: %s", preset.role)
         described_interfaces = len(
             self.db.query(DevicePresets)
             .join(Templates, DevicePresets.template_id == Templates.id)
