@@ -2,7 +2,6 @@ import argparse
 import logging
 import os
 import tkinter as tk
-import uuid
 from typing import TYPE_CHECKING, Dict
 
 from config import config
@@ -16,7 +15,14 @@ from gui.tabs.configurator import (
 )
 from gui.tabs.configurator.connection_handler import CONNECTION_TYPES
 from utils.config import save_configuration
-from utils.environ import del_env, env_converter, set_env
+from utils.environ import set_env, initialize_device_environment
+
+
+if TYPE_CHECKING:
+    from database.models import Device, Preset
+    from gui.tabs import BaseTab
+
+logger = logging.getLogger("ConfiguratorApp")
 
 
 class TabRefresher:
@@ -77,13 +83,6 @@ class TabRefresher:
                 self.logger.warning(f"Unexpected tab: {name}")
 
         self.notebook.select(self.tabs["CONTROL"].frame)
-
-
-if TYPE_CHECKING:
-    from database.models import Device, Preset
-    from gui.tabs import BaseTab
-
-logger = logging.getLogger("ConfiguratorApp")
 
 
 class ConfiguratorApp(App):
@@ -190,28 +189,15 @@ class ConfiguratorApp(App):
     def register_device(self, device: "Device") -> None:
         """Registers the selected device and updates the environment."""
         self.device = self.db_services["device"].get_info(device)
-        self._update_device_environment(device)
+        initialize_device_environment(self.db_services, device)
 
-        if os.environ["DEV_TYPE"] == "router":
-            for env_param, env_value in config["router"].items():
-                set_env(env_param, env_value)
-            set_env("MODEL", env_converter.to_machine("MODEL", device.name))
-        elif self.device and self.device["roles"]:
+        if self.device.dev_type == "switch" and self.device["roles"]:
             self.register_preset(self.device["roles"][0])
         else:
             self.logger.warning("No roles found for device: %s", device.name)
 
         self.logger.debug("Device registered: %s", device.name)
         self.refresh_tabs()
-
-    def _update_device_environment(self, device: "Device") -> None:
-        """Updates the environment variables related to the device."""
-        set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")
-        del_env("DEV_ROLE")
-        set_env("DEV_NAME", device.name)
-        set_env("DEV_TYPE", device.dev_type)
-        company_name = self.db_services["company"].get_one(id=device.company_id).name
-        set_env("DEV_COMPANY", company_name)
 
     def register_preset(self, role: str, or_value: str = "1") -> None:
         """Registers the selected preset and updates the environment."""

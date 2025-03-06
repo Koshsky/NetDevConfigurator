@@ -33,7 +33,7 @@ def _process_json_config(json_config: Dict[str, Any], device_company: str) -> st
     return replace_env_vars(configuration) + "end\n"
 
 
-def save_configuration(header: str, preset: Dict[str, Any]) -> str:
+def save_configuration(header: str = "", preset: Dict[str, Any] = None) -> str:
     """Saves the generated configuration to a file.
 
     Args:

@@ -1,8 +1,34 @@
 import logging
 import os
 import re
+import uuid
+from typing import TYPE_CHECKING
+from config import config
+
+
+if TYPE_CHECKING:
+    from database.models import Device
 
 logger = logging.getLogger(__name__)
+
+
+# TODO: need tftp_enviroment setup function
+
+
+def initialize_device_environment(db_services, device: "Device") -> None:
+    """Updates the environment variables related to the device."""
+    del_env("DEV_ROLE")
+
+    set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")  # noqa: F821
+    set_env("DEV_NAME", device.name)
+    set_env("DEV_TYPE", device.dev_type)
+    company_name = db_services["company"].get_one(id=device.company_id).name
+    set_env("DEV_COMPANY", company_name)
+
+    if os.environ["DEV_TYPE"] == "router":
+        for env_param, env_value in config["router"].items():
+            set_env(env_param, env_value)
+        set_env("MODEL", env_converter.to_machine("MODEL", device.name))
 
 
 def replace_env_vars(configuration: str) -> str:
@@ -33,6 +59,7 @@ def replace_env_vars(configuration: str) -> str:
 
 
 def check_environment_variables():
+    # TODO: рефакторинг нужен
     """Checks if all required environment variables are set.
 
     Raises:
@@ -42,11 +69,10 @@ def check_environment_variables():
     logger.debug("Checking environment variables...")
     required_vars = {
         "CERT": None,
-        "OR": None,
         "DEV_NAME": None,
+        "DEV_TYPE": ["router", "switch"],
         "TFTP_FOLDER": None,
         "CFG_FILENAME": None,
-        "DEV_TYPE": None,
         "DEV_COMPANY": ["Zyxel", "Eltex"],
     }
 
@@ -58,9 +84,23 @@ def check_environment_variables():
             f"Missing required environment variables: {', '.join(missing_vars)}"
         )
 
-    if os.environ["DEV_TYPE"] == "switch" and "DEV_ROLE" not in os.environ:
-        logger.error("Missing required environment variable: DEV_ROLE")
-        raise EnvironmentError("Missing required environment variable: DEV_ROLE")
+    if os.environ["DEV_TYPE"] not in required_vars["DEV_TYPE"]:
+        logger.error("Unsupported device type: %s", os.environ["DEV_TYPE"])
+        raise ValueError(f"Unsupported device type: {os.environ['DEV_TYPE']}")
+
+    if os.environ["DEV_TYPE"] == "switch":
+        if "DEV_ROLE" not in os.environ:
+            logger.error("Missing required environment variable: DEV_ROLE")
+            raise EnvironmentError("Missing required environment variable: DEV_ROLE")
+        if os.environ["DEV_ROLE"] in [
+            "tsh",
+        ]:  # TODO: спроси для каких ролей обязательна OR
+            if "OR" not in os.environ:
+                logger.error("Missing required environment variable: OR")
+                raise EnvironmentError("Missing required environment variable: OR")
+            if not os.environ["OR"].isdigit():
+                logger.error("Environmental variable OR must be integer.")
+                raise EnvironmentError("Environmental variable OR must be integer.")
 
     if os.environ["DEV_COMPANY"] not in required_vars["DEV_COMPANY"]:
         logger.error("Unsupported device company: %s", os.environ["DEV_COMPANY"])
