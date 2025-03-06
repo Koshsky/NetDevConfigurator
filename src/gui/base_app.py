@@ -1,10 +1,8 @@
 import logging
 from tkinter import ttk
 
-from sqlalchemy.orm import sessionmaker
-
 from config import config
-from database.services import prepare_entity_collections, setup_database_services
+from database.services import init_db_connection, get_entity_collections
 
 from .tabs import ConnectionTab
 
@@ -15,17 +13,15 @@ logger = logging.getLogger("gui")
 class App:
     def __init__(self, root, title):
         self._init_root(root, title)
-        self.session = None
         self.tabs = {}
         self.create_tabs()
+        self.db_services = None
+        self.entity_collections = None
+        self.session = None
 
     def create_tabs(self):
         self.create_tab(
-            ConnectionTab,
-            CONNECTION_TAB_TITLE,
-            "normal",
-            self.on_success_callback,
-            self.on_failure_callback,
+            ConnectionTab, CONNECTION_TAB_TITLE, "normal", self.on_connection_submit
         )
 
     def create_tab(
@@ -42,20 +38,28 @@ class App:
 
         self.notebook.select(0)
 
-    def on_success_callback(self, engine):
-        self.session = sessionmaker(bind=engine)()
-        self.db_services = setup_database_services(self.session)
-        self.entity_collections = prepare_entity_collections(self.db_services)
+    def init_database(self, db_params):
+        try:
+            self.session, self.db_services = init_db_connection(db_params)
+            self.entity_collections = get_entity_collections(self.db_services)
+            return True
+        except Exception as e:
+            return self._handle_database_error(e)
 
-        self.notebook.forget(self.tabs[CONNECTION_TAB_TITLE].frame)
-        del self.tabs[CONNECTION_TAB_TITLE]
-        logger.debug("%s is forgotten", CONNECTION_TAB_TITLE)
-
-        self.refresh_tabs()
-
-    def on_failure_callback(self, error):
-        logger.error("an error occurred: %s", error)
+    def _handle_database_error(self, e):
+        logger.error("an error occurred: %s", e)
+        self.db_services = None
+        self.entity_collections = None
         self.session = None
+        raise e
+
+    def on_connection_submit(self, db_params):
+        if self.init_database(db_params):
+            self.notebook.forget(self.tabs[CONNECTION_TAB_TITLE].frame)
+            del self.tabs[CONNECTION_TAB_TITLE]
+            logger.debug("%s is forgotten", CONNECTION_TAB_TITLE)
+
+            self.refresh_tabs()
 
     def _init_root(self, root, title):
         self.root = root

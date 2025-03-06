@@ -31,6 +31,41 @@ def parse_role(role_string: str) -> Tuple[str, Optional[str]]:
         raise ValueError(f"Invalid role format: {role_string}")
 
 
+def init_db_connection(config):
+    """Initializes the database connection and services.
+
+    Args:
+        config: The configuration dictionary.
+
+    Returns:
+        A tuple containing the database session and services.
+
+    Raises:
+        SystemExit: If the database connection fails.
+    """
+    try:
+        connection_string = (
+            f"postgresql://"
+            f"{config['database']['username']}:"
+            f"{config['database']['password']}@"
+            f"{config['database']['host']}:"
+            f"{config['database']['port']}/"
+            f"{config['database']['database']}"
+        )
+        engine = create_engine(connection_string)
+        session = sessionmaker(bind=engine)()
+        db_services = setup_database_services(session)
+
+        # Проверка подключения
+        session.execute("SELECT 1").scalar()
+        logger.info("Успешное подключение к базе данных")
+        return session, db_services
+
+    except Exception as e:
+        logger.error("Ошибка подключения к базе данных: %s", e)
+        sys.exit(1)
+
+
 def main(cert: str, device_name: str, role_string: Optional[str] = None) -> None:
     """
     CLI utility for finding the most recent file.
@@ -45,21 +80,7 @@ def main(cert: str, device_name: str, role_string: Optional[str] = None) -> None
             or if the device is not found.
     """
 
-    connection_string = (
-        f"postgresql://"
-        f"{config['database']['username']}:"
-        f"{config['database']['password']}@"
-        f"{config['database']['host']}:"
-        f"{config['database']['port']}/"
-        f"{config['database']['database']}"
-    )
-    engine = create_engine(connection_string)
-    connect = engine.connect()
-    connect.close()
-    logger.info("Successful connection to the database %s", connection_string)
-
-    session = sessionmaker(bind=engine)()
-    db_services = setup_database_services(session)
+    session, db_services = init_db_connection(config)
     device = db_services["device"].get_one(name=device_name)
 
     if not device:

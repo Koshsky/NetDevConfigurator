@@ -1,8 +1,6 @@
 import logging
 import tkinter as tk
 
-from sqlalchemy import create_engine
-
 from config import config
 from gui.decorators import apply_error_handler
 
@@ -17,21 +15,17 @@ class ConnectionTab(BaseTab):
         self,
         parent,
         app,
-        on_success_callback,
-        on_failure_callback,
+        on_click_callback,
         log_name="ConnectionTab",
     ):
         super().__init__(parent, app, log_name)
-        self.on_success_callback = on_success_callback
-        self.on_failure_callback = on_failure_callback
-
-        self._fields = config["database"]
+        self.on_click_callback = on_click_callback
 
         self.entries = {}
         self.refresh_widgets()
 
     def _create_widgets(self):
-        for label_text, default_value in self._fields.items():
+        for label_text, default_value in config["database"].items():
             label = tk.Label(self.frame, text=label_text)
             label.pack(pady=5)
 
@@ -47,25 +41,9 @@ class ConnectionTab(BaseTab):
         self.message_label.pack(pady=5)
 
     def on_button_click(self):
-        db_params = {key: entry.get() for key, entry in self.entries.items()}
-
-        connection_string = (
-            f"postgresql://"
-            f"{db_params['username']}:"
-            f"{db_params['password']}@"
-            f"{db_params['host']}:"
-            f"{db_params['port']}/"
-            f"{db_params['database']}"
-        )
-
         try:
-            engine = create_engine(connection_string)
-            connect = engine.connect()
-            connect.close()
-            logger.info("Successful connection to the database %s", connection_string)
+            db_params = {key: entry.get() for key, entry in self.entries.items()}
+            self.on_click_callback(db_params)
 
-            self.on_success_callback(engine)
         except Exception as error:
-            logger.error("Connection failed to %s", connection_string)
-            self.on_failure_callback(error)
             self.message_label.config(text=f"Error: {str(error)}", fg="red")

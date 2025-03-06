@@ -13,9 +13,6 @@ def error_handler(func):
         except Exception as e:
             logger.error("%s: %s", type(e).__name__, e)
             self.show_error(type(e).__name__, e)
-        finally:
-            if self.app.session is not None:
-                self.app.session.rollback()
 
     return wrapper
 
