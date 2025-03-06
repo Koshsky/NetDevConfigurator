@@ -19,20 +19,16 @@ class AddTab(BaseTab):
         )
 
     def submit_protocol(self):
-        protocol_name = self.fields["protocol"]["name"].get().strip()
-        if not protocol_name:
+        if protocol_name := self.fields["protocol"]["name"].get().strip():
+            self.app.db_services["protocol"].create(name=protocol_name)
+        else:
             raise ValueError("Protocol name cannot be empty.")
 
-        self.app.db_services["protocol"].create(name=protocol_name)
-        self.display_feedback("Successfully added to the protocols table.")
-
     def submit_family(self):
-        family_name = self.fields["family"]["name"].get().strip()
-        if not family_name:
+        if family_name := self.fields["family"]["name"].get().strip():
+            self.app.db_services["family"].create(name=family_name)
+        else:
             raise ValueError("Family name cannot be empty.")
-
-        self.app.db_services["family"].create(name=family_name)
-        self.display_feedback("Successfully added to the families table.")
 
     def submit_device(self):
         device_name = self.fields["device"]["name"].get().strip()
@@ -56,12 +52,8 @@ class AddTab(BaseTab):
             dev_type=dev_type,
         )
 
-        self.display_feedback("Successfully added to the devices table.")
-
     def submit_company(self):
-        company_name = self.fields["company"]["name"].get().strip()
-        if not company_name:
+        if company_name := self.fields["company"]["name"].get().strip():
+            self.app.db_services["company"].create(name=company_name)
+        else:
             raise ValueError("Company name cannot be empty.")
-
-        self.app.db_services["company"].create(name=company_name)
-        self.display_feedback("Successfully added to the companies table.")
