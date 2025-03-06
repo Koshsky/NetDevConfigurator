@@ -109,12 +109,24 @@ class ConfiguratorApp(App):
         """Returns the driver configuration."""
         host_address = os.environ.get("HOST_ADDRESS")
         host_port = os.environ.get("HOST_PORT")
-        try:
-            host_username = os.environ["HOST_USERNAME"]
-            host_password = os.environ["HOST_PASSWORD"]
-        except KeyError as e:
-            self.logger.error("Missing required environment variable: %s", e)
-            raise  # Re-raise the exception after logging
+        host_username = os.environ.get("HOST_USERNAME")
+        host_password = os.environ.get("HOST_PASSWORD")
+        if missing_vars := [
+            var
+            for var, value in (
+                ("HOST_ADDRESS", host_address),
+                ("HOST_PORT", host_port),
+                ("HOST_USERNAME", host_username),
+                ("HOST_PASSWORD", host_password),
+            )
+            if value is None
+        ]:
+            self.logger.error(
+                "Missing required environment variable(s): %s", ", ".join(missing_vars)
+            )
+            raise EnvironmentError(
+                f"Missing required environment variable(s): {', '.join(missing_vars)}"
+            )
 
         return {
             "auth_strict_key": False,
@@ -141,9 +153,13 @@ class ConfiguratorApp(App):
             dev_type = os.environ.get("DEV_TYPE")
             if dev_type == "router":
                 self.tabs["ROUTER"].update_config()
-            else:
+            elif dev_type == "switch":
                 self.tabs["TEMPLATES"].update_config()
                 self.tabs["INTERFACES"].update_config()
+            else:
+                raise ValueError(
+                    f"Invalid or unset DEV_TYPE environment variable: {dev_type}"
+                )
 
         header = control_tab.connection_handler.get_header()
         save_configuration(header, self.preset)
@@ -156,9 +172,11 @@ class ConfiguratorApp(App):
         try:
             with open(config_filepath, "r") as f:
                 return f.read()
-        except FileNotFoundError:
+        except FileNotFoundError as e:
             self.logger.error("Configuration file not found: %s", config_filepath)
-            return ""
+            raise FileNotFoundError(
+                f"Configuration file not found: {config_filepath}"
+            ) from e
 
     def create_tabs(self) -> None:
         """Creates and adds tabs to the notebook."""
@@ -172,12 +190,7 @@ class ConfiguratorApp(App):
     def register_device(self, device: "Device") -> None:
         """Registers the selected device and updates the environment."""
         self.device = self.db_services["device"].get_info(device)
-        set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")
-        del_env("DEV_ROLE")
-        set_env("DEV_NAME", device.name)
-        set_env("DEV_TYPE", device.dev_type)
-        company_name = self.db_services["company"].get_one(id=device.company_id).name
-        set_env("DEV_COMPANY", company_name)
+        self._update_device_environment(device)
 
         if os.environ["DEV_TYPE"] == "router":
             for env_param, env_value in config["router"].items():
@@ -190,6 +203,15 @@ class ConfiguratorApp(App):
 
         self.logger.debug("Device registered: %s", device.name)
         self.refresh_tabs()
+
+    def _update_device_environment(self, device: "Device") -> None:
+        """Updates the environment variables related to the device."""
+        set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")
+        del_env("DEV_ROLE")
+        set_env("DEV_NAME", device.name)
+        set_env("DEV_TYPE", device.dev_type)
+        company_name = self.db_services["company"].get_one(id=device.company_id).name
+        set_env("DEV_COMPANY", company_name)
 
     def register_preset(self, role: str, or_value: str = "1") -> None:
         """Registers the selected preset and updates the environment."""
