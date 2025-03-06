@@ -12,6 +12,10 @@ from gui.tabs.manager import (
 
 
 class DBManagerApp(App):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.tabs["CONNECTION"].on_button_click()
+
     def create_tabs(self):
         super().create_tabs()
         self.create_tab(AddTab, "ADD")
