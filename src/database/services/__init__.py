@@ -1,11 +1,11 @@
-from .company_service import CompanyService
-from .device_service import DeviceService
+from .company import CompanyService
+from .device import DeviceService
 from .exceptions import EntityNotFoundError
-from .family_service import FamilyService
-from .port_service import PortService
-from .preset_service import PresetService, allowed_roles
-from .protocol_service import ProtocolService
-from .template_service import TemplateService, allowed_types
+from .family import FamilyService
+from .port import PortService
+from .preset import PresetService, allowed_roles
+from .protocol import ProtocolService
+from .template import TemplateService, allowed_types
 
 __all__ = [
     "CompanyService",
