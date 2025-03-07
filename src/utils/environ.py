@@ -94,7 +94,8 @@ def check_environment_variables():
             raise EnvironmentError("Missing required environment variable: DEV_ROLE")
         if os.environ["DEV_ROLE"] in [
             "tsh",
-        ]:  # TODO: спроси для каких ролей обязательна OR
+            "or",
+        ]:
             if "OR" not in os.environ:
                 logger.error("Missing required environment variable: OR")
                 raise EnvironmentError("Missing required environment variable: OR")
