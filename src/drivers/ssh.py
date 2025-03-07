@@ -3,6 +3,7 @@ import re
 import socket
 import time
 from functools import wraps
+from typing import Any, List
 
 import paramiko
 
@@ -11,21 +12,54 @@ from .base_driver import BaseDriver
 logger = logging.getLogger("ssh")
 
 
-def check_port_open(func):
+def check_port_open(func: callable) -> callable:
+    """Decorator to check if the SSH port is open before executing a function.
+
+    Args:
+        func: The function to be decorated.
+
+    Returns:
+        The decorated function.
+
+    Raises:
+        Exception: If the SSH port is not open.
+    """
+
     @wraps(func)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(self, *args: Any, **kwargs: Any) -> Any:
         if self.ssh is None:
             logger.critical(
                 "SSH port is not open. Please use context manager to manipulate with network device via SSH"
             )
-            raise Exception("SSH port is not open")
+            raise SSHPortNotOpenError("SSH port is not open")
         return func(self, *args, **kwargs)
 
     return wrapper
 
 
+class SSHPortNotOpenError(Exception):
+    """Raised when attempting to interact with an unopened SSH connection."""
+
+    pass
+
+
 class SSHBaseDriver(BaseDriver):
-    def __init__(self, on_open_sequence, comms_prompt_pattern, **driver):
+    """Base driver for SSH connections.
+
+    This class provides the basic functionality for interacting with
+    network devices via SSH, including sending commands and receiving responses.
+    """
+
+    def __init__(
+        self, on_open_sequence: List[str], comms_prompt_pattern: str, **driver: Any
+    ) -> None:
+        """Initializes the SSHBaseDriver.
+
+        Args:
+            on_open_sequence (str): The sequence of commands to execute upon opening the connection.
+            comms_prompt_pattern (str): The regex pattern to match the command prompt.
+            **driver (dict): Additional driver parameters.
+        """
         self.on_open_sequence = on_open_sequence
         self.comms_prompt_pattern = comms_prompt_pattern
         self.address = driver["host"]
@@ -35,17 +69,31 @@ class SSHBaseDriver(BaseDriver):
         self.ssh = None
 
     @property
-    def __connection_string(self):
+    def __connection_string(self) -> str:
+        """Returns the connection string."""
         return f"{self.username}:{self.password}@{self.address}:{self.port}"
 
     @check_port_open
     def send_command(self, command: str) -> str:
+        """Sends a command to the SSH server.
+
+        Args:
+            command: The command to send.
+
+        Returns:
+            The response from the server.
+        """
         self.ssh.send(f"{command}\n")
         logger.info("Send: %s", command)
         return self._get_response()
 
     @check_port_open
-    def _get_response(self):
+    def _get_response(self) -> str:
+        """Gets the response from the SSH server.
+
+        Returns:
+            The response from the server.
+        """
         output = ""
 
         while True:
@@ -69,11 +117,21 @@ class SSHBaseDriver(BaseDriver):
                 continue
         return "\n".join(output.split("\n")[1:-1])
 
-    def __enter__(self):
+    def __enter__(self) -> "SSHBaseDriver":
+        """Enters the context manager and establishes the SSH connection.
+
+        Returns:
+            The SSHBaseDriver instance.
+
+        Raises:
+            TimeoutError: If the connection times out.
+            paramiko.SSHException: If there is an SSH error.
+            Exception: For any other connection error.
+        """
         try:
-            cl = paramiko.SSHClient()
-            cl.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            cl.connect(
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            client.connect(
                 hostname=self.address,
                 port=self.port,
                 username=self.username,
@@ -82,26 +140,30 @@ class SSHBaseDriver(BaseDriver):
                 allow_agent=False,
                 timeout=4,
             )
-            self.ssh = cl.invoke_shell()
+            self.ssh = client.invoke_shell()
             self.ssh.settimeout(1)
+            logger.info("Successful connection to %s via ssh", self.__connection_string)
+            self.execute(self.on_open_sequence)
+            return self
         except TimeoutError as e:
             logger.error(
-                "Connection failed to %s via ssh: timed out", self.__connection_string
+                f"Connection to {self.__connection_string} via ssh timed out: {e}"
             )
-            raise e
+            raise
         except paramiko.SSHException as e:
-            logger.error(
-                "Connection failed to %s via ssh: %s", self.__connection_string, e
-            )
-            raise e
+            logger.error(f"SSH connection to {self.__connection_string} failed: {e}")
+            raise
         except Exception as e:
-            logger.critical("Unknown error during connection: %s (%s)", type(e), e)
-            raise e
-        logger.info("Successful connection to %s via ssh", self.__connection_string)
-        self.execute(self.on_open_sequence)
-        return self
+            logger.critical(
+                f"Unknown error during connection to {self.__connection_string}: {type(e)}: {e}"
+            )
+            raise
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """Exits the context manager and closes the SSH connection.
+
+        Closes the SSH connection and logs any exceptions that occurred.
+        """
         if self.ssh:
             self.ssh.close()
             logger.info("SSH connection closed.")
@@ -109,5 +171,3 @@ class SSHBaseDriver(BaseDriver):
 
         if exc_type is not None:
             logger.error("An exception occurred: %s", exc_val)
-
-        return False  # Propagate the exception if one occurred

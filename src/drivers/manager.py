@@ -14,7 +14,25 @@ logger = logging.getLogger(__name__)
 
 
 class ConnectionManager:
-    def __init__(self, device, connection_type: str, **driver_kwargs):
+    """Manages the connection to a network device.
+
+    This class handles the initialization and management of the connection
+    to a network device using different driver types (SSH, COM, Mock).
+    It provides methods for configuring the device, retrieving information,
+    and updating firmware.
+    """
+
+    def __init__(self, device: dict, connection_type: str, **driver_kwargs):
+        """Initializes the ConnectionManager.
+
+        Args:
+            device: A dictionary containing device information.
+            connection_type: The type of connection ("ssh", "com", or "mock").
+            **driver_kwargs: Additional keyword arguments for the driver.
+
+        Raises:
+            ValueError: If the connection type is invalid.
+        """
         self.core = get_core(device["family"]["name"])
         self.device = device
 
@@ -31,14 +49,25 @@ class ConnectionManager:
         else:
             raise ValueError(f"Invalid connection type: {connection_type}")
 
-    def __enter__(self):
+    def __enter__(self) -> "ConnectionManager":
+        """Enters the context manager and establishes the connection to the device.
+
+        Returns:
+            The ConnectionManager instance.
+        """
         self.driver.__enter__()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        """Exits the context manager and closes the connection to the device."""
         self.driver.__exit__(exc_type, exc_val, exc_tb)
 
-    def base_configure_192(self):
+    def base_configure_192(self) -> str:
+        """Configures the device with a base 192.168.3.x IP address.
+
+        Returns:
+            The output of the configuration commands.
+        """
         available_ip = find_available_ip(
             "192.168.3.0/24",  # hardcode bc 192 in function name
             lambda ip: ip.packed[-1] >= 100 and ip.packed[-1] < 201,
@@ -46,74 +75,77 @@ class ConnectionManager:
         set_env("HOST_ADDRESS", available_ip)
         return self.driver.execute(self.core.base_configure_192)
 
-    def show_run(self):
+    def show_run(self) -> str:
+        """Executes the 'show running-config' command.
+
+        Returns:
+            The running configuration of the device.
+        """
         return self.driver.execute(self.core.show_run)
 
-    def get_header(self):
-        config = self.show_run()
-        header = "".join(
-            line + "\n"
-            for line in config.split("\n")
-            if line.startswith(self.core.comment_symbol)
-        )
-        return header + "!\n"
+    def get_header(self) -> str:
+        """Retrieves the header from the running configuration.
 
-    def update_startup_config(self):
+        Returns:
+            The header of the running configuration.
+        """
+        config = self.show_run()
+        return (
+            "".join(
+                line + "\n"
+                for line in config.splitlines()
+                if line.startswith(self.core.comment_symbol)
+            )
+            + "!\n"
+        )
+
+    def update_startup_config(self) -> str:
+        """Updates the startup configuration.
+
+        Returns:
+            The output of the update command.
+        """
         command = self.core.update_startup_config
         return self.driver.execute(command)
 
-    def reboot(self):
+    def reboot(self) -> None:
+        """Reboots the device."""
         self.driver.execute(self.core.reload)
 
-    def update_boot(self):
+    def _load_firmware_component(self, component_type: str) -> str:
+        """Updates a specific firmware component (boot, uboot, or firmware).
+
+        Args:
+            component_type: The type of the firmware component ("boot", "uboot", "firmware").
+
+        Returns:
+            The output of the update command, or an empty string if no file is found.
+        """
+
         filename = find_most_recent_file(
-            f"{os.environ['TFTP_FOLDER']}/firmware", self.device["pattern"]["boot"]
+            f"{os.environ['TFTP_FOLDER']}/firmware",
+            self.device["pattern"][component_type],
         )
-        if filename is None:
+        if not filename:
             logger.warning(
-                "There is no boot file for %s in %s matching %s",
+                f"There is no {component_type} file for %s in %s matching %s",
                 self.device["name"],
                 os.environ["TFTP_FOLDER"],
-                self.device["pattern"]["boot"],
+                self.device["pattern"][component_type],
             )
             return ""
-        else:
-            set_env("FILENAME", filename)
-            return self.driver.execute(self.core.load_boot)
 
-    def update_uboot(self):
-        filename = find_most_recent_file(
-            f"{os.environ['TFTP_FOLDER']}/firmware", self.device["pattern"]["uboot"]
+        set_env("FILENAME", filename)
+        return self.driver.execute(getattr(self.core, f"load_{component_type}"))
+
+    def update_firmwares(self) -> str:
+        """Updates all firmware components (boot, U-Boot, firmware).
+
+        Returns:
+            The combined output of all update commands.
+        """
+        return (
+            self._load_firmware_component("boot")
+            + self._load_firmware_component("uboot")
+            + self._load_firmware_component("firmware")
         )
-        if filename is None:
-            logger.warning(
-                "There is no uboot file for %s in %s matching %s",
-                self.device["name"],
-                os.environ["TFTP_FOLDER"],
-                self.device["pattern"]["uboot"],
-            )
-            return ""
-        else:
-            set_env("FILENAME", filename)
-            return self.driver.execute(self.core.load_uboot)
-
-    def update_firmware(self):
-        filename = find_most_recent_file(
-            f"{os.environ['TFTP_FOLDER']}/firmware", self.device["pattern"]["firmware"]
-        )
-        if filename is None:
-            logger.warning(
-                "There is no firmware file for %s in %s matching %s",
-                self.device["name"],
-                os.environ["TFTP_FOLDER"],
-                self.device["pattern"]["firmware"],
-            )
-            return ""
-        else:
-            set_env("FILENAME", filename)
-            return self.driver.execute(self.core.load_firmware)
-
-    def update_firmwares(self):
-        res = self.update_boot()
-        res += self.update_uboot()
-        return res + self.update_firmware()
