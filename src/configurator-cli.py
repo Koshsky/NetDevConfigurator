@@ -1,5 +1,3 @@
-import logging
-
 import os
 import sys
 
@@ -7,8 +5,6 @@ from config import config, disable_logging
 from database.services import init_db_connection, EntityNotFoundError
 from utils.config import save_configuration
 from utils.environ import initialize_device_environment, set_env
-
-logger = logging.getLogger(__name__)
 
 
 def get_cert():
@@ -78,7 +74,7 @@ def prepare_configuration_file():
             save_configuration("header\n")
         print(f"Path to file: {os.environ['CFG_FILENAME']}")
     except Exception as e:
-        logger.exception("An error occurred: %s", e)
+        print("An error occurred:", e)
         sys.exit(1)
 
 
