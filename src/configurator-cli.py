@@ -94,10 +94,10 @@ def prepare_credentials():
             )
             set_env(var_name, var_value)
         if False:  # TODO: test connection.
-            break
-        else:
             connection_string = "aa:bb@cc:dd"
             print(f"Cannot connection to {connection_string}. Please try again.")
+        else:
+            break
 
 
 if __name__ == "__main__":
