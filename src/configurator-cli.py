@@ -31,7 +31,7 @@ def get_device(db_services):
 
 
 def get_switch_role(device_info):
-    if device_info["dev_type"] == "router":
+    if device_info["dev_type"] != "switch":
         return None
 
     while True:
