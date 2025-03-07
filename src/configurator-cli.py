@@ -98,7 +98,7 @@ def prepare_credentials():
 
 if __name__ == "__main__":
     with disable_logging():
-        from drivers import SSHDriver, MockDriver
+        from drivers import ConnectionManager
 
         prepare_credentials()
         prepare_configuration_file()

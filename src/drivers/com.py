@@ -5,7 +5,7 @@ import serial
 
 from config import config
 
-from ..core import get_core
+from .base_driver import BaseDriver
 
 logger = logging.getLogger("COM")
 
@@ -23,9 +23,10 @@ def check_port_open(func):
     return wrapper
 
 
-class COMBaseDriver:
-    def __init__(self, device, **driver):
-        self.core = get_core(device["family"]["name"])
+class COMBaseDriver(BaseDriver):
+    def __init__(self, on_open_sequence, comms_prompt_pattern, **driver):
+        self.on_open_sequence = on_open_sequence
+        self.comms_prompt_pattern = comms_prompt_pattern
         self.ser = serial.Serial(
             port=config["serial-port"],
             baudrate=115200,
@@ -47,27 +48,12 @@ class COMBaseDriver:
         return self._get_response()
 
     @check_port_open
-    def send_commands(self, commands):
-        for command in commands:
-            self.ser.write(f"{command}\n".encode())
-            logger.info("Send: %s", command)
-        return self._get_response()
-
-    @check_port_open
     def _get_response(self):
         output = "\n".join(line.decode().strip() for line in self.ser.readlines())
         logger.debug(
             f"Read {len(output)} symbols. No more data to read.",
         )
         return output
-
-    @check_port_open
-    def _on_open(self):
-        self.__log_in()
-        self.send_commands(self.core.open_sequence)
-        logger.debug(
-            "On open sequence for %s was sent successfully", type(self.core).__name__
-        )
 
     def __enter__(self):
         if self.ser.is_open:
@@ -77,7 +63,8 @@ class COMBaseDriver:
         except serial.SerialException as e:
             logger.error("Serial port cannot be open: %s", e)
             raise Exception("Failed to open serial port")
-        self._on_open()
+        self.__log_in()
+        self.execute(self.on_open_sequence)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

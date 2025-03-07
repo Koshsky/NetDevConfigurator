@@ -1,5 +1,10 @@
-from .ssh.ssh_driver import SSHDriver
-from .com.com_driver import COMDriver
-from .mock.mock_driver import MockDriver
+from config import config
+from utils.environ import set_env
 
-__all__ = ["SSHDriver", "COMDriver", "MockDriver"]
+from .manager import ConnectionManager
+
+set_env("TFTP_ADDRESS", config["tftp-server"]["address"])
+set_env("TFTP_PORT", config["tftp-server"]["port"])
+set_env("TFTP_FOLDER", config["tftp-server"]["folder"])
+
+__all__ = ["ConnectionManager"]

@@ -1,10 +1,12 @@
 import logging
-import socket
 import re
-from functools import wraps
-import paramiko
+import socket
 import time
-from drivers.core import get_core
+from functools import wraps
+
+import paramiko
+
+from .base_driver import BaseDriver
 
 logger = logging.getLogger("ssh")
 
@@ -22,10 +24,10 @@ def check_port_open(func):
     return wrapper
 
 
-class SSHBaseDriver:
-    def __init__(self, device, **driver):
-        self.core = get_core(device["family"]["name"])
-        self.device = device
+class SSHBaseDriver(BaseDriver):
+    def __init__(self, on_open_sequence, comms_prompt_pattern, **driver):
+        self.on_open_sequence = on_open_sequence
+        self.comms_prompt_pattern = comms_prompt_pattern
         self.address = driver["host"]
         self.username = driver["auth_username"]
         self.password = driver["auth_password"]
@@ -37,17 +39,10 @@ class SSHBaseDriver:
         return f"{self.username}:{self.password}@{self.address}:{self.port}"
 
     @check_port_open
-    def send_command(self, command: str, get_response=True) -> str:
+    def send_command(self, command: str) -> str:
         self.ssh.send(f"{command}\n")
         logger.info("Send: %s", command)
-        return self._get_response() if get_response else None
-
-    @check_port_open
-    def send_commands(self, commands, get_response=True):
-        for command in commands:
-            self.ssh.send(f"{command}\n")
-            logger.info("Send: %s", command)
-        return self._get_response() if get_response else None
+        return self._get_response()
 
     @check_port_open
     def _get_response(self):
@@ -103,11 +98,8 @@ class SSHBaseDriver:
             logger.critical("Unknown error during connection: %s (%s)", type(e), e)
             raise e
         logger.info("Successful connection to %s via ssh", self.__connection_string)
-        self._on_open()
+        self.execute(self.on_open_sequence)
         return self
-
-    def _on_open(self):
-        self.send_commands(self.core.open_sequence)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.ssh:

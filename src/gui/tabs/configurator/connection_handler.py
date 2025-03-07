@@ -3,7 +3,7 @@ import os
 from typing import Dict, List, Tuple, Type
 
 from config import config
-from drivers import COMDriver, MockDriver, SSHDriver
+from drivers import ConnectionManager
 from utils.environ import set_env
 
 from ..base_tab import BaseTab
@@ -85,7 +85,7 @@ class BaseConnectionHandler:
 
     def __getattr__(self, name: str):
         """Dynamically handles SSH driver methods."""
-        if hasattr(SSHDriver, name):
+        if hasattr(ConnectionManager, name):
 
             def dynamic_method(*args):
                 return self._execute_with_driver(operation=name, *args)
@@ -95,9 +95,7 @@ class BaseConnectionHandler:
             f"'{self.__class__.__name__}' object has no attribute '{name}'"
         )
 
-    def _execute_with_driver(
-        self, operation: str, Driver: Type[SSHDriver] = SSHDriver, *args
-    ):
+    def _execute_with_driver(self, operation: str, connection_type: str, *args):
         """Executes an operation using the specified driver.
 
         Args:
@@ -110,7 +108,9 @@ class BaseConnectionHandler:
         self.update_host_info()
 
         try:
-            with Driver(**self.app.driver) as conn:
+            with ConnectionManager(
+                self.app.device, connection_type, **self.app.driver
+            ) as conn:
                 method = getattr(conn, operation)
                 result = method(*args)
                 if isinstance(result, str):
@@ -140,13 +140,15 @@ class COMSSHConnectionHandler(BaseConnectionHandler):
         """Executes an operation, configuring the base connection if necessary."""
         if os.environ.get("BASE_LOADED") == "false":
             try:
-                super()._execute_with_driver("base_configure_192", Driver=COMDriver)
+                super()._execute_with_driver(
+                    "base_configure_192", connection_type="com"
+                )
             except Exception:
                 logger.exception("Error during base configuration.")
                 raise
             else:
                 set_env("BASE_LOADED", "true")
-        return super()._execute_with_driver(operation, *args)
+        return super()._execute_with_driver(operation, connection_type="ssh", *args)
 
 
 class MockConnectionHandler(BaseConnectionHandler):
@@ -164,7 +166,7 @@ class MockConnectionHandler(BaseConnectionHandler):
 
     def _execute_with_driver(self, operation: str, *args):
         """Executes an operation using the MockDriver."""
-        return super()._execute_with_driver(operation, Driver=MockDriver, *args)
+        return super()._execute_with_driver(operation, connection_type="mock", *args)
 
 
 class SSHConnectionHandler(BaseConnectionHandler):
