@@ -73,7 +73,7 @@ class BaseService(Generic[ModelType]):
         entity_count = len(entities)
 
         if entity_count == 1:
-            logger.info("Found one %s entity: %s", self.model.__name__, kwargs)
+            logger.debug("Found one %s entity: %s", self.model.__name__, kwargs)
             return entities[0]
         elif entity_count == 0:
             logger.warning(
@@ -147,7 +147,7 @@ class BaseService(Generic[ModelType]):
             self.db.add(entity)
             self.db.commit()
             self.db.refresh(entity)
-            logger.info("Created %s successfully: %s", self.model.__name__, kwargs)
+            logger.debug("Created %s successfully: %s", self.model.__name__, kwargs)
             return entity
         except SQLAlchemyError as e:
             logger.error("Failed to create %s: %s", self.model.__name__, str(e))
@@ -168,7 +168,7 @@ class BaseService(Generic[ModelType]):
             setattr(entity, key, value)
         self.db.commit()
         self.db.refresh(entity)
-        logger.info("Updated %s successfully: %s", self.model.__name__, updated_data)
+        logger.debug("Updated %s successfully: %s", self.model.__name__, updated_data)
         return entity
 
     def delete_one(self, **kwargs: Any) -> None:
@@ -189,6 +189,6 @@ class BaseService(Generic[ModelType]):
         if entity:
             self.db.delete(entity)
             self.db.commit()
-            logger.info(
+            logger.debug(
                 "%s with id %d deleted successfully", self.model.__name__, entity.id
             )

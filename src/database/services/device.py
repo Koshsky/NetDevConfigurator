@@ -46,7 +46,7 @@ class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
         Returns:
             The updated device.
         """
-        logger.info("Updating masks for device: %s", device.name)
+        logger.debug("Updating masks for device: %s", device.name)
         device.boot = boot
         device.uboot = uboot
         device.firmware = firmware
@@ -72,7 +72,7 @@ class DeviceService(BaseService, DevicePortService, DeviceProtocolService):
             A dictionary containing device details, including associated
             presets, protocols, and ports.
         """
-        logger.info("Retrieving information for device: %s", device.name)
+        logger.debug("Retrieving information for device: %s", device.name)
         presets = (
             self.db.query(Presets)
             .join(Devices, Presets.device_id == Devices.id)

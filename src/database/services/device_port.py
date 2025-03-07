@@ -41,7 +41,7 @@ class DevicePortService:
         Returns:
             The device with updated ports.
         """
-        logger.info("Updating ports for device: %s", device.name)
+        logger.debug("Updating ports for device: %s", device.name)
         self._reset_ports(device)
         if ports is not None:
             for port in ports:
@@ -61,7 +61,7 @@ class DevicePortService:
         Args:
             device: The device to reset ports for.
         """
-        logger.info("Resetting ports for device: %s", device.name)
+        logger.debug("Resetting ports for device: %s", device.name)
         deleted_count = (
             self.db.query(DevicePorts)
             .filter(DevicePorts.device_id == device.id)
@@ -85,7 +85,7 @@ class DevicePortService:
         Returns:
             A list of dictionaries, each containing information about a port.
         """
-        logger.info("Retrieving ports for device: %s", device.name)
+        logger.debug("Retrieving ports for device: %s", device.name)
         ports = [
             {
                 "interface": device_port.interface,
@@ -124,7 +124,7 @@ class DevicePortService:
         Raises:
             NotImplementedError: If there's no method for getting the next interface for the company.
         """
-        logger.info("Adding port %s to device: %s", port.name, device.name)
+        logger.debug("Adding port %s to device: %s", port.name, device.name)
         company = (
             self.db.query(Companies)
             .join(Devices, Companies.id == Devices.company_id)

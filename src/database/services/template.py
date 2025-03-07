@@ -67,7 +67,7 @@ class TemplateService(BaseService[Templates]):
                 f"Invalid type: '{template_type}'. Allowed types are: {allowed_types}"
             )
 
-        logger.info("Creating template with data: %s", kwargs)
+        logger.debug("Creating template with data: %s", kwargs)
         return super().create(**kwargs)
 
     def get_info(self, template: "Templates") -> JsonType:
@@ -79,7 +79,7 @@ class TemplateService(BaseService[Templates]):
         Returns:
             A dictionary containing template information.
         """
-        logger.info("Retrieving information for template: %s", template.name)
+        logger.debug("Retrieving information for template: %s", template.name)
         family = FamilyService(self.db).get_one(id=template.family_id)
         template_info: Dict[str, JsonType] = {
             "name": template.name,

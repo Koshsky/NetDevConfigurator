@@ -88,7 +88,7 @@ class DevicePresetService:
         Returns:
             The newly created DevicePresets instance.
         """
-        logger.info("Adding template %s to preset %s", template.name, preset.role)
+        logger.debug("Adding template %s to preset %s", template.name, preset.role)
         max_ordered_number = self._get_max_ordered_number(preset.id)
 
         device_preset = DevicePresets(
@@ -119,7 +119,7 @@ class DevicePresetService:
         Raises:
             ValueError: If the ordered_number exceeds the allowed limit.
         """
-        logger.info(
+        logger.debug(
             "Inserting template %s into preset %s at position %d",
             template.name,
             preset.role,
@@ -160,7 +160,7 @@ class DevicePresetService:
             preset_id: The ID of the preset.
             ordered_number: The position of the template to remove.
         """
-        logger.info(
+        logger.debug(
             "Removing template at position %d from preset_id %d",
             ordered_number,
             preset_id,

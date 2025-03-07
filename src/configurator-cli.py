@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 import re
 import sys
 from typing import Optional, Tuple
@@ -25,7 +26,8 @@ def parse_role(role_string: str) -> Tuple[str, Optional[str]]:
         ValueError: If the role string format is invalid.
     """
     if not (match := re.match(r"([a-zA-Z]+)(\d+)?", role_string)):
-        raise ValueError(f"Invalid role format: {role_string}")
+        logger.error("Invalid role format: %s", role_string)
+        sys.exit(1)
     set_env("DEV_ROLE", match[1])
     if match[2]:
         set_env("OR", match[2])
@@ -59,12 +61,14 @@ def main(cert: str, device_name: str, role_string: Optional[str] = None) -> None
         role, OR = parse_role(role_string) if role_string else (None, None)
         preset = db_services["preset"].get_info_one(device_id=device.id, role=role)
         res = save_configuration("", preset)
-        print(res)  # TODO: or print path to file?
+        print(res)
     elif device.dev_type == "router":
         res = save_configuration()
         print(res)
     else:
         logger.error()
+        sys.exit(1)
+    logger.info("Path to file: %s", os.environ["CFG_FILENAME"])
 
 
 if __name__ == "__main__":

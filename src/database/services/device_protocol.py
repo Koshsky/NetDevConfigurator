@@ -37,7 +37,7 @@ class DeviceProtocolService:
             device: The device to update protocols for.
             protocols: A list of protocols to associate with the device.
         """
-        logger.info("Updating protocols for device: %s", device.name)
+        logger.debug("Updating protocols for device: %s", device.name)
         self._reset_protocols(device)
         for protocol in protocols:
             self._add_protocol(device, protocol)
@@ -55,7 +55,7 @@ class DeviceProtocolService:
         Args:
             device: The device to reset protocols for.
         """
-        logger.info("Resetting protocols for device: %s", device.name)
+        logger.debug("Resetting protocols for device: %s", device.name)
         deleted_count = (
             self.db.query(DeviceProtocols)
             .filter(DeviceProtocols.device_id == device.id)
@@ -77,7 +77,7 @@ class DeviceProtocolService:
         Returns:
             A list of protocol information dictionaries.
         """
-        logger.info("Retrieving protocols for device: %s", device.name)
+        logger.debug("Retrieving protocols for device: %s", device.name)
         protocols = [
             ProtocolService(self.db).get_info(protocol)
             for protocol in (
@@ -106,7 +106,7 @@ class DeviceProtocolService:
         Returns:
             The newly created DeviceProtocols instance.
         """
-        logger.info("Adding protocol %s to device: %s", protocol.name, device.name)
+        logger.debug("Adding protocol %s to device: %s", protocol.name, device.name)
         device_protocol = DeviceProtocols(device_id=device.id, protocol_id=protocol.id)
         self.db.add(device_protocol)
         self.db.commit()

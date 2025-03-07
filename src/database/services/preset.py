@@ -63,7 +63,7 @@ class PresetService(BaseService, DevicePresetService):
             raise ValueError(
                 f"Invalid role: '{role}'. Allowed roles are: {allowed_roles}"
             )
-        logger.info("Creating preset with data: %s", kwargs)
+        logger.debug("Creating preset with data: %s", kwargs)
         return super().create(**kwargs)
 
     def get_info(self, preset: "Presets", check: bool = False) -> JsonType:
@@ -80,7 +80,7 @@ class PresetService(BaseService, DevicePresetService):
         Raises:
             ValueError: If check is True and the preset configuration is invalid.
         """
-        logger.info("Retrieving information for preset: %s", preset.role)
+        logger.debug("Retrieving information for preset: %s", preset.role)
         device = self.device_service.get_info_one(id=preset.device_id)
         if check and not self.validate(preset):
             logger.error(
