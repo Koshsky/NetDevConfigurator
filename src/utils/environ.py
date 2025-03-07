@@ -110,7 +110,7 @@ def check_environment_variables():
     logger.debug("All required environment variables are set.")
 
 
-def set_env(key: str, value: str | int) -> bool:
+def set_env(key: str, value: str | int | None) -> bool:
     """Sets an environment variable.
 
     Args:
@@ -120,6 +120,9 @@ def set_env(key: str, value: str | int) -> bool:
     Returns:
         True if the environment variable was set or updated, False otherwise.
     """
+    if value is None:
+        return
+
     value = str(value)
     if key not in os.environ or os.environ[key] != value:
         os.environ[key] = value

@@ -7,7 +7,7 @@ formatters:
 handlers:
   stdout:
     class: logging.StreamHandler
-    stream: ext://sys.stderr
+    stream: ext://sys.stdout
     formatter: simple
   file:
     class: logging.FileHandler

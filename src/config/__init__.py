@@ -1,5 +1,6 @@
 import logging
 import logging.config
+from contextlib import contextmanager
 
 import yaml
 
@@ -10,3 +11,12 @@ logging.getLogger("paramiko").setLevel(logging.WARNING)
 
 config = yaml.safe_load(open("./src/config/config.yaml"))
 config["router"] = yaml.safe_load(open("./src/config/router.yaml"))
+
+
+@contextmanager
+def disable_logging():
+    try:
+        logging.disable(logging.CRITICAL)
+        yield
+    finally:
+        logging.disable(logging.NOTSET)
