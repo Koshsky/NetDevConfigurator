@@ -7,9 +7,15 @@ from typing import Any, List
 
 import paramiko
 
-from .base_driver import BaseDriver
+from .base_driver import BaseDriver, ConnectionError
 
 logger = logging.getLogger("ssh")
+
+
+class SSHPortOpenError(ConnectionError):
+    """Raised when attempting to interact with an unopened SSH connection."""
+
+    pass
 
 
 def check_port_open(func: callable) -> callable:
@@ -31,16 +37,10 @@ def check_port_open(func: callable) -> callable:
             logger.critical(
                 "SSH port is not open. Please use context manager to manipulate with network device via SSH"
             )
-            raise SSHPortNotOpenError("SSH port is not open")
+            raise SSHPortOpenError("SSH port is not open")
         return func(self, *args, **kwargs)
 
     return wrapper
-
-
-class SSHPortNotOpenError(Exception):
-    """Raised when attempting to interact with an unopened SSH connection."""
-
-    pass
 
 
 class SSHBaseDriver(BaseDriver):

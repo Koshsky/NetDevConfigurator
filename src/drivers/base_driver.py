@@ -5,6 +5,24 @@ from typing import List, Any
 logger = logging.getLogger("COM")
 
 
+class DriverError(Exception):
+    """Base class for all driver-related exceptions."""
+
+    pass
+
+
+class ConnectionError(DriverError):
+    """Base class for exceptions related to connection problems."""
+
+    pass
+
+
+class AuthenticationError(DriverError):
+    """Base class for exceptions related to authentication problems."""
+
+    pass
+
+
 class BaseDriver(ABC):
     """Abstract base class for device drivers."""
 

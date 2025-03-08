@@ -6,18 +6,18 @@ import serial
 
 from config import config
 
-from .base_driver import BaseDriver
+from .base_driver import BaseDriver, ConnectionError, AuthenticationError
 
 logger = logging.getLogger("COM")
 
 
-class SerialPortOpenError(Exception):
+class SerialPortOpenError(ConnectionError):
     """Raised when there is an error opening the serial port."""
 
     pass
 
 
-class LoginError(Exception):
+class LoginError(AuthenticationError):
     """Raised when there is an error logging in to the device."""
 
     pass
