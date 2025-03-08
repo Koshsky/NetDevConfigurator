@@ -22,14 +22,15 @@ def _process_json_config(json_config: Dict[str, Any], device_company: str) -> st
     logger.debug("Processing JSON configuration for %s", device_company)
     if device_company == "Zyxel":
         logger.debug("Applying Zyxel specific processing.")
-        configuration = prepare_zyxel_environs(json_config)
+        json_config = prepare_zyxel_environs(json_config)
     else:  # Eltex and other companies
         logger.debug("No company-specific processing required.")
-        configuration = "".join(
-            f"{v['text'].replace('{INTERFACE_ID}', k)}\n"
-            for k, v in json_config.items()
-            if v["text"]
-        )
+
+    configuration = "".join(
+        f"{v['text'].replace('{INTERFACE_ID}', k)}\n"
+        for k, v in json_config.items()
+        if v["text"]
+    )
     return replace_env_vars(configuration) + "end\n"
 
 
