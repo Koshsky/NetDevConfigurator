@@ -115,7 +115,6 @@ class BaseConnectionHandler:
                 result = method(*args)
                 if isinstance(result, str):
                     self.tab.display_feedback(result)
-                self.tab.display_feedback(result)  # Display result even if not a string
                 return result
         except Exception as e:
             logger.exception(

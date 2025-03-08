@@ -124,7 +124,7 @@ class ConnectionManager:
 
         filename = find_most_recent_file(
             f"{os.environ['TFTP_FOLDER']}/firmware",
-            self.device["pattern"][component_type],
+            self.device["pattern"][component_type] or "",
         )
         if not filename:
             logger.warning(
