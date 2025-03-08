@@ -34,9 +34,6 @@ def check_port_open(func: callable) -> callable:
     @wraps(func)
     def wrapper(self, *args: Any, **kwargs: Any) -> Any:
         if self.ssh is None:
-            logger.critical(
-                "SSH port is not open. Please use context manager to manipulate with network device via SSH"
-            )
             raise SSHPortOpenError("SSH port is not open")
         return func(self, *args, **kwargs)
 
