@@ -6,12 +6,16 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy.orm import Session
 
-from .exceptions import EntityNotFoundError
-
 logger = logging.getLogger(__name__)
 
 ModelType = TypeVar("ModelType", bound=DeclarativeMeta)
 JsonType = Union[List["JsonType"], Dict[str, "JsonType"]]
+
+
+class EntityNotFoundError(Exception):
+    """Raised when an entity is not found in the database."""
+
+    pass
 
 
 class BaseService(Generic[ModelType]):

@@ -1,13 +1,24 @@
 import os
 import sys
+from typing import TYPE_CHECKING, Dict, Any
 
 from config import config, disable_logging
-from database.services import init_db_connection, EntityNotFoundError
+from database.services import EntityNotFoundError, init_db_connection
 from utils.config import save_configuration
 from utils.environ import initialize_device_environment, set_env
 
+if TYPE_CHECKING:
+    from database.models import Devices
 
-def get_cert():
+CONNECTION_TYPE = "ssh"
+
+
+def get_cert() -> str:
+    """Get the certificate from user input.
+
+    Prompts the user to enter a certificate, using the default certificate
+    from the configuration if no input is provided.
+    """
     cert = (
         input(f"Enter certificate [{config['default-cert']}]: ")
         or config["default-cert"]
@@ -15,7 +26,12 @@ def get_cert():
     set_env("CERT", cert)
 
 
-def get_device(db_services):
+def get_device(db_services: Dict[str, Any]) -> Devices:
+    """Get the device from user input.
+
+    Prompts the user to enter a device name and retrieves the device
+    from the database. If the device is not found, prompts the user again.
+    """
     while True:
         device_name = input("Enter device name: ")
         try:
@@ -26,7 +42,12 @@ def get_device(db_services):
             print(f"Device '{device_name}' not found. Please try again.")
 
 
-def get_switch_role(device_info):
+def get_switch_role(device_info: Dict[str, Any]) -> str | None:
+    """Get the switch role from user input.
+
+    Prompts the user to enter a switch role, validating the input against the
+    available roles for the device. If the role is invalid, prompts the user again.
+    """
     if device_info["dev_type"] != "switch":
         return None
 
@@ -38,7 +59,12 @@ def get_switch_role(device_info):
         print(f"There is no {role} role for {device_info['name']}. Please try again.")
 
 
-def get_operating_room(role):
+def get_operating_room(role: str) -> str | None:
+    """Get the operating room from user input.
+
+    Prompts the user to enter an operating room, validating the input.
+    If the role is not "tsh" or "or", returns None.
+    """
     if role not in ["tsh", "or"]:
         return None
 
@@ -50,7 +76,7 @@ def get_operating_room(role):
         print(f"Invalid {role} operating room number. Please try again.")
 
 
-def prepare_configuration_file():
+def prepare_configuration_file() -> Devices:
     """Prepare and save the configuration file.
 
     Retrieves user input for device, role, and operating room, then saves the
@@ -71,14 +97,17 @@ def prepare_configuration_file():
                 "header\n", preset
             )  # TODO: ВАЖНО need to retrieve original header.
         else:
-            save_configuration("header\n")
+            save_configuration(
+                "header\n"
+            )  # TODO: ВАЖНО need to retrieve original header.
         print(f"Path to file: {os.environ['CFG_FILENAME']}")
+        return device
     except Exception as e:
         print("An error occurred:", e)
         sys.exit(1)
 
 
-def prepare_credentials():
+def prepare_credentials(device: Devices):
     """Prepare and save host credentials.
 
     Retrieves user input for host credentials, then saves them as environment variables.
@@ -89,16 +118,17 @@ def prepare_credentials():
                 input(f"Enter {var_name} [{default_values[0]}]: ") or default_values[0]
             )
             set_env(var_name, var_value)
-        if False:  # TODO: test connection.
-            connection_string = "aa:bb@cc:dd"
+        try:
+            with ConnectionManager(device, connection_type=CONNECTION_TYPE):
+                break  # successful connection
+        except DriverError:
+            connection_string = f"{os.environ.get('USER')}:{os.environ.get('PASSWORD')}@{os.environ.get('HOST')}:{os.environ.get('PORT')}"
             print(f"Cannot connection to {connection_string}. Please try again.")
-        else:
-            break
 
 
 if __name__ == "__main__":
     with disable_logging():
-        from drivers import SSHDriver, MockDriver
+        from drivers import ConnectionManager, DriverError
 
-        prepare_credentials()
-        prepare_configuration_file()
+        device = prepare_configuration_file()
+        prepare_credentials(device)

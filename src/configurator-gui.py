@@ -129,7 +129,6 @@ class ConfiguratorApp(App):
 
         return {
             "auth_strict_key": False,
-            "device": self.device,  # Use self.device directly
             "host": host_address,
             "port": host_port,
             "auth_username": host_username,
@@ -191,7 +190,7 @@ class ConfiguratorApp(App):
         self.device = self.db_services["device"].get_info(device)
         initialize_device_environment(self.db_services, device)
 
-        if self.device.dev_type == "switch" and self.device["roles"]:
+        if self.device["dev_type"] == "switch" and self.device["roles"]:
             self.register_preset(self.device["roles"][0])
         else:
             self.logger.warning("No roles found for device: %s", device.name)

@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 
 from .company import CompanyService
 from .device import DeviceService
-from .exceptions import EntityNotFoundError
+from .base_service import EntityNotFoundError
 from .family import FamilyService
 from .port import PortService
 from .preset import PresetService, allowed_roles
