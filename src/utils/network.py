@@ -70,7 +70,7 @@ def find_available_ip(
         ip_str = str(ip)
         logger.debug("Checking IP: %s", ip_str)
         if ip_str not in active_ips:
-            if filter_func is not None and not filter_func(ip_str):
+            if filter_func is not None and not filter_func(ip):
                 logger.debug("IP %s filtered out by filter function.", ip_str)
                 continue
             logger.info("Found available IP address: %s", ip_str)

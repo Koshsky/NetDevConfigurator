@@ -44,6 +44,7 @@ class ConnectionManager:
             self.driver = driver_class(
                 on_open_sequence=self.core.open_sequence,
                 comms_prompt_pattern=self.core.comms_prompt_pattern,
+                success_signs=self.core.success_signs,
                 **driver_kwargs,
             )
         else:

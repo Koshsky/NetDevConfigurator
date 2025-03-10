@@ -106,33 +106,13 @@ class ConfiguratorApp(App):
     @property
     def driver(self) -> dict:
         """Returns the driver configuration."""
-        host_address = os.environ.get("HOST_ADDRESS")
-        host_port = os.environ.get("HOST_PORT")
-        host_username = os.environ.get("HOST_USERNAME")
-        host_password = os.environ.get("HOST_PASSWORD")
-        if missing_vars := [
-            var
-            for var, value in (
-                ("HOST_ADDRESS", host_address),
-                ("HOST_PORT", host_port),
-                ("HOST_USERNAME", host_username),
-                ("HOST_PASSWORD", host_password),
-            )
-            if value is None
-        ]:
-            self.logger.error(
-                "Missing required environment variable(s): %s", ", ".join(missing_vars)
-            )
-            raise EnvironmentError(
-                f"Missing required environment variable(s): {', '.join(missing_vars)}"
-            )
 
         return {
             "auth_strict_key": False,
-            "host": host_address,
-            "port": host_port,
-            "auth_username": host_username,
-            "auth_password": host_password,
+            "host": os.environ.get("HOST_ADDRESS"),
+            "port": os.environ.get("HOST_PORT"),
+            "auth_username": os.environ.get("HOST_USERNAME"),
+            "auth_password": os.environ.get("HOST_PASSWORD"),
         }
 
     @property

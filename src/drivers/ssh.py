@@ -101,7 +101,7 @@ class SSHBaseDriver(BaseDriver):
 
                 last_line = output.strip().splitlines()[-1] if output.strip() else ""
 
-                if re.match(self.core.comms_prompt_pattern, last_line):
+                if re.match(self.comms_prompt_pattern, last_line):
                     logger.debug("The last line matches the pattern: '%s'", last_line)
                     break
                 else:

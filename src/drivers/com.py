@@ -56,7 +56,7 @@ class COMBaseDriver(BaseDriver):
     and receiving responses.
     """
 
-    def __init__(self, on_open_sequence, comms_prompt_pattern, **driver):
+    def __init__(self, on_open_sequence, comms_prompt_pattern, success_signs, **driver):
         """Initializes the COMBaseDriver.
 
         Args:
@@ -66,6 +66,7 @@ class COMBaseDriver(BaseDriver):
         """
         self.on_open_sequence = on_open_sequence
         self.comms_prompt_pattern = comms_prompt_pattern
+        self.success_signs = success_signs
         self.ser = serial.Serial(
             port=config["serial-port"],
             baudrate=115200,
@@ -173,7 +174,7 @@ class COMBaseDriver(BaseDriver):
             self.ser.write(f"{self.username}\n".encode())
             self.ser.write(f"{self.password}\n".encode())
             response = self._get_response()
-            if self.core.success_signs.intersection(response.lower().split()):
+            if self.success_signs.intersection(response.lower().split()):
                 logger.info("Logged in successfully")
                 return True
             # TODO: НЕВАЖНО ЭТО ВЫЗВАНО НЕ ТОЛЬКО WRONG CREDENTIALS
