@@ -60,7 +60,6 @@ class BaseConnectionHandler:
 
     def create_widgets(self):
         """Creates widgets for connection parameters."""
-        logger.debug("Creating connection widgets...")
         self.tab.create_block(
             "host",
             {field: tuple(config["host"][field]) for field in self.fields_config},
@@ -180,6 +179,10 @@ class SSHConnectionHandler(BaseConnectionHandler):
             ("HOST_USERNAME", "username"),
             ("HOST_PASSWORD", "password"),
         ]
+
+    def _execute_with_driver(self, operation: str, *args):
+        """Executes an operation using the SSHDriver."""
+        return super()._execute_with_driver(operation, connection_type="ssh", *args)
 
 
 def get_connection_handler(tab: BaseTab) -> "BaseConnectionHandler":

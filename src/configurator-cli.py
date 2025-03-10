@@ -26,7 +26,7 @@ def get_cert() -> str:
     set_env("CERT", cert)
 
 
-def get_device(db_services: Dict[str, Any]) -> Devices:
+def get_device(db_services: Dict[str, Any]) -> "Devices":
     """Get the device from user input.
 
     Prompts the user to enter a device name and retrieves the device
@@ -76,7 +76,7 @@ def get_operating_room(role: str) -> str | None:
         print(f"Invalid {role} operating room number. Please try again.")
 
 
-def prepare_configuration_file() -> Devices:
+def prepare_configuration_file() -> Dict[str, Any]:
     """Prepare and save the configuration file.
 
     Retrieves user input for device, role, and operating room, then saves the
@@ -93,42 +93,77 @@ def prepare_configuration_file() -> Devices:
     try:
         if "DEV_ROLE" in os.environ:
             preset = db_services["preset"].get_info_one(device_id=device.id, role=role)
-            save_configuration(
+            conf = save_configuration(
                 "header\n", preset
             )  # TODO: ВАЖНО need to retrieve original header.
         else:
-            save_configuration(
+            conf = save_configuration(
                 "header\n"
             )  # TODO: ВАЖНО need to retrieve original header.
         print(f"Path to file: {os.environ['CFG_FILENAME']}")
-        return device
+        return conf, device_info
     except Exception as e:
         print("An error occurred:", e)
         sys.exit(1)
 
 
-def prepare_credentials(device: Devices):
+def prepare_credentials(device_info: dict[str, Any]):
     """Prepare and save host credentials.
 
     Retrieves user input for host credentials, then saves them as environment variables.
     """
     while True:
+        driver = {}
         for var_name, default_values in config["host"].items():
             var_value = (
                 input(f"Enter {var_name} [{default_values[0]}]: ") or default_values[0]
             )
-            set_env(var_name, var_value)
+            driver[var_name] = var_value
         try:
-            with ConnectionManager(device, connection_type=CONNECTION_TYPE):
+            with ConnectionManager(
+                device_info, connection_type=CONNECTION_TYPE, **driver
+            ):
+                print("Successful connection via ssh!")
                 break  # successful connection
-        except DriverError:
+        except (TimeoutError, DriverError):
             connection_string = f"{os.environ.get('USER')}:{os.environ.get('PASSWORD')}@{os.environ.get('HOST')}:{os.environ.get('PORT')}"
             print(f"Cannot connection to {connection_string}. Please try again.")
+    return driver
+
+
+def prepare_tftp():
+    """Prepare and save the TFTP server address.
+
+    Prompts the user to confirm or change the current TFTP server address,
+    and updates the environment variable accordingly.
+    """
+    current_address = os.environ.get("TFTP_ADDRESS")
+    while (
+        input(
+            f"Current tftp-address is {current_address}. Do you want to change this? y/n "
+        ).lower()
+        == "y"
+    ):
+        new_address = input("Enter new tftp-address: ")
+        set_env("TFTP_ADDRESS", new_address)
+        current_address = new_address  # update current address for next prompt
 
 
 if __name__ == "__main__":
     with disable_logging():
         from drivers import ConnectionManager, DriverError
 
-        device = prepare_configuration_file()
-        prepare_credentials(device)
+        conf, device_info = prepare_configuration_file()
+        driver = prepare_credentials(device_info)
+        prepare_tftp()
+
+        print(conf)
+        with ConnectionManager(
+            device_info, connection_type=CONNECTION_TYPE, **driver
+        ) as conn:
+            if input("Load configuration? y/n ").lower() == "y":
+                conn.update_startup_config()
+            if input("Update firmwares? y/n ").lower() == "y":
+                conn.update_firmwares()
+            if input("Reload device? y/n ").lower() == "y":
+                conn.reboot()

@@ -77,8 +77,8 @@ class COMBaseDriver(BaseDriver):
             rtscts=False,
             dsrdtr=False,
         )
-        self.password = driver["auth_password"]
-        self.username = driver["auth_username"]
+        self.password = driver["password"]
+        self.username = driver["username"]
 
     @check_port_open
     def send_command(self, command: str) -> str:

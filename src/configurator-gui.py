@@ -109,10 +109,10 @@ class ConfiguratorApp(App):
 
         return {
             "auth_strict_key": False,
-            "host": os.environ.get("HOST_ADDRESS"),
+            "address": os.environ.get("HOST_ADDRESS"),
             "port": os.environ.get("HOST_PORT"),
-            "auth_username": os.environ.get("HOST_USERNAME"),
-            "auth_password": os.environ.get("HOST_PASSWORD"),
+            "username": os.environ.get("HOST_USERNAME"),
+            "password": os.environ.get("HOST_PASSWORD"),
         }
 
     @property

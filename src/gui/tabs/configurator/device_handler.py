@@ -55,11 +55,10 @@ class DeviceHandlerFactory:
         device_type = os.environ.get("DEV_TYPE")
         if not device_type:
             raise ValueError("DEV_TYPE environment variable not set.")
-        handler_class = self.handlers.get(device_type)
-        if not handler_class:
+        if handler_class := self.handlers.get(device_type):
+            return handler_class(self.tab)
+        else:
             raise ValueError(f"Unknown device type: {device_type}")
-        logger.debug(f"Creating device handler for type: {device_type}")
-        return handler_class(self.tab)
 
 
 class SwitchHandler(BaseDeviceHandler):
@@ -67,7 +66,6 @@ class SwitchHandler(BaseDeviceHandler):
 
     def create_widgets(self):
         """Creates widgets for switch parameters."""
-        logger.debug("Creating widgets for switch...")
         self.tab.create_block(
             "params",
             {

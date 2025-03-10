@@ -11,8 +11,8 @@ database:
   host: localhost            # by default
   port: 5432                 # by default
   database: device_registry  # by default
-  username: postgres         # by default ; rename to auth_username
-  password: postgres         # by default ; rename to auth_password
+  username: postgres         # by default
+  password: postgres         # by default
 
 tftp-server:
   address: 192.168.3.105

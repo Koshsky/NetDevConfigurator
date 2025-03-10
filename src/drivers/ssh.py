@@ -59,9 +59,9 @@ class SSHBaseDriver(BaseDriver):
         """
         self.on_open_sequence = on_open_sequence
         self.comms_prompt_pattern = comms_prompt_pattern
-        self.address = driver["host"]
-        self.username = driver["auth_username"]
-        self.password = driver["auth_password"]
+        self.address = driver["address"]
+        self.username = driver["username"]
+        self.password = driver["password"]
         self.port = 22
         self.ssh = None
 

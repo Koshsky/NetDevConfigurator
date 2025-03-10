@@ -20,18 +20,12 @@ class ControlTab(BaseTab):
 
     def _create_widgets(self):
         """Creates and arranges widgets within the tab."""
-        logger.debug("Creating connection handler...")
         self.connection_handler = get_connection_handler(self)
-        logger.debug("Creating device handler...")
         self.device_handler = get_device_handler(self)
 
-        logger.debug("Creating connection handler widgets...")
         self.connection_handler.create_widgets()
-        logger.debug("Creating device handler widgets...")
         self.device_handler.create_widgets()
-        logger.debug("Creating action buttons...")
         self._create_action_buttons()
-        logger.debug("Creating feedback area...")
         self.create_feedback_area()
 
         logger.debug("Updating host info...")
@@ -47,7 +41,6 @@ class ControlTab(BaseTab):
             ("REBOOT DEVICE", self.connection_handler.reboot),
         ]
         for action, callback in actions:
-            logger.debug(f"Creating button for action: {action}")
             self.create_button_in_line((action, callback))
 
     def show_template(self):
