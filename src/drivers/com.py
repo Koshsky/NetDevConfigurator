@@ -1,7 +1,7 @@
 import logging
 from functools import wraps
 from typing import Callable
-
+import re
 import serial
 
 from config import config
@@ -56,7 +56,7 @@ class COMBaseDriver(BaseDriver):
     and receiving responses.
     """
 
-    def __init__(self, on_open_sequence, comms_prompt_pattern, success_signs, **driver):
+    def __init__(self, on_open_sequence, comms_prompt_pattern, **driver):
         """Initializes the COMBaseDriver.
 
         Args:
@@ -66,7 +66,6 @@ class COMBaseDriver(BaseDriver):
         """
         self.on_open_sequence = on_open_sequence
         self.comms_prompt_pattern = comms_prompt_pattern
-        self.success_signs = success_signs
         self.ser = serial.Serial(
             port=config["serial-port"],
             baudrate=115200,
@@ -107,6 +106,18 @@ class COMBaseDriver(BaseDriver):
             f"Read {len(output)} symbols. No more data to read.",
         )
         return output
+
+    @check_port_open
+    def __is_logged(self) -> bool:
+        """Checks if the user is logged in to the device.
+
+        Returns:
+            True if logged in, False otherwise.
+        """
+        self.ser.write(b"\n\n")
+        response = [line.strip() for line in self.ser.readlines()]
+        last_line = response[-1].decode("utf-8")
+        return re.match(self.comms_prompt_pattern, last_line)
 
     def __enter__(self) -> "COMBaseDriver":
         """Enters the context manager and establishes the serial connection.
@@ -151,17 +162,6 @@ class COMBaseDriver(BaseDriver):
             self.ser.close()
 
     @check_port_open
-    def __is_logged(self) -> bool:
-        """Checks if the user is logged in to the device.
-
-        Returns:
-            True if logged in, False otherwise.
-        """
-        self.ser.write(b"\n\n\n\n\n\n")
-        response = [line.strip() for line in self.ser.readlines()]
-        return len({line.strip() for line in response[-5::]}) == 1
-
-    @check_port_open
     def __log_in(self):
         """Logs in to the device via the serial port.
 
@@ -170,14 +170,14 @@ class COMBaseDriver(BaseDriver):
         """
         if not self.__is_logged():
             logger.info("Logging in...")
+
             self.ser.write(b"\n")
             self.ser.write(f"{self.username}\n".encode())
             self.ser.write(f"{self.password}\n".encode())
-            response = self._get_response()
-            if self.success_signs.intersection(response.lower().split()):
+            if self.__is_logged():
                 logger.info("Logged in successfully")
                 return True
-            # TODO: НЕВАЖНО ЭТО ВЫЗВАНО НЕ ТОЛЬКО WRONG CREDENTIALS
+            # TODO: НЕВАЖНО ЭТО ВЫЗВАНО НЕ ТОЛЬКО WRONG CREDENTIALS (пока паттерн не учитывает conf режим.)
             logger.error(
                 "Login error: wrong credentials. username:%s password:%s",
                 self.username,

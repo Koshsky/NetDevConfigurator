@@ -4,9 +4,6 @@ import os
 class BaseZyxel:
     comment_symbol = ";"
     comms_prompt_pattern = r"^(\n)?[a-zA-Z0-9_-]+[>#\$]\s*"
-    success_signs = {
-        "Copyright",
-    }
     open_sequence = []
 
     reload = "reload config 1\ny"

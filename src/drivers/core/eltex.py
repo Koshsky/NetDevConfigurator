@@ -4,7 +4,6 @@ import os
 class ESRxx:
     comment_symbol = "#"
     comms_prompt_pattern = r"^(\n)?[()a-zA-Z0-9_-]+[>#\$]\s*"
-    success_signs = {"Welcome"}
     open_sequence = ["terminal datadump"]
 
     show_run = "show running-config extended"
@@ -40,11 +39,6 @@ class ESRxx:
 class BaseMES:
     comment_symbol = "#"
     comms_prompt_pattern = r"^(\n)?[a-zA-Z0-9_-]+[>#\$]\s*$"
-    success_signs = {
-        "succeeded",
-        "successful",
-        "success",
-    }
 
     reload = "reload\nyy"  # cause 'y' 'y' DOESN'T require '\n'
     show_run = "show running-config"
