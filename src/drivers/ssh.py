@@ -95,7 +95,7 @@ class SSHBaseDriver(BaseDriver):
 
         while True:
             try:
-                time.sleep(0.2)
+                time.sleep(0.5)
                 part = self.ssh.recv(1024).decode("utf-8")
                 output += part
 

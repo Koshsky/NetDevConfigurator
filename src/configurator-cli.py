@@ -93,14 +93,9 @@ def prepare_configuration_file() -> Dict[str, Any]:
     try:
         if "DEV_ROLE" in os.environ:
             preset = db_services["preset"].get_info_one(device_id=device.id, role=role)
-            conf = save_configuration(
-                "header\n", preset
-            )  # TODO: ВАЖНО need to retrieve original header.
         else:
-            conf = save_configuration(
-                "header\n"
-            )  # TODO: ВАЖНО need to retrieve original header.
-        return conf, device_info
+            preset = None
+        return preset, device_info
     except Exception as e:
         print("An error occurred:", e)
         sys.exit(1)
@@ -149,20 +144,23 @@ def prepare_tftp():
 
 
 if __name__ == "__main__":
-    with disable_logging():
-        from drivers import ConnectionManager, DriverError
+    # with disable_logging():
+    from drivers import ConnectionManager, DriverError
 
-        conf, device_info = prepare_configuration_file()
-        driver = prepare_credentials(device_info)
-        prepare_tftp()
+    preset, device_info = prepare_configuration_file()
+    driver = prepare_credentials(device_info)
+    prepare_tftp()
 
-        with ConnectionManager(
-            device_info, connection_type=CONNECTION_TYPE, **driver
-        ) as conn:
-            print(conn.show_run())
-            # if input("Load configuration? y/n ").lower() == "y":
-            #     conn.update_startup_config()
-            # if input("Update firmwares? y/n ").lower() == "y":
-            #     conn.update_firmwares()
-            # if input("Reload device? y/n ").lower() == "y":
-            #     conn.reboot()
+    with ConnectionManager(
+        device_info, connection_type=CONNECTION_TYPE, **driver
+    ) as conn:
+        header = conn.get_header()
+        print("HEADER:", header, sep="\n")
+        save_configuration(header, preset)
+        print(conn.update_startup_config())
+        # if input("Load configuration? y/n ").lower() == "y":
+        #     conn.update_startup_config()
+        # if input("Update firmwares? y/n ").lower() == "y":
+        #     conn.update_firmwares()
+        # if input("Reload device? y/n ").lower() == "y":
+        #     conn.reboot()

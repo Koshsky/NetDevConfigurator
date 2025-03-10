@@ -65,7 +65,6 @@ def init_db_connection(config):
         return session, db_services
 
     except Exception as e:
-        print(e)
         logger.error("Connection failed to %s: %s", connection_string, e)
 
 

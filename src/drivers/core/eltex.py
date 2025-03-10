@@ -3,7 +3,7 @@ import os
 
 class ESRxx:
     comment_symbol = "#"
-    comms_prompt_pattern = r"^(\n)?.+[>#\$]\s*"
+    comms_prompt_pattern = r"^(\n)?[a-zA-Z]+.+[>#\$]\s*"
     open_sequence = ["terminal datadump"]
 
     show_run = "show running-config extended"
@@ -12,8 +12,7 @@ class ESRxx:
     @property
     def update_startup_config(self):
         return [
-            f"copy tftp://{os.environ['TFTP_ADDRESS']}/tmp/{os.environ['CFG_FILENAME']} system:candidate-config"
-            "confirm",  # ?? y y
+            f"copy tftp://{os.environ['TFTP_ADDRESS']}:/tmp/{os.environ['CFG_FILENAME']} system:candidate-config",
         ]
 
     # @property

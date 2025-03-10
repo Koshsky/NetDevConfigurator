@@ -41,120 +41,120 @@ nat destination
     from zone untrusted
     rule 1
       match protocol tcp
-      match destination-address Public_IP
-      match destination-port https
+      match destination-address object-group Public_IP
+      match destination-port object-group https
       action destination-nat pool HP
       enable
     exit
     rule 2
       match protocol tcp
-      match destination-address Public_IP
-      match destination-port HP_https
+      match destination-address object-group Public_IP
+      match destination-port object-group HP_https
       action destination-nat pool HP
       enable
     exit
     rule 3
       match protocol tcp
-      match destination-address Public_IP
-      match destination-port DMZ_stream
+      match destination-address object-group Public_IP
+      match destination-port object-group DMZ_stream
       action destination-nat pool CONF
       enable
     exit
     <nat_dest_tc>
     rule 5
       match protocol tcp
-      match destination-address Public_IP
-      match destination-port http
+      match destination-address object-group Public_IP
+      match destination-port object-group http
       action destination-nat pool TR_Conf
       enable
     exit
     <@nat_dest_tc>
     rule 10
       match protocol tcp
-      match destination-address Public_IP
-      match destination-port KMS
+      match destination-address object-group Public_IP
+      match destination-port object-group KMS
       action destination-nat pool CONF
       enable
     exit
     <nat_dest_tc>
     rule 11
       match protocol tcp
-      match destination-address Public_IP
-      match destination-port trueconf
+      match destination-address object-group Public_IP
+      match destination-port object-group trueconf
       action destination-nat pool TR_Conf
       enable
     exit
     rule 12
       match protocol tcp
-      match destination-address Public_IP
-      match destination-port SIP
+      match destination-address object-group Public_IP
+      match destination-port object-group SIP
       action destination-nat pool TR_Conf
       enable
     exit
     rule 13
       match protocol udp
-      match destination-address Public_IP
-      match destination-port SIP
+      match destination-address object-group Public_IP
+      match destination-port object-group SIP
       action destination-nat pool TR_Conf
       enable
     exit
     rule 14
       match protocol tcp
-      match destination-address Public_IP
-      match destination-port H323
+      match destination-address object-group Public_IP
+      match destination-port object-group H323
       action destination-nat pool TR_Conf
       enable
     exit
     rule 15
       match protocol udp
-      match destination-address Public_IP
-      match destination-port H323
+      match destination-address object-group Public_IP
+      match destination-port object-group H323
       action destination-nat pool TR_Conf
       enable
     exit
     <@nat_dest_tc>
     rule 20
       match protocol udp
-      match destination-address Public_IP
-      match destination-port WRTC
+      match destination-address object-group Public_IP
+      match destination-port object-group WRTC
       action destination-nat pool CONF
       enable
     exit
     <nat_dest_tc>
     rule 21
       match protocol udp
-      match destination-address Public_IP
-      match destination-port RTP
+      match destination-address object-group Public_IP
+      match destination-port object-group RTP
       action destination-nat pool TR_Conf
       enable
     exit
     rule 22
       match protocol tcp
-      match destination-address Public_IP
-      match destination-port WRTC_TrConf
+      match destination-address object-group Public_IP
+      match destination-port object-group WRTC_TrConf
       action destination-nat pool TR_Conf
       enable
     exit
     rule 23
       match protocol udp
-      match destination-address Public_IP
-      match destination-port WRTC_TrConf
+      match destination-address object-group Public_IP
+      match destination-port object-group WRTC_TrConf
       action destination-nat pool TR_Conf
       enable
     exit
     <@nat_dest_tc>
     rule 30
       match protocol tcp
-      match destination-address Public_IP
-      match destination-port extconf
+      match destination-address object-group Public_IP
+      match destination-port object-group extconf
       action destination-nat pool CONF
       enable
     exit
     <count_stream>
     rule ?
       match protocol tcp
-      match destination-address Public_IP
-      match destination-port Streamer_service!
+      match destination-address object-group Public_IP
+      match destination-port object-group Streamer_service!
       action destination-nat pool STREAM_!
       enable
     exit
@@ -163,8 +163,8 @@ nat destination
     <count_tcroom>
     rule ?
       match protocol tcp
-      match destination-address TCRoom!_Public_IP
-      match destination-port tc_room
+      match destination-address object-group TCRoom!_Public_IP
+      match destination-port object-group tc_room
       action destination-nat pool TRCONF_ROOM!
       enable
     exit
@@ -172,8 +172,8 @@ nat destination
     <count_tcroom_rdp>
     rule ?
       match protocol tcp
-      match destination-address TCRoom!_Public_IP
-      match destination-port rdp
+      match destination-address object-group TCRoom!_Public_IP
+      match destination-port object-group rdp
       action destination-nat pool TRCONF_ROOM!
       enable
     exit
@@ -183,8 +183,8 @@ nat destination
     <count_ph>
     rule ?
       match protocol tcp
-      match destination-address Public_IP
-      match destination-port ph_nat!
+      match destination-address object-group Public_IP
+      match destination-port object-group ph_nat!
       action destination-nat pool PH_!
       enable
     exit
@@ -193,8 +193,8 @@ nat destination
     <nat_dest_raisa>
     rule 70
       match protocol tcp
-      match destination-address RAISA_Public_IP
-      match destination-port http
+      match destination-address object-group RAISA_Public_IP
+      match destination-port object-group http
       action destination-nat pool RAISA
       enable
     exit
@@ -204,15 +204,15 @@ nat destination
     from zone trusted
     rule 1
       match protocol tcp
-      match destination-address Public_IP
-      match destination-port KMS
+      match destination-address object-group Public_IP
+      match destination-port object-group KMS
       action destination-nat pool CONF
       enable
     exit
     rule 10
       match protocol udp
-      match destination-address Public_IP
-      match destination-port WRTC
+      match destination-address object-group Public_IP
+      match destination-port object-group WRTC
       action destination-nat pool CONF
       enable
     exit

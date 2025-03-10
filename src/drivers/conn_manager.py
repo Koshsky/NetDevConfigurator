@@ -90,13 +90,13 @@ class ConnectionManager:
             The header of the running configuration.
         """
         config = self.show_run()
-        return (
-            "".join(
-                line + "\n"
-                for line in config.splitlines()
-                if line.startswith(self.core.comment_symbol)
-            )
-            + "!\n"
+        for line in config.splitlines()[:10]:
+            print(line)
+
+        return "".join(
+            line + "\n"
+            for line in config.splitlines()
+            if line.startswith(self.core.comment_symbol)
         )
 
     def update_startup_config(self) -> str:

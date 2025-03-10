@@ -48,7 +48,7 @@ security zone-pair trusted self
   rule 10
     action permit
     match protocol tcp
-    match destination-port ssh
+    match destination-port object-group ssh
     enable
   exit
   rule 20
@@ -59,7 +59,7 @@ security zone-pair trusted self
   rule 30
     action permit
     match protocol udp
-    match destination-port snmp
+    match destination-port object-group snmp
     enable
 exit
 security zone-pair untrusted self
@@ -72,13 +72,13 @@ security zone-pair untrusted self
   rule 30
     action permit
     match protocol udp
-    match destination-port L2TP
+    match destination-port object-group L2TP
     enable
   exit
   rule 40
     action permit
     match protocol udp
-    match destination-port IKE
+    match destination-port object-group IKE
     enable
   exit
   rule 50
@@ -89,13 +89,13 @@ security zone-pair untrusted self
   rule 60
     action permit
     match protocol udp
-    match destination-port NATT
+    match destination-port object-group NATT
     enable
   exit
   rule 70
     action permit
     match protocol tcp
-    match destination-port ssh
+    match destination-port object-group ssh
     enable
   exit
   <@secure_VPN>
@@ -103,20 +103,20 @@ exit
 security zone-pair untrusted trusted
   rule 1
     action permit
-    match destination-address HP
+    match destination-address object-group HP
     match destination-nat
     enable
   exit
   rule 2
     action permit
-    match destination-address STREAM
+    match destination-address object-group STREAM
     match destination-nat
     enable
   exit
   <secure_ph>
   rule 3
     action permit
-    match destination-address packhaus
+    match destination-address object-group packhaus
     match destination-nat
     enable
   exit
@@ -124,7 +124,7 @@ security zone-pair untrusted trusted
   <secure_tcroom>
   rule 4
     action permit
-    match destination-address TRCONF_ROOM
+    match destination-address object-group TRCONF_ROOM
     match destination-nat
     enable
   exit
@@ -133,20 +133,20 @@ exit
 security zone-pair untrusted DMZ
   rule 1
     action permit
-    match destination-address CONF
+    match destination-address object-group CONF
     match destination-nat
     enable
   exit
   rule 2
     action permit
     match protocol tcp
-    match destination-port KMS
+    match destination-port object-group KMS
     enable
   exit
   <secure_tc>
   rule 3
     action permit
-    match destination-address TR_CONF
+    match destination-address object-group TR_CONF
     match destination-nat
     enable
   exit
@@ -161,39 +161,39 @@ security zone-pair trusted DMZ
   rule 20
     action permit
     match protocol tcp
-    match destination-port ssh
+    match destination-port object-group ssh
     enable
   exit
   rule 30
     action permit
     match protocol tcp
-    match destination-port KMS
+    match destination-port object-group KMS
     enable
   exit
   <secure_tc>
   rule 40
     action permit
     match protocol tcp
-    match destination-port trueconf
+    match destination-port object-group trueconf
     enable
   exit
   <@secure_tc>
   rule 41
     action permit
     match protocol tcp
-    match destination-port http
+    match destination-port object-group http
     enable
   exit
   rule 42
     action permit
     match protocol tcp
-    match destination-port node_exporter
+    match destination-port object-group node_exporter
     enable
   exit
   rule 50
     action permit
     match protocol udp
-    match destination-port WRTC
+    match destination-port object-group WRTC
     enable
   exit
 exit
@@ -208,25 +208,25 @@ security zone-pair DMZ trusted
   rule 10
     action permit
     match protocol tcp
-    match destination-port HP_services
+    match destination-port object-group HP_services
     enable
   exit
   rule 20
     action permit
     match protocol udp
-    match destination-port dns_clients
+    match destination-port object-group dns_clients
     enable
   exit
   rule 30
     action permit
     match protocol udp
-    match destination-port ntp
+    match destination-port object-group ntp
     enable
   exit
   rule 40
     action permit
     match protocol tcp
-    match destination-port minio_ports
+    match destination-port object-group minio_ports
     enable
   exit
 exit
@@ -241,7 +241,7 @@ security zone-pair VPN self
   rule 10
     action permit
     match protocol tcp
-    match destination-port ssh
+    match destination-port object-group ssh
     enable
   exit
 exit
@@ -254,137 +254,137 @@ security zone-pair VPN trusted
   rule 10
     action permit
     match protocol udp
-    match destination-port dns_clients
+    match destination-port object-group dns_clients
     enable
   exit
   rule 11
     action permit
     match protocol tcp
-    match destination-port ssh
+    match destination-port object-group ssh
     enable
   exit
   rule 12
     action permit
     match protocol udp
-    match destination-port tftp
+    match destination-port object-group tftp
     enable
   exit
   rule 13
     action permit
     match protocol tcp
-    match destination-port http
+    match destination-port object-group http
     enable
   exit
   rule 14
     action permit
     match protocol tcp
-    match destination-port https
+    match destination-port object-group https
     enable
   exit
   rule 15
     action permit
     match protocol udp
-    match destination-port ntp
+    match destination-port object-group ntp
     enable
   exit
   rule 17
     action permit
     match protocol tcp
-    match destination-port vnc_server
+    match destination-port object-group vnc_server
     enable
   exit
   rule 18
     action permit
     match protocol tcp
-    match destination-port grafana
+    match destination-port object-group grafana
     enable
   exit
   rule 19
     action permit
     match protocol tcp
-    match destination-port HP_https
+    match destination-port object-group HP_https
     enable
   exit
   rule 20
     action permit
     match protocol tcp
-    match destination-port DMZ_stream
+    match destination-port object-group DMZ_stream
     enable
   exit
   rule 21
     action permit
     match protocol tcp
-    match destination-port extconf
+    match destination-port object-group extconf
     enable
   exit
   rule 22
     action permit
     match protocol tcp
-    match destination-port Streamer_service1
+    match destination-port object-group Streamer_service1
     enable
   exit
   rule 23
     action permit
     match protocol tcp
-    match destination-port KMS
+    match destination-port object-group KMS
     enable
   exit
   rule 24
     action permit
     match protocol tcp
-    match destination-port HP_services
+    match destination-port object-group HP_services
     enable
   exit
   rule 25
     action permit
     match protocol tcp
-    match destination-port minio_ports
+    match destination-port object-group minio_ports
     enable
   exit
   rule 26
     action permit
     match protocol tcp
-    match destination-port HP_master
+    match destination-port object-group HP_master
     enable
   exit
   rule 27
     action permit
     match protocol tcp
-    match destination-port rtsp
+    match destination-port object-group rtsp
     enable
   exit
   rule 28
     action permit
     match protocol udp
-    match destination-port dhcp_client
+    match destination-port object-group dhcp_client
   exit
   rule 29
     action permit
     match protocol udp
-    match destination-port dhcp_server
+    match destination-port object-group dhcp_server
   exit
   rule 30
     action permit
     match protocol tcp
-    match destination-port OR_http
+    match destination-port object-group OR_http
     enable
   exit
   rule 31
     action permit
     match protocol tcp
-    match destination-port prometheus
+    match destination-port object-group prometheus
     enable
   exit
   rule 32
     action permit
     match protocol tcp
-    match destination-port snmp_exporter
+    match destination-port object-group snmp_exporter
     enable
   exit
   rule 33
     action permit
     match protocol tcp
-    match destination-port node_exporter
+    match destination-port object-group node_exporter
     enable
   exit
 exit
@@ -397,114 +397,114 @@ security zone-pair VPN DMZ
   rule 10
     action permit
     match protocol udp
-    match destination-port dns_clients
+    match destination-port object-group dns_clients
     enable
   exit
   rule 11
     action permit
     match protocol tcp
-    match destination-port ssh
+    match destination-port object-group ssh
     enable
   exit
   rule 12
     action permit
     match protocol udp
-    match destination-port tftp
+    match destination-port object-group tftp
     enable
   exit
   rule 13
     action permit
     match protocol tcp
-    match destination-port http
+    match destination-port object-group http
     enable
   exit
   rule 14
     action permit
     match protocol tcp
-    match destination-port https
+    match destination-port object-group https
     enable
   exit
   rule 15
     action permit
     match protocol udp
-    match destination-port ntp
+    match destination-port object-group ntp
     enable
   exit
   rule 17
     action permit
     match protocol tcp
-    match destination-port vnc_server
+    match destination-port object-group vnc_server
     enable
   exit
   rule 18
     action permit
     match protocol tcp
-    match destination-port grafana
+    match destination-port object-group grafana
     enable
   exit
   rule 19
     action permit
     match protocol tcp
-    match destination-port HP_https
+    match destination-port object-group HP_https
     enable
   exit
   rule 20
     action permit
     match protocol tcp
-    match destination-port DMZ_stream
+    match destination-port object-group DMZ_stream
     enable
   exit
   rule 21
     action permit
     match protocol tcp
-    match destination-port extconf
+    match destination-port object-group extconf
     enable
   exit
   rule 22
     action permit
     match protocol tcp
-    match destination-port Streamer_service1
+    match destination-port object-group Streamer_service1
     enable
   exit
   rule 23
     action permit
     match protocol tcp
-    match destination-port KMS
+    match destination-port object-group KMS
     enable
   exit
   rule 24
     action permit
     match protocol tcp
-    match destination-port HP_services
+    match destination-port object-group HP_services
     enable
   exit
   rule 25
     action permit
     match protocol tcp
-    match destination-port minio_ports
+    match destination-port object-group minio_ports
     enable
   exit
   rule 26
     action permit
     match protocol tcp
-    match destination-port HP_master
+    match destination-port object-group HP_master
     enable
   exit
   rule 27
     action permit
     match protocol tcp
-    match destination-port rtsp
+    match destination-port object-group rtsp
     enable
   exit
   rule 28
     action permit
     match protocol udp
-    match destination-port dhcp_client
+    match destination-port object-group dhcp_client
   exit
   rule 29
     action permit
     match protocol udp
-    match destination-port dhcp_server
+    match destination-port object-group dhcp_server
   exit
 exit
 <@secure_VPN>
@@ -540,13 +540,13 @@ security zone-pair RAISA trusted
   rule 1
     action permit
     match protocol udp
-    match destination-port dns_clients
+    match destination-port object-group dns_clients
     enable
   exit
   rule 2
     action permit
     match protocol icmp
-    match destination-address HP
+    match destination-address object-group HP
     enable
   exit
 exit
