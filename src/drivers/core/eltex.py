@@ -3,7 +3,7 @@ import os
 
 class ESRxx:
     comment_symbol = "#"
-    comms_prompt_pattern = r"^(\n)?[()a-zA-Z0-9_-]+[>#\$]\s*"
+    comms_prompt_pattern = r"^(\n)?.+[>#\$]\s*"
     open_sequence = ["terminal datadump"]
 
     show_run = "show running-config extended"
@@ -21,6 +21,21 @@ class ESRxx:
     #     self,
     # ):
     #     return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} boot"
+
+    @property
+    def base_configure_192(self):
+        return [
+            "configure",
+            "interface vlan 1",
+            f"ip address {os.environ['HOST_ADDRESS']} 255.255.255.0",
+            "!",
+            "interface gigabitethernet 1/0/1",
+            "switchport mode access",
+            "no switchport forbidden default-vlan",
+            "switchport access vlan 1",
+            "!",
+            "end",
+        ]
 
     @property
     def load_uboot(self):

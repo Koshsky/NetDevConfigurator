@@ -100,7 +100,6 @@ def prepare_configuration_file() -> Dict[str, Any]:
             conf = save_configuration(
                 "header\n"
             )  # TODO: ВАЖНО need to retrieve original header.
-        print(f"Path to file: {os.environ['CFG_FILENAME']}")
         return conf, device_info
     except Exception as e:
         print("An error occurred:", e)
@@ -157,13 +156,13 @@ if __name__ == "__main__":
         driver = prepare_credentials(device_info)
         prepare_tftp()
 
-        print(conf)
         with ConnectionManager(
             device_info, connection_type=CONNECTION_TYPE, **driver
         ) as conn:
-            if input("Load configuration? y/n ").lower() == "y":
-                conn.update_startup_config()
-            if input("Update firmwares? y/n ").lower() == "y":
-                conn.update_firmwares()
-            if input("Reload device? y/n ").lower() == "y":
-                conn.reboot()
+            print(conn.show_run())
+            # if input("Load configuration? y/n ").lower() == "y":
+            #     conn.update_startup_config()
+            # if input("Update firmwares? y/n ").lower() == "y":
+            #     conn.update_firmwares()
+            # if input("Reload device? y/n ").lower() == "y":
+            #     conn.reboot()
