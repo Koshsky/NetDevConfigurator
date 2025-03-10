@@ -32,20 +32,18 @@ def find_most_recent_file(directory: str, pattern: str) -> Optional[str]:
     most_recent_time = 0
 
     for file_path in dir_path.iterdir():
-        if file_path.is_file():
-            logger.debug("Checking file: %s", file_path.name)
-            if fnmatch.fnmatch(file_path.name, pattern):
-                file_mtime = file_path.stat().st_mtime
+        if file_path.is_file() and fnmatch.fnmatch(file_path.name, pattern):
+            file_mtime = file_path.stat().st_mtime
+            logger.debug(
+                "File '%s' matches pattern, mtime: %s", file_path.name, file_mtime
+            )
+            if file_mtime > most_recent_time:
                 logger.debug(
-                    "File '%s' matches pattern, mtime: %s", file_path.name, file_mtime
+                    "File '%s' is newer than current most recent file",
+                    file_path.name,
                 )
-                if file_mtime > most_recent_time:
-                    logger.debug(
-                        "File '%s' is newer than current most recent file",
-                        file_path.name,
-                    )
-                    most_recent_time = file_mtime
-                    most_recent_file = file_path.name
+                most_recent_time = file_mtime
+                most_recent_file = file_path.name
 
     if most_recent_file is None:
         logger.warning(
