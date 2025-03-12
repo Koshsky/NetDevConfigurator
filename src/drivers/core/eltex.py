@@ -3,7 +3,7 @@ import os
 
 class ESRxx:
     comment_symbol = "#"
-    comms_prompt_pattern = r"^(\n)?[a-zA-Z]+.+[>#\$]\s*"
+    comms_prompt_pattern = r"^(\n)?[a-zA-Z0-9().\-_]+[>#\$]\s*"
     open_sequence = ["terminal datadump"]
 
     show_run = "show running-config extended"
