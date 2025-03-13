@@ -95,23 +95,23 @@ class SSHBaseDriver(BaseDriver):
 
         while True:
             try:
-                time.sleep(0.5)
-                part = self.ssh.recv(1024).decode("utf-8")
-                output += part
+                time.sleep(0.1)
+                output += self.ssh.recv(1024).decode("utf-8")
 
                 last_line = output.strip().splitlines()[-1] if output.strip() else ""
 
                 if re.match(self.comms_prompt_pattern, last_line):
-                    logger.debug("The last line matches the pattern: '%s'", last_line)
+                    logger.debug("The last line matches the pattern: %s", last_line)
                     break
                 else:
                     logger.debug(
-                        "The last line does not match the pattern: '%s'", last_line
+                        "The last line does not match the pattern: %s", last_line
                     )
 
             except socket.timeout:
                 logger.debug("Socket timeout occurred.")
                 continue
+        logger.debug("LAST LINE : %s", output.split()[-1])
         return "\n".join(output.split("\n")[1:-1])
 
     def __enter__(self) -> "SSHBaseDriver":
@@ -140,6 +140,8 @@ class SSHBaseDriver(BaseDriver):
             self.ssh = client.invoke_shell()
             self.ssh.settimeout(1)
             logger.info("Successful connection to %s via ssh", self.__connection_string)
+            hello = self._get_response()  # skip hello message from device
+            print(hello)
             self.execute(self.on_open_sequence)
             return self
         except TimeoutError as e:
