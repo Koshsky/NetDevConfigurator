@@ -30,6 +30,33 @@ class App:
         self.db_services = None
         self.entity_collections = None
         self.session = None
+        self._setup_keyboard_shortcuts()
+
+    def _setup_keyboard_shortcuts(self):
+        """Setup keyboard shortcuts for tab navigation."""
+        self.root.bind("<Control-Tab>", self._next_tab)
+        self.root.bind("<Control-Shift-Tab>", self._prev_tab)
+        # Для Linux/Windows добавим альтернативные комбинации
+        self.root.bind("<Control-Key-Page_Down>", self._next_tab)
+        self.root.bind("<Control-Key-Page_Up>", self._prev_tab)
+
+    def _next_tab(self, event):
+        """Switch to the next tab."""
+        current = self.notebook.index(self.notebook.select())
+        tabs = self.notebook.tabs()
+        if tabs:  # Если есть вкладки
+            next_tab = (current + 1) % len(tabs)  # Циклический переход
+            self.notebook.select(next_tab)
+        return "break"  # Предотвращаем дальнейшую обработку события
+
+    def _prev_tab(self, event):
+        """Switch to the previous tab."""
+        current = self.notebook.index(self.notebook.select())
+        tabs = self.notebook.tabs()
+        if tabs:  # Если есть вкладки
+            prev_tab = (current - 1) % len(tabs)  # Циклический переход
+            self.notebook.select(prev_tab)
+        return "break"  # Предотвращаем дальнейшую обработку события
 
     def create_tabs(self):
         """Create the tabs for the application."""
