@@ -5,6 +5,7 @@ from tkinter import IntVar, ttk
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from ttkwidgets.autocomplete import AutocompleteCombobox
+from config import config
 
 logger = logging.getLogger("gui")
 
@@ -16,7 +17,13 @@ class BaseTab:
         """Initializes a new instance of the BaseTab class."""
         self.__log_name: str = log_name
         self.frame: ttk.Frame = ttk.Frame(parent)
-        self.frame.pack(padx=10, pady=10)
+        self.frame.columnconfigure(
+            list(range(config["app"]["grid_columns"])), minsize=40, weight=1
+        )
+        # Не настраиваем все строки заранее, они будут настраиваться по мере добавления виджетов
+        self.frame.pack(
+            fill=tk.BOTH, side=tk.TOP, expand=False, padx=5, pady=5
+        )  # expand=False и добавлены отступы
         self.app: Any = app
         self._cur_row: int = 0
         self.cur_col: int = 0
@@ -157,7 +164,12 @@ class BaseTab:
             self.frame, wrap="word", width=width, height=height, state=tk.DISABLED
         )
         self.feedback_text.grid(
-            row=self._cur_row, column=0, columnspan=15, padx=5, pady=5, sticky="nsew"
+            row=self._cur_row,
+            column=0,
+            columnspan=config["app"]["grid_columns"],
+            padx=5,
+            pady=5,
+            sticky="nsew",
         )
 
         scrollbar = ttk.Scrollbar(
