@@ -1,5 +1,4 @@
 app:
-  geometry: "1500x900+300+85"
   grid_columns: 8  # Number of columns in the grid layout
   templates:
     width: 6

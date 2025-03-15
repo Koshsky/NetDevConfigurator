@@ -115,6 +115,11 @@ class App:
         self.root = root
         self.root.title(title)
         self.notebook = ttk.Notebook(self.root)
-
         self.notebook.pack(fill="both", expand=True)
-        self.root.geometry(config["app"]["geometry"])
+
+        # Устанавливаем минимальный размер окна и позволяем ему адаптироваться
+        self.root.update_idletasks()  # Обновляем, чтобы получить реальные размеры виджетов
+        self.root.minsize(self.root.winfo_width(), self.root.winfo_height())
+        self.root.geometry(
+            ""
+        )  # Сбрасываем геометрию, чтобы окно подстроилось под содержимое

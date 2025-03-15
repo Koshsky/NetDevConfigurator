@@ -20,10 +20,7 @@ class BaseTab:
         self.frame.columnconfigure(
             list(range(config["app"]["grid_columns"])), minsize=40, weight=1
         )
-        # Не настраиваем все строки заранее, они будут настраиваться по мере добавления виджетов
-        self.frame.pack(
-            fill=tk.BOTH, side=tk.TOP, expand=False, padx=5, pady=5
-        )  # expand=False и добавлены отступы
+        self.frame.pack(fill=tk.BOTH, side=tk.TOP, expand=False, padx=5, pady=5)
         self.app: Any = app
         self._cur_row: int = 0
         self.cur_col: int = 0
@@ -152,7 +149,11 @@ class BaseTab:
 
         button_widget = tk.Button(self.frame, text=button[0], command=button[1])
         button_widget.grid(
-            row=self._cur_row, column=0, pady=5, columnspan=100, sticky="ew"
+            row=self._cur_row,
+            column=0,
+            pady=5,
+            columnspan=config["app"]["grid_columns"],
+            sticky="ew",
         )
         self._cur_row += 1
 
@@ -175,7 +176,9 @@ class BaseTab:
         scrollbar = ttk.Scrollbar(
             self.frame, orient="vertical", command=self.feedback_text.yview
         )
-        scrollbar.grid(row=self._cur_row, column=15, sticky="ns")
+        scrollbar.grid(
+            row=self._cur_row, column=config["app"]["grid_columns"], sticky="ns"
+        )
         self.feedback_text.config(yscrollcommand=scrollbar.set)
 
         self.display_feedback(message)  # Use display_feedback to set initial message
