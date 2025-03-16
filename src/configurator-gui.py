@@ -25,6 +25,16 @@ if TYPE_CHECKING:
 logger = logging.getLogger("ConfiguratorApp")
 
 
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description="Network Device Configurator")
+    parser.add_argument("--mock", action="store_true", help="Enable mock mode")
+    parser.add_argument(
+        "-A", "--advanced", action="store_true", help="Advanced mode for fine-tuning"
+    )
+    return parser.parse_args()
+
+
 class TabRefresher:
     """Refreshes the visibility of tabs based on the application state."""
 
@@ -89,13 +99,30 @@ class ConfiguratorApp(App):
     """Main application class for the network device configurator."""
 
     def __init__(
-        self, root: tk.Tk, title: str, advanced: bool, *args, **kwargs
+        self,
+        master: tk.Tk,
+        title: str,
+        mock_enabled: bool = False,
+        advanced: bool = False,
+        *args,
+        **kwargs,
     ) -> None:
-        super().__init__(root, title)
+        """Initialize the application.
+
+        Args:
+            master: The root Tkinter window.
+            title: The title of the application window.
+            mock_enabled: Whether mock mode is enabled.
+            advanced: Whether advanced mode is enabled.
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+        """
+        self.mock_enabled = mock_enabled
+        self.advanced_mode = advanced
+        self.preset = None
+        super().__init__(master, title, *args, **kwargs)
         self.logger = logging.getLogger("ConfiguratorApp")
-        self.advanced_mode: bool = advanced
         self.device: "Device" | None = None  # type hint added
-        self.preset: "Preset" | None = None  # type hint added
         self.refresher = TabRefresher(self)
         self.tabs["CONNECTION"].on_button_click()
 
@@ -157,16 +184,20 @@ class ConfiguratorApp(App):
             ) from e
 
     def create_tabs(self) -> None:
-        """Creates and adds tabs to the notebook."""
+        """Create and add tabs to the application."""
         super().create_tabs()
-        self.create_tab(HelloTab, "HOME")
+        self.create_tab(HelloTab, "HOME", mock_enabled=self.mock_enabled)
         self.create_tab(TemplateTab, "TEMPLATES", **config["app"]["templates"])
         self.create_tab(InterfacesTab, "INTERFACES", **config["app"]["interfaces"])
         self.create_tab(RouterTab, "ROUTER")
         self.create_tab(ControlTab, "CONTROL")
 
     def register_device(self, device: "Device") -> None:
-        """Registers the selected device and updates the environment."""
+        """Register a device with the application.
+
+        Args:
+            device: The device to register.
+        """
         self.device = self.db_services["device"].get_info(device)
         initialize_device_environment(self.db_services, device)
 
@@ -198,17 +229,21 @@ class ConfiguratorApp(App):
             )
 
 
+def main():
+    """Main entry point of the application."""
+    args = parse_args()
+
+    root = tk.Tk()
+    app = ConfiguratorApp(
+        root,
+        "Network Device Configurator",
+        mock_enabled=args.mock,
+        advanced=args.advanced,
+    )
+    root.mainloop()
+
+
 if __name__ == "__main__":
     set_env("CERT", config["default-cert"])
     set_env("OR", "1")
-
-    parser = argparse.ArgumentParser(
-        description="Upload configurations and manage network devices"
-    )
-    parser.add_argument(
-        "-A", "--advanced", action="store_true", help="Advanced mode for fine-tuning"
-    )
-    args = parser.parse_args()
-    root = tk.Tk()
-    app = ConfiguratorApp(root, "Configurator", args.advanced)
-    root.mainloop()
+    main()
