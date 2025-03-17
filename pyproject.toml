@@ -21,6 +21,7 @@ wrapt-timeout-decorator = "^1.5.1"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
 debugpy = "^1.8.13"
+alembic = "1.13.1"
 
 [build-system]
 requires = ["poetry-core"]
