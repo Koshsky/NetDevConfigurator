@@ -2,7 +2,7 @@ import logging
 from tkinter import ttk
 
 from config import config
-from database.services import init_db_connection, get_entity_collections
+from database.services import init_db_connection
 
 from .tabs import ConnectionTab
 
@@ -28,7 +28,6 @@ class App:
         self.tabs = {}
         self.create_tabs()
         self.db_services = None
-        self.entity_collections = None
         self.session = None
         self._setup_keyboard_shortcuts()
 
@@ -99,7 +98,6 @@ class App:
         """
         try:
             self.session, self.db_services = init_db_connection(db_params)
-            self.entity_collections = get_entity_collections(self.db_services)
             return True
         except Exception as e:
             return self._handle_database_error(e)
@@ -115,7 +113,6 @@ class App:
         """
         logger.error("an error occurred: %s", e)
         self.db_services = None
-        self.entity_collections = None
         self.session = None
         raise e
 

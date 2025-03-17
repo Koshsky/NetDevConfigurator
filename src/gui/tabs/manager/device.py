@@ -16,15 +16,17 @@ class UpdateTab(BaseTab):
     def _create_widgets(self) -> None:
         """Creates the widgets for the tab."""
         logger.debug("Creating widgets for UpdateTab")
+        devices = self.app.db_services["device"].get_all()
+        protocols = self.app.db_services["protocol"].get_all()
+        ports = self.app.db_services["port"].get_all()
         self.create_block(
             "",
             {
-                "device": self.app.entity_collections["device"],
+                "device": tuple(d.name for d in devices),
                 "mask": {"boot": ("",), "uboot": ("",), "firmware": ("",)},
-                "protocols": list(self.app.entity_collections["protocol"]),
+                "protocols": list(p.name for p in protocols),
                 "ports": {
-                    f"{i}": (None,) + self.app.entity_collections["port"]
-                    for i in range(1, 61)
+                    f"{i}": (None,) + tuple(p.name for p in ports) for i in range(1, 61)
                 },
             },
             width=12,

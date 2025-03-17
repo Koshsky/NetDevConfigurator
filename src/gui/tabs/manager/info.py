@@ -3,6 +3,7 @@ from pprint import pformat
 from typing import Any
 
 from gui import BaseTab, apply_error_handler
+from database.services import allowed_roles
 
 logger = logging.getLogger(__name__)
 
@@ -17,14 +18,20 @@ class InfoTab(BaseTab):
         for entity_type in entity_types:
             self.create_block(
                 entity_type,
-                {"name": self.app.entity_collections[entity_type]},
+                {
+                    "name": tuple(
+                        e.name for e in self.app.db_services[entity_type].get_all()
+                    )
+                },
                 ("SHOW", getattr(self, f"show_{entity_type}_info")),
             )
         self.create_block(
             "preset",
             {
-                "device": self.app.entity_collections["device"],
-                "role": self.app.entity_collections["role"],
+                "device": tuple(
+                    d.name for d in self.app.db_services["device"].get_all()
+                ),
+                "role": allowed_roles,
             },
             ("SHOW", self.show_preset_info),
         )

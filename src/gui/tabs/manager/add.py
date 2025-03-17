@@ -19,8 +19,12 @@ class AddTab(BaseTab):
             "device",
             {
                 "name": None,
-                "company": self.app.entity_collections["company"],
-                "family": self.app.entity_collections["family"],
+                "company": tuple(
+                    c.name for c in self.app.db_services["company"].get_all()
+                ),
+                "family": tuple(
+                    f.name for f in self.app.db_services["family"].get_all()
+                ),
                 "dev_type": ("switch", "router"),
             },
             ("SUBMIT", self.submit_device),

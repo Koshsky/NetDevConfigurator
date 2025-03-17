@@ -47,7 +47,7 @@ class BaseService(Generic[ModelType]):
                 entities = entities.filter(column.in_(value))
             else:
                 entities = entities.filter(column == value)
-        entities = entities.all()
+        entities = entities.order_by(self.model.name).all()
         logger.debug(
             "Found %d %s entities with filters: %s",
             len(entities),

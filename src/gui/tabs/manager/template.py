@@ -4,6 +4,7 @@ from pprint import pformat
 from typing import TYPE_CHECKING, Any, Dict
 
 from gui import BaseTab, apply_error_handler
+from database.services import allowed_types, allowed_roles
 
 if TYPE_CHECKING:
     from database.models import Templates
@@ -21,10 +22,14 @@ class TemplateTab(BaseTab):
         self.create_block(
             "template",
             {
-                "name": self.app.entity_collections["template"],
-                "family": self.app.entity_collections["family"],
-                "type": self.app.entity_collections["template_type"],
-                "role": self.app.entity_collections["role"] + ("common",),
+                "name": tuple(
+                    t.name for t in self.app.db_services["template"].get_all()
+                ),
+                "family": tuple(
+                    f.name for f in self.app.db_services["family"].get_all()
+                ),
+                "type": allowed_types,
+                "role": allowed_roles + ("common",),
             },
         )
         self.create_large_input_field("text")

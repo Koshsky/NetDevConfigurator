@@ -46,7 +46,8 @@ class HelloTab(BaseTab):
 
     def _create_device_block(self) -> None:
         """Creates the device selection block."""
-        self.create_block("device", {"name": self.app.entity_collections["device"]})
+        devices = self.app.db_services["device"].get_all()
+        self.create_block("device", {"name": tuple(d.name for d in devices)})
 
     def _create_common_block(self) -> None:
         """Creates the common settings block, currently for certificates."""

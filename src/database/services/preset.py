@@ -16,6 +16,7 @@ from .template import TemplateService
 logger = logging.getLogger(__name__)
 allowed_roles: Tuple[str, ...] = (  # `common` suits for all
     "data",
+    "data+mgmt",
     "ipmi",
     "icu",
     "or",

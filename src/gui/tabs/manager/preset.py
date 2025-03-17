@@ -2,6 +2,7 @@ import logging
 from typing import Any, Dict, List
 
 from gui import BaseTab, apply_error_handler
+from database.services import allowed_roles
 
 logger = logging.getLogger(__name__)
 
@@ -25,11 +26,12 @@ class PresetTab(BaseTab):
 
     def _create_preset_block(self) -> None:
         """Creates the preset management block."""
+        devices = self.app.db_services["device"].get_all(dev_type="switch")
         self.create_block(
             "preset",
             {
-                "device": self.app.entity_collections["device"],
-                "role": self.app.entity_collections["role"],
+                "device": tuple(d.name for d in devices),
+                "role": allowed_roles,
             },
         )
         self.create_button_in_line(("CREATE", self.create_preset))

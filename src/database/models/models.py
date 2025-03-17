@@ -147,6 +147,7 @@ class Presets(Base):
     id = Column(Integer, primary_key=True)
     device_id = Column(Integer, nullable=False)
     role = Column(String(256), nullable=False)
+    name = Column(String(256), nullable=False)
     description = Column(Text)
 
     device = relationship('Devices', back_populates='presets')

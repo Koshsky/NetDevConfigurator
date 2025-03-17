@@ -66,30 +66,3 @@ def init_db_connection(config):
 
     except Exception as e:
         logger.error("Connection failed to %s: %s", connection_string, e)
-
-
-def get_entity_collections(entity_services):
-    """Retrieves collections of entity names.
-
-    Args:
-        entity_services: A dictionary of entity services.
-
-    Returns:
-        A dictionary containing tuples of entity names.
-    """
-    return {
-        "company": tuple(
-            company.name for company in entity_services["company"].get_all()
-        ),
-        "family": tuple(family.name for family in entity_services["family"].get_all()),
-        "device": tuple(device.name for device in entity_services["device"].get_all()),
-        "protocol": tuple(
-            protocol.name for protocol in entity_services["protocol"].get_all()
-        ),
-        "port": tuple(port.name for port in entity_services["port"].get_all()),
-        "template": tuple(
-            set({template.name for template in entity_services["template"].get_all()})
-        ),
-        "template_type": allowed_types,
-        "role": allowed_roles,
-    }

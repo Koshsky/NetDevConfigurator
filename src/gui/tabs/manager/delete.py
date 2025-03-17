@@ -16,7 +16,7 @@ class DeleteTab(BaseTab):
         for entity in entities:
             self.create_block(
                 entity,
-                {"name": self.app.entity_collections[entity]},
+                {"name": tuple(e.name for e in self.app.db_services[entity].get_all())},
                 ("delete", lambda e=entity: self.delete_entity(e)),
             )
 
