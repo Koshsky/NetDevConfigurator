@@ -67,7 +67,7 @@ class COMBaseDriver(BaseDriver):
         self.on_open_sequence = on_open_sequence
         self.comms_prompt_pattern = comms_prompt_pattern
         self.ser = serial.Serial(
-            port=config.serial.port,
+            port=config["serial-port"],
             baudrate=115200,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,

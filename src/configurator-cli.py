@@ -1,9 +1,11 @@
+import argparse
 import os
 import sys
-from typing import TYPE_CHECKING, Dict, Any
+from typing import TYPE_CHECKING, Any, Dict
 
 from config import config, disable_logging
 from database.services import EntityNotFoundError, init_db_connection
+from drivers import ConnectionManager, DriverError
 from utils.config import save_configuration
 from utils.environ import initialize_device_environment, set_env
 
@@ -11,6 +13,18 @@ if TYPE_CHECKING:
     from database.models import Devices
 
 CONNECTION_TYPE = "ssh"
+
+
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description="Network Device Configurator CLI")
+    parser.add_argument(
+        "--show-logs",
+        action="store_true",
+        default=False,
+        help="Show logging output (default: False)",
+    )
+    return parser.parse_args()
 
 
 def get_cert() -> str:
@@ -140,9 +154,11 @@ def prepare_tftp():
         current_address = new_address  # update current address for next prompt
 
 
-if __name__ == "__main__":
-    # with disable_logging():
-    from drivers import ConnectionManager, DriverError
+def main_logic():
+    """Main logic of the configurator.
+
+    This function contains the core logic that is executed whether logging is enabled or not.
+    """
 
     preset, device_info = prepare_configuration_file()
     driver = prepare_credentials(device_info)
@@ -155,9 +171,12 @@ if __name__ == "__main__":
         print("HEADER:", header, sep="\n")
         save_configuration(header, preset)
         print(conn.update_startup_config())
-        # if input("Load configuration? y/n ").lower() == "y":
-        #     conn.update_startup_config()
-        # if input("Update firmwares? y/n ").lower() == "y":
-        #     conn.update_firmwares()
-        # if input("Reload device? y/n ").lower() == "y":
-        #     conn.reboot()
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    if not args.show_logs:
+        with disable_logging():
+            main_logic()
+    else:
+        main_logic()

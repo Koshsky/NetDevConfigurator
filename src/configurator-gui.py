@@ -19,7 +19,7 @@ from utils.environ import set_env, initialize_device_environment
 
 
 if TYPE_CHECKING:
-    from database.models import Device, Preset
+    from database.models import Device
     from gui.tabs import BaseTab
 
 logger = logging.getLogger("ConfiguratorApp")
@@ -244,7 +244,7 @@ def main():
     args = parse_args()
 
     root = tk.Tk()
-    app = ConfiguratorApp(
+    ConfiguratorApp(
         root,
         "Network Device Configurator",
         mock_enabled=args.mock,
