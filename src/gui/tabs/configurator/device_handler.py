@@ -1,8 +1,7 @@
 import logging
-import os
 from typing import Dict, Type
 
-from utils.environ import env_converter, set_env
+from utils.environ import env_converter, get_env, set_env
 
 from ..base_tab import BaseTab
 
@@ -52,7 +51,7 @@ class DeviceHandlerFactory:
         Raises:
             ValueError: If DEV_TYPE is not set or if the device type is unknown.
         """
-        device_type = os.environ.get("DEV_TYPE")
+        device_type = get_env("DEV_TYPE")
         if not device_type:
             raise ValueError("DEV_TYPE environment variable not set.")
         if handler_class := self.handlers.get(device_type):
@@ -78,8 +77,8 @@ class SwitchHandler(BaseDeviceHandler):
     def _actualize_values(self):
         """Sets initial values for switch parameters from environment variables."""
         logger.debug("Actualizing values for switch...")
-        self.tab.fields["params"]["role"].set(os.environ.get("DEV_ROLE", ""))
-        self.tab.fields["params"]["or"].set(os.environ.get("OR", ""))
+        self.tab.fields["params"]["role"].set(get_env("DEV_ROLE", ""))
+        self.tab.fields["params"]["or"].set(get_env("OR", ""))
 
     def update_device_info(self):
         """Updates switch information based on user input."""

@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple, Type
 
 from config import config
 from drivers import ConnectionManager
-from utils.environ import set_env
+from utils.environ import get_env, set_env
 
 from ..base_tab import BaseTab
 
@@ -37,7 +37,7 @@ class ConnectionHandlerFactory:
         Raises:
             ValueError: If the connection type is unknown.
         """
-        conn_type = os.environ.get("CONNECTION_TYPE")
+        conn_type = get_env("CONNECTION_TYPE")
         if not conn_type:
             raise ValueError("CONNECTION_TYPE environment variable not set.")
 
@@ -70,7 +70,7 @@ class BaseConnectionHandler:
         """Sets initial values for connection parameters from environment variables."""
         logger.debug("Actualizing connection values...")
         for var_name, field in self.env_vars:
-            if field in self.tab.fields["host"] and (value := os.environ.get(var_name)):
+            if field in self.tab.fields["host"] and (value := get_env(var_name)):
                 self.tab.fields["host"][field].set(value)
 
     def update_host_info(self):
@@ -136,7 +136,7 @@ class COMSSHConnectionHandler(BaseConnectionHandler):
 
     def _execute_with_driver(self, operation: str, *args):
         """Executes an operation, configuring the base connection if necessary."""
-        if os.environ.get("BASE_LOADED") == "false":
+        if get_env("BASE_LOADED") == "false":
             try:
                 super()._execute_with_driver(
                     "base_configure_192", connection_type="com"

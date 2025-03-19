@@ -1,7 +1,6 @@
 import logging
-import os
 
-from utils.environ import set_env
+from utils.environ import get_env, set_env
 from utils.filesystem import find_most_recent_file
 from utils.network import find_available_ip
 
@@ -123,14 +122,14 @@ class ConnectionManager:
         """
 
         filename = find_most_recent_file(
-            f"{os.environ['TFTP_FOLDER']}/firmware",
+            f"{get_env('TFTP_FOLDER')}/firmware",
             self.device["pattern"][component_type] or "",
         )
         if not filename:
             logger.warning(
                 f"There is no {component_type} file for %s in %s matching %s",
                 self.device["name"],
-                os.environ["TFTP_FOLDER"],
+                get_env("TFTP_FOLDER"),
                 self.device["pattern"][component_type],
             )
             return ""

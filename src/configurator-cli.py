@@ -1,5 +1,4 @@
 import argparse
-import os
 import sys
 from typing import TYPE_CHECKING, Any, Dict
 
@@ -7,7 +6,7 @@ from config import config, disable_logging
 from database.services import EntityNotFoundError, init_db_connection
 from drivers import ConnectionManager, DriverError
 from utils.config import save_configuration
-from utils.environ import initialize_device_environment, set_env
+from utils.environ import get_env, initialize_device_environment, set_env
 
 if TYPE_CHECKING:
     from database.models import Devices
@@ -102,7 +101,7 @@ def prepare_configuration_file() -> Dict[str, Any]:
     get_operating_room(role)
 
     try:
-        if "DEV_ROLE" in os.environ:
+        if get_env("DEV_ROLE"):
             preset = db_services["preset"].get_info_one(device_id=device.id, role=role)
         else:
             preset = None
@@ -131,7 +130,7 @@ def prepare_credentials(device_info: dict[str, Any]):
                 print("Successful connection via ssh!")
                 break  # successful connection
         except (TimeoutError, DriverError):
-            connection_string = f"{os.environ.get('USER')}:{os.environ.get('PASSWORD')}@{os.environ.get('HOST')}:{os.environ.get('PORT')}"
+            connection_string = f"{get_env('USER')}:{get_env('PASSWORD')}@{get_env('HOST')}:{get_env('PORT')}"
             print(f"Cannot connection to {connection_string}. Please try again.")
     return driver
 
@@ -142,7 +141,7 @@ def prepare_tftp():
     Prompts the user to confirm or change the current TFTP server address,
     and updates the environment variable accordingly.
     """
-    current_address = os.environ.get("TFTP_ADDRESS")
+    current_address = get_env("TFTP_ADDRESS")
     while (
         input(
             f"Current tftp-address is {current_address}. Do you want to change this? y/n "

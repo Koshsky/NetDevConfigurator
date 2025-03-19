@@ -15,7 +15,7 @@ from gui.tabs.configurator import (
 )
 from gui.tabs.configurator.connection_handler import CONNECTION_TYPES
 from utils.config import save_configuration
-from utils.environ import set_env, initialize_device_environment
+from utils.environ import get_env, set_env, initialize_device_environment
 
 
 if TYPE_CHECKING:
@@ -47,7 +47,7 @@ class TabRefresher:
 
     def refresh_tabs(self) -> None:
         """Refreshes the tabs based on the current environment."""
-        connection_type = os.environ.get("CONNECTION_TYPE")
+        connection_type = get_env("CONNECTION_TYPE")
         self.logger.debug(
             f"Refreshing configurator tabs. CONNECTION_TYPE={connection_type}"
         )
@@ -71,8 +71,8 @@ class TabRefresher:
 
     def _refresh_connected_tabs(self) -> None:
         """Refreshes tabs when a connection type is selected."""
-        dev_type = os.environ.get("DEV_TYPE")
-        dev_role_present = "DEV_ROLE" in os.environ
+        dev_type = get_env("DEV_TYPE")
+        dev_role_present = get_env("DEV_ROLE")
         self.logger.debug(
             f"Refreshing tabs for connection. DEV_TYPE={dev_type}, DEV_ROLE present={dev_role_present}"
         )
@@ -136,10 +136,10 @@ class ConfiguratorApp(App):
 
         return {
             "auth_strict_key": False,
-            "address": os.environ.get("HOST_ADDRESS"),
-            "port": os.environ.get("HOST_PORT"),
-            "username": os.environ.get("HOST_USERNAME"),
-            "password": os.environ.get("HOST_PASSWORD"),
+            "address": get_env("HOST_ADDRESS"),
+            "port": get_env("HOST_PORT"),
+            "username": get_env("HOST_USERNAME"),
+            "password": get_env("HOST_PASSWORD"),
         }
 
     @property
@@ -155,7 +155,7 @@ class ConfiguratorApp(App):
         control_tab.device_handler.update_device_info()
 
         if self.advanced_mode:
-            dev_type = os.environ.get("DEV_TYPE")
+            dev_type = get_env("DEV_TYPE")
             if dev_type == "router":
                 self.tabs["ROUTER"].update_config()
             elif dev_type == "switch":
@@ -172,7 +172,7 @@ class ConfiguratorApp(App):
     def _read_configuration_file(self) -> str:
         """Reads and returns the generated text configuration."""
         config_filepath = os.path.join(
-            os.environ["TFTP_FOLDER"], "tmp", os.environ["CFG_FILENAME"]
+            get_env("TFTP_FOLDER"), "tmp", get_env("CFG_FILENAME")
         )
         try:
             with open(config_filepath, "r") as f:
@@ -222,10 +222,10 @@ class ConfiguratorApp(App):
     def register_preset(self, role: str, or_value: str = "1") -> None:
         """Registers the selected preset and updates the environment."""
         set_env("OR", or_value)
-        if "DEV_ROLE" in os.environ and os.environ["DEV_ROLE"] == role:
+        if get_env("DEV_ROLE") and get_env("DEV_ROLE") == role:
             return
 
-        device = self.db_services["device"].get_one(name=os.environ["DEV_NAME"])
+        device = self.db_services["device"].get_one(name=get_env("DEV_NAME"))
         if preset := self.db_services["preset"].get_one(device_id=device.id, role=role):
             self.preset = self.db_services["preset"].get_info(preset, check=True)
             set_env("DEV_ROLE", preset.role)

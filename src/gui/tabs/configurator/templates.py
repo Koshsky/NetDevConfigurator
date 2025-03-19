@@ -1,8 +1,8 @@
 import logging
-import os
 from typing import Any, Callable, Dict, Tuple
 
 from gui import BaseTab, apply_error_handler
+from utils.environ import get_env
 
 logger = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ class TemplateTab(BaseTab):
         """Retrieves templates of a specific type."""
         templates = self.app.db_services["template"].get_all(
             family_id=self.app.device["family"]["id"],
-            role=[os.environ["DEV_ROLE"], "common"],
+            role=[get_env("DEV_ROLE"), "common"],
         )
         tail = ("None",) if self._allow_none else ()
         return (

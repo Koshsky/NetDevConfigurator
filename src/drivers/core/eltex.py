@@ -1,5 +1,7 @@
 import os
 
+from utils.environ import get_env
+
 
 class ESRxx:
     comment_symbol = "#"
@@ -13,21 +15,21 @@ class ESRxx:
     @property
     def update_startup_config(self):
         return [
-            f"copy tftp://{os.environ['TFTP_ADDRESS']}:/tmp/{os.environ['CFG_FILENAME']} system:candidate-config",
+            f"copy tftp://{get_env('TFTP_ADDRESS')}:/tmp/{get_env('CFG_FILENAME')} system:candidate-config",
         ]
 
     # @property
-    # def load_boot(
-    #     self,
-    # ):
-    #     return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} boot"
+    # def load_boot(self):
+    #     return (
+    #         f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} boot"
+    #     )
 
     @property
     def base_configure_192(self):
         return [
             "configure",
             "interface vlan 1",
-            f"ip address {os.environ['HOST_ADDRESS']} 255.255.255.0",
+            f"ip address {get_env('HOST_ADDRESS')} 255.255.255.0",
             "!",
             "interface gigabitethernet 1/0/1",
             "switchport mode access",
@@ -39,11 +41,11 @@ class ESRxx:
 
     @property
     def load_uboot(self):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} system:boot-2"
+        return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:boot-2"
 
     @property
     def load_firmware(self):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} system:firmware"
+        return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:firmware"
         # TODO: БУДУЩЕЕ распарсить show bootvar и определить более новый образ
         # boot system image-[12]
 
@@ -60,14 +62,14 @@ class BaseMES:
 
     @property
     def update_startup_config(self):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/tmp/{os.environ['CFG_FILENAME']} startup-config"
+        return f"copy tftp://{get_env('TFTP_ADDRESS')}/tmp/{get_env('CFG_FILENAME')} startup-config"
 
     @property
     def base_configure_192(self):
         return [
             "configure terminal",
             "interface vlan 1",
-            f"ip address {os.environ['HOST_ADDRESS']} 255.255.255.0",
+            f"ip address {get_env('HOST_ADDRESS')} 255.255.255.0",
             "ssh enable",
             "!",
             "interface gigabitethernet 0/1",
@@ -85,11 +87,13 @@ class MES14xx24xx34xx37xx(BaseMES):
 
     @property
     def load_boot(self):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} boot"
+        return (
+            f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} boot"
+        )
 
     @property
     def load_firmware(self):
-        return f"copy tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']} image"
+        return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} image"
 
 
 class MES23xx33xx35xx36xx53xx5400(BaseMES):
@@ -97,7 +101,7 @@ class MES23xx33xx35xx36xx53xx5400(BaseMES):
 
     @property
     def load_boot(self):
-        return f"boot system tftp://{os.environ['TFTP_ADDRESS']}/firmware/{os.environ['FILENAME']}"
+        return f"boot system tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')}"
 
 
 class MES11xx21xx20xx31xx(BaseMES):

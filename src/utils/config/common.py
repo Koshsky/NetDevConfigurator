@@ -2,7 +2,7 @@ import logging
 import os
 from typing import Dict, Any
 
-from utils.environ import replace_env_vars, check_environment_variables
+from utils.environ import replace_env_vars, check_environment_variables, get_env
 from .esr import save_ESR_configuration
 from .zyxel import prepare_zyxel_environs
 
@@ -50,21 +50,19 @@ def save_configuration(header: str = "", preset: Dict[str, Any] = None) -> str:
     logger.debug("Saving configuration...")
     check_environment_variables()
 
-    if os.environ["DEV_TYPE"] == "router":
+    if get_env("DEV_TYPE") == "router":
         logger.debug("Saving configuration for router.")
         configuration = save_ESR_configuration(header)
-    elif os.environ["DEV_TYPE"] == "switch":
+    elif get_env("DEV_TYPE") == "switch":
         logger.debug("Saving configuration for switch.")
         configuration = header + _process_json_config(
-            preset["configuration"], os.environ["DEV_COMPANY"]
+            preset["configuration"], get_env("DEV_COMPANY")
         )
     else:
-        logger.error("Unknown device type: %s", os.environ["DEV_TYPE"])
-        raise ValueError(f"Unknown device type: {os.environ['DEV_TYPE']}")
+        logger.error("Unknown device type: %s", get_env("DEV_TYPE"))
+        raise ValueError(f"Unknown device type: {get_env('DEV_TYPE')}")
 
-    config_path = os.path.join(
-        os.environ["TFTP_FOLDER"], "tmp", os.environ["CFG_FILENAME"]
-    )
+    config_path = os.path.join(get_env("TFTP_FOLDER"), "tmp", get_env("CFG_FILENAME"))
     logger.debug("Saving configuration to: %s", config_path)
     try:
         with open(config_path, "w") as f:

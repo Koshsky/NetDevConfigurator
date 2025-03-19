@@ -1,9 +1,8 @@
 import logging
-import os
 from typing import Any, Dict, Tuple
 
 from gui import BaseTab, apply_error_handler
-from utils.environ import env_converter, set_env
+from utils.environ import env_converter, get_env, set_env
 
 logger = logging.getLogger("tab")
 
@@ -25,9 +24,9 @@ class RouterTab(BaseTab):
     def _actualize(self) -> None:
         """Actualizes the values of the environment variable fields."""
         for env_name, field in self.fields["env"]["vars"].items():
-            if env_name not in os.environ:
+            if not get_env(env_name):
                 set_env(env_name, field.get().strip())
-            field.set(env_converter.to_human(env_name, os.environ[env_name]))
+            field.set(env_converter.to_human(env_name, get_env(env_name)))
 
     def update_config(self) -> None:
         """Updates the environment variables with the values from the fields."""
@@ -47,7 +46,7 @@ class RouterTab(BaseTab):
             "GW": (env_converter.get_human("GW"),),
             "VERS": tuple(env_converter["VERS"]),
         }
-        if os.environ["TYPE_COMPLEX"] == "1":
+        if get_env("TYPE_COMPLEX") == "1":
             env_vars |= {
                 "PH_COUNT": tuple(range(1, 26)),
                 "STREAM_COUNT": tuple(range(1, 26)),
@@ -58,14 +57,14 @@ class RouterTab(BaseTab):
             "TELEPORT": tuple(env_converter["VPN"]),
             "RAISA": tuple(env_converter["VPN"]),
         }
-        if os.environ["RAISA"] == "1":
+        if get_env("RAISA") == "1":
             env_vars["RAISA_IP"] = (env_converter.get_human("RAISA_IP"),)
         env_vars["TRUECONF"] = tuple(env_converter["TRUECONF"])
 
-        if os.environ["TRUECONF"] == "1":
+        if get_env("TRUECONF") == "1":
             env_vars["TRUEROOM"] = tuple(env_converter["TRUEROOM"])
 
-        if os.environ["TRUEROOM"] == os.environ["TRUECONF"] == "1":
+        if get_env("TRUEROOM") == get_env("TRUECONF") == "1":
             env_vars["TRUEROOM_COUNT"] = tuple(range(1, 26))
             env_vars["TRUEROOM_IP1"] = (env_converter.get_human("TRUEROOM_IP1"),)
         return env_vars
