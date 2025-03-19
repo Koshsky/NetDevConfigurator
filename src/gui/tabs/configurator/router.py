@@ -38,33 +38,54 @@ class RouterTab(BaseTab):
                 logger.error(f"Incorrect value for {env_name}: {field.get()}")
         self.refresh_widgets()
 
-    def _get_env_vars(self) -> Dict[str, Tuple[Any, ...]]:
+    def _get_env_vars(self) -> Dict[str, Tuple[str, ...]]:
         """Retrieves the environment variables and their possible values."""
-        env_vars: Dict[str, Tuple[Any, ...]] = {
-            "PUBLIC_IP": (env_converter.get_human("PUBLIC_IP"),),
-            "PUBLIC_MASK": (env_converter.get_human("PUBLIC_MASK"),),
-            "GW": (env_converter.get_human("GW"),),
-            "VERS": tuple(env_converter["VERS"]),
+
+        def ensure_none_last(values: Tuple[str, ...]) -> Tuple[str, ...]:
+            """Ensures that "None" is the last value in the tuple if present."""
+            if "None" in values:
+                return tuple(x for x in values if x != "None") + ("None",)
+            return values
+
+        env_vars: Dict[str, Tuple[str, ...]] = {
+            "PUBLIC_IP": ensure_none_last(
+                (str(env_converter.get_human("PUBLIC_IP") or ""),)
+            ),
+            "PUBLIC_MASK": ensure_none_last(
+                (str(env_converter.get_human("PUBLIC_MASK") or ""),)
+            ),
+            "GW": ensure_none_last((str(env_converter.get_human("GW") or ""),)),
+            "VERS": ensure_none_last(tuple(str(x) for x in env_converter["VERS"])),
         }
         if get_env("TYPE_COMPLEX") == "1":
             env_vars |= {
-                "PH_COUNT": tuple(range(1, 26)),
-                "STREAM_COUNT": tuple(range(1, 26)),
+                "PH_COUNT": ensure_none_last(tuple(str(x) for x in range(1, 26))),
+                "STREAM_COUNT": ensure_none_last(tuple(str(x) for x in range(1, 26))),
             }
 
         env_vars |= {
-            "VPN": tuple(env_converter["VPN"]),
-            "TELEPORT": tuple(env_converter["VPN"]),
-            "RAISA": tuple(env_converter["VPN"]),
+            "VPN": ensure_none_last(tuple(str(x) for x in env_converter["VPN"])),
+            "TELEPORT": ensure_none_last(tuple(str(x) for x in env_converter["VPN"])),
+            "RAISA": ensure_none_last(tuple(str(x) for x in env_converter["VPN"])),
         }
         if get_env("RAISA") == "1":
-            env_vars["RAISA_IP"] = (env_converter.get_human("RAISA_IP"),)
-        env_vars["TRUECONF"] = tuple(env_converter["TRUECONF"])
+            env_vars["RAISA_IP"] = ensure_none_last(
+                (str(env_converter.get_human("RAISA_IP") or ""),)
+            )
+        env_vars["TRUECONF"] = ensure_none_last(
+            tuple(str(x) for x in env_converter["TRUECONF"])
+        )
 
         if get_env("TRUECONF") == "1":
-            env_vars["TRUEROOM"] = tuple(env_converter["TRUEROOM"])
+            env_vars["TRUEROOM"] = ensure_none_last(
+                tuple(str(x) for x in env_converter["TRUEROOM"])
+            )
 
         if get_env("TRUEROOM") == get_env("TRUECONF") == "1":
-            env_vars["TRUEROOM_COUNT"] = tuple(range(1, 26))
-            env_vars["TRUEROOM_IP1"] = (env_converter.get_human("TRUEROOM_IP1"),)
+            env_vars["TRUEROOM_COUNT"] = ensure_none_last(
+                tuple(str(x) for x in range(1, 26))
+            )
+            env_vars["TRUEROOM_IP1"] = ensure_none_last(
+                (str(env_converter.get_human("TRUEROOM_IP1") or ""),)
+            )
         return env_vars

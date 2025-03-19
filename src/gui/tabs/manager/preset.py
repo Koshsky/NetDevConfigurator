@@ -150,8 +150,10 @@ class PresetTab(BaseTab):
         if not self.relevant_templates:
             logger.error("No suitable configuration templates found")
             raise ValueError("There are no suitable configuration templates")
-        self.fields["template"]["name"]["values"] = self.relevant_templates
-        self.fields["template"]["name"].set(self.relevant_templates[0])
+        self.fields["template"]["name"].set_values(self.relevant_templates)
+        self.fields["template"]["name"].set_text(
+            self.relevant_templates[0] if self.relevant_templates else None
+        )
 
     def preview(self) -> None:
         """Displays a preview of the preset configuration."""

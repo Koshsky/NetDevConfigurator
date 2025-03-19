@@ -26,7 +26,8 @@ class UpdateTab(BaseTab):
                 "mask": {"boot": ("",), "uboot": ("",), "firmware": ("",)},
                 "protocols": list(p.name for p in protocols),
                 "ports": {
-                    f"{i}": (None,) + tuple(p.name for p in ports) for i in range(1, 61)
+                    f"{i}": ("None",) + tuple(p.name for p in ports)
+                    for i in range(1, 61)
                 },
             },
             width=12,
@@ -86,7 +87,7 @@ class UpdateTab(BaseTab):
         """Returns a list of selected ports, handling mixed speeds and trailing None values."""
         logger.debug("Getting selected ports")
         raw_input: List[str] = list(
-            map(lambda x: x[1].get(), self.fields[""]["ports"].items())
+            map(lambda x: str(x[1].get() or "None"), self.fields[""]["ports"].items())
         )
 
         def strip_none(ports: List[str]) -> List[str]:
@@ -101,6 +102,8 @@ class UpdateTab(BaseTab):
             res: List["Ports"] = []
             for port_name in fields[::-1]:
                 if port_name == "None":
+                    if not res:  # Если список пуст, пропускаем None
+                        continue
                     res.append(res[-1])
                     continue
                 port: "Ports" = self.app.db_services["port"].get_one(name=port_name)

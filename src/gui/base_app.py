@@ -3,6 +3,7 @@ from tkinter import ttk
 
 from config import DatabaseConfig
 from database.services import init_db_connection
+from gui.styles import BACKGROUND_COLOR, FONT, PADDING, BORDER_WIDTH
 
 from .tabs import ConnectionTab
 
@@ -140,7 +141,39 @@ class App:
         """
         self.root = root
         self.root.title(title)
-        self.notebook = ttk.Notebook(self.root)
+
+        # Настраиваем стиль для главного окна
+        style = ttk.Style()
+        style.configure(
+            "Light.TFrame",
+            background=BACKGROUND_COLOR,
+            relief="flat",
+            borderwidth=BORDER_WIDTH,
+            padding=PADDING,
+        )
+
+        # Настраиваем стиль для notebook
+        style.configure(
+            "Light.TNotebook",
+            background=BACKGROUND_COLOR,
+            tabmargins=(2, 5, 2, 0),
+            padding=PADDING,
+        )
+        style.configure(
+            "Light.TNotebook.Tab",
+            background=BACKGROUND_COLOR,
+            foreground="black",
+            padding=PADDING,
+            font=FONT,
+        )
+        style.map(
+            "Light.TNotebook.Tab",
+            background=[("selected", BACKGROUND_COLOR)],
+            foreground=[("selected", "black")],
+        )
+
+        # Создаем и настраиваем notebook
+        self.notebook = ttk.Notebook(self.root, style="Light.TNotebook")
         self.notebook.pack(fill="both", expand=True)
 
         # Устанавливаем минимальный размер окна и позволяем ему адаптироваться

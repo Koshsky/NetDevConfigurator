@@ -1,10 +1,20 @@
 import logging
 import tkinter as tk
+from tkinter import IntVar
 import tkinter.messagebox as messagebox
-from tkinter import IntVar, ttk
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+import tkinter.ttk as ttk
 
-from ttkwidgets.autocomplete import AutocompleteCombobox
+from gui.widgets import (
+    CustomFrame,
+    CustomLabel,
+    CustomEntry,
+    CustomScrollbar,
+    CustomText,
+    CustomButton,
+    CustomCheckbox,
+    CustomCombobox,
+)
 from config import config
 
 logger = logging.getLogger("gui")
@@ -16,10 +26,7 @@ class BaseTab:
     def __init__(self, parent: tk.Tk, app: Any, log_name: str = "Unknown tab") -> None:
         """Initializes a new instance of the BaseTab class."""
         self.__log_name: str = log_name
-        self.frame: ttk.Frame = ttk.Frame(parent)
-        self.frame.columnconfigure(
-            list(range(config.app.grid_columns)), minsize=40, weight=1
-        )
+        self.frame: CustomFrame = CustomFrame(parent)
         self.frame.pack(fill=tk.BOTH, side=tk.TOP, expand=False, padx=5, pady=5)
         self.app: Any = app
         self._cur_row: int = 0
@@ -60,6 +67,7 @@ class BaseTab:
         for widget in self.frame.winfo_children():
             widget.destroy()
         self.fields = {}
+        self.frame.reset_position()
 
     def create_large_input_field(
         self, field_name: str, width: int = 75, height: int = 12
@@ -68,7 +76,7 @@ class BaseTab:
         if field_name in self.fields:
             raise ValueError(f"Field '{field_name}' already exists.")
 
-        text_field = tk.Text(self.frame, wrap="word", width=width, height=height)
+        text_field = CustomText(self.frame, width=width, height=height)
         text_field.grid(
             row=self._cur_row, column=0, columnspan=100, padx=5, pady=5, sticky="w"
         )
@@ -88,13 +96,13 @@ class BaseTab:
         if entity_name not in self.fields:
             self.fields[entity_name] = {}
 
-        ttk.Label(self.frame, text=entity_name).grid(
+        CustomLabel(self.frame, text=entity_name).grid(
             row=self._cur_row, column=0, padx=5, pady=5
         )
         self.cur_col = 1
 
         for param_name, param_presets in parameters.items():
-            ttk.Label(self.frame, text=param_name).grid(
+            CustomLabel(self.frame, text=param_name).grid(
                 row=self._cur_row, column=self.cur_col, padx=5, pady=5
             )
 
@@ -111,11 +119,9 @@ class BaseTab:
                     entity_name, param_name, param_presets, width
                 )
             else:
-                raise TypeError(
-                    "Invalid parameter preset type"
-                )  # Handle unexpected types
+                raise TypeError("Invalid parameter preset type")
 
-            self._cur_row += 1  # Move to the next row after each parameter
+            self._cur_row += 1
 
         if button is not None:
             if not (
@@ -126,7 +132,7 @@ class BaseTab:
             ):
                 raise TypeError("button parameter must be a tuple of (str, callable)")
 
-            tk.Button(self.frame, text=button[0], command=button[1]).grid(
+            CustomButton(self.frame, text=button[0], command=button[1]).grid(
                 row=self._cur_row - len(parameters),
                 column=self.cur_col + 2,
                 padx=5,
@@ -134,7 +140,7 @@ class BaseTab:
                 rowspan=len(parameters),
             )
 
-        ttk.Label(self.frame, text="").grid(row=self._cur_row, column=0, pady=0)
+        CustomLabel(self.frame, text="").grid(row=self._cur_row, column=0, pady=0)
         self._cur_row += 1
 
     def create_button_in_line(self, button: Tuple[str, Callable[[], None]]) -> None:
@@ -147,7 +153,7 @@ class BaseTab:
         ):
             raise TypeError("button parameter must be a tuple of (str, callable)")
 
-        button_widget = tk.Button(self.frame, text=button[0], command=button[1])
+        button_widget = CustomButton(self.frame, text=button[0], command=button[1])
         button_widget.grid(
             row=self._cur_row,
             column=0,
@@ -161,7 +167,7 @@ class BaseTab:
         self, message: str = "DATABASE STORAGE", width: int = 150, height: int = 25
     ) -> None:
         """Creates a text area for displaying feedback messages."""
-        self.feedback_text = tk.Text(
+        self.feedback_text = CustomText(
             self.frame, wrap="word", width=width, height=height, state=tk.DISABLED
         )
         self.feedback_text.grid(
@@ -173,13 +179,13 @@ class BaseTab:
             sticky="nsew",
         )
 
-        scrollbar = ttk.Scrollbar(
+        scrollbar = CustomScrollbar(
             self.frame, orient="vertical", command=self.feedback_text.yview
         )
         scrollbar.grid(row=self._cur_row, column=config.app.grid_columns, sticky="ns")
         self.feedback_text.config(yscrollcommand=scrollbar.set)
 
-        self.display_feedback(message)  # Use display_feedback to set initial message
+        self.display_feedback(message)
         self._cur_row += 1
 
     def show_error(self, title: str, error: str) -> None:
@@ -188,14 +194,13 @@ class BaseTab:
 
     def display_feedback(self, message: str) -> None:
         """Displays a feedback message in the feedback area."""
-        self.feedback_text.config(state=tk.NORMAL)
-        self.feedback_text.delete(1.0, tk.END)
-        self.feedback_text.insert(tk.END, message)
-        self.feedback_text.config(state=tk.DISABLED)
+        self.feedback_text.set_readonly(False)
+        self.feedback_text.set_text(message)
+        self.feedback_text.set_readonly(True)
 
     def __create_entry_field(self, entity_name: str, param_name: str) -> None:
         """Creates a single entry field."""
-        field = ttk.Entry(self.frame)
+        field = CustomEntry(self.frame)
         field.grid(row=self._cur_row, column=self.cur_col + 1, padx=5, pady=5)
         self.fields[entity_name][param_name] = field
 
@@ -203,9 +208,10 @@ class BaseTab:
         self, entity_name: str, param_name: str, param_presets: Tuple[str, ...]
     ) -> None:
         """Creates a single combobox field."""
-        field = AutocompleteCombobox(self.frame, completevalues=param_presets)
+        field = CustomCombobox(self.frame, completevalues=param_presets)
         field.grid(row=self._cur_row, column=self.cur_col + 1, padx=5, pady=5)
-        field.current(0)
+        field.set_values(list(param_presets))
+        field.set_text(param_presets[0] if param_presets else "")
         self.fields[entity_name][param_name] = field
 
     def __create_checkbox_group(
@@ -221,10 +227,9 @@ class BaseTab:
         first_row = self._cur_row
         first_col = self.cur_col
         for box in param_presets:
-            checkbox_var = IntVar()
-            checkbox = tk.Checkbutton(self.frame, text=box, variable=checkbox_var)
+            checkbox = CustomCheckbox(self.frame, text=box)
             checkbox.grid(row=self._cur_row, column=self.cur_col + 1, padx=5)
-            self.fields[entity_name][param_name][box] = checkbox_var
+            self.fields[entity_name][param_name][box] = checkbox
             self._cur_row += 1
             if space is not None:
                 space -= 1
@@ -249,13 +254,13 @@ class BaseTab:
         first_row = self._cur_row
         first_col = self.cur_col
         for sub_param, preset in param_presets.items():
-            label = ttk.Label(self.frame, text=sub_param)
-            label.grid(
+            CustomLabel(self.frame, text=sub_param).grid(
                 row=self._cur_row, column=self.cur_col + 1, padx=5, pady=5, sticky="e"
             )
-            field = AutocompleteCombobox(self.frame, completevalues=preset)
+            field = CustomCombobox(self.frame, completevalues=preset)
             field.grid(row=self._cur_row, column=self.cur_col + 2, padx=5, pady=5)
-            field.current(0)
+            field.set_values(preset)
+            field.set_text(preset[0] if preset else "")
             self.fields[entity_name][param_name][sub_param] = field
             self._cur_row += 1
             if space is not None:
