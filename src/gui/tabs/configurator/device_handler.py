@@ -77,8 +77,8 @@ class SwitchHandler(BaseDeviceHandler):
     def _actualize_values(self):
         """Sets initial values for switch parameters from environment variables."""
         logger.debug("Actualizing values for switch...")
-        self.tab.fields["params"]["role"].set(get_env("DEV_ROLE", ""))
-        self.tab.fields["params"]["or"].set(get_env("OR", ""))
+        self.tab.fields["params"]["role"].set(get_env("DEV_ROLE") or "")
+        self.tab.fields["params"]["or"].set(get_env("OR") or "")
 
     def update_device_info(self):
         """Updates switch information based on user input."""

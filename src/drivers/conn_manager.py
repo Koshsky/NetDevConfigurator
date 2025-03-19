@@ -126,12 +126,6 @@ class ConnectionManager:
             self.device["pattern"][component_type] or "",
         )
         if not filename:
-            logger.warning(
-                f"There is no {component_type} file for %s in %s matching %s",
-                self.device["name"],
-                get_env("TFTP_FOLDER"),
-                self.device["pattern"][component_type],
-            )
             return ""
 
         set_env("FILENAME", filename)

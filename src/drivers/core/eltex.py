@@ -100,7 +100,7 @@ class MES23xx33xx35xx36xx53xx5400(BaseMES):
     open_sequence = ["terminal datadump", "terminal width 0", "terminal no prompt"]
 
     @property
-    def load_boot(self):
+    def load_firmware(self):
         return f"boot system tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')}"
 
 
