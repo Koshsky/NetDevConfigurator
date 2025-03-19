@@ -1,12 +1,93 @@
 import logging
 import os
-from typing import Dict, Any
+import re
+from typing import Any, Dict
 
-from utils.environ import replace_env_vars, check_environment_variables, get_env
+from utils.environ import get_env
+
 from .esr import save_ESR_configuration
 from .zyxel import prepare_zyxel_environs
 
 logger = logging.getLogger(__name__)
+
+
+def replace_env_vars(configuration: str) -> str:
+    """Replaces environment variables placeholders in a string with their values.
+
+    Placeholders are enclosed in curly braces, e.g., "{VAR_NAME}".
+
+    Args:
+        configuration: The string containing environment variable placeholders.
+
+    Returns:
+        The string with placeholders replaced by their environment variable values.
+
+    Raises:
+        ValueError: If any referenced environment variable is not set.
+    """
+    logger.debug("Replacing environment variables in configuration:")
+    for match in re.finditer(r"{([A-Z0-9_]+)}", configuration):
+        env_var = match.group(1)
+        logger.debug("Found placeholder for environment variable: %s", env_var)
+        if not get_env(env_var):
+            logger.error("Missing environment variable: %s", env_var)
+            raise ValueError(f"Missing environment variable: {env_var}")
+        value = get_env(env_var)
+        logger.debug("Replacing placeholder with value: %s", value)
+        configuration = configuration.replace(f"{{{env_var}}}", value)
+    return configuration
+
+
+def check_environment_variables():
+    # TODO: рефакторинг нужен
+    """Checks if all required environment variables are set.
+
+    Raises:
+        EnvironmentError: If a required environment variable is missing.
+        ValueError: If the device company is not supported.
+    """
+    logger.debug("Checking environment variables...")
+    required_vars = {
+        "CERT": None,
+        "DEV_NAME": None,
+        "DEV_TYPE": ["router", "switch"],
+        "TFTP_FOLDER": None,
+        "CFG_FILENAME": None,
+        "DEV_COMPANY": ["Zyxel", "Eltex"],
+    }
+
+    if missing_vars := [var for var in required_vars if not get_env(var)]:
+        logger.error(
+            "Missing required environment variables: %s", ", ".join(missing_vars)
+        )
+        raise EnvironmentError(
+            f"Missing required environment variables: {', '.join(missing_vars)}"
+        )
+
+    if get_env("DEV_TYPE") not in required_vars["DEV_TYPE"]:
+        logger.error("Unsupported device type: %s", get_env("DEV_TYPE"))
+        raise ValueError(f"Unsupported device type: {get_env('DEV_TYPE')}")
+
+    if get_env("DEV_TYPE") == "switch":
+        if not get_env("DEV_ROLE"):
+            logger.error("Missing required environment variable: DEV_ROLE")
+            raise EnvironmentError("Missing required environment variable: DEV_ROLE")
+        if get_env("DEV_ROLE") in [
+            "tsh",
+            "or",
+        ]:
+            if not get_env("OR"):
+                logger.error("Missing required environment variable: OR")
+                raise EnvironmentError("Missing required environment variable: OR")
+            if not get_env("OR").isdigit():
+                logger.error("Environmental variable OR must be integer.")
+                raise EnvironmentError("Environmental variable OR must be integer.")
+
+    if get_env("DEV_COMPANY") not in required_vars["DEV_COMPANY"]:
+        logger.error("Unsupported device company: %s", get_env("DEV_COMPANY"))
+        raise ValueError(f"Unsupported device company: {get_env('DEV_COMPANY')}")
+
+    logger.debug("All required environment variables are set.")
 
 
 def _process_json_config(json_config: Dict[str, Any], device_company: str) -> str:

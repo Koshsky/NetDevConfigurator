@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Dict
+from typing import List
 
 
 @dataclass
@@ -59,64 +59,6 @@ class HostConfig:
 
 
 @dataclass
-class RouterConversion:
-    """Конвертация значений роутера."""
-
-    model_conversion: Dict[str, str] = field(
-        default_factory=lambda: {
-            "ESR20": "1",
-            "ESR21": "2",
-            "ESR31": "3",
-            "esr20": "1",
-            "esr21": "2",
-            "esr31": "3",
-        }
-    )
-    type_complex_conversion: Dict[str, str] = field(
-        default_factory=lambda: {
-            "Standard": "1",
-            "All-in-one": "2",
-        }
-    )
-    vers_conversion: Dict[str, str] = field(
-        default_factory=lambda: {
-            "1.23 and newer": "1",
-            "old": "2",
-        }
-    )
-    vpn_conversion: Dict[str, str] = field(
-        default_factory=lambda: {
-            "YES": "1",
-            "NO": "2",
-        }
-    )
-    teleport_conversion: Dict[str, str] = field(
-        default_factory=lambda: {
-            "YES": "1",
-            "NO": "2",
-        }
-    )
-    raisa_conversion: Dict[str, str] = field(
-        default_factory=lambda: {
-            "YES": "1",
-            "NO": "2",
-        }
-    )
-    trueconf_conversion: Dict[str, str] = field(
-        default_factory=lambda: {
-            "YES": "1",
-            "NO": "2",
-        }
-    )
-    trueroom_conversion: Dict[str, str] = field(
-        default_factory=lambda: {
-            "YES": "1",
-            "NO": "2",
-        }
-    )
-
-
-@dataclass
 class RouterConfig:
     """Конфигурация роутера."""
 
@@ -146,7 +88,6 @@ class Config:
     tftp: TFTPConfig = field(default_factory=TFTPConfig)
     host: HostConfig = field(default_factory=HostConfig)
     router: RouterConfig = field(default_factory=RouterConfig)
-    router_conversion: RouterConversion = field(default_factory=RouterConversion)
     default_cert: str = "MVS"
     serial_port: str = "/dev/ttyUSB0"
     mvs_network: str = "192.168.3.0/24"
