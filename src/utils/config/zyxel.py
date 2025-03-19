@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 from utils.environ import set_env
 

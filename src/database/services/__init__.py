@@ -3,14 +3,14 @@ import logging
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
+from .base_service import EntityNotFoundError
 from .company import CompanyService
 from .device import DeviceService
-from .base_service import EntityNotFoundError
 from .family import FamilyService
 from .port import PortService
-from .preset import PresetService, allowed_roles
+from .preset import PresetService
 from .protocol import ProtocolService
-from .template import TemplateService, allowed_types
+from .template import TemplateService
 
 __all__ = [
     "CompanyService",

@@ -1,9 +1,10 @@
 import logging
 import logging.config
 from contextlib import contextmanager
-from .config import Config, DatabaseConfig
+
 import yaml
 
+from .config import Config
 
 LOGGING = yaml.safe_load(open("./src/config/logging_config.yaml"))
 logging.config.dictConfig(LOGGING)

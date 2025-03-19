@@ -1,7 +1,7 @@
 from .control import ControlTab
-from .templates import TemplateTab
 from .hello import HelloTab
-from .router import RouterTab
 from .interfaces import InterfacesTab
+from .router import RouterTab
+from .templates import TemplateTab
 
 __all__ = ["ControlTab", "TemplateTab", "HelloTab", "RouterTab", "InterfacesTab"]

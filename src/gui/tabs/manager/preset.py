@@ -1,8 +1,8 @@
 import logging
 from typing import Any, Dict, List
 
-from gui import BaseTab, apply_error_handler
 from database.services import allowed_roles
+from gui import BaseTab, apply_error_handler
 
 logger = logging.getLogger(__name__)
 

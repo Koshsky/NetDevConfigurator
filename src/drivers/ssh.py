@@ -15,7 +15,6 @@ logger = logging.getLogger("ssh")
 class SSHPortOpenError(ConnectionError):
     """Raised when attempting to interact with an unopened SSH connection."""
 
-    pass
 
 
 def check_port_open(func: callable) -> callable:

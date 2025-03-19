@@ -1,10 +1,10 @@
 import logging
 
 from .eltex import (
+    ESRxx,
     MES11xx21xx20xx31xx,
     MES14xx24xx34xx37xx,
     MES23xx33xx35xx36xx53xx5400,
-    ESRxx,
 )
 from .zyxel import BaseZyxel
 

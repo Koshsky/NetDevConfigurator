@@ -15,7 +15,6 @@ JsonType = Union[List["JsonType"], Dict[str, "JsonType"]]
 class EntityNotFoundError(Exception):
     """Raised when an entity is not found in the database."""
 
-    pass
 
 
 class BaseService(Generic[ModelType]):

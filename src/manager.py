@@ -1,14 +1,14 @@
-import tkinter as tk
 import logging
+import tkinter as tk
 
 from gui.base_app import App
 from gui.tabs.manager import (
     AddTab,
-    PresetTab,
     DeleteTab,
     InfoTab,
-    UpdateTab,
+    PresetTab,
     TemplateTab,
+    UpdateTab,
 )
 
 logger = logging.getLogger(__name__)

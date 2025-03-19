@@ -1,4 +1,3 @@
-import os
 
 from utils.environ import get_env
 

@@ -2,8 +2,8 @@ import logging
 from pprint import pformat
 from typing import Any
 
-from gui import BaseTab, apply_error_handler
 from database.services import allowed_roles
+from gui import BaseTab, apply_error_handler
 
 logger = logging.getLogger(__name__)
 

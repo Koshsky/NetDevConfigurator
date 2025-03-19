@@ -4,6 +4,7 @@ from typing import Dict
 from sqlalchemy.orm import Session
 
 from database.models import Families
+
 from .base_service import BaseService, JsonType
 from .device import DeviceService
 

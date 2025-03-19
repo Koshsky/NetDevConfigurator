@@ -3,7 +3,7 @@ from tkinter import ttk
 
 from config import DatabaseConfig
 from database.services import init_db_connection
-from gui.styles import BACKGROUND_COLOR, FONT, PADDING, BORDER_WIDTH
+from gui.styles import BACKGROUND_COLOR, BORDER_WIDTH, FONT, PADDING
 
 from .tabs import ConnectionTab
 

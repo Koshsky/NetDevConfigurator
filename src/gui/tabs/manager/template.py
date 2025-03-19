@@ -3,8 +3,8 @@ import tkinter as tk
 from pprint import pformat
 from typing import TYPE_CHECKING, Any, Dict
 
+from database.services import allowed_roles, allowed_types
 from gui import BaseTab, apply_error_handler
-from database.services import allowed_types, allowed_roles
 
 if TYPE_CHECKING:
     from database.models import Templates

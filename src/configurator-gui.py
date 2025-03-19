@@ -15,8 +15,7 @@ from gui.tabs.configurator import (
 )
 from gui.tabs.configurator.connection_handler import CONNECTION_TYPES
 from utils.config import save_configuration
-from utils.environ import get_env, set_env, initialize_device_environment
-
+from utils.environ import get_env, initialize_device_environment, set_env
 
 if TYPE_CHECKING:
     from database.models import Device

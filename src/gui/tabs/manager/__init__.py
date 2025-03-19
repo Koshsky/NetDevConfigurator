@@ -1,8 +1,8 @@
 from .add import AddTab
-from .preset import PresetTab
 from .delete import DeleteTab
-from .info import InfoTab
 from .device import UpdateTab
+from .info import InfoTab
+from .preset import PresetTab
 from .template import TemplateTab
 
 __all__ = [

@@ -1,21 +1,19 @@
 import logging
 import tkinter as tk
-from tkinter import IntVar
 import tkinter.messagebox as messagebox
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
-import tkinter.ttk as ttk
 
+from config import config
 from gui.widgets import (
-    CustomFrame,
-    CustomLabel,
-    CustomEntry,
-    CustomScrollbar,
-    CustomText,
     CustomButton,
     CustomCheckbox,
     CustomCombobox,
+    CustomEntry,
+    CustomFrame,
+    CustomLabel,
+    CustomScrollbar,
+    CustomText,
 )
-from config import config
 
 logger = logging.getLogger("gui")
 

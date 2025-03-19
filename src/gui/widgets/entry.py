@@ -2,13 +2,13 @@
 
 import tkinter as tk
 from tkinter import ttk
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from gui.styles import (
+    BORDER_WIDTH,
     ENTRY_BACKGROUND,
     FONT,
     PADDING,
-    BORDER_WIDTH,
 )
 
 

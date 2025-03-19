@@ -1,8 +1,7 @@
 """Custom label widget."""
 
-import tkinter as tk
 from tkinter import ttk
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from gui.styles import (
     BACKGROUND_COLOR,

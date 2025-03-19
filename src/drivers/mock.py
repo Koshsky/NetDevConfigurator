@@ -57,4 +57,3 @@ class MockDriver(BaseDriver):
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """Exits the context manager and simulates connection closing."""
-        pass

@@ -2,8 +2,9 @@
 
 import tkinter as tk
 from tkinter import ttk
-from ttkwidgets.autocomplete import AutocompleteCombobox
 from typing import Any, Dict, List, Optional, Tuple
+
+from ttkwidgets.autocomplete import AutocompleteCombobox
 
 
 class CustomCombobox(AutocompleteCombobox):

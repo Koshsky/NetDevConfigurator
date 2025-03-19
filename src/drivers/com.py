@@ -1,12 +1,13 @@
 import logging
+import re
 from functools import wraps
 from typing import Callable
-import re
+
 import serial
 
 from config import config
 
-from .base_driver import BaseDriver, ConnectionError, AuthenticationError
+from .base_driver import AuthenticationError, BaseDriver, ConnectionError
 
 logger = logging.getLogger("COM")
 
@@ -14,13 +15,11 @@ logger = logging.getLogger("COM")
 class SerialPortOpenError(ConnectionError):
     """Raised when there is an error opening the serial port."""
 
-    pass
 
 
 class LoginError(AuthenticationError):
     """Raised when there is an error logging in to the device."""
 
-    pass
 
 
 def check_port_open(func: Callable) -> Callable:

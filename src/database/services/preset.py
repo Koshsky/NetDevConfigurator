@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Any, Dict, Generator, Tuple, List
+from typing import TYPE_CHECKING, Any, Dict, Generator, List, Tuple
 
 from sqlalchemy.orm import Session
 
@@ -7,9 +7,10 @@ if TYPE_CHECKING:
     from database.models import DevicePresets, Devices, Presets, Templates
 
 from database.models import DevicePresets, Devices, Presets, Templates
+
 from .base_service import BaseService, JsonType
-from .device_preset import DevicePresetService
 from .device import DeviceService
+from .device_preset import DevicePresetService
 from .family import FamilyService
 from .template import TemplateService
 
