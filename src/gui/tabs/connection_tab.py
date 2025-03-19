@@ -25,7 +25,7 @@ class ConnectionTab(BaseTab):
         self.refresh_widgets()
 
     def _create_widgets(self):
-        for label_text, default_value in config["database"].items():
+        for label_text, default_value in config.database.__dict__.items():
             label = tk.Label(self.frame, text=label_text)
             label.pack(pady=5)
 

@@ -1,7 +1,7 @@
 import logging
 from tkinter import ttk
 
-from config import config
+from config import DatabaseConfig
 from database.services import init_db_connection
 
 from .tabs import ConnectionTab
@@ -96,6 +96,8 @@ class App:
         Returns:
             True if the connection was successful, False otherwise.
         """
+
+        db_params = DatabaseConfig(**db_params)
         try:
             self.session, self.db_services = init_db_connection(db_params)
             return True

@@ -38,25 +38,25 @@ def run_postgres_command(command, env, error_context):
 
 def backup_postgres_db(db_params):
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-    path = f"{config['backup-folder']}/dev{timestamp}.sql"
+    path = f"{config.backup_folder}/dev{timestamp}.sql"
 
     command = [
         "pg_dump",
         "-h",
-        db_params["host"],
+        db_params.host,
         "-p",
-        str(db_params["port"]),
+        str(db_params.port),
         "-U",
-        db_params["username"],
+        db_params.username,
         "-F",
         "c",
         "-f",
         path,
-        db_params["database"],
+        db_params.database,
     ]
 
     with contextlib.suppress(Exception):
-        env = {"PGPASSWORD": db_params["password"]}
+        env = {"PGPASSWORD": db_params.password}
         try:
             run_postgres_command(command, env, path)
             logger.info("Database saved successfully to %s", os.path.abspath(path))
@@ -65,7 +65,7 @@ def backup_postgres_db(db_params):
 
 
 def restore_postgres_db(db_params, path):
-    env = {"PGPASSWORD": db_params["password"]}
+    env = {"PGPASSWORD": db_params.password}
 
     if not os.path.isfile(path):
         logger.error("%s doesn't exist.", path)
@@ -75,27 +75,27 @@ def restore_postgres_db(db_params, path):
         return [
             "psql",
             "-h",
-            db_params["host"],
+            db_params.host,
             "-p",
-            str(db_params["port"]),
+            str(db_params.port),
             "-U",
-            db_params["username"],
+            db_params.username,
             "-c",
             cmd,
         ]
 
-    drop_command = base_command(f"DROP DATABASE IF EXISTS {db_params['database']};")
-    create_command = base_command(f"CREATE DATABASE {db_params['database']};")
+    drop_command = base_command(f"DROP DATABASE IF EXISTS {db_params.database};")
+    create_command = base_command(f"CREATE DATABASE {db_params.database};")
     restore_command = [
         "pg_restore",
         "-h",
-        db_params["host"],
+        db_params.host,
         "-p",
-        str(db_params["port"]),
+        str(db_params.port),
         "-U",
-        db_params["username"],
+        db_params.username,
         "-d",
-        db_params["database"],
+        db_params.database,
         path,
     ]
 
@@ -120,12 +120,12 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.backup:
-        backup_postgres_db(config["database"])
+        backup_postgres_db(config.database)
     elif args.restore:
         if args.output:
             path = args.output
         else:
-            path = get_most_recent_file(config["backup-folder"])
-        restore_postgres_db(config["database"], path)
+            path = get_most_recent_file(config.backup_folder)
+        restore_postgres_db(config.database, path)
     else:
         print("Please specify either --backup or --restore.")

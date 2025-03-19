@@ -26,8 +26,9 @@ def initialize_device_environment(db_services, device: "Device") -> None:
     set_env("DEV_COMPANY", company_name)
 
     if os.environ["DEV_TYPE"] == "router":
-        for env_param, env_value in config["router"].items():
-            set_env(env_param, env_value)
+        for env_param, env_value in config.router.__dict__.items():
+            if not env_param.startswith("_"):
+                set_env(env_param, env_value)
         set_env("MODEL", env_converter.to_machine("MODEL", device.name))
 
 
@@ -124,6 +125,7 @@ def set_env(key: str, value: str | int | None) -> bool:
         return
 
     value = str(value)
+    key = key.upper()
     if key not in os.environ or os.environ[key] != value:
         os.environ[key] = value
         logger.info(
@@ -140,6 +142,7 @@ def del_env(key: str):
         key: The name of the environment variable to delete.
     """
     logger.debug("Deleting environment variable: %s", key)
+    key = key.upper()
     if key in os.environ:
         del os.environ[key]
         logger.info("Environmental variable deleted: %s", key)

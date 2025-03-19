@@ -45,7 +45,7 @@ class RouterTab(BaseTab):
             "PUBLIC_IP": (env_converter.get_human("PUBLIC_IP"),),
             "PUBLIC_MASK": (env_converter.get_human("PUBLIC_MASK"),),
             "GW": (env_converter.get_human("GW"),),
-            "VERS": tuple(env_converter["VERS"]),
+            "VERS": tuple(env_converter["VERS"].keys()),
         }
         if os.environ["TYPE_COMPLEX"] == "1":
             env_vars |= {
@@ -54,16 +54,16 @@ class RouterTab(BaseTab):
             }
 
         env_vars |= {
-            "VPN": tuple(env_converter["VPN"]),
-            "TELEPORT": tuple(env_converter["VPN"]),
-            "RAISA": tuple(env_converter["VPN"]),
+            "VPN": tuple(env_converter["VPN"].keys()),
+            "TELEPORT": tuple(env_converter["VPN"].keys()),
+            "RAISA": tuple(env_converter["VPN"].keys()),
         }
         if os.environ["RAISA"] == "1":
             env_vars["RAISA_IP"] = (env_converter.get_human("RAISA_IP"),)
-        env_vars["TRUECONF"] = tuple(env_converter["TRUECONF"])
+        env_vars["TRUECONF"] = tuple(env_converter["TRUECONF"].keys())
 
         if os.environ["TRUECONF"] == "1":
-            env_vars["TRUEROOM"] = tuple(env_converter["TRUEROOM"])
+            env_vars["TRUEROOM"] = tuple(env_converter["TRUEROOM"].keys())
 
         if os.environ["TRUEROOM"] == os.environ["TRUECONF"] == "1":
             env_vars["TRUEROOM_COUNT"] = tuple(range(1, 26))

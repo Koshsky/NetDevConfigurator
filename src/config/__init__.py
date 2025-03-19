@@ -1,7 +1,7 @@
 import logging
 import logging.config
 from contextlib import contextmanager
-
+from .config import Config, DatabaseConfig
 import yaml
 
 
@@ -9,8 +9,7 @@ LOGGING = yaml.safe_load(open("./src/config/logging_config.yaml"))
 logging.config.dictConfig(LOGGING)
 logging.getLogger("paramiko").setLevel(logging.WARNING)
 
-config = yaml.safe_load(open("./src/config/config.yaml"))
-config["router"] = yaml.safe_load(open("./src/config/router.yaml"))
+config = Config()
 
 
 @contextmanager

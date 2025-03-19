@@ -18,7 +18,7 @@ class BaseTab:
         self.__log_name: str = log_name
         self.frame: ttk.Frame = ttk.Frame(parent)
         self.frame.columnconfigure(
-            list(range(config["app"]["grid_columns"])), minsize=40, weight=1
+            list(range(config.app.grid_columns)), minsize=40, weight=1
         )
         self.frame.pack(fill=tk.BOTH, side=tk.TOP, expand=False, padx=5, pady=5)
         self.app: Any = app
@@ -152,7 +152,7 @@ class BaseTab:
             row=self._cur_row,
             column=0,
             pady=5,
-            columnspan=config["app"]["grid_columns"],
+            columnspan=config.app.grid_columns,
             sticky="ew",
         )
         self._cur_row += 1
@@ -167,7 +167,7 @@ class BaseTab:
         self.feedback_text.grid(
             row=self._cur_row,
             column=0,
-            columnspan=config["app"]["grid_columns"],
+            columnspan=config.app.grid_columns,
             padx=5,
             pady=5,
             sticky="nsew",
@@ -176,9 +176,7 @@ class BaseTab:
         scrollbar = ttk.Scrollbar(
             self.frame, orient="vertical", command=self.feedback_text.yview
         )
-        scrollbar.grid(
-            row=self._cur_row, column=config["app"]["grid_columns"], sticky="ns"
-        )
+        scrollbar.grid(row=self._cur_row, column=config.app.grid_columns, sticky="ns")
         self.feedback_text.config(yscrollcommand=scrollbar.set)
 
         self.display_feedback(message)  # Use display_feedback to set initial message

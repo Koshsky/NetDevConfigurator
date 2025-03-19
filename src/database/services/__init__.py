@@ -41,11 +41,11 @@ def init_db_connection(config):
     try:
         connection_string = (
             f"postgresql://"
-            f"{config['username']}:"
-            f"{config['password']}@"
-            f"{config['host']}:"
-            f"{config['port']}/"
-            f"{config['database']}"
+            f"{config.username}:"
+            f"{config.password}@"
+            f"{config.host}:"
+            f"{config.port}/"
+            f"{config.database}"
         )
         engine = create_engine(connection_string)
         session = sessionmaker(bind=engine)()

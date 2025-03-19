@@ -187,8 +187,18 @@ class ConfiguratorApp(App):
         """Create and add tabs to the application."""
         super().create_tabs()
         self.create_tab(HelloTab, "HOME", mock_enabled=self.mock_enabled)
-        self.create_tab(TemplateTab, "TEMPLATES", **config["app"]["templates"])
-        self.create_tab(InterfacesTab, "INTERFACES", **config["app"]["interfaces"])
+        self.create_tab(
+            TemplateTab,
+            "TEMPLATES",
+            width=config.app.templates_width,
+            allow_none=config.app.templates_allow_none,
+        )
+        self.create_tab(
+            InterfacesTab,
+            "INTERFACES",
+            width=config.app.interfaces_width,
+            allow_none=config.app.interfaces_allow_none,
+        )
         self.create_tab(RouterTab, "ROUTER")
         self.create_tab(ControlTab, "CONTROL")
 
@@ -244,6 +254,6 @@ def main():
 
 
 if __name__ == "__main__":
-    set_env("CERT", config["default-cert"])
+    set_env("CERT", config.default_cert)
     set_env("OR", "1")
     main()

@@ -62,7 +62,7 @@ class BaseConnectionHandler:
         """Creates widgets for connection parameters."""
         self.tab.create_block(
             "host",
-            {field: tuple(config["host"][field]) for field in self.fields_config},
+            {field: tuple(getattr(config.host, field)) for field in self.fields_config},
         )
         self._actualize_values()
 

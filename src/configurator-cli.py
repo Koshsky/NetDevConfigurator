@@ -19,10 +19,7 @@ def get_cert() -> str:
     Prompts the user to enter a certificate, using the default certificate
     from the configuration if no input is provided.
     """
-    cert = (
-        input(f"Enter certificate [{config['default-cert']}]: ")
-        or config["default-cert"]
-    )
+    cert = input(f"Enter certificate [{config.default_cert}]: ") or config.default_cert
     set_env("CERT", cert)
 
 
@@ -82,7 +79,7 @@ def prepare_configuration_file() -> Dict[str, Any]:
     Retrieves user input for device, role, and operating room, then saves the
     configuration to a file.
     """
-    _, db_services = init_db_connection(config["database"])
+    _, db_services = init_db_connection(config.database)
 
     get_cert()
     device = get_device(db_services)
@@ -108,7 +105,7 @@ def prepare_credentials(device_info: dict[str, Any]):
     """
     while True:
         driver = {}
-        for var_name, default_values in config["host"].items():
+        for var_name, default_values in config.host.__dict__.items():
             var_value = (
                 input(f"Enter {var_name} [{default_values[0]}]: ") or default_values[0]
             )
