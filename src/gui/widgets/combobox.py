@@ -23,7 +23,7 @@ class CustomCombobox(AutocompleteCombobox):
             completevalues: The values to use for autocomplete.
             **kwargs: Additional keyword arguments.
         """
-        # Создаем легкий стиль для combobox
+        # Create a light style for combobox
         style = ttk.Style()
         style.configure(
             "Light.TCombobox",

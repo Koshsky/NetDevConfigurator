@@ -4,16 +4,16 @@ from typing import List, Tuple
 
 @dataclass
 class AppConfig:
-    """Конфигурация приложения."""
+    """Application configuration."""
 
-    # Настройки сетки
+    # Grid settings
     grid_columns: int = 8
     templates_width: int = 6
     templates_allow_none: bool = True
     interfaces_width: int = 12
     interfaces_allow_none: bool = False
 
-    # Стили интерфейса
+    # interface styles
     background_color: str = "#ffffff"
     foreground_color: str = "#000000"
     main_color: str = "#00e0ce"
@@ -26,7 +26,7 @@ class AppConfig:
 
 @dataclass
 class DatabaseConfig:
-    """Конфигурация базы данных."""
+    """Database configuration."""
 
     host: str = "localhost"
     port: int = 5432
@@ -37,7 +37,7 @@ class DatabaseConfig:
 
 @dataclass
 class TFTPConfig:
-    """Конфигурация TFTP сервера."""
+    """TFTP server configuration."""
 
     address: str = "192.168.3.105"
     port: int = 69
@@ -46,7 +46,7 @@ class TFTPConfig:
 
 @dataclass
 class HostConfig:
-    """Конфигурация хоста."""
+    """Host configuration."""
 
     address: List[str] = field(
         default_factory=lambda: [
@@ -71,7 +71,7 @@ class HostConfig:
 
 @dataclass
 class RouterConfig:
-    """Конфигурация роутера."""
+    """Router configuration."""
 
     public_ip: str = "192.168.3.231"
     public_mask: int = 24
@@ -92,7 +92,7 @@ class RouterConfig:
 
 @dataclass
 class Config:
-    """Основной класс конфигурации."""
+    """Main configuration class."""
 
     app: AppConfig = field(default_factory=AppConfig)
     database: DatabaseConfig = field(default_factory=DatabaseConfig)

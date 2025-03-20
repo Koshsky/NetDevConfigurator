@@ -24,11 +24,11 @@ class BaseTab:
     def __init__(self, parent: tk.Tk, app: Any, log_name: str = "Unknown tab") -> None:
         """Initializes a new instance of the BaseTab class."""
         self.__log_name: str = log_name
-        # Основной фрейм, который будет расширяться
+        # Main frame that will expand
         self.frame: CustomFrame = CustomFrame(parent)
         self.frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-        # Внутренний контейнер для центрирования виджетов
+        # Inner container for centering widgets
         self.content_frame = CustomFrame(self.frame)
         self.content_frame.pack(fill=tk.BOTH, expand=True)
 
@@ -94,35 +94,35 @@ class BaseTab:
         width: Optional[int] = None,
     ) -> None:
         """Creates a block of input fields."""
-        # Создаем основной фрейм и центрируем его
+        # Create main frame and center it
         block_frame = CustomFrame(self.content_frame)
         block_frame.pack(fill=tk.X, padx=5, pady=5)
 
         if entity_name not in self.fields:
             self.fields[entity_name] = {}
 
-        # Создаем фрейм для заголовка
+        # Create frame for header
         header_frame = CustomFrame(block_frame)
         header_frame.pack(fill=tk.X, pady=2)
 
-        # Заголовок блока
+        # Block title
         CustomLabel(header_frame, text=entity_name).pack(side=tk.LEFT)
 
         self.cur_col = 1
 
-        # Создаем фрейм для параметров
+        # Create frame for parameters
         params_frame = CustomFrame(block_frame)
         params_frame.pack(fill=tk.X, padx=5, pady=5)
 
         for param_name, param_presets in parameters.items():
-            # Создаем фрейм для строки параметра
+            # Create frame for parameter row
             param_frame = CustomFrame(params_frame)
             param_frame.pack(fill=tk.X, pady=2)
 
-            # Метка параметра
+            # Parameter label
             CustomLabel(param_frame, text=param_name).pack(side=tk.LEFT, padx=5)
 
-            # Фрейм для поля ввода и кнопки
+            # Frame for input field and button
             input_frame = CustomFrame(param_frame)
             input_frame.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
@@ -141,7 +141,7 @@ class BaseTab:
             else:
                 raise TypeError("Invalid parameter preset type")
 
-            # Добавляем кнопку, если она есть
+            # Add button if provided
             if button is not None:
                 if not (
                     isinstance(button, tuple)
@@ -202,7 +202,7 @@ class BaseTab:
 
     def __create_entry_field(self, entity_name: str, param_name: str, parent_frame: CustomFrame) -> None:
         """Creates a single entry field."""
-        field = CustomEntry(parent_frame, width=30)  # Ограничиваем ширину
+        field = CustomEntry(parent_frame, width=30)  # Limit width
         field.pack(side=tk.LEFT, padx=5)
         self.fields[entity_name][param_name] = field
 
@@ -210,7 +210,7 @@ class BaseTab:
         self, entity_name: str, param_name: str, param_presets: Tuple[str, ...], parent_frame: CustomFrame
     ) -> None:
         """Creates a single combobox field."""
-        field = CustomCombobox(parent_frame, completevalues=param_presets, width=30)  # Ограничиваем ширину
+        field = CustomCombobox(parent_frame, completevalues=param_presets, width=30)  # Limit width
         field.pack(side=tk.LEFT, padx=5)
         field.set_values(list(param_presets))
         field.set_text(param_presets[0] if param_presets else "")
@@ -228,7 +228,7 @@ class BaseTab:
         self.fields[entity_name][param_name] = {}
 
         if width is not None:
-            # Создаем сетку чекбоксов
+            # Create grid of checkboxes
             for i in range(0, len(param_presets), width):
                 row_frame = CustomFrame(parent_frame)
                 row_frame.pack(fill=tk.X, pady=2)
@@ -238,7 +238,7 @@ class BaseTab:
                     checkbox.pack(side=tk.LEFT, padx=5)
                     self.fields[entity_name][param_name][box] = checkbox
         else:
-            # Размещаем чекбоксы в столбец
+            # Place checkboxes in a column
             for box in param_presets:
                 checkbox = CustomCheckbox(parent_frame, text=box)
                 checkbox.pack(anchor=tk.W, pady=2)
@@ -263,29 +263,29 @@ class BaseTab:
         """
         self.fields[entity_name][param_name] = {}
 
-        # Если width не указан, используем значение по умолчанию из конфига
+        # If width is not specified, use default from config
         if width is None:
             width = config.app.grid_columns
 
-        # Создаем фрейм для сетки
+        # Create frame for grid
         grid_frame = CustomFrame(parent_frame)
         grid_frame.pack(fill=tk.X, pady=2)
 
-        # Создаем комбобоксы в сетке
+        # Create comboboxes in grid
         for i, (sub_param, preset) in enumerate(param_presets.items()):
             row = i % width
             col = i // width
 
-            # Создаем фрейм для метки и комбобокса
+            # Create frame for label and combobox
             cell_frame = CustomFrame(grid_frame)
             cell_frame.grid(row=row, column=col, padx=5, pady=2, sticky="ew")
 
-            # Настраиваем веса колонок для равномерного распределения
+            # Configure column weights for even distribution
             grid_frame.grid_columnconfigure(col, weight=1)
 
-            # Создаем метку и комбобокс
+            # Create label and combobox
             CustomLabel(cell_frame, text=sub_param).pack(side=tk.LEFT, padx=2)
-            field = CustomCombobox(cell_frame, completevalues=preset, width=30)  # Ограничиваем ширину
+            field = CustomCombobox(cell_frame, completevalues=preset, width=30)  # Limit width
             field.pack(side=tk.LEFT, padx=2)
             field.set_values(preset)
             field.set_text(preset[0] if preset else "")
