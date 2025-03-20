@@ -3,7 +3,7 @@ import tkinter as tk
 from pprint import pformat
 from typing import TYPE_CHECKING, Any, Dict
 
-from database.services import allowed_roles, allowed_types
+from database.services import ALLOWED_ROLES, ALLOWED_TYPES
 from gui import BaseTab, apply_error_handler
 
 if TYPE_CHECKING:
@@ -28,8 +28,8 @@ class TemplateTab(BaseTab):
                 "family": tuple(
                     f.name for f in self.app.db_services["family"].get_all()
                 ),
-                "type": allowed_types,
-                "role": allowed_roles + ("common",),
+                "type": ALLOWED_TYPES,
+                "role": ALLOWED_ROLES + ("common",),
             },
         )
         self.create_large_input_field("text")

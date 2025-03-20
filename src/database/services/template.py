@@ -12,7 +12,7 @@ from .base_service import BaseService, JsonType
 from .family import FamilyService
 
 logger = logging.getLogger(__name__)
-allowed_types: Tuple[str, ...] = (
+ALLOWED_TYPES: Tuple[str, ...] = (
     "hostname",
     "VLAN",
     "ssh",
@@ -59,12 +59,12 @@ class TemplateService(BaseService[Templates]):
             ValueError: If the provided type is invalid.
         """
         template_type = kwargs.get("type")
-        if template_type not in allowed_types:
+        if template_type not in ALLOWED_TYPES:
             logger.error(
                 "Invalid type provided when creating a template: %s", template_type
             )
             raise ValueError(
-                f"Invalid type: '{template_type}'. Allowed types are: {allowed_types}"
+                f"Invalid type: '{template_type}'. Allowed types are: {ALLOWED_TYPES}"
             )
 
         logger.debug("Creating template with data: %s", kwargs)

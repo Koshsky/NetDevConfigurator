@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict, List
 
-from database.services import allowed_roles
+from database.services import ALLOWED_ROLES
 from gui import BaseTab, apply_error_handler
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ class PresetTab(BaseTab):
             "preset",
             {
                 "device": tuple(d.name for d in devices),
-                "role": allowed_roles,
+                "role": ALLOWED_ROLES,
             },
         )
         self.create_button_in_line(("CREATE", self.create_preset))

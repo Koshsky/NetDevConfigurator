@@ -2,7 +2,7 @@ import logging
 from pprint import pformat
 from typing import Any
 
-from database.services import allowed_roles
+from database.services import ALLOWED_ROLES
 from gui import BaseTab, apply_error_handler
 
 logger = logging.getLogger(__name__)
@@ -29,9 +29,10 @@ class InfoTab(BaseTab):
             "preset",
             {
                 "device": tuple(
-                    d.name for d in self.app.db_services["device"].get_all()
+                    d.name
+                    for d in self.app.db_services["device"].get_all(dev_type="switch")
                 ),
-                "role": allowed_roles,
+                "role": ALLOWED_ROLES,
             },
             ("SHOW", self.show_preset_info),
         )

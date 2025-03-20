@@ -15,7 +15,7 @@ from .family import FamilyService
 from .template import TemplateService
 
 logger = logging.getLogger(__name__)
-allowed_roles: Tuple[str, ...] = (  # `common` suits for all
+ALLOWED_ROLES: Tuple[str, ...] = (  # `common` suits for all
     "data",
     "data+mgmt",
     "ipmi",
@@ -60,10 +60,10 @@ class PresetService(BaseService, DevicePresetService):
             ValueError: If the provided role is invalid.
         """
         role = kwargs.get("role")
-        if role not in allowed_roles:
+        if role not in ALLOWED_ROLES:
             logger.error("Invalid role provided when creating a preset: %s", role)
             raise ValueError(
-                f"Invalid role: '{role}'. Allowed roles are: {allowed_roles}"
+                f"Invalid role: '{role}'. Allowed roles are: {ALLOWED_ROLES}"
             )
         logger.debug("Creating preset with data: %s", kwargs)
         return super().create(**kwargs)

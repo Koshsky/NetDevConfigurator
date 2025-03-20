@@ -8,9 +8,9 @@ from .company import CompanyService
 from .device import DeviceService
 from .family import FamilyService
 from .port import PortService
-from .preset import PresetService
+from .preset import PresetService, ALLOWED_ROLES
 from .protocol import ProtocolService
-from .template import TemplateService
+from .template import TemplateService, ALLOWED_TYPES
 
 __all__ = [
     "CompanyService",
@@ -21,6 +21,8 @@ __all__ = [
     "ProtocolService",
     "TemplateService",
     "EntityNotFoundError",
+    "ALLOWED_ROLES",
+    "ALLOWED_TYPES",
 ]
 
 logger = logging.getLogger("database.services")
