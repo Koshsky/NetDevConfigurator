@@ -24,8 +24,14 @@ class BaseTab:
     def __init__(self, parent: tk.Tk, app: Any, log_name: str = "Unknown tab") -> None:
         """Initializes a new instance of the BaseTab class."""
         self.__log_name: str = log_name
+        # Основной фрейм, который будет расширяться
         self.frame: CustomFrame = CustomFrame(parent)
-        self.frame.pack(fill=tk.BOTH, side=tk.TOP, expand=False, padx=5, pady=5)
+        self.frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        
+        # Внутренний контейнер для центрирования виджетов
+        self.content_frame = CustomFrame(self.frame)
+        self.content_frame.pack(fill=tk.BOTH, expand=True)
+        
         self.app: Any = app
         self._cur_row: int = 0
         self.cur_col: int = 0
@@ -62,7 +68,7 @@ class BaseTab:
     def _remove_widgets(self) -> None:
         """Removes all widgets from the tab."""
         logger.debug("%s tab cleared", self.__log_name)
-        for widget in self.frame.winfo_children():
+        for widget in self.content_frame.winfo_children():
             widget.destroy()
         self.fields = {}
         self.frame.reset_position()
@@ -74,10 +80,8 @@ class BaseTab:
         if field_name in self.fields:
             raise ValueError(f"Field '{field_name}' already exists.")
 
-        text_field = CustomText(self.frame, width=width, height=height)
-        text_field.grid(
-            row=self._cur_row, column=0, columnspan=100, padx=5, pady=5, sticky="w"
-        )
+        text_field = CustomText(self.content_frame, width=width, height=height)
+        text_field.pack(fill=tk.X, padx=5, pady=5)
 
         self.fields[field_name] = text_field
         self._cur_row += 1
@@ -90,31 +94,37 @@ class BaseTab:
         width: Optional[int] = None,
     ) -> None:
         """Creates a block of input fields."""
+        block_frame = CustomFrame(self.content_frame)
+        block_frame.pack(fill=tk.X, padx=5, pady=5)
 
         if entity_name not in self.fields:
             self.fields[entity_name] = {}
 
-        CustomLabel(self.frame, text=entity_name).grid(
-            row=self._cur_row, column=0, padx=5, pady=5
-        )
+        # Заголовок блока
+        CustomLabel(block_frame, text=entity_name).pack(anchor=tk.W)
         self.cur_col = 1
 
+        # Создаем фрейм для параметров
+        params_frame = CustomFrame(block_frame)
+        params_frame.pack(fill=tk.X, padx=5, pady=5)
+
         for param_name, param_presets in parameters.items():
-            CustomLabel(self.frame, text=param_name).grid(
-                row=self._cur_row, column=self.cur_col, padx=5, pady=5
-            )
+            param_frame = CustomFrame(params_frame)
+            param_frame.pack(fill=tk.X, pady=2)
+
+            CustomLabel(param_frame, text=param_name).pack(side=tk.LEFT, padx=5)
 
             if param_presets is None or len(param_presets) == 0:
-                self.__create_entry_field(entity_name, param_name)
+                self.__create_entry_field(entity_name, param_name, param_frame)
             elif isinstance(param_presets, tuple):
-                self.__create_combobox_field(entity_name, param_name, param_presets)
+                self.__create_combobox_field(entity_name, param_name, param_presets, param_frame)
             elif isinstance(param_presets, list):
                 self.__create_checkbox_group(
-                    entity_name, param_name, param_presets, width
+                    entity_name, param_name, param_presets, width, param_frame
                 )
             elif isinstance(param_presets, dict):
                 self.__create_combobox_group(
-                    entity_name, param_name, param_presets, width
+                    entity_name, param_name, param_presets, width, param_frame
                 )
             else:
                 raise TypeError("Invalid parameter preset type")
@@ -130,16 +140,7 @@ class BaseTab:
             ):
                 raise TypeError("button parameter must be a tuple of (str, callable)")
 
-            CustomButton(self.frame, text=button[0], command=button[1]).grid(
-                row=self._cur_row - len(parameters),
-                column=self.cur_col + 2,
-                padx=5,
-                pady=5,
-                rowspan=len(parameters),
-            )
-
-        CustomLabel(self.frame, text="").grid(row=self._cur_row, column=0, pady=0)
-        self._cur_row += 1
+            CustomButton(block_frame, text=button[0], command=button[1]).pack(pady=5)
 
     def create_button_in_line(self, button: Tuple[str, Callable[[], None]]) -> None:
         """Creates a button that occupies the full width of the tab."""
@@ -151,36 +152,26 @@ class BaseTab:
         ):
             raise TypeError("button parameter must be a tuple of (str, callable)")
 
-        button_widget = CustomButton(self.frame, text=button[0], command=button[1])
-        button_widget.grid(
-            row=self._cur_row,
-            column=0,
-            pady=5,
-            columnspan=config.app.grid_columns,
-            sticky="ew",
-        )
+        button_widget = CustomButton(self.content_frame, text=button[0], command=button[1])
+        button_widget.pack(fill=tk.X, padx=5, pady=5)
         self._cur_row += 1
 
     def create_feedback_area(
         self, message: str = "DATABASE STORAGE", width: int = 150, height: int = 25
     ) -> None:
         """Creates a text area for displaying feedback messages."""
+        feedback_frame = CustomFrame(self.content_frame)
+        feedback_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+
         self.feedback_text = CustomText(
-            self.frame, wrap="word", width=width, height=height, state=tk.DISABLED
+            feedback_frame, wrap="word", width=width, height=height, state=tk.DISABLED
         )
-        self.feedback_text.grid(
-            row=self._cur_row,
-            column=0,
-            columnspan=config.app.grid_columns,
-            padx=5,
-            pady=5,
-            sticky="nsew",
-        )
+        self.feedback_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         scrollbar = CustomScrollbar(
-            self.frame, orient="vertical", command=self.feedback_text.yview
+            feedback_frame, orient="vertical", command=self.feedback_text.yview
         )
-        scrollbar.grid(row=self._cur_row, column=config.app.grid_columns, sticky="ns")
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.feedback_text.config(yscrollcommand=scrollbar.set)
 
         self.display_feedback(message)
@@ -196,18 +187,18 @@ class BaseTab:
         self.feedback_text.set_text(message)
         self.feedback_text.set_readonly(True)
 
-    def __create_entry_field(self, entity_name: str, param_name: str) -> None:
+    def __create_entry_field(self, entity_name: str, param_name: str, parent_frame: CustomFrame) -> None:
         """Creates a single entry field."""
-        field = CustomEntry(self.frame)
-        field.grid(row=self._cur_row, column=self.cur_col + 1, padx=5, pady=5)
+        field = CustomEntry(parent_frame)
+        field.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
         self.fields[entity_name][param_name] = field
 
     def __create_combobox_field(
-        self, entity_name: str, param_name: str, param_presets: Tuple[str, ...]
+        self, entity_name: str, param_name: str, param_presets: Tuple[str, ...], parent_frame: CustomFrame
     ) -> None:
         """Creates a single combobox field."""
-        field = CustomCombobox(self.frame, completevalues=param_presets)
-        field.grid(row=self._cur_row, column=self.cur_col + 1, padx=5, pady=5)
+        field = CustomCombobox(parent_frame, completevalues=param_presets)
+        field.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
         field.set_values(list(param_presets))
         field.set_text(param_presets[0] if param_presets else "")
         self.fields[entity_name][param_name] = field
@@ -218,26 +209,27 @@ class BaseTab:
         param_name: str,
         param_presets: List[str],
         width: Optional[int] = None,
+        parent_frame: CustomFrame = None,
     ) -> None:
         """Creates a group of checkboxes."""
         self.fields[entity_name][param_name] = {}
-        space = width
-        first_row = self._cur_row
-        first_col = self.cur_col
-        for box in param_presets:
-            checkbox = CustomCheckbox(self.frame, text=box)
-            checkbox.grid(row=self._cur_row, column=self.cur_col + 1, padx=5)
-            self.fields[entity_name][param_name][box] = checkbox
-            self._cur_row += 1
-            if space is not None:
-                space -= 1
-                if not space:
-                    self._cur_row = first_row
-                    self.cur_col += 1
-                    space = width
-        if width is not None and len(param_presets) == width:
-            self._cur_row = first_row + width
-            self.cur_col = first_col
+        
+        if width is not None:
+            # Создаем сетку чекбоксов
+            for i in range(0, len(param_presets), width):
+                row_frame = CustomFrame(parent_frame)
+                row_frame.pack(fill=tk.X, pady=2)
+                
+                for box in param_presets[i:i + width]:
+                    checkbox = CustomCheckbox(row_frame, text=box)
+                    checkbox.pack(side=tk.LEFT, padx=5)
+                    self.fields[entity_name][param_name][box] = checkbox
+        else:
+            # Размещаем чекбоксы в столбец
+            for box in param_presets:
+                checkbox = CustomCheckbox(parent_frame, text=box)
+                checkbox.pack(anchor=tk.W, pady=2)
+                self.fields[entity_name][param_name][box] = checkbox
 
     def __create_combobox_group(
         self,
@@ -245,28 +237,18 @@ class BaseTab:
         param_name: str,
         param_presets: Dict[str, List[str]],
         width: Optional[int] = None,
+        parent_frame: CustomFrame = None,
     ) -> None:
         """Creates a group of comboboxes."""
         self.fields[entity_name][param_name] = {}
-        space = width
-        first_row = self._cur_row
-        first_col = self.cur_col
+        
         for sub_param, preset in param_presets.items():
-            CustomLabel(self.frame, text=sub_param).grid(
-                row=self._cur_row, column=self.cur_col + 1, padx=5, pady=5, sticky="e"
-            )
-            field = CustomCombobox(self.frame, completevalues=preset)
-            field.grid(row=self._cur_row, column=self.cur_col + 2, padx=5, pady=5)
+            row_frame = CustomFrame(parent_frame)
+            row_frame.pack(fill=tk.X, pady=2)
+            
+            CustomLabel(row_frame, text=sub_param).pack(side=tk.LEFT, padx=5)
+            field = CustomCombobox(row_frame, completevalues=preset)
+            field.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
             field.set_values(preset)
             field.set_text(preset[0] if preset else "")
             self.fields[entity_name][param_name][sub_param] = field
-            self._cur_row += 1
-            if space is not None:
-                space -= 1
-                if not space:
-                    self._cur_row = first_row
-                    self.cur_col += 2
-                    space = width
-        if width is not None and len(param_presets) > width:
-            self._cur_row = first_row + width
-            self.cur_col = first_col
