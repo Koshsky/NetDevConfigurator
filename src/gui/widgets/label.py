@@ -3,15 +3,11 @@
 from tkinter import ttk
 from typing import Any, Dict
 
-from gui.styles import (
-    BACKGROUND_COLOR,
-    FONT,
-    PADDING,
-)
+from config import config
 
 
 class CustomLabel(ttk.Label):
-    """Custom label widget with additional functionality."""
+    """Custom label widget with improved styling."""
 
     def __init__(
         self,
@@ -26,17 +22,20 @@ class CustomLabel(ttk.Label):
             text: The text to display.
             **kwargs: Additional keyword arguments.
         """
-        # Создаем стиль для метки
+        super().__init__(parent, text=text, **kwargs)
+        self._setup_style()
+
+    def _setup_style(self):
+        """Setup the label style."""
         style = ttk.Style()
         style.configure(
-            "Light.TLabel",
-            background=BACKGROUND_COLOR,
+            "Custom.TLabel",
+            background=config.app.background_color,
             foreground="black",
-            padding=PADDING,
-            font=FONT,
+            font=config.app.font,
+            padding=config.app.padding,
         )
-
-        super().__init__(parent, text=text, style="Light.TLabel", **kwargs)
+        self.configure(style="Custom.TLabel")
 
     def set_text(self, text: str) -> None:
         """Set the label text.

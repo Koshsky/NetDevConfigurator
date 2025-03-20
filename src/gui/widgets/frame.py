@@ -1,7 +1,10 @@
 """Custom frame widget."""
 
+import tkinter as tk
 from tkinter import ttk
 from typing import Any, Dict
+
+from config import config
 
 from gui.styles import (
     BACKGROUND_COLOR,
@@ -11,7 +14,7 @@ from gui.styles import (
 
 
 class CustomFrame(ttk.Frame):
-    """Custom frame widget with additional functionality."""
+    """Custom frame widget with improved styling."""
 
     def __init__(
         self,
@@ -24,19 +27,22 @@ class CustomFrame(ttk.Frame):
             parent: The parent widget.
             **kwargs: Additional keyword arguments.
         """
-        # Создаем стиль для фрейма
-        style = ttk.Style()
-        style.configure(
-            "Light.TFrame",
-            background=BACKGROUND_COLOR,
-            relief="flat",
-            borderwidth=BORDER_WIDTH,
-            padding=PADDING,
-        )
-
-        super().__init__(parent, style="Light.TFrame", **kwargs)
+        super().__init__(parent, **kwargs)
+        self._setup_style()
         self.current_row = 0
         self.current_column = 0
+
+    def _setup_style(self):
+        """Setup the frame style."""
+        style = ttk.Style()
+        style.configure(
+            "Custom.TFrame",
+            background=config.app.background_color,
+            relief="flat",
+            borderwidth=config.app.border_width,
+            padding=config.app.padding,
+        )
+        self.configure(style="Custom.TFrame")
 
     def get_current_position(self) -> tuple[int, int]:
         """Get the current position in the frame.

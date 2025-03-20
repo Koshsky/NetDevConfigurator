@@ -4,16 +4,11 @@ import tkinter as tk
 from tkinter import ttk
 from typing import Any, Dict
 
-from gui.styles import (
-    BORDER_WIDTH,
-    ENTRY_BACKGROUND,
-    FONT,
-    PADDING,
-)
+from config import config
 
 
 class CustomText(tk.Text):
-    """Custom text widget with additional functionality."""
+    """Custom text widget with improved styling."""
 
     def __init__(
         self,
@@ -32,32 +27,18 @@ class CustomText(tk.Text):
             wrap: The wrap mode for text.
             **kwargs: Additional keyword arguments.
         """
-        # Создаем стиль для текстового поля
-        style = ttk.Style()
-        style.configure(
-            "Light.TText",
-            background=ENTRY_BACKGROUND,
-            foreground="black",
-            insertbackground="black",
-            relief="flat",
-            borderwidth=BORDER_WIDTH,
-            font=FONT,
-            padding=PADDING,
-        )
-
         super().__init__(
             parent,
             width=width,
             height=height,
             wrap=wrap,
-            bg=ENTRY_BACKGROUND,
+            bg=config.app.entry_background,
             fg="black",
-            insertbackground="black",
+            font=config.app.font,
+            padx=config.app.padding[0],
+            pady=config.app.padding[1],
             relief="flat",
-            borderwidth=BORDER_WIDTH,
-            font=FONT,
-            padx=PADDING[0],
-            pady=PADDING[1],
+            borderwidth=config.app.border_width,
             **kwargs,
         )
 

@@ -1,16 +1,27 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Tuple
 
 
 @dataclass
 class AppConfig:
     """Конфигурация приложения."""
 
+    # Настройки сетки
     grid_columns: int = 8
     templates_width: int = 6
     templates_allow_none: bool = True
     interfaces_width: int = 12
     interfaces_allow_none: bool = False
+
+    # Стили интерфейса
+    background_color: str = "#F1F8E9"  # Светло-зеленый фон
+    entry_background: str = "#E8F5E9"  # Пастельно-зеленый для полей ввода
+    button_background: str = "#4CAF50"  # Зеленый для кнопок
+    button_active: str = "#45a049"  # Темно-зеленый для активных кнопок
+    button_pressed: str = "#3d8b40"  # Еще темнее для нажатых кнопок
+    font: Tuple[str, int] = ("Helvetica", 10)
+    padding: Tuple[int, int] = (5, 5)
+    border_width: int = 1
 
 
 @dataclass

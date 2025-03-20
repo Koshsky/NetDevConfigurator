@@ -100,7 +100,6 @@ class RouterHandler(BaseDeviceHandler):
             {
                 "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
             },
-            ("UPDATE", self.update_device_info),
         )
 
     def update_device_info(self):

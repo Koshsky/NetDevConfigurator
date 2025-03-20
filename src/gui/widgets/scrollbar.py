@@ -1,59 +1,36 @@
 """Custom scrollbar widget."""
 
+import tkinter as tk
 from tkinter import ttk
 from typing import Any, Dict
 
-from gui.styles import (
-    BORDER_WIDTH,
-    ENTRY_BACKGROUND,
-)
+from config import config
 
 
 class CustomScrollbar(ttk.Scrollbar):
-    """Custom scrollbar widget with additional functionality."""
+    """Custom scrollbar widget with improved styling."""
 
-    def __init__(
-        self,
-        parent: Any,
-        orient: str = "vertical",
-        **kwargs: Dict[str, Any],
-    ) -> None:
-        """Initialize the CustomScrollbar.
+    def __init__(self, master, **kwargs):
+        """Initialize the custom scrollbar.
 
         Args:
-            parent: The parent widget.
-            orient: The orientation of the scrollbar ("vertical" or "horizontal").
+            master: The parent widget.
             **kwargs: Additional keyword arguments.
         """
-        # Создаем стиль для полосы прокрутки
+        super().__init__(master, **kwargs)
+        self._setup_style()
+
+    def _setup_style(self):
+        """Setup the scrollbar style."""
         style = ttk.Style()
         style.configure(
-            "Light.Vertical.TScrollbar",
-            background=ENTRY_BACKGROUND,
-            troughcolor=ENTRY_BACKGROUND,
+            "Custom.Vertical.TScrollbar",
+            background=config.app.background_color,
+            troughcolor=config.app.background_color,
             width=10,
             arrowsize=13,
-            relief="flat",
-            borderwidth=BORDER_WIDTH,
         )
-        style.configure(
-            "Light.Horizontal.TScrollbar",
-            background=ENTRY_BACKGROUND,
-            troughcolor=ENTRY_BACKGROUND,
-            width=10,
-            arrowsize=13,
-            relief="flat",
-            borderwidth=BORDER_WIDTH,
-        )
-
-        # Выбираем стиль в зависимости от ориентации
-        scrollbar_style = (
-            "Light.Vertical.TScrollbar"
-            if orient == "vertical"
-            else "Light.Horizontal.TScrollbar"
-        )
-
-        super().__init__(parent, orient=orient, style=scrollbar_style, **kwargs)
+        self.configure(style="Custom.Vertical.TScrollbar")
 
     def set_orientation(self, orient: str) -> None:
         """Set the scrollbar orientation.

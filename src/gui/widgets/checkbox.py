@@ -1,47 +1,41 @@
 """Custom checkbox widget."""
 
 import tkinter as tk
+from tkinter import ttk
 from typing import Any, Dict, Optional
 
-from gui.styles import (
-    BACKGROUND_COLOR,
-    ENTRY_BACKGROUND,
-    FONT,
-    PADDING,
-)
+from config import config
 
 
-class CustomCheckbox(tk.Checkbutton):
-    """Custom checkbox widget with additional functionality."""
+class CustomCheckbox(ttk.Checkbutton):
+    """Custom checkbox widget with improved styling."""
 
-    def __init__(
-        self,
-        parent: Any,
-        text: str = "",
-        style: Optional[str] = None,
-        **kwargs: Dict[str, Any],
-    ) -> None:
-        """Initialize the CustomCheckbox.
+    def __init__(self, master, **kwargs):
+        """Initialize the custom checkbox.
 
         Args:
-            parent: The parent widget.
-            text: The text to display next to the checkbox.
-            style: The style to apply to the checkbox (ignored for tk.Checkbutton).
+            master: The parent widget.
             **kwargs: Additional keyword arguments.
         """
-        self._var = tk.BooleanVar()
-        super().__init__(
-            parent,
-            text=text,
-            variable=self._var,
-            bg=BACKGROUND_COLOR,
-            fg="black",
-            font=FONT,
-            padx=PADDING[0],
-            pady=PADDING[1],
-            selectcolor=ENTRY_BACKGROUND,
-            **kwargs,
+        super().__init__(master, **kwargs)
+        self._setup_style()
+
+    def _setup_style(self):
+        """Setup the checkbox style."""
+        style = ttk.Style()
+        style.configure(
+            "Custom.TCheckbutton",
+            background=config.app.background_color,
+            foreground="black",
+            font=config.app.font,
+            padding=config.app.padding,
         )
+        style.map(
+            "Custom.TCheckbutton",
+            background=[("selected", config.app.background_color)],
+            foreground=[("selected", "black")],
+        )
+        self.configure(style="Custom.TCheckbutton")
 
     def set_text(self, text: str) -> None:
         """Set the checkbox text.
@@ -57,7 +51,7 @@ class CustomCheckbox(tk.Checkbutton):
         Args:
             checked: Whether to check the checkbox.
         """
-        self._var.set(checked)
+        self.select() if checked else self.deselect()
 
     def is_checked(self) -> bool:
         """Get the checkbox checked state.
@@ -65,7 +59,7 @@ class CustomCheckbox(tk.Checkbutton):
         Returns:
             bool: Whether the checkbox is checked.
         """
-        return self._var.get()
+        return self.instate(['selected'])
 
     def set_style(self, style: str) -> None:
         """Set the checkbox style (ignored for tk.Checkbutton).

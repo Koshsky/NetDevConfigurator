@@ -23,10 +23,10 @@ class ControlTab(BaseTab):
         self.connection_handler = get_connection_handler(self)
         self.device_handler = get_device_handler(self)
 
+        self.create_feedback_area()
         self.connection_handler.create_widgets()
         self.device_handler.create_widgets()
         self._create_action_buttons()
-        self.create_feedback_area()
 
         logger.debug("Updating host info...")
         self.connection_handler.update_host_info()

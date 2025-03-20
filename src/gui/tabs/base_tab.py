@@ -27,11 +27,11 @@ class BaseTab:
         # Основной фрейм, который будет расширяться
         self.frame: CustomFrame = CustomFrame(parent)
         self.frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-        
+
         # Внутренний контейнер для центрирования виджетов
         self.content_frame = CustomFrame(self.frame)
         self.content_frame.pack(fill=tk.BOTH, expand=True)
-        
+
         self.app: Any = app
         self._cur_row: int = 0
         self.cur_col: int = 0
@@ -94,14 +94,20 @@ class BaseTab:
         width: Optional[int] = None,
     ) -> None:
         """Creates a block of input fields."""
+        # Создаем основной фрейм и центрируем его
         block_frame = CustomFrame(self.content_frame)
         block_frame.pack(fill=tk.X, padx=5, pady=5)
 
         if entity_name not in self.fields:
             self.fields[entity_name] = {}
 
+        # Создаем фрейм для заголовка
+        header_frame = CustomFrame(block_frame)
+        header_frame.pack(fill=tk.X, pady=2)
+
         # Заголовок блока
-        CustomLabel(block_frame, text=entity_name).pack(anchor=tk.W)
+        CustomLabel(header_frame, text=entity_name).pack(side=tk.LEFT)
+
         self.cur_col = 1
 
         # Создаем фрейм для параметров
@@ -109,38 +115,45 @@ class BaseTab:
         params_frame.pack(fill=tk.X, padx=5, pady=5)
 
         for param_name, param_presets in parameters.items():
+            # Создаем фрейм для строки параметра
             param_frame = CustomFrame(params_frame)
             param_frame.pack(fill=tk.X, pady=2)
 
+            # Метка параметра
             CustomLabel(param_frame, text=param_name).pack(side=tk.LEFT, padx=5)
 
+            # Фрейм для поля ввода и кнопки
+            input_frame = CustomFrame(param_frame)
+            input_frame.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
             if param_presets is None or len(param_presets) == 0:
-                self.__create_entry_field(entity_name, param_name, param_frame)
+                self.__create_entry_field(entity_name, param_name, input_frame)
             elif isinstance(param_presets, tuple):
-                self.__create_combobox_field(entity_name, param_name, param_presets, param_frame)
+                self.__create_combobox_field(entity_name, param_name, param_presets, input_frame)
             elif isinstance(param_presets, list):
                 self.__create_checkbox_group(
-                    entity_name, param_name, param_presets, width, param_frame
+                    entity_name, param_name, param_presets, width, input_frame
                 )
             elif isinstance(param_presets, dict):
                 self.__create_combobox_group(
-                    entity_name, param_name, param_presets, width, param_frame
+                    entity_name, param_name, param_presets, width, input_frame
                 )
             else:
                 raise TypeError("Invalid parameter preset type")
 
+            # Добавляем кнопку, если она есть
+            if button is not None:
+                if not (
+                    isinstance(button, tuple)
+                    and len(button) == 2
+                    and isinstance(button[0], str)
+                    and callable(button[1])
+                ):
+                    raise TypeError("button parameter must be a tuple of (str, callable)")
+
+                CustomButton(input_frame, text=button[0], command=button[1]).pack(side=tk.LEFT, padx=5)
+
             self._cur_row += 1
-
-        if button is not None:
-            if not (
-                isinstance(button, tuple)
-                and len(button) == 2
-                and isinstance(button[0], str)
-                and callable(button[1])
-            ):
-                raise TypeError("button parameter must be a tuple of (str, callable)")
-
-            CustomButton(block_frame, text=button[0], command=button[1]).pack(pady=5)
 
     def create_button_in_line(self, button: Tuple[str, Callable[[], None]]) -> None:
         """Creates a button that occupies the full width of the tab."""
@@ -189,16 +202,16 @@ class BaseTab:
 
     def __create_entry_field(self, entity_name: str, param_name: str, parent_frame: CustomFrame) -> None:
         """Creates a single entry field."""
-        field = CustomEntry(parent_frame)
-        field.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+        field = CustomEntry(parent_frame, width=30)  # Ограничиваем ширину
+        field.pack(side=tk.LEFT, padx=5)
         self.fields[entity_name][param_name] = field
 
     def __create_combobox_field(
         self, entity_name: str, param_name: str, param_presets: Tuple[str, ...], parent_frame: CustomFrame
     ) -> None:
         """Creates a single combobox field."""
-        field = CustomCombobox(parent_frame, completevalues=param_presets)
-        field.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+        field = CustomCombobox(parent_frame, completevalues=param_presets, width=30)  # Ограничиваем ширину
+        field.pack(side=tk.LEFT, padx=5)
         field.set_values(list(param_presets))
         field.set_text(param_presets[0] if param_presets else "")
         self.fields[entity_name][param_name] = field
@@ -213,13 +226,13 @@ class BaseTab:
     ) -> None:
         """Creates a group of checkboxes."""
         self.fields[entity_name][param_name] = {}
-        
+
         if width is not None:
             # Создаем сетку чекбоксов
             for i in range(0, len(param_presets), width):
                 row_frame = CustomFrame(parent_frame)
                 row_frame.pack(fill=tk.X, pady=2)
-                
+
                 for box in param_presets[i:i + width]:
                     checkbox = CustomCheckbox(row_frame, text=box)
                     checkbox.pack(side=tk.LEFT, padx=5)
@@ -239,16 +252,41 @@ class BaseTab:
         width: Optional[int] = None,
         parent_frame: CustomFrame = None,
     ) -> None:
-        """Creates a group of comboboxes."""
+        """Creates a group of comboboxes in a grid layout.
+
+        Args:
+            entity_name: The name of the entity.
+            param_name: The name of the parameter.
+            param_presets: Dictionary of parameter presets.
+            width: The width of the grid (number of columns).
+            parent_frame: The parent frame to create comboboxes in.
+        """
         self.fields[entity_name][param_name] = {}
-        
-        for sub_param, preset in param_presets.items():
-            row_frame = CustomFrame(parent_frame)
-            row_frame.pack(fill=tk.X, pady=2)
-            
-            CustomLabel(row_frame, text=sub_param).pack(side=tk.LEFT, padx=5)
-            field = CustomCombobox(row_frame, completevalues=preset)
-            field.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+
+        # Если width не указан, используем значение по умолчанию из конфига
+        if width is None:
+            width = config.app.grid_columns
+
+        # Создаем фрейм для сетки
+        grid_frame = CustomFrame(parent_frame)
+        grid_frame.pack(fill=tk.X, pady=2)
+
+        # Создаем комбобоксы в сетке
+        for i, (sub_param, preset) in enumerate(param_presets.items()):
+            row = i % width
+            col = i // width
+
+            # Создаем фрейм для метки и комбобокса
+            cell_frame = CustomFrame(grid_frame)
+            cell_frame.grid(row=row, column=col, padx=5, pady=2, sticky="ew")
+
+            # Настраиваем веса колонок для равномерного распределения
+            grid_frame.grid_columnconfigure(col, weight=1)
+
+            # Создаем метку и комбобокс
+            CustomLabel(cell_frame, text=sub_param).pack(side=tk.LEFT, padx=2)
+            field = CustomCombobox(cell_frame, completevalues=preset, width=30)  # Ограничиваем ширину
+            field.pack(side=tk.LEFT, padx=2)
             field.set_values(preset)
             field.set_text(preset[0] if preset else "")
             self.fields[entity_name][param_name][sub_param] = field

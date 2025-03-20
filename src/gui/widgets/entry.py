@@ -4,16 +4,11 @@ import tkinter as tk
 from tkinter import ttk
 from typing import Any, Dict
 
-from gui.styles import (
-    BORDER_WIDTH,
-    ENTRY_BACKGROUND,
-    FONT,
-    PADDING,
-)
+from config import config
 
 
 class CustomEntry(ttk.Entry):
-    """Custom entry widget with additional functionality."""
+    """Custom entry widget with improved styling."""
 
     def __init__(
         self,
@@ -26,21 +21,20 @@ class CustomEntry(ttk.Entry):
             parent: The parent widget.
             **kwargs: Additional keyword arguments.
         """
-        # Создаем стиль для поля ввода
+        super().__init__(parent, **kwargs)
+        self._setup_style()
+
+    def _setup_style(self):
+        """Setup the entry style."""
         style = ttk.Style()
         style.configure(
-            "Light.TEntry",
-            fieldbackground=ENTRY_BACKGROUND,
-            background=ENTRY_BACKGROUND,
+            "Custom.TEntry",
+            background=config.app.entry_background,
             foreground="black",
-            insertcolor="black",
-            relief="flat",
-            borderwidth=BORDER_WIDTH,
-            padding=PADDING,
-            font=FONT,
+            font=config.app.font,
+            padding=config.app.padding,
         )
-
-        super().__init__(parent, style="Light.TEntry", **kwargs)
+        self.configure(style="Custom.TEntry")
 
     def set_text(self, text: str) -> None:
         """Set the entry text.

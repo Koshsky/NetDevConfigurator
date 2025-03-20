@@ -1,9 +1,8 @@
 import logging
 from tkinter import ttk
 
-from config import DatabaseConfig
+from config import DatabaseConfig, config
 from database.services import init_db_connection
-from gui.styles import BACKGROUND_COLOR, BORDER_WIDTH, FONT, PADDING
 
 from .tabs import ConnectionTab
 
@@ -146,29 +145,29 @@ class App:
         style = ttk.Style()
         style.configure(
             "Light.TFrame",
-            background=BACKGROUND_COLOR,
+            background=config.app.background_color,
             relief="flat",
-            borderwidth=BORDER_WIDTH,
-            padding=PADDING,
+            borderwidth=config.app.border_width,
+            padding=config.app.padding,
         )
 
         # Настраиваем стиль для notebook
         style.configure(
             "Light.TNotebook",
-            background=BACKGROUND_COLOR,
+            background=config.app.background_color,
             tabmargins=(2, 5, 2, 0),
-            padding=PADDING,
+            padding=config.app.padding,
         )
         style.configure(
             "Light.TNotebook.Tab",
-            background=BACKGROUND_COLOR,
+            background=config.app.background_color,
             foreground="black",
-            padding=PADDING,
-            font=FONT,
+            padding=config.app.padding,
+            font=config.app.font,
         )
         style.map(
             "Light.TNotebook.Tab",
-            background=[("selected", BACKGROUND_COLOR)],
+            background=[("selected", config.app.background_color)],
             foreground=[("selected", "black")],
         )
 
