@@ -3,7 +3,7 @@
 import tkinter as tk
 from tkinter import ttk
 from typing import Any, Callable, Dict, Optional
-
+from config import config
 
 class CustomButton(ttk.Button):
     """Custom button widget with additional functionality."""
@@ -27,20 +27,19 @@ class CustomButton(ttk.Button):
         style = ttk.Style()
         style.configure(
             "Green.TButton",
-            background="#4CAF50",  # Основной зеленый
-            foreground="white",  # Белый текст
-            padding=(10, 5),  # Отступы
-            relief="flat",  # Плоский стиль
-            borderwidth=0,  # Без границ
-            font=("Helvetica", 10),  # Шрифт
+            background=config.app.main_color,
+            foreground=config.app.foreground_color,
+            padding=config.app.padding,
+            relief="flat",
+            borderwidth=0,
+            font=config.app.font,
         )
 
         # Настраиваем эффекты при наведении и нажатии
         style.map(
             "Green.TButton",
-            background=[("active", "#45a049"), ("pressed", "#3d8b40")],
-            foreground=[("active", "white"), ("pressed", "white")],
-            relief=[("pressed", "flat"), ("!pressed", "flat")],
+            background=[("active", config.app.main_color)],
+            relief=[("pressed", "flat")],
         )
 
         super().__init__(

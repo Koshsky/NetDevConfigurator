@@ -14,11 +14,11 @@ class AppConfig:
     interfaces_allow_none: bool = False
 
     # Стили интерфейса
-    background_color: str = "#F1F8E9"  # Светло-зеленый фон
-    entry_background: str = "#E8F5E9"  # Пастельно-зеленый для полей ввода
-    button_background: str = "#4CAF50"  # Зеленый для кнопок
-    button_active: str = "#45a049"  # Темно-зеленый для активных кнопок
-    button_pressed: str = "#3d8b40"  # Еще темнее для нажатых кнопок
+    background_color: str = "#ffffff"
+    foreground_color: str = "#000000"
+    main_color: str = "#00e0ce"
+    second_color: str = "#F4FAFA"
+
     font: Tuple[str, int] = ("Helvetica", 10)
     padding: Tuple[int, int] = (5, 5)
     border_width: int = 1

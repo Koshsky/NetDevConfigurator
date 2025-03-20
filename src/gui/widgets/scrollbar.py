@@ -25,8 +25,8 @@ class CustomScrollbar(ttk.Scrollbar):
         style = ttk.Style()
         style.configure(
             "Custom.Vertical.TScrollbar",
-            background=config.app.background_color,
-            troughcolor=config.app.background_color,
+            background=config.app.second_color,
+            troughcolor=config.app.second_color,
             width=10,
             arrowsize=13,
         )

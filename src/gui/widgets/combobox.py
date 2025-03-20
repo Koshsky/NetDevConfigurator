@@ -5,7 +5,7 @@ from tkinter import ttk
 from typing import Any, Dict, List, Optional, Tuple
 
 from ttkwidgets.autocomplete import AutocompleteCombobox
-
+from config import config
 
 class CustomCombobox(AutocompleteCombobox):
     """Custom combobox widget with additional functionality."""
@@ -27,11 +27,11 @@ class CustomCombobox(AutocompleteCombobox):
         style = ttk.Style()
         style.configure(
             "Light.TCombobox",
-            fieldbackground="#E8F5E9",  # Пастельно-зеленый
-            background="#E8F5E9",  # Пастельно-зеленый
-            selectbackground="#C8E6C9",  # Немного темнее для выделения
-            selectforeground="black",
-            arrowcolor="black",
+            fieldbackground=config.app.second_color,
+            background=config.app.second_color,
+            selectbackground=config.app.second_color,
+            selectforeground=config.app.foreground_color,
+            arrowcolor=config.app.foreground_color,
             relief="flat",
             borderwidth=1,
         )

@@ -2,8 +2,6 @@
 
 import tkinter as tk
 from tkinter import ttk
-from typing import Any, Dict, Optional
-
 from config import config
 
 
@@ -26,14 +24,14 @@ class CustomCheckbox(ttk.Checkbutton):
         style.configure(
             "Custom.TCheckbutton",
             background=config.app.background_color,
-            foreground="black",
+            foreground=config.app.foreground_color,
             font=config.app.font,
             padding=config.app.padding,
         )
         style.map(
             "Custom.TCheckbutton",
             background=[("selected", config.app.background_color)],
-            foreground=[("selected", "black")],
+            foreground=[("selected", config.app.foreground_color)],
         )
         self.configure(style="Custom.TCheckbutton")
 

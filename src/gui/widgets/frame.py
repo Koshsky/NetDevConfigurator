@@ -6,11 +6,6 @@ from typing import Any, Dict
 
 from config import config
 
-from gui.styles import (
-    BACKGROUND_COLOR,
-    BORDER_WIDTH,
-    PADDING,
-)
 
 
 class CustomFrame(ttk.Frame):
