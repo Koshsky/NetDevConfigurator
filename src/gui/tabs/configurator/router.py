@@ -18,19 +18,19 @@ class RouterTab(BaseTab):
 
     def _create_widgets(self) -> None:
         """Creates the widgets for the RouterTab."""
-        self.create_block("env", {"vars": self._get_env_vars()}, width=self.width)
+        self.create_block("env", {"": self._get_env_vars()}, width=self.width)
         self._actualize()
 
     def _actualize(self) -> None:
         """Actualizes the values of the environment variable fields."""
-        for env_name, field in self.fields["env"]["vars"].items():
+        for env_name, field in self.fields["env"][""].items():
             if not get_env(env_name):
                 set_env(env_name, field.get().strip())
             field.set(env_converter.to_human(env_name, get_env(env_name)))
 
     def update_config(self) -> None:
         """Updates the environment variables with the values from the fields."""
-        for env_name, field in self.fields["env"]["vars"].items():
+        for env_name, field in self.fields["env"][""].items():
             try:
                 env_value = env_converter.to_machine(env_name, field.get())
                 set_env(env_name, env_value)

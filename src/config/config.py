@@ -19,7 +19,7 @@ class AppConfig:
     main_color: str = "#00e0ce"
     second_color: str = "#F4FAFA"
 
-    font: Tuple[str, int] = ("Helvetica", 10)
+    font: Tuple[str, int] = ("Arial", 12)
     padding: Tuple[int, int] = (5, 5)
     border_width: int = 1
 
