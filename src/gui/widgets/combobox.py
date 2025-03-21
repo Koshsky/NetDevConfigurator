@@ -4,10 +4,14 @@ import tkinter as tk
 from tkinter import ttk
 from typing import Any, Dict, List, Optional, Tuple
 
+
 from ttkwidgets.autocomplete import AutocompleteCombobox
+
+# с AutocompleteCombobox существует ОЧЕНЬ неприятный баг.
 from config import config
 
-class CustomCombobox(AutocompleteCombobox):
+
+class CustomCombobox(ttk.Combobox):
     """Custom combobox widget with additional functionality."""
 
     def __init__(
@@ -32,13 +36,11 @@ class CustomCombobox(AutocompleteCombobox):
             selectbackground=config.app.second_color,
             selectforeground=config.app.foreground_color,
             arrowcolor=config.app.foreground_color,
-            relief="flat",
-            borderwidth=1,
         )
 
         super().__init__(
             parent,
-            completevalues=completevalues or (),
+            # completevalues=completevalues or (),
             style="Light.TCombobox",
             **kwargs,
         )
@@ -49,7 +51,8 @@ class CustomCombobox(AutocompleteCombobox):
         Args:
             values: The new values to use for autocomplete.
         """
-        self.configure(completevalues=tuple(values))
+        pass
+        # self.configure(completevalues=tuple(values))
 
     def set_text(self, text: Optional[str]) -> None:
         """Set the combobox text.

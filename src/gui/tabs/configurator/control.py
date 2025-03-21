@@ -18,6 +18,10 @@ class ControlTab(BaseTab):
         self.device_handler = None
         self.base_loaded = None
 
+    def update_envs(self):
+        self.connection_handler.update_envs()
+        self.device_handler.update_envs()
+
     def _create_widgets(self):
         """Creates and arranges widgets within the tab."""
         self.connection_handler = get_connection_handler(self)
@@ -29,7 +33,7 @@ class ControlTab(BaseTab):
         self.create_feedback_area()
 
         logger.debug("Updating host info...")
-        self.connection_handler.update_host_info()
+        self.app.update_envs()
 
     def _create_action_buttons(self):
         """Creates action buttons for device management."""

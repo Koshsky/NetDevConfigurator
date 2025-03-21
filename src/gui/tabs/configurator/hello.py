@@ -31,6 +31,10 @@ class HelloTab(BaseTab):
         self._create_common_block()
         self._create_connection_buttons()
 
+    def update_envs(self):
+        set_env("CERT", self.fields["common"]["CERT"].get().strip())
+        set_env("TFTP_ADDRESS", self.fields["common"]["TFTP"].get().strip())
+
     def prepare(self, connection_type: str) -> None:
         """Prepares the connection by setting environment variables and registering the device.
 
@@ -38,7 +42,7 @@ class HelloTab(BaseTab):
             connection_type: The type of connection.
         """
         set_env("CONNECTION_TYPE", connection_type)
-        set_env("CERT", self.fields["common"]["CERT"].get().strip())
+        self.update_envs()
         device = self.app.db_services["device"].get_one(
             name=self.fields["device"]["name"].get().strip()
         )
@@ -51,7 +55,9 @@ class HelloTab(BaseTab):
 
     def _create_common_block(self) -> None:
         """Creates the common settings block, currently for certificates."""
-        self.create_block("common", {"CERT": (config.default_cert,)})
+        self.create_block(
+            "common", {"CERT": (config.default_cert,), "TFTP": (config.tftp.address,)}
+        )
 
     def _create_connection_buttons(self) -> None:
         """Creates the connection type selection buttons."""

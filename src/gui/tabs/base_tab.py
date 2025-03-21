@@ -178,7 +178,10 @@ class BaseTab:
         self._cur_row += 1
 
     def create_feedback_area(
-        self, message: str = "DATABASE STORAGE", width: int = 150, height: int = 25
+        self,
+        message: str = "Feedback will be here...",
+        width: int = 150,
+        height: int = 25,
     ) -> None:
         """Creates a text area for displaying feedback messages."""
         feedback_frame = CustomFrame(self.content_frame)
@@ -201,6 +204,10 @@ class BaseTab:
     def show_error(self, title: str, error: str) -> None:
         """Shows an error message box."""
         messagebox.showerror(title, error)
+
+    def show_info(self, title: str, error: str) -> None:
+        """Shows an info message box."""
+        messagebox.showinfo(title, error)
 
     def display_feedback(self, message: str) -> None:
         """Displays a feedback message in the feedback area."""

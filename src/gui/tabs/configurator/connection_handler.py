@@ -72,7 +72,7 @@ class BaseConnectionHandler:
             if field in self.tab.fields["host"] and (value := get_env(var_name)):
                 self.tab.fields["host"][field].set(value)
 
-    def update_host_info(self):
+    def update_envs(self):
         """Updates host information based on user input."""
         logger.debug("Updating host info...")
         for var_name, field in self.env_vars:
@@ -103,7 +103,10 @@ class BaseConnectionHandler:
         Raises:
             Exception: Any exception raised by the driver.
         """
-        self.update_host_info()
+        self.app.update_envs()
+        self.tab.show_info(
+            "Please wait", f"executing {operation} via {connection_type}..."
+        )
 
         try:
             with ConnectionManager(

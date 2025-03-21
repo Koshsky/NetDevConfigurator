@@ -125,6 +125,11 @@ class ConfiguratorApp(App):
         self.refresher = TabRefresher(self)
         self.tabs["CONNECTION"].on_button_click()
 
+    def update_envs(self):
+        for name, tab in self.tabs.items():
+            if hasattr(tab, "update_envs"):
+                tab.update_envs()
+
     def refresh_tabs(self) -> None:
         """Refreshes the tab visibility."""
         self.refresher.refresh_tabs()
@@ -147,25 +152,26 @@ class ConfiguratorApp(App):
         self._prepare_configuration()
         return self._read_configuration_file()
 
+    def update_config(self):
+        dev_type = get_env("DEV_TYPE")
+        if dev_type == "router":
+            self.tabs["ROUTER"].update_config()
+        elif dev_type == "switch":
+            self.tabs["TEMPLATES"].update_config()
+            self.tabs["INTERFACES"].update_config()
+        else:
+            raise ValueError(
+                f"Invalid or unset DEV_TYPE environment variable: {dev_type}"
+            )
+
     def _prepare_configuration(self) -> None:
         """Prepares the configuration by updating tabs and saving."""
-        control_tab = self.tabs["CONTROL"]
-        control_tab.connection_handler.update_host_info()
-        control_tab.device_handler.update_device_info()
+        self.update_envs()
 
         if self.advanced_mode:
-            dev_type = get_env("DEV_TYPE")
-            if dev_type == "router":
-                self.tabs["ROUTER"].update_config()
-            elif dev_type == "switch":
-                self.tabs["TEMPLATES"].update_config()
-                self.tabs["INTERFACES"].update_config()
-            else:
-                raise ValueError(
-                    f"Invalid or unset DEV_TYPE environment variable: {dev_type}"
-                )
+            self.update_config()
 
-        header = control_tab.connection_handler.get_header()
+        header = self.tabs["CONTROL"].connection_handler.get_header()
         save_configuration(header, self.preset)
 
     def _read_configuration_file(self) -> str:

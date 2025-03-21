@@ -23,7 +23,7 @@ class BaseDeviceHandler:
         """
         raise NotImplementedError
 
-    def update_device_info(self):
+    def update_envs(self):
         """Updates the device information based on user input.
 
         Raises:
@@ -80,7 +80,7 @@ class SwitchHandler(BaseDeviceHandler):
         self.tab.fields["params"]["role"].set(get_env("DEV_ROLE") or "")
         self.tab.fields["params"]["or"].set(get_env("OR") or "")
 
-    def update_device_info(self):
+    def update_envs(self):
         """Updates switch information based on user input."""
         logger.debug("Updating device info for switch...")
         self.app.register_preset(
@@ -102,7 +102,7 @@ class RouterHandler(BaseDeviceHandler):
             },
         )
 
-    def update_device_info(self):
+    def update_envs(self):
         """Updates router information based on user input."""
         logger.debug("Updating device info for router...")
         set_env(

@@ -29,7 +29,7 @@ class CustomEntry(ttk.Entry):
         style = ttk.Style()
         style.configure(
             "Custom.TEntry",
-            background=config.app.background_color,
+            background=config.app.second_color,
             foreground=config.app.foreground_color,
             font=config.app.font,
             padding=config.app.padding,
