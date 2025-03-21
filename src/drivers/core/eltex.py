@@ -48,8 +48,6 @@ class ESRxx:
     @property
     def load_firmware(self):
         return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:firmware"
-        # TODO: БУДУЩЕЕ распарсить show bootvar и определить более новый образ
-        # boot system image-[12]
 
     def show_bootvar(self):
         return "show bootvar"

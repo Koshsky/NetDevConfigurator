@@ -4,9 +4,6 @@ import os
 logger = logging.getLogger(__name__)
 
 
-# TODO: need tftp_enviroment setup function
-
-
 def get_env(key: str) -> str | int | None:
     """Gets an environment variable.
 

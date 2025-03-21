@@ -117,7 +117,7 @@ class ConnectionManager:
     def _update_startup_config_router(self):
         result = self.driver.execute(self.core.update_startup_config)
         if "not parsed" in result:
-            logger.error("Cannot apply candidate configuration: %s", result)
+            logger.error("ROLLBACK. Cannot apply candidate configuration: %s", result)
             self.driver.execute(self.core.rollback)
             return f"Cannot apply candidate configuration:\n\n{result}"
         if diff := self.driver.execute(self.core.show_diff):
