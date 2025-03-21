@@ -30,7 +30,7 @@ class CustomLabel(ttk.Label):
         style = ttk.Style()
         style.configure(
             "Custom.TLabel",
-            background=config.app.color4,
+            background=config.app.color1,
             foreground=config.app.text_color,
             font=config.app.font,
             padding=config.app.padding,

@@ -19,8 +19,8 @@ class CustomScrollbar(ttk.Scrollbar):
         style.configure(
             "Custom.Vertical.TScrollbar",
             gripcount=1,
-            background=config.app.color1,
-            troughcolor=config.app.color1,
+            background=config.app.color3,
+            troughcolor=config.app.color3,
             bordercolor="blue",
             arrowcolor="white",
         )

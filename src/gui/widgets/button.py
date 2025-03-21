@@ -28,19 +28,29 @@ class CustomButton(ttk.Button):
         style = ttk.Style()
         style.configure(
             "Custom.TButton",
-            background=config.app.color1,
+            background=config.app.color3,
             foreground=config.app.text_color,
             padding=config.app.padding,
             relief="flat",
-            borderwidth=0,
+            borderwidth=1,
             font=config.app.font,
         )
 
         # Настраиваем эффекты при наведении и нажатии
         style.map(
             "Custom.TButton",
-            background=[("active", config.app.color1)],
-            relief=[("pressed", "flat")],
+            background=[
+                ("active", config.app.color4),
+                ("pressed", config.app.color4),
+                ("disabled", config.app.color4),
+            ],
+            foreground=[
+                ("active", config.app.text_color),
+                ("pressed", config.app.text_color),
+                ("disabled", config.app.color3),
+            ],
+            relief=[("pressed", "sunken")],
+            borderwidth=[("active", 2)],
         )
 
         super().__init__(

@@ -30,7 +30,7 @@ class CustomFrame(ttk.Frame):
         style = ttk.Style()
         style.configure(
             "Custom.TFrame",
-            background=config.app.color4,
+            background=config.app.color1,
             relief="flat",
             borderwidth=config.app.border_width,
             padding=config.app.padding,

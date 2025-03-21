@@ -23,14 +23,14 @@ class CustomCheckbox(ttk.Checkbutton):
         style = ttk.Style()
         style.configure(
             "Custom.TCheckbutton",
-            background=config.app.color1,
+            background=config.app.color3,
             foreground=config.app.text_color,
             font=config.app.font,
             padding=config.app.padding,
         )
         style.map(
             "Custom.TCheckbutton",
-            background=[("selected", config.app.color1)],
+            background=[("selected", config.app.color3)],
             foreground=[("selected", config.app.text_color)],
         )
         self.configure(style="Custom.TCheckbutton")

@@ -15,9 +15,10 @@ class AppConfig:
 
     # interface styles
     text_color: str = "#000000"
-    color1: str = "#00e0ce"
+    color1: str = "#ffffff"
     color2: str = "#F4FAFA"
-    color4: str = "#ffffff"
+    color3: str = "#00e0ce"
+    color4: str = "#09AEA1"
 
     font: Tuple[str, int] = ("Arial", 12)
     padding: Tuple[int, int] = (5, 5)

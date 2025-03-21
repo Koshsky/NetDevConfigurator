@@ -31,7 +31,7 @@ class CustomText(tk.Text):
             width=width,
             height=height,
             wrap=wrap,
-            bg=config.app.color4,
+            bg=config.app.color1,
             fg=config.app.text_color,
             font=config.app.font,
             padx=config.app.padding[0],

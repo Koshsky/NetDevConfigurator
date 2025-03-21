@@ -167,7 +167,7 @@ class App:
         )
         style.map(
             "Light.TNotebook.Tab",
-            background=[("selected", config.app.color4)],
+            background=[("selected", config.app.color1)],
             foreground=[("selected", config.app.text_color)],
         )
 
