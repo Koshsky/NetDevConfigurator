@@ -16,10 +16,8 @@ class SerialPortOpenError(ConnectionError):
     """Raised when there is an error opening the serial port."""
 
 
-
 class LoginError(AuthenticationError):
     """Raised when there is an error logging in to the device."""
-
 
 
 def check_port_open(func: Callable) -> Callable:
@@ -66,7 +64,7 @@ class COMBaseDriver(BaseDriver):
         self.on_open_sequence = on_open_sequence
         self.comms_prompt_pattern = comms_prompt_pattern
         self.ser = serial.Serial(
-            port=config["serial-port"],
+            port=config.serial_port,
             baudrate=115200,
             parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE,

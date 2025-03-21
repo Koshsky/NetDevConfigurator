@@ -34,11 +34,11 @@ class ControlTab(BaseTab):
     def _create_action_buttons(self):
         """Creates action buttons for device management."""
         actions = [
-            ("RUNNING CONFIG", self.connection_handler.show_run),
-            ("CANDIDATE CONFIG", self.show_template),
-            ("LOAD TEMPLATE", self.connection_handler.update_startup_config),
+            ("SHOW RUNNING", self.connection_handler.show_run),
+            ("SHOW CANDIDATE", self.show_template),
+            ("LOAD CANDIDATE", self.connection_handler.update_startup_config),
             ("UPDATE FIRMWARES", self.connection_handler.update_firmwares),
-            ("REBOOT DEVICE", self.connection_handler.reboot),
+            ("REMOTE RELOAD", self.connection_handler.reboot),
         ]
         for action, callback in actions:
             self.create_button_in_line((action, callback))

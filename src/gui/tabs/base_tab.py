@@ -129,7 +129,9 @@ class BaseTab:
             if param_presets is None or len(param_presets) == 0:
                 self.__create_entry_field(entity_name, param_name, input_frame)
             elif isinstance(param_presets, tuple):
-                self.__create_combobox_field(entity_name, param_name, param_presets, input_frame)
+                self.__create_combobox_field(
+                    entity_name, param_name, param_presets, input_frame
+                )
             elif isinstance(param_presets, list):
                 self.__create_checkbox_group(
                     entity_name, param_name, param_presets, width, input_frame
@@ -149,9 +151,13 @@ class BaseTab:
                     and isinstance(button[0], str)
                     and callable(button[1])
                 ):
-                    raise TypeError("button parameter must be a tuple of (str, callable)")
+                    raise TypeError(
+                        "button parameter must be a tuple of (str, callable)"
+                    )
 
-                CustomButton(input_frame, text=button[0], command=button[1]).pack(side=tk.LEFT, padx=5)
+                CustomButton(input_frame, text=button[0], command=button[1]).pack(
+                    side=tk.LEFT, padx=5
+                )
 
             self._cur_row += 1
 
@@ -165,7 +171,9 @@ class BaseTab:
         ):
             raise TypeError("button parameter must be a tuple of (str, callable)")
 
-        button_widget = CustomButton(self.content_frame, text=button[0], command=button[1])
+        button_widget = CustomButton(
+            self.content_frame, text=button[0], command=button[1]
+        )
         button_widget.pack(fill=tk.X, padx=5, pady=5)
         self._cur_row += 1
 
@@ -200,17 +208,25 @@ class BaseTab:
         self.feedback_text.set_text(message)
         self.feedback_text.set_readonly(True)
 
-    def __create_entry_field(self, entity_name: str, param_name: str, parent_frame: CustomFrame) -> None:
+    def __create_entry_field(
+        self, entity_name: str, param_name: str, parent_frame: CustomFrame
+    ) -> None:
         """Creates a single entry field."""
         field = CustomEntry(parent_frame, width=30)  # Limit width
         field.pack(side=tk.LEFT, padx=5)
         self.fields[entity_name][param_name] = field
 
     def __create_combobox_field(
-        self, entity_name: str, param_name: str, param_presets: Tuple[str, ...], parent_frame: CustomFrame
+        self,
+        entity_name: str,
+        param_name: str,
+        param_presets: Tuple[str, ...],
+        parent_frame: CustomFrame,
     ) -> None:
         """Creates a single combobox field."""
-        field = CustomCombobox(parent_frame, completevalues=param_presets, width=30)  # Limit width
+        field = CustomCombobox(
+            parent_frame, completevalues=param_presets, width=30
+        )  # Limit width
         field.pack(side=tk.LEFT, padx=5)
         field.set_values(list(param_presets))
         field.set_text(param_presets[0] if param_presets else "")
@@ -233,7 +249,7 @@ class BaseTab:
                 row_frame = CustomFrame(parent_frame)
                 row_frame.pack(fill=tk.X, pady=2)
 
-                for box in param_presets[i:i + width]:
+                for box in param_presets[i : i + width]:
                     checkbox = CustomCheckbox(row_frame, text=box)
                     checkbox.pack(side=tk.LEFT, padx=5)
                     self.fields[entity_name][param_name][box] = checkbox
@@ -285,7 +301,9 @@ class BaseTab:
 
             # Create label and combobox
             CustomLabel(cell_frame, text=sub_param).pack(side=tk.LEFT, padx=2)
-            field = CustomCombobox(cell_frame, completevalues=preset, width=30)  # Limit width
+            field = CustomCombobox(
+                cell_frame, completevalues=preset, width=30
+            )  # Limit width
             field.pack(side=tk.LEFT, padx=2)
             field.set_values(preset)
             field.set_text(preset[0] if preset else "")

@@ -37,7 +37,7 @@ class TemplateTab(BaseTab):
     def _create_config_block(self, filtered_templates: Dict[str, Any]) -> None:
         """Creates the configuration block with template selections."""
         self.create_block(
-            "config",
+            "",
             {
                 "templates": {
                     k: self._get_templates_by_type(v["type"])
@@ -50,14 +50,14 @@ class TemplateTab(BaseTab):
     def _actualize_values(self) -> None:
         """Sets the initial values of the template selection widgets."""
         for k, v in self.app.preset["configuration"].items():
-            if k in self.fields["config"]["templates"]:
-                self.fields["config"]["templates"][k].set(v["name"])
+            if k in self.fields[""]["templates"]:
+                self.fields[""]["templates"][k].set(v["name"])
 
     def update_config(self) -> None:
         """Updates the configuration with the selected templates."""
         for k, v in self.app.preset["configuration"].items():
-            if k in self.fields["config"]["templates"]:
-                new_template_name = self.fields["config"]["templates"][k].get().strip()
+            if k in self.fields[""]["templates"]:
+                new_template_name = self.fields[""]["templates"][k].get().strip()
                 valid_templates = self._get_templates_by_type(v["type"])
                 if new_template_name not in valid_templates:
                     logger.error(f"Invalid template for {k}: {new_template_name}")

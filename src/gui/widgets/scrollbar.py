@@ -1,8 +1,6 @@
 """Custom scrollbar widget."""
 
-import tkinter as tk
 from tkinter import ttk
-from typing import Any, Dict
 
 from config import config
 
@@ -17,20 +15,16 @@ class CustomScrollbar(ttk.Scrollbar):
             master: The parent widget.
             **kwargs: Additional keyword arguments.
         """
-        super().__init__(master, **kwargs)
-        self._setup_style()
-
-    def _setup_style(self):
-        """Setup the scrollbar style."""
         style = ttk.Style()
         style.configure(
             "Custom.Vertical.TScrollbar",
-            background=config.app.second_color,
-            troughcolor=config.app.second_color,
-            width=10,
-            arrowsize=13,
+            gripcount=1,
+            background=config.app.main_color,
+            troughcolor=config.app.background_color,
+            bordercolor="blue",
+            arrowcolor="white",
         )
-        self.configure(style="Custom.Vertical.TScrollbar")
+        super().__init__(master, style="Custom.Vertical.TScrollbar", **kwargs)
 
     def set_orientation(self, orient: str) -> None:
         """Set the scrollbar orientation.

@@ -1,28 +1,28 @@
 import tkinter as tk
+from tkinter import ttk
 
-window = tk.Tk()
-lbl_titles = [
-    "Name",
-    "Surname",
-    "Address1",
-    "Address2",
-    "City",
-    "Region",
-    "Post index",
-    "Country",
-]
-frame = tk.Frame(master=window, relief=tk.SUNKEN, borderwidth=5)
-# TODO: это очень важно!!!
-# -------------------------------------
-frame.columnconfigure(list(range(8)), minsize=40, weight=1)
-frame.rowconfigure(list(range(20)), minsize=20)
-frame.pack(fill=tk.BOTH, side=tk.LEFT, expand=True)
-# -------------------------------------
-print(tk.BOTH)
-for row in range(len(lbl_titles)):
-    label = tk.Label(master=frame, text=f"{lbl_titles[row]}:")
-    label.grid(column=0, row=row, sticky=tk.W + tk.E)
-    entry = tk.Entry(master=frame)
-    entry.grid(column=1, row=row, sticky=tk.W + tk.E)
+root = tk.Tk()
+style = ttk.Style()
+style.theme_use("clam")
 
-window.mainloop()
+# list the options of the style
+# (Argument should be an element of TScrollbar, eg. "thumb", "trough", ...)
+print(style.element_options("Horizontal.TScrollbar.thumb"))
+
+# configure the style
+style.configure(
+    "Horizontal.TScrollbar",
+    gripcount=1,
+    background="Green",
+    darkcolor="DarkGreen",
+    lightcolor="LightGreen",
+    troughcolor="gray",
+    bordercolor="blue",
+    arrowcolor="white",
+)
+
+hs = ttk.Scrollbar(root, orient="horizontal")
+hs.place(x=5, y=5, width=150)
+hs.set(0.2, 0.3)
+
+root.mainloop()
