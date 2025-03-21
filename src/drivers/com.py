@@ -174,7 +174,7 @@ class COMBaseDriver(BaseDriver):
             if self.__is_logged():
                 logger.info("Logged in successfully")
                 return True
-            # TODO: НЕВАЖНО ЭТО ВЫЗВАНО НЕ ТОЛЬКО WRONG CREDENTIALS (пока паттерн не учитывает conf режим.)
+            # TODO: НЕВАЖНО ЭТО ВЫЗВАНО НЕ ТОЛЬКО WRONG CREDENTIALS
             logger.error(
                 "Login error: wrong credentials. username:%s password:%s",
                 self.username,

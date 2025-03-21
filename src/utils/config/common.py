@@ -39,7 +39,6 @@ def replace_env_vars(configuration: str) -> str:
 
 
 def check_environment_variables():
-    # TODO: рефакторинг нужен
     """Checks if all required environment variables are set.
 
     Raises:

@@ -12,8 +12,6 @@ logger = logging.getLogger("core")
 
 
 def get_core(family: str):
-    # TODO: НЕВАЖНО искать ядро только один раз! при выборе устройства.
-    # сохранять его в configuratorApp и передавать вместе с драйвером
     cores = {
         "MES14xx/24xx/34xx/37xx": MES14xx24xx34xx37xx(),
         "MES11xx/21xx/22xx/31xx": MES11xx21xx20xx31xx(),
