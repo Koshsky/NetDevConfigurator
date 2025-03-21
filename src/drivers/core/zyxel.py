@@ -1,8 +1,8 @@
-
 from utils.environ import get_env
+from .device_core import DeviceCore
 
 
-class BaseZyxel:
+class BaseZyxel(DeviceCore):
     comment_symbol = ";"
     comms_prompt_pattern = r"^(\n)?[a-zA-Z0-9_-]+[>#\$]\s*"
     open_sequence = []

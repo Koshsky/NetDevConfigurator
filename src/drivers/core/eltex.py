@@ -1,9 +1,9 @@
 from utils.environ import get_env
+from .device_core import DeviceCore
 
 
-class ESRxx:
+class ESRxx(DeviceCore):
     comment_symbol = "#"
-    # comms_prompt_pattern = r"^(\n)?[a-zA-Z0-9().\-_]+[>#\$]\s*"
     comms_prompt_pattern = r"^(\n)?.+[>#\$]\s*"
     open_sequence = ["terminal datadump"]
 
@@ -19,12 +19,6 @@ class ESRxx:
     show_diff = "show configuration changes"
     rollback = "rollback"
     commit = "commit"
-
-    # @property
-    # def load_boot(self):
-    #     return (
-    #         f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} boot"
-    #     )
 
     @property
     def base_configure_192(self):
@@ -42,6 +36,12 @@ class ESRxx:
         ]
 
     @property
+    def load_boot(self):
+        return (
+            f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} boot"
+        )
+
+    @property
     def load_uboot(self):
         return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:boot-2"
 
@@ -53,11 +53,11 @@ class ESRxx:
         return "show bootvar"
 
 
-class BaseMES:
+class BaseMES(DeviceCore):
     comment_symbol = "#"
     comms_prompt_pattern = r"^(\n)?[a-zA-Z0-9_-]+[>#\$]\s*$"
-
-    reload = "reload\nyy"  # cause 'y' 'y' DOESN'T require '\n'
+    open_sequence = []
+    reload = "reload\nyy"
     show_run = "show running-config"
 
     @property

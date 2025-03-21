@@ -1,4 +1,7 @@
+from .device_core import DeviceCore
 import logging
+
+logger = logging.getLogger("core")
 
 from .eltex import (
     ESRxx,
@@ -6,27 +9,30 @@ from .eltex import (
     MES14xx24xx34xx37xx,
     MES23xx33xx35xx36xx53xx5400,
 )
+
 from .zyxel import BaseZyxel
-
-logger = logging.getLogger("core")
-
-
-def get_core(family: str):
-    cores = {
-        "MES14xx/24xx/34xx/37xx": MES14xx24xx34xx37xx(),
-        "MES11xx/21xx/22xx/31xx": MES11xx21xx20xx31xx(),
-        "MES23xx/33xx/35xx/36xx/53xx/5400": MES23xx33xx35xx36xx53xx5400(),
-        "ESRxx": ESRxx(),
-        "BaseZyxel": BaseZyxel(),
+class CoreFactory:
+    _devices = {
+        "MES14xx/24xx/34xx/37xx": MES14xx24xx34xx37xx,
+        "MES11xx/21xx/22xx/31xx": MES11xx21xx20xx31xx,
+        "MES23xx/33xx/35xx/36xx/53xx/5400": MES23xx33xx35xx36xx53xx5400,
+        "ESRxx": ESRxx,
+        "BaseZyxel": BaseZyxel,
     }
-    core = cores.get(family)
-    if core is None:
-        raise ValueError("Unsupported device family: %s", family)
-    logger.debug("Successfully retrieved core for device family: %s", family)
-    return core
+
+    @classmethod
+    def get_core(cls, family: str) -> DeviceCore:
+        device_class = cls._devices.get(family)
+        if device_class is None:
+            raise ValueError(f"Unsupported device family: {family}")
+        
+        device = device_class()
+        logger.debug(f"Successfully created device instance for family: {family}")
+        return device
 
 
 __all__ = [
     "handle_device_open",
-    "get_core",
+    "CoreFactory",
+    "DeviceCore",
 ]

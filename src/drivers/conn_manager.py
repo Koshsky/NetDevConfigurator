@@ -5,7 +5,7 @@ from utils.filesystem import find_most_recent_file
 from utils.network import find_available_ip
 
 from .com import COMBaseDriver
-from .core import get_core
+from .core import CoreFactory
 from .mock import MockDriver
 from .ssh import SSHBaseDriver
 
@@ -32,7 +32,7 @@ class ConnectionManager:
         Raises:
             ValueError: If the connection type is invalid.
         """
-        self.core = get_core(device["family"]["name"])
+        self.core = CoreFactory.get_core(device["family"]["name"])
         self.device = device
 
         if driver_class := {
