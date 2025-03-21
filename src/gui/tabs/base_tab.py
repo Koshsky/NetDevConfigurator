@@ -205,10 +205,6 @@ class BaseTab:
         """Shows an error message box."""
         messagebox.showerror(title, error)
 
-    def show_info(self, title: str, error: str) -> None:
-        """Shows an info message box."""
-        messagebox.showinfo(title, error)
-
     def display_feedback(self, message: str) -> None:
         """Displays a feedback message in the feedback area."""
         self.feedback_text.set_readonly(False)

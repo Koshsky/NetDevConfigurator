@@ -145,7 +145,7 @@ class App:
         style = ttk.Style()
         style.configure(
             "Light.TFrame",
-            background=config.app.second_color,
+            background=config.app.color2,
             relief="flat",
             borderwidth=config.app.border_width,
             padding=config.app.padding,
@@ -154,21 +154,21 @@ class App:
         # Настраиваем стиль для notebook
         style.configure(
             "Light.TNotebook",
-            background=config.app.second_color,
+            background=config.app.color2,
             tabmargins=(2, 5, 2, 0),
             padding=config.app.padding,
         )
         style.configure(
             "Light.TNotebook.Tab",
-            background=config.app.second_color,
-            foreground=config.app.foreground_color,
+            background=config.app.color2,
+            foreground=config.app.text_color,
             padding=config.app.padding,
             font=config.app.font,
         )
         style.map(
             "Light.TNotebook.Tab",
-            background=[("selected", config.app.background_color)],
-            foreground=[("selected", config.app.foreground_color)],
+            background=[("selected", config.app.color4)],
+            foreground=[("selected", config.app.text_color)],
         )
 
         # Создаем и настраиваем notebook

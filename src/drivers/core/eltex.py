@@ -1,4 +1,3 @@
-
 from utils.environ import get_env
 
 
@@ -16,6 +15,10 @@ class ESRxx:
         return [
             f"copy tftp://{get_env('TFTP_ADDRESS')}:/tmp/{get_env('CFG_FILENAME')} system:candidate-config",
         ]
+
+    show_diff = "show configuration changes"
+    rollback = "rollback"
+    commit = "commit"
 
     # @property
     # def load_boot(self):

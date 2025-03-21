@@ -1,11 +1,9 @@
 """Custom frame widget."""
 
-import tkinter as tk
 from tkinter import ttk
 from typing import Any, Dict
 
 from config import config
-
 
 
 class CustomFrame(ttk.Frame):
@@ -32,7 +30,7 @@ class CustomFrame(ttk.Frame):
         style = ttk.Style()
         style.configure(
             "Custom.TFrame",
-            background=config.app.background_color,
+            background=config.app.color4,
             relief="flat",
             borderwidth=config.app.border_width,
             padding=config.app.padding,

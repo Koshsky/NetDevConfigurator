@@ -11,7 +11,7 @@ from ttkwidgets.autocomplete import AutocompleteCombobox
 from config import config
 
 
-class CustomCombobox(ttk.Combobox):
+class CustomCombobox(AutocompleteCombobox):
     """Custom combobox widget with additional functionality."""
 
     def __init__(
@@ -31,16 +31,16 @@ class CustomCombobox(ttk.Combobox):
         style = ttk.Style()
         style.configure(
             "Light.TCombobox",
-            fieldbackground=config.app.second_color,
-            background=config.app.second_color,
-            selectbackground=config.app.second_color,
-            selectforeground=config.app.foreground_color,
-            arrowcolor=config.app.foreground_color,
+            fieldbackground=config.app.color2,
+            background=config.app.color2,
+            selectbackground=config.app.color2,
+            selectforeground=config.app.text_color,
+            arrowcolor=config.app.text_color,
         )
 
         super().__init__(
             parent,
-            # completevalues=completevalues or (),
+            completevalues=completevalues or (),
             style="Light.TCombobox",
             **kwargs,
         )
@@ -52,7 +52,7 @@ class CustomCombobox(ttk.Combobox):
             values: The new values to use for autocomplete.
         """
         pass
-        # self.configure(completevalues=tuple(values))
+        self.configure(completevalues=tuple(values))
 
     def set_text(self, text: Optional[str]) -> None:
         """Set the combobox text.

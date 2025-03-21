@@ -41,7 +41,6 @@ class TabRefresher:
         self.app = app
         self.notebook = app.notebook
         self.tabs: Dict[str, BaseTab] = app.tabs
-        self.advanced_mode = app.advanced_mode
         self.logger = logging.getLogger("TabRefresher")
 
     def refresh_tabs(self) -> None:
@@ -79,10 +78,12 @@ class TabRefresher:
         for name, tab in self.tabs.items():
             if name in ("TEMPLATES", "INTERFACES"):
                 tab.show_if(
-                    dev_type == "switch" and self.advanced_mode and dev_role_present
+                    dev_type == "switch"
+                    and get_env("ADVANCED_MODE") == "true"
+                    and dev_role_present
                 )
             elif name == "ROUTER":
-                tab.show_if(dev_type == "router" and self.advanced_mode)
+                tab.show_if(dev_type == "router" and get_env("ADVANCED_MODE") == "true")
             elif name == "CONTROL":
                 tab.show()
             elif name not in (
@@ -117,7 +118,7 @@ class ConfiguratorApp(App):
             **kwargs: Additional keyword arguments.
         """
         self.mock_enabled = mock_enabled
-        self.advanced_mode = advanced
+        set_env("ADVANCED_MODE", "true" if advanced else "false")
         self.preset = None
         super().__init__(master, title, *args, **kwargs)
         self.logger = logging.getLogger("ConfiguratorApp")
@@ -168,7 +169,7 @@ class ConfiguratorApp(App):
         """Prepares the configuration by updating tabs and saving."""
         self.update_envs()
 
-        if self.advanced_mode:
+        if get_env("ADVANCED_MODE") == "true":
             self.update_config()
 
         header = self.tabs["CONTROL"].connection_handler.get_header()

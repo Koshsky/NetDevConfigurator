@@ -23,15 +23,15 @@ class CustomCheckbox(ttk.Checkbutton):
         style = ttk.Style()
         style.configure(
             "Custom.TCheckbutton",
-            background=config.app.background_color,
-            foreground=config.app.foreground_color,
+            background=config.app.color1,
+            foreground=config.app.text_color,
             font=config.app.font,
             padding=config.app.padding,
         )
         style.map(
             "Custom.TCheckbutton",
-            background=[("selected", config.app.background_color)],
-            foreground=[("selected", config.app.foreground_color)],
+            background=[("selected", config.app.color1)],
+            foreground=[("selected", config.app.text_color)],
         )
         self.configure(style="Custom.TCheckbutton")
 
@@ -57,7 +57,7 @@ class CustomCheckbox(ttk.Checkbutton):
         Returns:
             bool: Whether the checkbox is checked.
         """
-        return self.instate(['selected'])
+        return self.instate(["selected"])
 
     def set_style(self, style: str) -> None:
         """Set the checkbox style (ignored for tk.Checkbutton).

@@ -104,9 +104,10 @@ class BaseConnectionHandler:
             Exception: Any exception raised by the driver.
         """
         self.app.update_envs()
-        self.tab.show_info(
-            "Please wait", f"executing {operation} via {connection_type}..."
-        )
+        if get_env("ADVANCED_MODE") == "true":
+            self.tab.display_feedback(
+                f"Please wait, executing {operation} via {connection_type}..."
+            )
 
         try:
             with ConnectionManager(
@@ -114,7 +115,7 @@ class BaseConnectionHandler:
             ) as conn:
                 method = getattr(conn, operation)
                 result = method(*args)
-                if isinstance(result, str):
+                if isinstance(result, str) and get_env("ADVANCED_MODE") == "true":
                     self.tab.display_feedback(result)
                 return result
         except Exception as e:

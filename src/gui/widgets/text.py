@@ -1,7 +1,6 @@
 """Custom text widget."""
 
 import tkinter as tk
-from tkinter import ttk
 from typing import Any, Dict
 
 from config import config
@@ -32,8 +31,8 @@ class CustomText(tk.Text):
             width=width,
             height=height,
             wrap=wrap,
-            bg=config.app.background_color,
-            fg=config.app.foreground_color,
+            bg=config.app.color4,
+            fg=config.app.text_color,
             font=config.app.font,
             padx=config.app.padding[0],
             pady=config.app.padding[1],

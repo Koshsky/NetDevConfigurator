@@ -5,6 +5,7 @@ from tkinter import ttk
 from typing import Any, Callable, Dict, Optional
 from config import config
 
+
 class CustomButton(ttk.Button):
     """Custom button widget with additional functionality."""
 
@@ -26,9 +27,9 @@ class CustomButton(ttk.Button):
         # Создаем стиль для кнопки
         style = ttk.Style()
         style.configure(
-            "Green.TButton",
-            background=config.app.main_color,
-            foreground=config.app.foreground_color,
+            "Custom.TButton",
+            background=config.app.color1,
+            foreground=config.app.text_color,
             padding=config.app.padding,
             relief="flat",
             borderwidth=0,
@@ -37,13 +38,13 @@ class CustomButton(ttk.Button):
 
         # Настраиваем эффекты при наведении и нажатии
         style.map(
-            "Green.TButton",
-            background=[("active", config.app.main_color)],
+            "Custom.TButton",
+            background=[("active", config.app.color1)],
             relief=[("pressed", "flat")],
         )
 
         super().__init__(
-            parent, text=text, command=command, style="Green.TButton", **kwargs
+            parent, text=text, command=command, style="Custom.TButton", **kwargs
         )
 
     def set_text(self, text: str) -> None:

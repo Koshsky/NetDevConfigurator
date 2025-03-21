@@ -104,8 +104,27 @@ class ConnectionManager:
         Returns:
             The output of the update command.
         """
-        command = self.core.update_startup_config
-        return self.driver.execute(command)
+        if get_env("DEV_TYPE") == "switch":
+            return self._update_startup_config_switch()
+        elif get_env("DEV_TYPE") == "router":
+            return self._update_startup_config_router()
+        else:
+            raise TypeError(f"Invalid DEV_TYPE: {get_env('DEV_TYPE')}")
+
+    def _update_startup_config_switch(self):
+        return self.driver.execute(self.core.update_startup_config)
+
+    def _update_startup_config_router(self):
+        result = self.driver.execute(self.core.update_startup_config)
+        if "not parsed" in result:
+            logger.error("Cannot apply candidate configuration: %s", result)
+            self.driver.execute(self.core.rollback)
+            return f"Cannot apply candidate configuration:\n\n{result}"
+        if diff := self.driver.execute(self.core.show_diff):
+            self.driver.execute(self.core.commit)
+            return f"Startup config has updated successfully. Changes:\n\n{diff}"
+        else:
+            raise RuntimeError("No changes to apply")
 
     def reboot(self) -> None:
         """Reboots the device."""

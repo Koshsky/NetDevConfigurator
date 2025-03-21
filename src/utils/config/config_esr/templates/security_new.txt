@@ -34,7 +34,7 @@ exit
 security zone-pair trusted untrusted
   rule 1
     action permit
-    match source-address INT_NET
+    match source-address object-group INT_NET
     enable
   exit
 exit
@@ -200,7 +200,7 @@ exit
 security zone-pair DMZ untrusted
   rule 1
     action permit
-    match source-address DMZ_NET
+    match source-address object-group DMZ_NET
     enable
   exit
 exit
@@ -526,7 +526,7 @@ exit
 security zone-pair RAISA untrusted
   rule 1
     action permit
-    match source-address RAISA_NET
+    match source-address object-group RAISA_NET
     enable
   exit
 exit

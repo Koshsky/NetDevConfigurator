@@ -14,10 +14,10 @@ class AppConfig:
     interfaces_allow_none: bool = False
 
     # interface styles
-    background_color: str = "#ffffff"
-    foreground_color: str = "#000000"
-    main_color: str = "#00e0ce"
-    second_color: str = "#F4FAFA"
+    text_color: str = "#000000"
+    color1: str = "#00e0ce"
+    color2: str = "#F4FAFA"
+    color4: str = "#ffffff"
 
     font: Tuple[str, int] = ("Arial", 12)
     padding: Tuple[int, int] = (5, 5)
@@ -39,7 +39,7 @@ class DatabaseConfig:
 class TFTPConfig:
     """TFTP server configuration."""
 
-    address: str = "192.168.3.105"
+    address: str = "192.168.3.193"
     port: int = 69
     folder: str = "/srv/tftp"
 
@@ -50,6 +50,7 @@ class HostConfig:
 
     address: List[str] = field(
         default_factory=lambda: [
+            "192.168.3.50",
             "79.134.218.38",
             "192.168.3.201",
             "192.168.0.1",
