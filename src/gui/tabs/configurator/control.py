@@ -50,9 +50,9 @@ class ControlTab(BaseTab):
     def get_actions(self):
         """Returns a list of actions."""
         return [
-            ("LOAD CANDIDATE", self.connection_handler.update_startup_config),
-            ("UPDATE FIRMWARES", self.connection_handler.update_firmwares),
-            ("REMOTE RELOAD", self.connection_handler.reboot),
+            ("LOAD CONFIGURATION", self.connection_handler.update_startup_config),
+            ("UPDATE FIRMWARE", self.connection_handler.update_firmwares),
+            ("REBOOT", self.connection_handler.reboot),
         ]
 
     def get_advanced_actions(self):
