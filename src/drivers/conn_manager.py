@@ -1,4 +1,7 @@
+"""Connection manager for network devices."""
+
 import logging
+from typing import Any, Dict
 
 from utils.environ import get_env, set_env
 from utils.filesystem import find_most_recent_file
@@ -112,9 +115,19 @@ class ConnectionManager:
             raise TypeError(f"Invalid DEV_TYPE: {get_env('DEV_TYPE')}")
 
     def _update_startup_config_switch(self):
+        """Updates startup configuration for switch devices.
+
+        Returns:
+            The output of the update command.
+        """
         return self.driver.execute(self.core.update_startup_config)
 
     def _update_startup_config_router(self):
+        """Updates startup configuration for router devices.
+
+        Returns:
+            The output of the update command.
+        """
         result = self.driver.execute(self.core.update_startup_config)
         if "not parsed" in result:
             logger.error("ROLLBACK. Cannot apply candidate configuration: %s", result)
@@ -122,6 +135,7 @@ class ConnectionManager:
             return f"Cannot apply candidate configuration:\n\n{result}"
         if diff := self.driver.execute(self.core.show_diff):
             self.driver.execute(self.core.commit)
+            set_env("HOST_ADDRESS", get_env("PUBLIC_IP"))
             return f"Startup config has updated successfully. Changes:\n\n{diff}"
         else:
             raise RuntimeError("No changes to apply")
@@ -139,7 +153,6 @@ class ConnectionManager:
         Returns:
             The output of the update command, or an empty string if no file is found.
         """
-
         filename = find_most_recent_file(
             f"{get_env('TFTP_FOLDER')}/firmware",
             self.device["pattern"][component_type] or "",
@@ -156,15 +169,39 @@ class ConnectionManager:
             raise TypeError(f"Invalid DEV_TYPE: {get_env('DEV_TYPE')}")
 
     def _load_firmware_component_switch(self, component_type: str):
+        """Loads firmware component for switch devices.
+
+        Args:
+            component_type: The type of the firmware component.
+
+        Returns:
+            The output of the load command.
+        """
         return self.driver.execute(getattr(self.core, f"load_{component_type}"))
 
     def _load_firmware_component_router(self, component_type: str):
+        """Loads firmware component for router devices.
+
+        Args:
+            component_type: The type of the firmware component.
+
+        Returns:
+            The output of the load command.
+        """
         res = self.driver.execute(getattr(self.core, f"load_{component_type}"))
         if component_type == "firmware":
             self._change_boot_image()
         return res
 
     def _change_boot_image(self) -> str:
+        """Changes the boot image for router devices.
+
+        Returns:
+            The output of the change boot image command.
+
+        Raises:
+            RuntimeError: If no inactive image is found.
+        """
         bootvar = self.driver.execute(self.core.show_bootvar)
 
         # Parse bootvar string to find inactive image number
