@@ -65,6 +65,11 @@ class BaseConnectionHandler:
         )
         self._actualize_values()
 
+    def load_configuration(self):
+        """Loads the configuration from the device."""
+        self.app.prepare_configuration()
+        return self.update_startup_config()
+
     def _actualize_values(self):
         """Sets initial values for connection parameters from environment variables."""
         logger.debug("Actualizing connection values...")

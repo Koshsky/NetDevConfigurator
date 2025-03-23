@@ -36,7 +36,8 @@ class ControlTab(BaseTab):
 
         logger.debug("Updating host info...")
         self.app.update_envs()
-        self.show_template()
+        if get_env("ADVANCED_MODE") == "true":
+            self.show_template()
 
     def _create_action_buttons(self):
         """Creates action buttons for device management."""
@@ -50,7 +51,7 @@ class ControlTab(BaseTab):
     def get_actions(self):
         """Returns a list of actions."""
         return [
-            ("LOAD CONFIGURATION", self.connection_handler.update_startup_config),
+            ("LOAD CONFIGURATION", self.connection_handler.load_configuration),
             ("UPDATE FIRMWARE", self.connection_handler.update_firmwares),
             ("REBOOT", self.connection_handler.reboot),
         ]

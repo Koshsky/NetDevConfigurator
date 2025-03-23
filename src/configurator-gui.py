@@ -150,7 +150,7 @@ class ConfiguratorApp(App):
     @property
     def text_configuration(self) -> str:
         """Returns the generated text configuration."""
-        self._prepare_configuration()
+        self.prepare_configuration()
         return self._read_configuration_file()
 
     def update_config(self):
@@ -165,7 +165,7 @@ class ConfiguratorApp(App):
                 f"Invalid or unset DEV_TYPE environment variable: {dev_type}"
             )
 
-    def _prepare_configuration(self) -> None:
+    def prepare_configuration(self) -> None:
         """Prepares the configuration by updating tabs and saving."""
         self.update_envs()
 

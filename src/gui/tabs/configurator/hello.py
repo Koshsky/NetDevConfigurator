@@ -42,7 +42,6 @@ class HelloTab(BaseTab):
             connection_type: The type of connection.
         """
         set_env("CONNECTION_TYPE", connection_type)
-        self.update_envs()
         device = self.app.db_services["device"].get_one(
             name=self.fields["device"]["name"].get().strip()
         )
