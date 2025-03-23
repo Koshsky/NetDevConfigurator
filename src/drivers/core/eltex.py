@@ -2,7 +2,7 @@ from utils.environ import get_env
 from .device_core import DeviceCore
 
 
-class ESRxx(DeviceCore):
+class BaseESR(DeviceCore):
     comment_symbol = "#"
     comms_prompt_pattern = r"^(\n)?.+[>#\$]\s*"
     open_sequence = ["terminal datadump"]
@@ -35,10 +35,15 @@ class ESRxx(DeviceCore):
             "end",
         ]
 
+    def show_bootvar(self):
+        return "show bootvar"
+
+
+class ESR2x(BaseESR):
     @property
     def load_boot(self):
         return (
-            f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} boot"
+            f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:boot-1"
         )
 
     @property
@@ -49,8 +54,15 @@ class ESRxx(DeviceCore):
     def load_firmware(self):
         return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:firmware"
 
-    def show_bootvar(self):
-        return "show bootvar"
+
+class ESR3x(BaseESR):
+    @property
+    def load_uboot(self):
+        return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:boot"
+
+    @property
+    def load_firmware(self):
+        return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:firmware"
 
 
 class BaseMES(DeviceCore):
