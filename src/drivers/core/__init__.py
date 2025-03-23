@@ -3,12 +3,14 @@ import logging
 
 logger = logging.getLogger("core")
 
-from .eltex import (
-    BaseESR,
-    ESR3x,
+from .mes import (
     MES11xx21xx20xx31xx,
     MES14xx24xx34xx37xx,
     MES23xx33xx35xx36xx53xx5400,
+)
+from .esr import (
+    ESR2x,
+    ESR3x,
 )
 
 from .zyxel import BaseZyxel
@@ -17,7 +19,7 @@ class CoreFactory:
         "MES14xx/24xx/34xx/37xx": MES14xx24xx34xx37xx,
         "MES11xx/21xx/22xx/31xx": MES11xx21xx20xx31xx,
         "MES23xx/33xx/35xx/36xx/53xx/5400": MES23xx33xx35xx36xx53xx5400,
-        "ESR2x": BaseESR,
+        "ESR2x": ESR2x,
         "ESR3x": ESR3x,
         "BaseZyxel": BaseZyxel,
     }
