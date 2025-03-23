@@ -66,7 +66,7 @@ class SwitchHandler(BaseDeviceHandler):
     def create_widgets(self):
         """Creates widgets for switch parameters."""
         self.tab.create_block(
-            "params",
+            "",
             {
                 "role": self.app.device["roles"],
                 "or": tuple(str(i) for i in range(1, 26)),
@@ -77,15 +77,15 @@ class SwitchHandler(BaseDeviceHandler):
     def _actualize_values(self):
         """Sets initial values for switch parameters from environment variables."""
         logger.debug("Actualizing values for switch...")
-        self.tab.fields["params"]["role"].set(get_env("DEV_ROLE") or "")
-        self.tab.fields["params"]["or"].set(get_env("OR") or "")
+        self.tab.fields[""]["role"].set(get_env("DEV_ROLE") or "")
+        self.tab.fields[""]["or"].set(get_env("OR") or "")
 
     def update_envs(self):
         """Updates switch information based on user input."""
         logger.debug("Updating device info for switch...")
         self.app.register_preset(
-            self.tab.fields["params"]["role"].get().strip(),
-            self.tab.fields["params"]["or"].get().strip(),
+            self.tab.fields[""]["role"].get().strip(),
+            self.tab.fields[""]["or"].get().strip(),
         )
 
 
@@ -96,7 +96,7 @@ class RouterHandler(BaseDeviceHandler):
         """Creates widgets for router parameters."""
         logger.debug("Creating widgets for router...")
         self.tab.create_block(
-            "params",
+            "",
             {
                 "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
             },
@@ -109,7 +109,7 @@ class RouterHandler(BaseDeviceHandler):
             "TYPE_COMPLEX",
             env_converter.to_machine(
                 "TYPE_COMPLEX",
-                self.tab.fields["params"]["TYPE_COMPLEX"].get().strip(),
+                self.tab.fields[""]["TYPE_COMPLEX"].get().strip(),
             ),
         )
 
