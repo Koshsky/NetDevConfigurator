@@ -18,8 +18,11 @@ class BaseESR(DeviceCore):
 
     show_diff = "show configuration changes"
     rollback = "rollback"
-    commit = "commit"
+    commit = ["commit", "confirm"]
 
+    @property
+    def change_boot_image(self):
+        return f"change bootvar image {get_env('BOOT_IMAGE')}"
     @property
     def base_configure_192(self):
         return [
@@ -38,6 +41,10 @@ class BaseESR(DeviceCore):
     def show_bootvar(self):
         return "show bootvar"
 
+    @property
+    def load_firmware(self):
+        return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:firmware"
+
 
 class ESR2x(BaseESR):
     @property
@@ -50,16 +57,8 @@ class ESR2x(BaseESR):
     def load_uboot(self):
         return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:boot-2"
 
-    @property
-    def load_firmware(self):
-        return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:firmware"
-
 
 class ESR3x(BaseESR):
     @property
     def load_uboot(self):
         return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:boot"
-
-    @property
-    def load_firmware(self):
-        return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:firmware"

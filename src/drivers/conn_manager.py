@@ -148,7 +148,37 @@ class ConnectionManager:
             return ""
 
         set_env("FILENAME", filename)
+        if get_env("DEV_TYPE") == "switch":
+            return self._load_firmware_component_switch(component_type)
+        elif get_env("DEV_TYPE") == "router":
+            return self._load_firmware_component_router(component_type)
+        else:
+            raise TypeError(f"Invalid DEV_TYPE: {get_env('DEV_TYPE')}")
+
+    def _load_firmware_component_switch(self, component_type: str):
         return self.driver.execute(getattr(self.core, f"load_{component_type}"))
+
+    def _load_firmware_component_router(self, component_type: str):
+        res = self.driver.execute(getattr(self.core, f"load_{component_type}"))
+        if component_type == "firmware":
+            self._change_boot_image()
+        return res
+
+    def _change_boot_image(self) -> str:
+        bootvar = self.driver.execute(self.core.show_bootvar)
+
+        # Parse bootvar string to find inactive image number
+        inactive_image = None
+        for line in bootvar.splitlines():
+            if "Not Active" in line:
+                # Split line by whitespace and get first column (image number)
+                inactive_image = line.split()[0]
+                break
+
+        if inactive_image is None:
+            raise RuntimeError("No inactive image found in bootvar")
+        set_env("BOOT_IMAGE", inactive_image)
+        return self.driver.execute(self.core.change_boot_image)
 
     def update_firmwares(self) -> str:
         """Updates all firmware components (boot, U-Boot, firmware).
