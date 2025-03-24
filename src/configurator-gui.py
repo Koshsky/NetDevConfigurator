@@ -260,6 +260,4 @@ def main():
 
 
 if __name__ == "__main__":
-    set_env("CERT", config.default_cert)
-    set_env("OR", "1")
     main()

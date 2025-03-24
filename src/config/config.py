@@ -40,7 +40,15 @@ class DatabaseConfig:
 class TFTPConfig:
     """TFTP server configuration."""
 
-    address: str = "192.168.3.193"
+    address: Tuple[str, ...] = field(
+        default_factory=lambda: (
+            "192.168.3.193",
+            "192.168.3.105",
+            "192.168.2.105",
+            "192.168.1.105",
+            "10.4.0.105",
+        )
+    )
     port: int = 69
     folder: str = "/srv/tftp"
 
@@ -49,25 +57,25 @@ class TFTPConfig:
 class HostConfig:
     """Host configuration."""
 
-    address: List[str] = field(
-        default_factory=lambda: [
+    address: Tuple[str, ...] = field(
+        default_factory=lambda: (
             "192.168.3.50",
             "79.134.218.38",
             "192.168.3.201",
             "192.168.0.1",
             "10.4.0.3",
-        ]
+        )
     )
-    port: List[str] = field(default_factory=lambda: ["22"])
-    username: List[str] = field(default_factory=lambda: ["admin", "mvsadmin"])
-    password: List[str] = field(
-        default_factory=lambda: [
+    port: Tuple[str, ...] = field(default_factory=lambda: ("22",))
+    username: Tuple[str, ...] = field(default_factory=lambda: ("admin", "mvsadmin"))
+    password: Tuple[str, ...] = field(
+        default_factory=lambda: (
+            "admin",
             "MVS_admin",
             "MVS_admin20",
-            "admin",
             "password",
             "1234",
-        ]
+        )
     )
 
 
@@ -101,7 +109,7 @@ class Config:
     tftp: TFTPConfig = field(default_factory=TFTPConfig)
     host: HostConfig = field(default_factory=HostConfig)
     router: RouterConfig = field(default_factory=RouterConfig)
-    default_cert: str = "MVS"
+    default_cert: Tuple[str, ...] = field(default_factory=lambda: ("MVS", "SPB"))
     serial_port: str = "/dev/ttyUSB0"
     mvs_network: str = "192.168.3.0/24"
     backup_folder: str = "./.backups/"

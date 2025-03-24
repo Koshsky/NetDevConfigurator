@@ -36,8 +36,6 @@ class ControlTab(BaseTab):
 
         logger.debug("Updating host info...")
         self.app.update_envs()
-        if get_env("ADVANCED_MODE") == "true":
-            self.show_template()
 
     def _create_action_buttons(self):
         """Creates action buttons for device management."""

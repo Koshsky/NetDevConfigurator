@@ -55,7 +55,7 @@ class HelloTab(BaseTab):
     def _create_common_block(self) -> None:
         """Creates the common settings block, currently for certificates."""
         self.create_block(
-            "", {"CERT": (config.default_cert,), "TFTP": (config.tftp.address,)}
+            "", {"CERT": config.default_cert, "TFTP": config.tftp.address}
         )
 
     def _create_connection_buttons(self) -> None:
