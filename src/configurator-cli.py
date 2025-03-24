@@ -75,7 +75,7 @@ def get_operating_room(role: str) -> str | None:
     Prompts the user to enter an operating room, validating the input.
     If the role is not "tsh" or "or", returns None.
     """
-    if role not in ["tsh", "or"]:
+    if role not in ["tsh", "or", "raisa-or"]:
         return None
 
     while True:

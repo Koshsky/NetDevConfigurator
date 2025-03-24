@@ -179,7 +179,7 @@ class BaseTab:
 
     def create_feedback_area(
         self,
-        message: str = "Feedback will be here...",
+        message: str = "INFORMATION...",
         width: int = 150,
         height: int = 25,
     ) -> None:

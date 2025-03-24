@@ -133,11 +133,13 @@ class ConnectionManager:
             logger.error("ROLLBACK. Cannot apply candidate configuration: %s", result)
             self.driver.execute(self.core.rollback)
             return result
+        # Uknown error
         diff = self.driver.execute(self.core.show_diff)
         if not diff:
             logger.info("ROLLBACK. No changes to apply")
             self.driver.execute(self.core.rollback)
             return diff
+
         set_env("HOST_ADDRESS", get_env("PUBLIC_IP"))
         return f"Startup config has updated successfully. Changes:\n\n{diff}"
 
