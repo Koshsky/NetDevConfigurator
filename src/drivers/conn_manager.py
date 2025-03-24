@@ -132,13 +132,14 @@ class ConnectionManager:
         if "not parsed" in result:
             logger.error("ROLLBACK. Cannot apply candidate configuration: %s", result)
             self.driver.execute(self.core.rollback)
-            return f"Cannot apply candidate configuration:\n\n{result}"
-        if diff := self.driver.execute(self.core.show_diff):
-            self.driver.execute(self.core.commit)
-            set_env("HOST_ADDRESS", get_env("PUBLIC_IP"))
-            return f"Startup config has updated successfully. Changes:\n\n{diff}"
-        else:
-            raise RuntimeError("No changes to apply")
+            return result
+        diff = self.driver.execute(self.core.show_diff)
+        if not diff:
+            logger.info("ROLLBACK. No changes to apply")
+            self.driver.execute(self.core.rollback)
+            return diff
+        set_env("HOST_ADDRESS", get_env("PUBLIC_IP"))
+        return f"Startup config has updated successfully. Changes:\n\n{diff}"
 
     def reboot(self) -> None:
         """Reboots the device."""
