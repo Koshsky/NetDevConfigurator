@@ -62,7 +62,6 @@ security zone-pair trusted self
     match destination-port object-group snmp
     enable
 exit
-security zone-pair untrusted self
   rule 10
     action permit
     match protocol icmp

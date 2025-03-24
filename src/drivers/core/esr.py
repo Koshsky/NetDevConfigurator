@@ -23,6 +23,7 @@ class BaseESR(DeviceCore):
     @property
     def change_boot_image(self):
         return f"change bootvar image {get_env('BOOT_IMAGE')}"
+    
     @property
     def base_configure_192(self):
         return [
@@ -38,8 +39,7 @@ class BaseESR(DeviceCore):
             "end",
         ]
 
-    def show_bootvar(self):
-        return "show bootvar"
+    show_bootvar = "show bootvar"
 
     @property
     def load_firmware(self):
