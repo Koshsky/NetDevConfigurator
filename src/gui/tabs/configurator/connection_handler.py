@@ -1,7 +1,6 @@
 import logging
-from typing import Dict, List, Tuple, Type
+from typing import Dict, Type
 
-from config import config
 from drivers import ConnectionManager
 from utils.environ import get_env, set_env
 
@@ -50,33 +49,17 @@ class BaseConnectionHandler:
     def __init__(self, control_tab: BaseTab):
         self.tab = control_tab
         self.app = control_tab.app
-        self.fields_config: List[str] = []
-        self.env_vars: List[Tuple[str, str]] = []
-
-    def create_widgets(self):
-        """Creates widgets for connection parameters."""
-        self.tab.create_block(
-            "host",
-            {field: tuple(getattr(config.host, field)) for field in self.fields_config},
-        )
-        self._actualize_values()
+        self.env_vars: Dict[str, str] = {}
 
     def load_configuration(self):
         """Loads the configuration from the device."""
         self.app.prepare_configuration()
         return self.update_startup_config()
 
-    def _actualize_values(self):
-        """Sets initial values for connection parameters from environment variables."""
-        logger.debug("Actualizing connection values...")
-        for var_name, field in self.env_vars:
-            if field in self.tab.fields["host"] and (value := get_env(var_name)):
-                self.tab.fields["host"][field].set(value)
-
     def update_envs(self):
         """Updates host information based on user input."""
         logger.debug("Updating host info...")
-        for var_name, field in self.env_vars:
+        for var_name, field in self.env_vars.items():
             if field in self.tab.fields.get("host", {}):
                 value = self.tab.fields["host"][field].get().strip()
                 if set_env(var_name, value):
@@ -132,11 +115,10 @@ class ComConnectionHandler(BaseConnectionHandler):
 
     def __init__(self, control_tab: BaseTab):
         super().__init__(control_tab)
-        self.fields_config = ["username", "password"]
-        self.env_vars = [
-            ("HOST_USERNAME", "username"),
-            ("HOST_PASSWORD", "password"),
-        ]
+        self.env_vars = {
+            "HOST_USERNAME": {"ru": "ИМЯ ПОЛЬЗОВАТЕЛЯ", "en": "username"},
+            "HOST_PASSWORD": {"ru": "ПАРОЛЬ", "en": "password"},
+        }
 
     def _execute_with_driver(self, operation: str, *args):
         """Executes an operation, configuring the base connection if necessary."""
@@ -158,13 +140,12 @@ class MockConnectionHandler(BaseConnectionHandler):
 
     def __init__(self, control_tab: BaseTab):
         super().__init__(control_tab)
-        self.fields_config = ["address", "port", "username", "password"]
-        self.env_vars = [
-            ("HOST_ADDRESS", "address"),
-            ("HOST_PORT", "port"),
-            ("HOST_USERNAME", "username"),
-            ("HOST_PASSWORD", "password"),
-        ]
+        self.env_vars = {
+            "HOST_ADDRESS": {"ru": "АДРЕС", "en": "address"},
+            "HOST_PORT": {"ru": "ПОРТ", "en": "port"},
+            "HOST_USERNAME": {"ru": "ИМЯ ПОЛЬЗОВАТЕЛЯ", "en": "username"},
+            "HOST_PASSWORD": {"ru": "ПАРОЛЬ", "en": "password"},
+        }
 
     def _execute_with_driver(self, operation: str, *args):
         """Executes an operation using the MockDriver."""
@@ -176,13 +157,12 @@ class SSHConnectionHandler(BaseConnectionHandler):
 
     def __init__(self, control_tab: BaseTab):
         super().__init__(control_tab)
-        self.fields_config = ["address", "port", "username", "password"]
-        self.env_vars = [
-            ("HOST_ADDRESS", "address"),
-            ("HOST_PORT", "port"),
-            ("HOST_USERNAME", "username"),
-            ("HOST_PASSWORD", "password"),
-        ]
+        self.env_vars = {
+            "HOST_ADDRESS": {"ru": "АДРЕС", "en": "address"},
+            "HOST_PORT": {"ru": "ПОРТ", "en": "port"},
+            "HOST_USERNAME": {"ru": "ИМЯ ПОЛЬЗОВАТЕЛЯ", "en": "username"},
+            "HOST_PASSWORD": {"ru": "ПАРОЛЬ", "en": "password"},
+        }
 
     def _execute_with_driver(self, operation: str, *args):
         """Executes an operation using the SSHDriver."""

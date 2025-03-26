@@ -14,14 +14,7 @@ class BaseDeviceHandler:
     def __init__(self, tab: BaseTab):
         self.tab = tab
         self.app = tab.app
-
-    def create_widgets(self):
-        """Creates the necessary widgets for the device type.
-
-        Raises:
-            NotImplementedError: This method should be implemented by subclasses.
-        """
-        raise NotImplementedError
+        self.env_vars: Dict[str, str] = {}
 
     def update_envs(self):
         """Updates the device information based on user input.
@@ -63,22 +56,12 @@ class DeviceHandlerFactory:
 class SwitchHandler(BaseDeviceHandler):
     """Device handler for switches."""
 
-    def create_widgets(self):
-        """Creates widgets for switch parameters."""
-        self.tab.create_block(
-            "",
-            {
-                "role": self.app.device["roles"],
-                "or": tuple(str(i) for i in range(1, 26)),
-            },
-        )
-        self._actualize_values()
-
-    def _actualize_values(self):
-        """Sets initial values for switch parameters from environment variables."""
-        logger.debug("Actualizing values for switch...")
-        self.tab.fields[""]["role"].set(get_env("DEV_ROLE") or "")
-        self.tab.fields[""]["or"].set(get_env("OR") or "")
+    def __init__(self, tab: BaseTab):
+        super().__init__(tab)
+        self.env_vars = {
+            "DEV_ROLE": {"ru": "РОЛЬ", "en": "role"},
+            "OR": {"ru": "ОПЕРАЦИОННАЯ", "en": "or"},
+        }
 
     def update_envs(self):
         """Updates switch information based on user input."""
@@ -92,15 +75,11 @@ class SwitchHandler(BaseDeviceHandler):
 class RouterHandler(BaseDeviceHandler):
     """Device handler for routers."""
 
-    def create_widgets(self):
-        """Creates widgets for router parameters."""
-        logger.debug("Creating widgets for router...")
-        self.tab.create_block(
-            "",
-            {
-                "TYPE_COMPLEX": tuple(env_converter["TYPE_COMPLEX"]),
-            },
-        )
+    def __init__(self, tab: BaseTab):
+        super().__init__(tab)
+        self.env_vars = {
+            "TYPE_COMPLEX": {"ru": "ТИП КОМПЛЕКСА", "en": "type_complex"},
+        }
 
     def update_envs(self):
         """Updates router information based on user input."""

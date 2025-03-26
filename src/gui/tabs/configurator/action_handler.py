@@ -29,9 +29,18 @@ class ActionHandler:
             List of tuples containing action name and callback function.
         """
         return [
-            ("LOAD CONFIGURATION", self.connection_handler.load_configuration),
-            ("UPDATE FIRMWARE", self.connection_handler.update_firmware),
-            ("REBOOT", self.connection_handler.reboot),
+            (
+                {"ru": "ЗАГРУЗИТЬ КОНФИГУРАЦИЮ", "en": "LOAD CONFIGURATION"},
+                self.connection_handler.load_configuration,
+            ),
+            (
+                {"ru": "ОБНАРУЖИТЬ УСТРОЙСТВО", "en": "UPDATE FIRMWARE"},
+                self.connection_handler.update_firmware,
+            ),
+            (
+                {"ru": "ПЕРЕЗАГРУЗИТЬ", "en": "REBOOT"},
+                self.connection_handler.reboot,
+            ),
         ]
 
     def get_advanced_actions(self) -> List[Tuple[str, Callable]]:
@@ -41,8 +50,14 @@ class ActionHandler:
             List of tuples containing action name and callback function.
         """
         return [
-            ("SHOW RUNNING", self.connection_handler.show_run),
-            ("SHOW CANDIDATE", self.parent.show_template),
+            (
+                {"ru": "ПОКАЗАТЬ РАБОЧУЮ", "en": "SHOW RUNNING"},
+                self.connection_handler.show_run,
+            ),
+            (
+                {"ru": "ПОКАЗАТЬ КАНДИДАТ", "en": "SHOW CANDIDATE"},
+                self.parent.show_template,
+            ),
         ] + self.get_actions()
 
     def get_available_actions(self) -> List[Tuple[str, Callable]]:
@@ -57,9 +72,3 @@ class ActionHandler:
         else:
             self.logger.debug("Basic mode enabled, returning basic actions")
             return self.get_actions()
-
-    def create_action_buttons(self):
-        """Creates action buttons for device management."""
-        actions = self.get_available_actions()
-        for action, callback in actions:
-            self.parent.create_button_in_line((action, callback))

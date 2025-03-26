@@ -31,6 +31,9 @@ def parse_args():
     parser.add_argument(
         "-A", "--advanced", action="store_true", help="Advanced mode for fine-tuning"
     )
+    parser.add_argument(
+        "-L", "--lang", type=str, default="ru", help="Language for the application"
+    )
     return parser.parse_args()
 
 
@@ -104,6 +107,7 @@ class ConfiguratorApp(App):
         title: str,
         mock_enabled: bool = False,
         advanced: bool = False,
+        lang: str = "ru",
         *args,
         **kwargs,
     ) -> None:
@@ -119,6 +123,8 @@ class ConfiguratorApp(App):
         """
         self.mock_enabled = mock_enabled
         set_env("ADVANCED_MODE", "true" if advanced else "false")
+        # set_env("LANG", lang)
+        self.lang = lang
         self.preset = None
         super().__init__(master, title, *args, **kwargs)
         self.logger = logging.getLogger("ConfiguratorApp")
@@ -259,6 +265,7 @@ def main():
         "Network Device Configurator",
         mock_enabled=args.mock,
         advanced=args.advanced,
+        lang=args.lang,
     )
     root.mainloop()
 
