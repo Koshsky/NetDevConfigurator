@@ -220,7 +220,7 @@ class ConnectionManager:
         set_env("BOOT_IMAGE", inactive_image)
         return self.driver.execute(self.core.change_boot_image)
 
-    def update_firmwares(self) -> str:
+    def update_firmware(self) -> str:
         """Updates all firmware components (boot, U-Boot, firmware).
 
         Returns:
