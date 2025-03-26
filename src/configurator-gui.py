@@ -34,7 +34,7 @@ def parse_args():
     return parser.parse_args()
 
 
-class TabRefresher:
+class AppRefresher:
     """Refreshes the visibility of tabs based on the application state."""
 
     def __init__(self, app: "App") -> None:
@@ -123,7 +123,7 @@ class ConfiguratorApp(App):
         super().__init__(master, title, *args, **kwargs)
         self.logger = logging.getLogger("ConfiguratorApp")
         self.device: "Device" | None = None  # type hint added
-        self.refresher = TabRefresher(self)
+        self.refresher = AppRefresher(self)
         self.tabs["CONNECTION"].on_button_click()
 
     def update_envs(self):
@@ -177,8 +177,7 @@ class ConfiguratorApp(App):
         if get_env("ADVANCED_MODE") == "true":
             self.update_config()
 
-        header = self.tabs["CONTROL"].connection_handler.get_header()
-        save_configuration(header, self.preset)
+        save_configuration(self.preset)
 
     def _read_configuration_file(self) -> str:
         """Reads and returns the generated text configuration."""

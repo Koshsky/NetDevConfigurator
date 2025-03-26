@@ -114,7 +114,7 @@ def _process_json_config(json_config: Dict[str, Any], device_company: str) -> st
     return replace_env_vars(configuration) + "end\n"
 
 
-def save_configuration(header: str = "", preset: Dict[str, Any] = None) -> str:
+def save_configuration(preset: Dict[str, Any] = None) -> str:
     """Saves the generated configuration to a file.
 
     Args:
@@ -132,10 +132,10 @@ def save_configuration(header: str = "", preset: Dict[str, Any] = None) -> str:
 
     if get_env("DEV_TYPE") == "router":
         logger.debug("Saving configuration for router.")
-        configuration = save_ESR_configuration(header)
+        configuration = save_ESR_configuration()
     elif get_env("DEV_TYPE") == "switch":
         logger.debug("Saving configuration for switch.")
-        configuration = header + _process_json_config(
+        configuration = _process_json_config(
             preset["configuration"], get_env("DEV_COMPANY")
         )
     else:

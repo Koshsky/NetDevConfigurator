@@ -7,7 +7,7 @@ from utils.environ import get_env
 logger = logging.getLogger(__name__)
 
 
-def save_ESR_configuration(header: str) -> str:
+def save_ESR_configuration() -> str:
     """Saves the ESR configuration to a file and prepends a header.
 
     Runs the `make_config.sh` script to generate the configuration,
@@ -43,7 +43,7 @@ def save_ESR_configuration(header: str) -> str:
         logger.exception("Configuration file not found at %s", config_path)
         raise
 
-    complete_config = header + config
+    complete_config = config
 
     with open(config_path, "w") as f:
         f.write(complete_config)
