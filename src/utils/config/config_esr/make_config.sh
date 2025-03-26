@@ -282,6 +282,12 @@ replace "pub_msk" $PUBLIC_MASK "$DIR/tmp/main"
 replace "gate_ip" $GW "$DIR/tmp/main"
 FIN_CONFIG=$( cat $DIR/tmp/main )
 
-echo "$FIN_CONFIG"| tail -n +7 > "$TFTP_FOLDER/tmp/$CFG_FILENAME"  # +2 - с комментариями
-log_message "Configuration saved in $TFTP_FOLDER/tmp/$CFG_FILENAME"
+if [ -n "$CFG_PATH" ]; then
+    if [ ! -d "$(dirname "$TFTP_FOLDER/$CFG_PATH")" ]; then
+        mkdir -p "$(dirname "$TFTP_FOLDER/$CFG_PATH")"
+        log_message "Created directory structure: $(dirname "$TFTP_FOLDER/$CFG_PATH")"
+    fi
+    echo "$FIN_CONFIG"| tail -n +7 > "$TFTP_FOLDER/$CFG_PATH"  # +2 - с комментариями
+    log_message "Configuration saved in $TFTP_FOLDER/$CFG_PATH"
+fi
 rm -R $DIR/tmp

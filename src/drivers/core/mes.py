@@ -11,7 +11,7 @@ class BaseMES(DeviceCore):
 
     @property
     def update_startup_config(self):
-        return f"copy tftp://{get_env('TFTP_ADDRESS')}/tmp/{get_env('CFG_FILENAME')} startup-config"
+        return f"copy tftp://{get_env('TFTP_ADDRESS')}/{get_env('CFG_PATH')} startup-config"
 
     @property
     def base_configure_192(self):

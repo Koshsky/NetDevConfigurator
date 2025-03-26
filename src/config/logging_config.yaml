@@ -19,4 +19,4 @@ loggers:
     handlers:
       - stdout
       - file
-    level: DEBUG
+    level: INFO

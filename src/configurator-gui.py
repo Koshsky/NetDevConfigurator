@@ -127,6 +127,11 @@ class ConfiguratorApp(App):
         self.tabs["CONNECTION"].on_button_click()
 
     def update_envs(self):
+        if get_env("DEV_TYPE") == "router":
+            set_env("CFG_PATH", f"{config.tftp.backup_folder}/{get_env('CERT')}/{get_env('DEV_NAME')}.conf")
+        else:
+            set_env("CFG_PATH", f"{config.tftp.backup_folder}/{get_env('CERT')}/{get_env('DEV_ROLE')}.conf")
+
         for name, tab in self.tabs.items():
             if hasattr(tab, "update_envs"):
                 tab.update_envs()
@@ -178,7 +183,7 @@ class ConfiguratorApp(App):
     def _read_configuration_file(self) -> str:
         """Reads and returns the generated text configuration."""
         config_filepath = os.path.join(
-            get_env("TFTP_FOLDER"), "tmp", get_env("CFG_FILENAME")
+            get_env("TFTP_FOLDER"), get_env("CFG_PATH")
         )
         try:
             with open(config_filepath, "r") as f:

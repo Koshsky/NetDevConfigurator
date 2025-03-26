@@ -51,7 +51,7 @@ def check_environment_variables():
         "DEV_NAME": None,
         "DEV_TYPE": ["router", "switch"],
         "TFTP_FOLDER": None,
-        "CFG_FILENAME": None,
+        "CFG_PATH": None,
         "DEV_COMPANY": ["Zyxel", "Eltex"],
     }
 
@@ -142,9 +142,13 @@ def save_configuration(header: str = "", preset: Dict[str, Any] = None) -> str:
         logger.error("Unknown device type: %s", get_env("DEV_TYPE"))
         raise ValueError(f"Unknown device type: {get_env('DEV_TYPE')}")
 
-    config_path = os.path.join(get_env("TFTP_FOLDER"), "tmp", get_env("CFG_FILENAME"))
-    logger.debug("Saving configuration to: %s", config_path)
+    config_path = os.path.join(get_env("TFTP_FOLDER"), get_env("CFG_PATH"))
+    logger.info("Saving configuration to: %s", config_path)
     try:
+        if not os.path.exists(os.path.dirname(config_path)):
+            logger.debug("Creating directory: %s", os.path.dirname(config_path))
+            os.makedirs(os.path.dirname(config_path), exist_ok=True)
+            logger.debug("Created directory: %s", os.path.dirname(config_path))
         with open(config_path, "w") as f:
             f.write(configuration)
             logger.info("Configuration saved to %s", config_path)

@@ -51,7 +51,7 @@ class TFTPConfig:
     )
     port: int = 69
     folder: str = "/srv/tftp"
-
+    backup_folder: str = "backups"
 
 @dataclass
 class HostConfig:

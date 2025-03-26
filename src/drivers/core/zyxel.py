@@ -12,7 +12,7 @@ class BaseZyxel(DeviceCore):
 
     @property
     def update_startup_config(self):
-        return f"copy tftp config 1 {get_env('TFTP_ADDRESS')} tmp/{get_env('CFG_FILENAME')}"
+        return f"copy tftp config 1 {get_env('TFTP_ADDRESS')} {get_env('CFG_PATH')}"
 
     @property
     def base_configure_192(self):

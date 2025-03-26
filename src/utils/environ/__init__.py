@@ -17,7 +17,6 @@ def initialize_device_environment(db_services, device: "Device") -> None:
     """Updates the environment variables related to the device."""
     del_env("DEV_ROLE")
 
-    set_env("CFG_FILENAME", f"config_{uuid.uuid4()}.conf")  # noqa: F821
     set_env("DEV_NAME", device.name)
     set_env("DEV_TYPE", device.dev_type)
     company_name = db_services["company"].get_one(id=device.company_id).name

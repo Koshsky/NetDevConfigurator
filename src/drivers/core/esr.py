@@ -13,7 +13,7 @@ class BaseESR(DeviceCore):
     @property
     def update_startup_config(self):
         return [
-            f"copy tftp://{get_env('TFTP_ADDRESS')}:/tmp/{get_env('CFG_FILENAME')} system:candidate-config",
+            f"copy tftp://{get_env('TFTP_ADDRESS')}:/{get_env('CFG_PATH')} system:candidate-config",
         ]
 
     show_diff = "show configuration changes"
@@ -23,7 +23,7 @@ class BaseESR(DeviceCore):
     @property
     def change_boot_image(self):
         return f"change bootvar image {get_env('BOOT_IMAGE')}"
-    
+
     @property
     def base_configure_192(self):
         return [

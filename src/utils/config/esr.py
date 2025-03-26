@@ -24,7 +24,7 @@ def save_ESR_configuration(header: str) -> str:
         FileNotFoundError: If the generated configuration file is not found.
     """
     script_path = "./src/utils/config/config_esr/make_config.sh"
-    config_path = os.path.join(get_env("TFTP_FOLDER"), "tmp", get_env("CFG_FILENAME"))
+    config_path = os.path.join(get_env("TFTP_FOLDER"), get_env("CFG_PATH"))
 
     logger.debug("Running %s", script_path)
     try:
