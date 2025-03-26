@@ -21,12 +21,12 @@ class BaseMES(DeviceCore):
             f"ip address {get_env('HOST_ADDRESS')} 255.255.255.0",
             "ssh enable",
             "!",
-            "interface gigabitethernet 0/1",
-            "no switchport general allowed vlan",
-            "switchport mode access",
-            "no switchport forbidden default-vlan",
-            "switchport access vlan 1",
-            "!",
+            # "interface gigabitethernet 0/1",
+            # "no switchport general allowed vlan",
+            # "switchport mode access",
+            # "no switchport forbidden default-vlan",
+            # "switchport access vlan 1",
+            # "!",
             "end",
         ]
 

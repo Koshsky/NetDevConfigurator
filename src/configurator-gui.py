@@ -112,7 +112,7 @@ class ConfiguratorApp(App):
         Args:
             master: The root Tkinter window.
             title: The title of the application window.
-            mock_enabled: Whether mock mode is enabled.
+            mock_enabled: Whether MOCK connection is enabled.
             advanced: Whether advanced mode is enabled.
             *args: Additional positional arguments.
             **kwargs: Additional keyword arguments.

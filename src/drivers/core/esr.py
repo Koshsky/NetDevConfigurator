@@ -31,11 +31,11 @@ class BaseESR(DeviceCore):
             "interface vlan 1",
             f"ip address {get_env('HOST_ADDRESS')} 255.255.255.0",
             "!",
-            "interface gigabitethernet 1/0/1",
-            "switchport mode access",
-            "no switchport forbidden default-vlan",
-            "switchport access vlan 1",
-            "!",
+            # "interface gigabitethernet 1/0/1",
+            # "switchport mode access",
+            # "no switchport forbidden default-vlan",
+            # "switchport access vlan 1",
+            # "!",
             "end",
         ]
 

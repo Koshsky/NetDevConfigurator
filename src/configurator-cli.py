@@ -11,7 +11,7 @@ from utils.environ import get_env, initialize_device_environment, set_env
 if TYPE_CHECKING:
     from database.models import Devices
 
-CONNECTION_TYPE = "ssh"
+CONNECTION_TYPE = "SSH"
 
 
 def parse_args():

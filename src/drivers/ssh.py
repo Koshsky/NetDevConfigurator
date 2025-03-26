@@ -94,7 +94,7 @@ class SSHBaseDriver(BaseDriver):
 
         while True:
             try:
-                time.sleep(0.1)
+                time.sleep(0.05)  # TODO: чтобы избежать риска преждевременного закрытия соединения
                 output += self.ssh.recv(1024).decode("utf-8")
 
                 last_line = output.strip().splitlines()[-1] if output.strip() else ""

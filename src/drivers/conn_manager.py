@@ -29,7 +29,7 @@ class ConnectionManager:
 
         Args:
             device: A dictionary containing device information.
-            connection_type: The type of connection ("ssh", "com", or "mock").
+            connection_type: The type of connection ("SSH", "COM", or "MOCK").
             **driver_kwargs: Additional keyword arguments for the driver.
 
         Raises:
@@ -39,10 +39,10 @@ class ConnectionManager:
         self.device = device
 
         if driver_class := {
-            "ssh": SSHBaseDriver,
-            "com": COMBaseDriver,
-            "mock": MockDriver,
-        }.get(connection_type.lower()):
+            "SSH": SSHBaseDriver,
+            "COM": COMBaseDriver,
+            "MOCK": MockDriver,
+        }.get(connection_type):
             self.driver = driver_class(
                 on_open_sequence=self.core.open_sequence,
                 comms_prompt_pattern=self.core.comms_prompt_pattern,

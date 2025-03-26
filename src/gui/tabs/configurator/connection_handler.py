@@ -9,11 +9,7 @@ from ..base_tab import BaseTab
 
 logger = logging.getLogger("gui")
 
-CONNECTION_TYPES = {
-    "com+ssh": "COM+SSH",
-    "ssh": "SSH",
-    "mock": "MOCK",
-}
+CONNECTION_TYPES = ("COM", "SSH", "MOCK")
 
 
 class ConnectionHandlerFactory:
@@ -22,9 +18,9 @@ class ConnectionHandlerFactory:
     def __init__(self, tab: BaseTab):
         self.tab = tab
         self.handlers: Dict[str, Type[BaseConnectionHandler]] = {
-            "com+ssh": COMSSHConnectionHandler,
-            "ssh": SSHConnectionHandler,
-            "mock": MockConnectionHandler,
+            "COM": ComConnectionHandler,
+            "SSH": SSHConnectionHandler,
+            "MOCK": MockConnectionHandler,
         }
 
     def create_handler(self) -> "BaseConnectionHandler":
@@ -131,8 +127,8 @@ class BaseConnectionHandler:
             raise
 
 
-class COMSSHConnectionHandler(BaseConnectionHandler):
-    """Connection handler for COM+SSH connections."""
+class ComConnectionHandler(BaseConnectionHandler):
+    """Connection handler for COM connections."""
 
     def __init__(self, control_tab: BaseTab):
         super().__init__(control_tab)
@@ -147,14 +143,14 @@ class COMSSHConnectionHandler(BaseConnectionHandler):
         if get_env("BASE_LOADED") == "false":
             try:
                 super()._execute_with_driver(
-                    "base_configure_192", connection_type="com"
+                    "base_configure_192", connection_type="COM"
                 )
             except Exception:
                 logger.exception("Error during base configuration.")
                 raise
             else:
                 set_env("BASE_LOADED", "true")
-        return super()._execute_with_driver(operation, connection_type="ssh", *args)
+        return super()._execute_with_driver(operation, connection_type="COM", *args)
 
 
 class MockConnectionHandler(BaseConnectionHandler):
@@ -172,7 +168,7 @@ class MockConnectionHandler(BaseConnectionHandler):
 
     def _execute_with_driver(self, operation: str, *args):
         """Executes an operation using the MockDriver."""
-        return super()._execute_with_driver(operation, connection_type="mock", *args)
+        return super()._execute_with_driver(operation, connection_type="MOCK", *args)
 
 
 class SSHConnectionHandler(BaseConnectionHandler):
@@ -190,7 +186,7 @@ class SSHConnectionHandler(BaseConnectionHandler):
 
     def _execute_with_driver(self, operation: str, *args):
         """Executes an operation using the SSHDriver."""
-        return super()._execute_with_driver(operation, connection_type="ssh", *args)
+        return super()._execute_with_driver(operation, connection_type="SSH", *args)
 
 
 def get_connection_handler(tab: BaseTab) -> "BaseConnectionHandler":

@@ -20,7 +20,7 @@ class HelloTab(BaseTab):
             parent: The parent widget.
             app: The application instance.
             log_name: The name of the tab for logging.
-            mock_enabled: Whether mock mode is enabled.
+            mock_enabled: Whether MOCK connection is enabled.
         """
         super().__init__(parent, app, log_name)
         self.mock_enabled = mock_enabled
@@ -61,13 +61,11 @@ class HelloTab(BaseTab):
     def _create_connection_buttons(self) -> None:
         """Creates the connection type selection buttons."""
         # Фильтруем типы подключений в зависимости от флага mock_enabled
-        available_types = {
-            k: v
-            for k, v in CONNECTION_TYPES.items()
-            if k != "mock" or self.mock_enabled
-        }
+        available_types = CONNECTION_TYPES
 
-        for connection_type, label in available_types.items():
+        for connection_type in available_types:
+            if connection_type == "MOCK" and not self.mock_enabled:
+                continue
             self.create_button_in_line(
-                (label, lambda ct=connection_type: self.prepare(ct))
+                (connection_type, lambda ct=connection_type: self.prepare(ct))
             )
