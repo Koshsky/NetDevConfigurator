@@ -60,9 +60,7 @@ class App:
 
     def create_tabs(self):
         """Create the tabs for the application."""
-        self.create_tab(
-            ConnectionTab, self.connection_name, "normal", self.on_connection_submit
-        )
+        pass  # Создание вкладок теперь в AppRefresher
 
     def create_tab(
         self, ClassTab: type, tab_name: str, state: str = "hidden", *args, **kwargs

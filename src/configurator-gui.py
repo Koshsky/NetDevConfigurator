@@ -13,6 +13,7 @@ from gui.tabs.configurator import (
     RouterTab,
     TemplateTab,
 )
+from gui.tabs import ConnectionTab
 from gui.tabs.configurator.connection_handler import CONNECTION_TYPES
 from utils.config import save_configuration
 from utils.environ import get_env, initialize_device_environment, set_env
@@ -44,7 +45,43 @@ class AppRefresher:
         self.app = app
         self.notebook = app.notebook
         self.tabs: Dict[str, BaseTab] = app.tabs
+        self.lang = app.lang
         self.logger = logging.getLogger("TabRefresher")
+
+        # Инициализация имен вкладок
+        self.hello_name = get_string(self.lang, "TABS", "HOME")
+        self.templates_name = get_string(self.lang, "TABS", "TEMPLATES")
+        self.interfaces_name = get_string(self.lang, "TABS", "INTERFACES")
+        self.router_name = get_string(self.lang, "TABS", "ROUTER")
+        self.control_name = get_string(self.lang, "TABS", "CONTROL")
+        self.connection_name = get_string(self.lang, "TABS", "CONNECTION")
+
+    def create_tabs(self) -> None:
+        """Create and add tabs to the application."""
+        # Создаем вкладку подключения
+        self.app.create_tab(
+            ConnectionTab,
+            self.connection_name,
+            "normal",
+            self.app.on_connection_submit
+        )
+
+        # Создаем остальные вкладки
+        self.app.create_tab(HelloTab, self.hello_name, mock_enabled=self.app.mock_enabled)
+        self.app.create_tab(
+            TemplateTab,
+            self.templates_name,
+            width=config.app.templates_width,
+            allow_none=config.app.templates_allow_none,
+        )
+        self.app.create_tab(
+            InterfacesTab,
+            self.interfaces_name,
+            width=config.app.interfaces_width,
+            allow_none=config.app.interfaces_allow_none,
+        )
+        self.app.create_tab(RouterTab, self.router_name)
+        self.app.create_tab(ControlTab, self.control_name)
 
     def refresh_tabs(self) -> None:
         """Refreshes the tabs based on the current environment."""
@@ -53,12 +90,12 @@ class AppRefresher:
             f"Refreshing configurator tabs. CONNECTION_TYPE={connection_type}"
         )
         if connection_type is None:
-            self._show_only_tab(self.app.hello_name)
+            self._show_only_tab(self.hello_name)
         elif connection_type in CONNECTION_TYPES:
             self._refresh_connected_tabs()
         else:
             self.logger.error(f"Unknown CONNECTION_TYPE: {connection_type}")
-            self._show_only_tab(self.app.hello_name)
+            self._show_only_tab(self.hello_name)
 
     def _show_only_tab(self, tab_name: str) -> None:
         """Shows only the specified tab and hides all others."""
@@ -77,24 +114,47 @@ class AppRefresher:
             f"Refreshing tabs for connection. DEV_TYPE={dev_type}, DEV_ROLE present={dev_role_present}"
         )
 
-        for name, tab in self.app.tabs.items():
-            if name in (self.app.templates_name, self.app.interfaces_name):
+        for name, tab in self.tabs.items():
+            if name in (self.templates_name, self.interfaces_name):
                 tab.show_if(
                     dev_type == "switch"
                     and get_env("ADVANCED_MODE") == "true"
                     and dev_role_present
                 )
-            elif name == self.app.router_name:
+            elif name == self.router_name:
                 tab.show_if(dev_type == "router" and get_env("ADVANCED_MODE") == "true")
-            elif name == self.app.control_name:
+            elif name == self.control_name:
                 tab.show()
             elif name not in (
-                self.app.hello_name,
-                self.app.connection_name,
+                self.hello_name,
+                self.connection_name,
             ):  # these tabs are always hidden at this point
                 self.logger.warning(f"Unexpected tab: {name}")
 
-        self.notebook.select(self.tabs[self.app.control_name].frame)
+        self.notebook.select(self.tabs[self.control_name].frame)
+
+    def update_tab_names(self) -> None:
+        """Update all tab names with new translations."""
+        self.hello_name = get_string(self.lang, "TABS", "HOME")
+        self.templates_name = get_string(self.lang, "TABS", "TEMPLATES")
+        self.interfaces_name = get_string(self.lang, "TABS", "INTERFACES")
+        self.router_name = get_string(self.lang, "TABS", "ROUTER")
+        self.control_name = get_string(self.lang, "TABS", "CONTROL")
+        self.connection_name = get_string(self.lang, "TABS", "CONNECTION")
+
+        for name, tab in self.tabs.items():
+            if name == self.hello_name:
+                self.notebook.tab(tab.frame, text=self.hello_name)
+            elif name == self.templates_name:
+                self.notebook.tab(tab.frame, text=self.templates_name)
+            elif name == self.interfaces_name:
+                self.notebook.tab(tab.frame, text=self.interfaces_name)
+            elif name == self.router_name:
+                self.notebook.tab(tab.frame, text=self.router_name)
+            elif name == self.control_name:
+                self.notebook.tab(tab.frame, text=self.control_name)
+            elif name == self.connection_name:
+                self.notebook.tab(tab.frame, text=self.connection_name)
 
 
 class ConfiguratorApp(App):
@@ -122,20 +182,14 @@ class ConfiguratorApp(App):
         """
         self.mock_enabled = mock_enabled
         set_env("ADVANCED_MODE", "true" if advanced else "false")
-        # set_env("LANG", lang)
         self.lang = lang
-        self.hello_name = get_string(self.lang, "TABS", "HOME")
-        self.templates_name = get_string(self.lang, "TABS", "TEMPLATES")
-        self.interfaces_name = get_string(self.lang, "TABS", "INTERFACES")
-        self.router_name = get_string(self.lang, "TABS", "ROUTER")
-        self.control_name = get_string(self.lang, "TABS", "CONTROL")
-        self.connection_name = get_string(self.lang, "TABS", "CONNECTION")
         self.preset = None
         super().__init__(master, title, *args, **kwargs)
         self.logger = logging.getLogger("ConfiguratorApp")
-        self.device: "Device" | None = None  # type hint added
+        self.device: "Device" | None = None
         self.refresher = AppRefresher(self)
-        self.tabs[self.connection_name].on_button_click()
+        self.refresher.create_tabs()
+        self.tabs[self.refresher.connection_name].on_button_click()
 
     def update_envs(self):
         if get_env("DEV_TYPE") == "router":
@@ -154,7 +208,6 @@ class ConfiguratorApp(App):
     @property
     def driver(self) -> dict:
         """Returns the driver configuration."""
-
         return {
             "auth_strict_key": False,
             "address": get_env("HOST_ADDRESS"),
@@ -172,10 +225,10 @@ class ConfiguratorApp(App):
     def update_config(self):
         dev_type = get_env("DEV_TYPE")
         if dev_type == "router":
-            self.tabs[self.router_name].update_config()
+            self.tabs[self.refresher.router_name].update_config()
         elif dev_type == "switch":
-            self.tabs[self.templates_name].update_config()
-            self.tabs[self.interfaces_name].update_config()
+            self.tabs[self.refresher.templates_name].update_config()
+            self.tabs[self.refresher.interfaces_name].update_config()
         else:
             raise ValueError(
                 f"Invalid or unset DEV_TYPE environment variable: {dev_type}"
@@ -203,25 +256,6 @@ class ConfiguratorApp(App):
             raise FileNotFoundError(
                 f"Configuration file not found: {config_filepath}"
             ) from e
-
-    def create_tabs(self) -> None:
-        """Create and add tabs to the application."""
-        super().create_tabs()
-        self.create_tab(HelloTab, self.hello_name, mock_enabled=self.mock_enabled)
-        self.create_tab(
-            TemplateTab,
-            self.templates_name,
-            width=config.app.templates_width,
-            allow_none=config.app.templates_allow_none,
-        )
-        self.create_tab(
-            InterfacesTab,
-            self.interfaces_name,
-            width=config.app.interfaces_width,
-            allow_none=config.app.interfaces_allow_none,
-        )
-        self.create_tab(RouterTab, self.router_name)
-        self.create_tab(ControlTab, self.control_name)
 
     def register_device(self, device: "Device") -> None:
         """Register a device with the application.
