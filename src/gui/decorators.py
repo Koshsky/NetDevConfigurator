@@ -13,6 +13,7 @@ def error_handler(func):
             logger.error("%s: %s", type(e).__name__, e)
             self.show_error(type(e).__name__, e)
             self.app.session.rollback()
+            raise e
 
     return wrapper
 

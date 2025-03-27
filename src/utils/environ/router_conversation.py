@@ -114,18 +114,16 @@ class RouterConversion:
         Returns:
             The human-readable value of the environment variable.
         """
-        logger.debug("Getting human-readable value for %s", env_name)
         try:
             machine_value = get_env(env_name)
             human_value = self.to_human(env_name, machine_value)
-            logger.debug(f"Human-readable value for {env_name}: {human_value}")
             return human_value
         except KeyError:
             logger.warning(f"Environment variable not found: {env_name}")
             return ""
 
     def to_machine(self, env_name: str, human_value: str) -> str:
-        """Converts a human-readable value to a machine-readable value.
+        """Converts a human-readalble value to a machine-readable value.
 
         Args:
             env_name: The name of the environment variable.
@@ -134,13 +132,7 @@ class RouterConversion:
         Returns:
             The machine-readable value.
         """
-        logger.debug(
-            "Converting human-readable value '%s' to machine-readable for %s",
-            human_value,
-            env_name,
-        )
         machine_value = self.get(env_name, {}).get(human_value, human_value)
-        logger.debug(f"Machine-readable value for {env_name}: {machine_value}")
         return machine_value
 
     def to_human(self, env_name: str, machine_value: str) -> str:
@@ -153,12 +145,6 @@ class RouterConversion:
         Returns:
             The human-readable value, or the original value if no conversion is found.
         """
-        logger.debug(
-            "Converting machine-readable value '%s' to human-readable for %s",
-            machine_value,
-            env_name,
-        )
-
         try:
             human_value = next(
                 (
@@ -168,12 +154,8 @@ class RouterConversion:
                 ),
                 machine_value,
             )
-            logger.debug(f"Human-readable value for {env_name}: {human_value}")
             return human_value
         except KeyError:
-            logger.warning(
-                f"No conversion found for {env_name} with value {machine_value}"
-            )
             return machine_value
 
 

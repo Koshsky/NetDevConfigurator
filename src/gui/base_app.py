@@ -4,7 +4,6 @@ from tkinter import ttk
 from config import DatabaseConfig, config
 from database.services import init_db_connection
 
-from .tabs import ConnectionTab
 from locales import get_string
 
 logger = logging.getLogger("gui")

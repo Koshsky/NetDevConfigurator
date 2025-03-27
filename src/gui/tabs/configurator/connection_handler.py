@@ -8,7 +8,7 @@ from locales import get_string
 from ..base_tab import BaseTab
 
 logger = logging.getLogger("gui")
-
+from config import config
 CONNECTION_TYPES = ("COM", "SSH", "MOCK")
 
 
@@ -57,15 +57,14 @@ class BaseConnectionHandler:
         self.app = control_tab.app
         self.lang = control_tab.app.lang
         self.logger = logging.getLogger(__name__)
-        self.env_vars: Dict[str, Dict[str, str]] = {
-            "HOST": {"en": "host", "ru": "хост"},
-            "PORT": {"en": "port", "ru": "порт"},
-            "USERNAME": {"en": "username", "ru": "имя пользователя"},
-            "PASSWORD": {"en": "password", "ru": "пароль"},
-            "ENABLE_PASSWORD": {"en": "enable_password", "ru": "пароль привилегированного режима"},
-            "DEVICE_TYPE": {"en": "device_type", "ru": "тип устройства"},
-            "DEVICE_ROLE": {"en": "device_role", "ru": "роль устройства"},
-        }
+        self.connection_title = get_string(self.lang, "CONNECTION", "TITLE")
+
+        self.env_vars: Dict[str, Dict[str, str]] = [
+            "HOST_ADDRESS",
+            "HOST_PORT",
+            "HOST_USERNAME",
+            "HOST_PASSWORD",
+        ]
 
     def load_configuration(self):
         """Loads the configuration from the device."""
@@ -75,12 +74,36 @@ class BaseConnectionHandler:
     def update_envs(self):
         """Updates host information based on user input."""
         logger.debug("Updating host info...")
-        connection_title = get_string(self.lang, "CONNECTION", "TITLE")
-        for var_name, field in self.env_vars.items():
-            if field[self.lang] in self.tab.fields.get(connection_title, {}):
-                value = self.tab.fields[connection_title][field[self.lang]].get().strip()
-                if set_env(var_name, value):
-                    set_env("BASE_LOADED", "false")
+        if not self.fields:
+            return
+        for var_name in self.env_vars:
+            field = get_string(self.lang, "CONNECTION", var_name)
+            value = self.fields[field].get().strip()
+            if set_env(var_name, value):
+                set_env("BASE_LOADED", "false")
+
+    def actualize_values(self):
+        """Actualize values from the connection handler."""
+        logger.debug("Actualizing connection values...")
+        for var_name in self.env_vars:
+            field = get_string(self.lang, "CONNECTION", var_name)
+            if field in self.tab.fields[self.connection_title]:
+                value = get_env(var_name)
+                if value:
+                    self.fields[field].set(value)
+
+    def create_widgets(self):
+        """Creates widgets for connection parameters."""
+        self.tab.create_block(
+            get_string(self.lang, "CONNECTION", "TITLE"),
+            {
+                get_string(self.lang, "CONNECTION", field):
+                    tuple(getattr(config.host, field.split('_')[1].lower()))
+                for field in self.env_vars
+            },
+        )
+        self.fields = self.tab.fields[self.connection_title]
+
 
     def __getattr__(self, name: str):
         """Dynamically handles SSH driver methods."""
@@ -132,10 +155,10 @@ class ComConnectionHandler(BaseConnectionHandler):
 
     def __init__(self, control_tab: BaseTab):
         super().__init__(control_tab)
-        self.env_vars = {
-            "HOST_USERNAME": {"ru": "ИМЯ ПОЛЬЗОВАТЕЛЯ", "en": "username"},
-            "HOST_PASSWORD": {"ru": "ПАРОЛЬ", "en": "password"},
-        }
+        self.env_vars = [
+            "HOST_USERNAME",
+            "HOST_PASSWORD",
+        ]
 
     def _execute_with_driver(self, operation: str, *args):
         """Executes an operation, configuring the base connection if necessary."""
@@ -157,12 +180,6 @@ class MockConnectionHandler(BaseConnectionHandler):
 
     def __init__(self, control_tab: BaseTab):
         super().__init__(control_tab)
-        self.env_vars = {
-            "HOST_ADDRESS": {"ru": "АДРЕС", "en": "address"},
-            "HOST_PORT": {"ru": "ПОРТ", "en": "port"},
-            "HOST_USERNAME": {"ru": "ИМЯ ПОЛЬЗОВАТЕЛЯ", "en": "username"},
-            "HOST_PASSWORD": {"ru": "ПАРОЛЬ", "en": "password"},
-        }
 
     def _execute_with_driver(self, operation: str, *args):
         """Executes an operation using the MockDriver."""
@@ -174,12 +191,6 @@ class SSHConnectionHandler(BaseConnectionHandler):
 
     def __init__(self, control_tab: BaseTab):
         super().__init__(control_tab)
-        self.env_vars = {
-            "HOST_ADDRESS": {"ru": "АДРЕС", "en": "address"},
-            "HOST_PORT": {"ru": "ПОРТ", "en": "port"},
-            "HOST_USERNAME": {"ru": "ИМЯ ПОЛЬЗОВАТЕЛЯ", "en": "username"},
-            "HOST_PASSWORD": {"ru": "ПАРОЛЬ", "en": "password"},
-        }
 
     def _execute_with_driver(self, operation: str, *args):
         """Executes an operation using the SSHDriver."""

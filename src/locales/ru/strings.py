@@ -13,16 +13,26 @@ TABS = {
     "ROUTER": "Маршрутизатор",
 }
 
+# Hello section
+HELLO = {
+    "DEVICE_BLOCK": "Устройство",
+    "COMMON_BLOCK": "Общие настройки",
+    "DEVICE_NAME": "Имя устройства",
+    "CERT": "Доменное имя",
+    "TFTP": "TFTP",
+    "CONNECTION_COM": "COM",
+    "CONNECTION_SSH": "SSH",
+    "CONNECTION_TELNET": "Telnet",
+    "CONNECTION_MOCK": "Тестовое подключение"
+}
+
 # Connection section
 CONNECTION = {
     "TITLE": "Подключение",
-    "HOST": "Хост",
-    "PORT": "Порт",
-    "USERNAME": "Имя пользователя",
-    "PASSWORD": "Пароль",
-    "ENABLE_PASSWORD": "Пароль привилегированного режима",
-    "DEVICE_TYPE": "Тип устройства",
-    "DEVICE_ROLE": "Роль устройства",
+    "HOST_ADDRESS": "Адрес",
+    "HOST_PORT": "Порт",
+    "HOST_USERNAME": "Имя пользователя",
+    "HOST_PASSWORD": "Пароль",
 }
 
 # Device section
@@ -48,4 +58,17 @@ FEEDBACK = {
     "TITLE": "Обратная связь",
     "CLEAR": "Очистить",
     "SAVE": "Сохранить",
+}
+
+# Router section
+ROUTER = {
+    "TITLE": "Маршрутизатор",
+    "TYPE_COMPLEX": "Тип комплекса",
+}
+
+# Switch section
+SWITCH = {
+    "TITLE": "Коммутатор",
+    "DEV_ROLE": "Роль устройства",
+    "OR": "Операционная",
 }

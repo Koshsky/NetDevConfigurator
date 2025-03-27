@@ -17,94 +17,47 @@ if TYPE_CHECKING:
 logger = logging.getLogger("gui")
 
 
-class Refresher:
+class Refresher(BaseTab):
     """Manages widget updates and refreshes."""
 
-    def __init__(self, tab: "ControlTab"):
+    def __init__(self, parent, app, log_name, *args, **kwargs):
         """Initialize the refresher.
 
         Args:
             tab: The parent ControlTab instance.
         """
-        self.tab = tab
-        self.lang = tab.app.lang
+        self.app = app
+        self.lang = self.app.lang
         self.connection_handler: "ConnectionHandler" = None
         self.device_handler: "DeviceHandler" = None
         self.action_handler: "ActionHandler" = None
-        self.logger = logging.getLogger(__name__)
+        super().__init__(parent, app, log_name, *args, **kwargs)
 
     def initialize_handlers(self):
         """Initialize all handlers with the tab widget."""
-        self.connection_handler = get_connection_handler(self.tab)
-        self.device_handler = get_device_handler(self.tab)
-        self.action_handler = ActionHandler(self.connection_handler, self.tab)
+        self.connection_handler = get_connection_handler(self)
+        self.device_handler = get_device_handler(self)
+        self.action_handler = ActionHandler(self.connection_handler, self)
 
-    def create_widgets(self):
+    def _create_widgets(self):
         """Create all widgets using handlers."""
-        self._create_connection_widgets()
-        self._create_device_widgets()
-        self._create_action_buttons()
-        self.tab.create_feedback_area()
+        self.initialize_handlers()
+        self.connection_handler.create_widgets()
+        self.device_handler.create_widgets()
+        self.action_handler.create_buttons()
+        self.create_feedback_area()
         self._actualize_values()
 
     def _actualize_values(self):
         """Actualize values from the connection handler."""
-        logger.debug("Actualizing connection values...")
-        connection_title = get_string(self.lang, "CONNECTION", "TITLE")
-        for var_name, field in self.connection_handler.env_vars.items():
-            field = field[self.lang]
-            if field in self.tab.fields[connection_title] and (value := get_env(var_name)):
-                self.tab.fields[connection_title][field].set(value)
-
-        logger.debug("Actualizing device values...")
-        device_title = get_string(self.lang, "DEVICE", "TITLE")
-        for env_var, field in self.device_handler.env_vars.items():
-            field = field[self.lang]
-            if field in self.tab.fields[device_title] and (value := get_env(env_var)):
-                self.tab.fields[device_title][field].set(value)
-
-    def _create_connection_widgets(self):
-        """Creates widgets for connection parameters."""
-        self.tab.create_block(
-            get_string(self.lang, "CONNECTION", "TITLE"),
-            {
-                field[self.lang]: tuple(getattr(config.host, field['en']))
-                for field in self.connection_handler.env_vars.values()
-            },
-        )
-
-    def _create_device_widgets(self):
-        """Create device-related widgets."""
-        if get_env("DEV_TYPE") == "switch":
-            self.tab.create_block(
-                get_string(self.lang, "DEVICE", "TITLE"),
-                {
-                    field[self.lang]: self.app.device["roles"]
-                    for field in self.device_handler.env_vars.values()
-                },
-            )
-        elif get_env("DEV_TYPE") == "router":
-            self.tab.create_block(
-                get_string(self.lang, "DEVICE", "TITLE"),
-                {
-                    field[self.lang]: tuple(env_converter["TYPE_COMPLEX"],)
-                    for field in self.device_handler.env_vars.values()
-                },
-            )
-
-    def _create_action_buttons(self):
-        """Create action buttons."""
-        for text, action in self.action_handler.get_available_actions():
-            self.tab.create_button_in_line((
-                get_string(self.lang, "ACTIONS", text),
-                action
-            ))
+        self.connection_handler.actualize_values()
+        self.device_handler.actualize_values()
 
 @apply_error_handler
-class ControlTab(BaseTab):
+class ControlTab(Refresher):
     """Control tab for managing network devices."""
 
-    def __init__(self, tab, *args, **kwargs):
+    def __init__(self, parent, app, log_name="ControlTab", *args, **kwargs):
         """Initialize the control tab.
 
         Args:
@@ -112,23 +65,10 @@ class ControlTab(BaseTab):
             *args: Additional positional arguments.
             **kwargs: Additional keyword arguments.
         """
-        super().__init__(tab, *args, **kwargs)
-        self.refresher = Refresher(self)
+        super().__init__(parent, app, log_name, *args, **kwargs)
         self.base_loaded = None
 
     def update_envs(self):
         """Update environment variables for all handlers."""
         self.connection_handler.update_envs()
         self.device_handler.update_envs()
-
-
-    def _create_widgets(self):
-        """Creates and arranges widgets within the tab."""
-        self.refresher.initialize_handlers()
-        self.refresher.create_widgets()
-
-    def show_template(self):
-        """Displays the current configuration template."""
-        logger.debug("Showing configuration template...")
-        text = self.app.text_configuration
-        self.display_feedback(text)

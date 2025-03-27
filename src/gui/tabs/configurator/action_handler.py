@@ -5,24 +5,31 @@ from typing import Callable, List, Tuple
 
 from utils.environ import get_env
 from locales import get_string
-
 logger = logging.getLogger(__name__)
 
 
 class ActionHandler:
     """Handler for device actions."""
 
-    def __init__(self, connection_handler, parent):
+    def __init__(self, connection_handler, tab):
         """Initialize the action handler.
 
         Args:
             connection_handler: The connection handler instance.
-            parent: The parent widget for creating buttons.
+            tab: The tab widget for creating buttons.
         """
         self.connection_handler = connection_handler
-        self.parent = parent
-        self.lang = parent.app.lang
+        self.tab = tab
+        self.lang = tab.app.lang
         self.logger = logging.getLogger(__name__)
+
+    def create_buttons(self):
+        """Create action buttons."""
+        for text, action in self.get_available_actions():
+            self.tab.create_button_in_line((
+                get_string(self.lang, "ACTIONS", text),
+                action
+            ))
 
     def get_actions(self) -> List[Tuple[str, Callable]]:
         """Returns a list of basic actions.
@@ -44,7 +51,7 @@ class ActionHandler:
         """
         return [
             ("SHOW_RUNNING", self.connection_handler.show_run),
-            ("SHOW_CANDIDATE", self.connection_handler.show_template),
+            ("SHOW_CANDIDATE", self.show_template),
         ] + self.get_actions()
 
     def get_available_actions(self) -> List[Tuple[str, Callable]]:
@@ -59,3 +66,9 @@ class ActionHandler:
         else:
             self.logger.debug("Basic mode enabled, returning basic actions")
             return self.get_actions()
+
+    def show_template(self):
+        """Displays the current configuration template."""
+        logger.debug("Showing configuration template...")
+        text = self.tab.app.text_configuration
+        self.tab.display_feedback(text)

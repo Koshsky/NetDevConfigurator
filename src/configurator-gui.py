@@ -2,7 +2,7 @@ import argparse
 import logging
 import os
 import tkinter as tk
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING
 
 from config import config
 from gui.base_app import App
@@ -20,7 +20,6 @@ from utils.environ import get_env, initialize_device_environment, set_env
 from locales import get_string
 if TYPE_CHECKING:
     from database.models import Device
-    from gui.tabs import BaseTab
 
 logger = logging.getLogger("ConfiguratorApp")
 
@@ -38,50 +37,56 @@ def parse_args():
     return parser.parse_args()
 
 
-class AppRefresher:
+class AppRefresher(App):
     """Refreshes the visibility of tabs based on the application state."""
 
-    def __init__(self, app: "App") -> None:
-        self.app = app
-        self.notebook = app.notebook
-        self.tabs: Dict[str, BaseTab] = app.tabs
-        self.lang = app.lang
-        self.logger = logging.getLogger("TabRefresher")
+    def __init__(self, lang: str, mock_enabled: bool, advanced: bool, *args, **kwargs) -> None:
+        """Initialize the tab refresher.
 
-        # Инициализация имен вкладок
+        Args:
+            app: The parent application instance.
+        """
+        self.lang = lang
+        self.mock_enabled = mock_enabled
+        self.advanced = advanced
+        set_env("ADVANCED_MODE", "true" if advanced else "false")
+
         self.hello_name = get_string(self.lang, "TABS", "HOME")
         self.templates_name = get_string(self.lang, "TABS", "TEMPLATES")
         self.interfaces_name = get_string(self.lang, "TABS", "INTERFACES")
         self.router_name = get_string(self.lang, "TABS", "ROUTER")
         self.control_name = get_string(self.lang, "TABS", "CONTROL")
         self.connection_name = get_string(self.lang, "TABS", "CONNECTION")
+        super().__init__(*args, **kwargs)
+        self.tabs[self.connection_name].on_button_click()
+
 
     def create_tabs(self) -> None:
         """Create and add tabs to the application."""
         # Создаем вкладку подключения
-        self.app.create_tab(
+        self.create_tab(
             ConnectionTab,
             self.connection_name,
             "normal",
-            self.app.on_connection_submit
+            self.on_connection_submit
         )
 
         # Создаем остальные вкладки
-        self.app.create_tab(HelloTab, self.hello_name, mock_enabled=self.app.mock_enabled)
-        self.app.create_tab(
+        self.create_tab(HelloTab, self.hello_name, mock_enabled=self.mock_enabled)
+        self.create_tab(
             TemplateTab,
             self.templates_name,
             width=config.app.templates_width,
             allow_none=config.app.templates_allow_none,
         )
-        self.app.create_tab(
+        self.create_tab(
             InterfacesTab,
             self.interfaces_name,
             width=config.app.interfaces_width,
             allow_none=config.app.interfaces_allow_none,
         )
-        self.app.create_tab(RouterTab, self.router_name)
-        self.app.create_tab(ControlTab, self.control_name)
+        self.create_tab(RouterTab, self.router_name)
+        self.create_tab(ControlTab, self.control_name)
 
     def refresh_tabs(self) -> None:
         """Refreshes the tabs based on the current environment."""
@@ -99,6 +104,7 @@ class AppRefresher:
 
     def _show_only_tab(self, tab_name: str) -> None:
         """Shows only the specified tab and hides all others."""
+        self.logger.debug(f"Showing only tab: {tab_name}")
         for name, tab in self.tabs.items():
             if name == tab_name:
                 tab.show()
@@ -133,31 +139,7 @@ class AppRefresher:
 
         self.notebook.select(self.tabs[self.control_name].frame)
 
-    def update_tab_names(self) -> None:
-        """Update all tab names with new translations."""
-        self.hello_name = get_string(self.lang, "TABS", "HOME")
-        self.templates_name = get_string(self.lang, "TABS", "TEMPLATES")
-        self.interfaces_name = get_string(self.lang, "TABS", "INTERFACES")
-        self.router_name = get_string(self.lang, "TABS", "ROUTER")
-        self.control_name = get_string(self.lang, "TABS", "CONTROL")
-        self.connection_name = get_string(self.lang, "TABS", "CONNECTION")
-
-        for name, tab in self.tabs.items():
-            if name == self.hello_name:
-                self.notebook.tab(tab.frame, text=self.hello_name)
-            elif name == self.templates_name:
-                self.notebook.tab(tab.frame, text=self.templates_name)
-            elif name == self.interfaces_name:
-                self.notebook.tab(tab.frame, text=self.interfaces_name)
-            elif name == self.router_name:
-                self.notebook.tab(tab.frame, text=self.router_name)
-            elif name == self.control_name:
-                self.notebook.tab(tab.frame, text=self.control_name)
-            elif name == self.connection_name:
-                self.notebook.tab(tab.frame, text=self.connection_name)
-
-
-class ConfiguratorApp(App):
+class ConfiguratorApp(AppRefresher):
     """Main application class for the network device configurator."""
 
     def __init__(
@@ -180,16 +162,10 @@ class ConfiguratorApp(App):
             *args: Additional positional arguments.
             **kwargs: Additional keyword arguments.
         """
-        self.mock_enabled = mock_enabled
-        set_env("ADVANCED_MODE", "true" if advanced else "false")
-        self.lang = lang
         self.preset = None
-        super().__init__(master, title, *args, **kwargs)
         self.logger = logging.getLogger("ConfiguratorApp")
         self.device: "Device" | None = None
-        self.refresher = AppRefresher(self)
-        self.refresher.create_tabs()
-        self.tabs[self.refresher.connection_name].on_button_click()
+        super().__init__(lang, mock_enabled, advanced, master, title, *args, **kwargs)
 
     def update_envs(self):
         if get_env("DEV_TYPE") == "router":
@@ -197,13 +173,9 @@ class ConfiguratorApp(App):
         else:
             set_env("CFG_PATH", f"{config.tftp.backup_folder}/{get_env('CERT')}/{get_env('DEV_ROLE')}.conf")
 
-        for name, tab in self.tabs.items():
+        for tab in self.tabs.values():
             if hasattr(tab, "update_envs"):
                 tab.update_envs()
-
-    def refresh_tabs(self) -> None:
-        """Refreshes the tab visibility."""
-        self.refresher.refresh_tabs()
 
     @property
     def driver(self) -> dict:
@@ -225,10 +197,10 @@ class ConfiguratorApp(App):
     def update_config(self):
         dev_type = get_env("DEV_TYPE")
         if dev_type == "router":
-            self.tabs[self.refresher.router_name].update_config()
+            self.tabs[self.router_name].update_config()
         elif dev_type == "switch":
-            self.tabs[self.refresher.templates_name].update_config()
-            self.tabs[self.refresher.interfaces_name].update_config()
+            self.tabs[self.templates_name].update_config()
+            self.tabs[self.interfaces_name].update_config()
         else:
             raise ValueError(
                 f"Invalid or unset DEV_TYPE environment variable: {dev_type}"

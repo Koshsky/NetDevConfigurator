@@ -5,6 +5,8 @@ from utils.environ import env_converter, get_env, set_env
 
 from ..base_tab import BaseTab
 
+from locales import get_string
+
 logger = logging.getLogger("gui")
 
 
@@ -14,7 +16,22 @@ class BaseDeviceHandler:
     def __init__(self, tab: BaseTab):
         self.tab = tab
         self.app = tab.app
+        self.lang = tab.lang
         self.env_vars: Dict[str, str] = {}
+        self.fields: Dict[str, str] = {}
+
+    def create_widgets(self):
+        """Create widgets for the device handler."""
+        raise NotImplementedError
+
+
+    def actualize_values(self):
+        """Actualize values from the device handler."""
+        logger.debug("Actualizing device values...")
+        for env_var, field in self.env_vars.items():
+            field = field
+            if field in self.fields and (value := get_env(env_var)):
+                self.fields[field].set(env_converter.to_human(env_var, value))
 
     def update_envs(self):
         """Updates the device information based on user input.
@@ -59,16 +76,28 @@ class SwitchHandler(BaseDeviceHandler):
     def __init__(self, tab: BaseTab):
         super().__init__(tab)
         self.env_vars = {
-            "DEV_ROLE": {"ru": "РОЛЬ", "en": "role"},
-            "OR": {"ru": "ОПЕРАЦИОННАЯ", "en": "or"},
+            "DEV_ROLE": get_string(self.app.lang, "SWITCH", "DEV_ROLE"),
+            "OR": get_string(self.app.lang, "SWITCH", "OR"),
         }
+
+    def create_widgets(self):
+        """Create widgets for the device handler."""
+        logger.debug("Creating device widgets for switch...")
+        self.tab.create_block(
+            get_string(self.lang, "SWITCH", "TITLE"),
+            {
+                field: self.app.device["roles"]
+                for field in self.env_vars.values()
+            },
+        )
+        self.fields = self.tab.fields[get_string(self.app.lang, "SWITCH", "TITLE")]
 
     def update_envs(self):
         """Updates switch information based on user input."""
         logger.debug("Updating device info for switch...")
         self.app.register_preset(
-            self.tab.fields[""]["role"].get().strip(),
-            self.tab.fields[""]["or"].get().strip(),
+            self.fields[get_string(self.app.lang, "SWITCH", "DEV_ROLE")].get().strip(),
+            self.fields[get_string(self.app.lang, "SWITCH", "OR")].get().strip(),
         )
 
 
@@ -78,8 +107,20 @@ class RouterHandler(BaseDeviceHandler):
     def __init__(self, tab: BaseTab):
         super().__init__(tab)
         self.env_vars = {
-            "TYPE_COMPLEX": {"ru": "ТИП КОМПЛЕКСА", "en": "type_complex"},
+            "TYPE_COMPLEX": get_string(self.app.lang, "ROUTER", "TYPE_COMPLEX"),
         }
+
+    def create_widgets(self):
+        """Create widgets for the device handler."""
+        logger.debug("Creating device widgets for router...")
+        self.tab.create_block(
+            get_string(self.lang, "ROUTER", "TITLE"),
+            {
+                field: tuple(env_converter["TYPE_COMPLEX"],)
+                for field in self.env_vars.values()
+            },
+        )
+        self.fields = self.tab.fields[get_string(self.app.lang, "ROUTER", "TITLE")]
 
     def update_envs(self):
         """Updates router information based on user input."""
@@ -88,7 +129,7 @@ class RouterHandler(BaseDeviceHandler):
             "TYPE_COMPLEX",
             env_converter.to_machine(
                 "TYPE_COMPLEX",
-                self.tab.fields[""]["TYPE_COMPLEX"].get().strip(),
+                self.fields[get_string(self.app.lang, "ROUTER", "TYPE_COMPLEX")].get().strip(),
             ),
         )
 

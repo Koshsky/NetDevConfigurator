@@ -13,16 +13,26 @@ TABS = {
     "ROUTER": "Router",
 }
 
+# Hello section
+HELLO = {
+    "DEVICE_BLOCK": "Device",
+    "COMMON_BLOCK": "Common Settings",
+    "DEVICE_NAME": "Device Name",
+    "CERT": "Domain name",
+    "TFTP": "TFTP",
+    "CONNECTION_COM": "COM",
+    "CONNECTION_SSH": "SSH",
+    "CONNECTION_TELNET": "Telnet",
+    "CONNECTION_MOCK": "Test Connection"
+}
+
 # Connection section
 CONNECTION = {
     "TITLE": "Connection",
-    "HOST": "Host",
-    "PORT": "Port",
-    "USERNAME": "Username",
-    "PASSWORD": "Password",
-    "ENABLE_PASSWORD": "Enable Password",
-    "DEVICE_TYPE": "Device Type",
-    "DEVICE_ROLE": "Device Role",
+    "HOST_ADDRESS": "Address",
+    "HOST_PORT": "Port",
+    "HOST_USERNAME": "Username",
+    "HOST_PASSWORD": "Password",
 }
 
 # Device section
@@ -48,4 +58,17 @@ FEEDBACK = {
     "TITLE": "Feedback",
     "CLEAR": "Clear",
     "SAVE": "Save",
+}
+
+# Router section
+ROUTER = {
+    "TITLE": "Router",
+    "TYPE_COMPLEX": "Type Complex",
+}
+
+# Switch section
+SWITCH = {
+    "TITLE": "Switch",
+    "DEV_ROLE": "Device Role",
+    "OR": "OR",
 }
