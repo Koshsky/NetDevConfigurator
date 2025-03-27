@@ -5,8 +5,8 @@ from config import DatabaseConfig, config
 from database.services import init_db_connection
 
 from .tabs import ConnectionTab
+from locales import get_string
 
-CONNECTION_TAB_TITLE = "CONNECTION"
 logger = logging.getLogger("gui")
 
 
@@ -29,6 +29,7 @@ class App:
         self.create_tabs()
         self.db_services = None
         self.session = None
+        self.connection_name = get_string(self.lang, "TABS", "CONNECTION")
         self._setup_keyboard_shortcuts()
 
     def _setup_keyboard_shortcuts(self):
@@ -60,7 +61,7 @@ class App:
     def create_tabs(self):
         """Create the tabs for the application."""
         self.create_tab(
-            ConnectionTab, CONNECTION_TAB_TITLE, "normal", self.on_connection_submit
+            ConnectionTab, self.connection_name, "normal", self.on_connection_submit
         )
 
     def create_tab(
@@ -125,9 +126,9 @@ class App:
             db_params: The database connection parameters.
         """
         if self.init_database(db_params):
-            self.notebook.forget(self.tabs[CONNECTION_TAB_TITLE].frame)
-            del self.tabs[CONNECTION_TAB_TITLE]
-            logger.debug("%s is forgotten", CONNECTION_TAB_TITLE)
+            self.notebook.forget(self.tabs[self.connection_name].frame)
+            del self.tabs[self.connection_name]
+            logger.debug("%s is forgotten", self.connection_name)
 
             self.refresh_tabs()
 

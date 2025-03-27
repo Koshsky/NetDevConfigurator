@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 from config import config
 from gui import BaseTab, apply_error_handler
 from utils.environ import env_converter, get_env
+from locales import get_string
 from .connection_handler import get_connection_handler
 from .device_handler import get_device_handler
 from .action_handler import ActionHandler
@@ -49,20 +50,23 @@ class Refresher:
     def _actualize_values(self):
         """Actualize values from the connection handler."""
         logger.debug("Actualizing connection values...")
+        connection_title = get_string(self.lang, "CONNECTION", "TITLE")
         for var_name, field in self.connection_handler.env_vars.items():
             field = field[self.lang]
-            if field in self.tab.fields["host"] and (value := get_env(var_name)):
-                self.tab.fields["host"][field].set(value)
+            if field in self.tab.fields[connection_title] and (value := get_env(var_name)):
+                self.tab.fields[connection_title][field].set(value)
+
         logger.debug("Actualizing device values...")
+        device_title = get_string(self.lang, "DEVICE", "TITLE")
         for env_var, field in self.device_handler.env_vars.items():
             field = field[self.lang]
-            if field in self.tab.fields[""] and (value := get_env(env_var)):
-                self.tab.fields[""][field].set(value)
+            if field in self.tab.fields[device_title] and (value := get_env(env_var)):
+                self.tab.fields[device_title][field].set(value)
 
     def _create_connection_widgets(self):
         """Creates widgets for connection parameters."""
         self.tab.create_block(
-            "host",
+            get_string(self.lang, "CONNECTION", "TITLE"),
             {
                 field[self.lang]: tuple(getattr(config.host, field['en']))
                 for field in self.connection_handler.env_vars.values()
@@ -73,7 +77,7 @@ class Refresher:
         """Create device-related widgets."""
         if get_env("DEV_TYPE") == "switch":
             self.tab.create_block(
-                "",
+                get_string(self.lang, "DEVICE", "TITLE"),
                 {
                     field[self.lang]: self.app.device["roles"]
                     for field in self.device_handler.env_vars.values()
@@ -81,7 +85,7 @@ class Refresher:
             )
         elif get_env("DEV_TYPE") == "router":
             self.tab.create_block(
-                "",
+                get_string(self.lang, "DEVICE", "TITLE"),
                 {
                     field[self.lang]: tuple(env_converter["TYPE_COMPLEX"],)
                     for field in self.device_handler.env_vars.values()
@@ -91,7 +95,10 @@ class Refresher:
     def _create_action_buttons(self):
         """Create action buttons."""
         for text, action in self.action_handler.get_available_actions():
-            self.tab.create_button_in_line((text[self.lang], action))
+            self.tab.create_button_in_line((
+                get_string(self.lang, "ACTIONS", text),
+                action
+            ))
 
 @apply_error_handler
 class ControlTab(BaseTab):

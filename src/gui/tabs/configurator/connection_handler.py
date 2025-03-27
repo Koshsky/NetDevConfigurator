@@ -3,6 +3,7 @@ from typing import Dict, Type
 
 from drivers import ConnectionManager
 from utils.environ import get_env, set_env
+from locales import get_string
 
 from ..base_tab import BaseTab
 
@@ -47,9 +48,24 @@ class BaseConnectionHandler:
     """Base class for connection handlers."""
 
     def __init__(self, control_tab: BaseTab):
+        """Initialize the connection handler.
+
+        Args:
+            control_tab: The parent tab widget.
+        """
         self.tab = control_tab
         self.app = control_tab.app
-        self.env_vars: Dict[str, str] = {}
+        self.lang = control_tab.app.lang
+        self.logger = logging.getLogger(__name__)
+        self.env_vars: Dict[str, Dict[str, str]] = {
+            "HOST": {"en": "host", "ru": "хост"},
+            "PORT": {"en": "port", "ru": "порт"},
+            "USERNAME": {"en": "username", "ru": "имя пользователя"},
+            "PASSWORD": {"en": "password", "ru": "пароль"},
+            "ENABLE_PASSWORD": {"en": "enable_password", "ru": "пароль привилегированного режима"},
+            "DEVICE_TYPE": {"en": "device_type", "ru": "тип устройства"},
+            "DEVICE_ROLE": {"en": "device_role", "ru": "роль устройства"},
+        }
 
     def load_configuration(self):
         """Loads the configuration from the device."""
@@ -59,9 +75,10 @@ class BaseConnectionHandler:
     def update_envs(self):
         """Updates host information based on user input."""
         logger.debug("Updating host info...")
+        connection_title = get_string(self.lang, "CONNECTION", "TITLE")
         for var_name, field in self.env_vars.items():
-            if field in self.tab.fields.get("host", {}):
-                value = self.tab.fields["host"][field].get().strip()
+            if field[self.lang] in self.tab.fields.get(connection_title, {}):
+                value = self.tab.fields[connection_title][field[self.lang]].get().strip()
                 if set_env(var_name, value):
                     set_env("BASE_LOADED", "false")
 

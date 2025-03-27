@@ -4,6 +4,7 @@ import logging
 from typing import Callable, List, Tuple
 
 from utils.environ import get_env
+from locales import get_string
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,7 @@ class ActionHandler:
         """
         self.connection_handler = connection_handler
         self.parent = parent
+        self.lang = parent.app.lang
         self.logger = logging.getLogger(__name__)
 
     def get_actions(self) -> List[Tuple[str, Callable]]:
@@ -29,18 +31,9 @@ class ActionHandler:
             List of tuples containing action name and callback function.
         """
         return [
-            (
-                {"ru": "ЗАГРУЗИТЬ КОНФИГУРАЦИЮ", "en": "LOAD CONFIGURATION"},
-                self.connection_handler.load_configuration,
-            ),
-            (
-                {"ru": "ОБНАРУЖИТЬ УСТРОЙСТВО", "en": "UPDATE FIRMWARE"},
-                self.connection_handler.update_firmware,
-            ),
-            (
-                {"ru": "ПЕРЕЗАГРУЗИТЬ", "en": "REBOOT"},
-                self.connection_handler.reboot,
-            ),
+            ("LOAD_CONFIGURATION", self.connection_handler.load_configuration),
+            ("UPDATE_FIRMWARE", self.connection_handler.update_firmware),
+            ("REBOOT", self.connection_handler.reboot),
         ]
 
     def get_advanced_actions(self) -> List[Tuple[str, Callable]]:
@@ -50,14 +43,8 @@ class ActionHandler:
             List of tuples containing action name and callback function.
         """
         return [
-            (
-                {"ru": "ПОКАЗАТЬ РАБОЧУЮ", "en": "SHOW RUNNING"},
-                self.connection_handler.show_run,
-            ),
-            (
-                {"ru": "ПОКАЗАТЬ КАНДИДАТ", "en": "SHOW CANDIDATE"},
-                self.parent.show_template,
-            ),
+            ("SHOW_RUNNING", self.connection_handler.show_run),
+            ("SHOW_CANDIDATE", self.connection_handler.show_template),
         ] + self.get_actions()
 
     def get_available_actions(self) -> List[Tuple[str, Callable]]:

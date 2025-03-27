@@ -10,7 +10,7 @@ from gui.tabs.manager import (
     TemplateTab,
     UpdateTab,
 )
-
+from locales import get_string
 logger = logging.getLogger(__name__)
 
 
@@ -28,7 +28,8 @@ class DBManagerApp(App):
         """
         logger.debug("Initializing DBManagerApp")
         super().__init__(master, title, *args, **kwargs)
-        self.tabs["CONNECTION"].on_button_click()
+        self.connection_name = get_string(self.lang, "TABS", "CONNECTION")
+        self.tabs[self.connection_name].on_button_click()
 
     def create_tabs(self) -> None:
         """Create and add tabs to the application."""
