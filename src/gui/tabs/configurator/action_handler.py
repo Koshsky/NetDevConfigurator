@@ -3,8 +3,9 @@
 import logging
 from typing import Callable, List, Tuple
 
-from utils.environ import get_env
 from locales import get_string
+from utils.environ import get_env
+
 logger = logging.getLogger(__name__)
 
 
@@ -26,10 +27,9 @@ class ActionHandler:
     def create_buttons(self):
         """Create action buttons."""
         for text, action in self.get_available_actions():
-            self.tab.create_button_in_line((
-                get_string(self.lang, "ACTIONS", text),
-                action
-            ))
+            self.tab.create_button_in_line(
+                (get_string(self.lang, "ACTIONS", text), action)
+            )
 
     def get_actions(self) -> List[Tuple[str, Callable]]:
         """Returns a list of basic actions.

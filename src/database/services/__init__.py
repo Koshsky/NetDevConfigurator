@@ -8,9 +8,9 @@ from .company import CompanyService
 from .device import DeviceService
 from .family import FamilyService
 from .port import PortService
-from .preset import PresetService, ALLOWED_ROLES
+from .preset import ALLOWED_ROLES, PresetService
 from .protocol import ProtocolService
-from .template import TemplateService, ALLOWED_TYPES
+from .template import ALLOWED_TYPES, TemplateService
 
 __all__ = [
     "CompanyService",

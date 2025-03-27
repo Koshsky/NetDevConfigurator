@@ -1,19 +1,20 @@
-from .device_core import DeviceCore
 import logging
 
-logger = logging.getLogger("core")
-
+from .device_core import DeviceCore
+from .esr import (
+    ESR2x,
+    ESR3x,
+)
 from .mes import (
     MES11xx21xx20xx31xx,
     MES14xx24xx34xx37xx,
     MES23xx33xx35xx36xx53xx5400,
 )
-from .esr import (
-    ESR2x,
-    ESR3x,
-)
-
 from .zyxel import BaseZyxel
+
+logger = logging.getLogger("core")
+
+
 class CoreFactory:
     _devices = {
         "MES14xx/24xx/34xx/37xx": MES14xx24xx34xx37xx,

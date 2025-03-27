@@ -1,13 +1,11 @@
 import logging
 import tkinter as tk
 from pprint import pformat
-from typing import TYPE_CHECKING, Any, Dict
+from typing import Any, Dict
 
+from database.models import Templates
 from database.services import ALLOWED_ROLES, ALLOWED_TYPES
 from gui import BaseTab, apply_error_handler
-
-if TYPE_CHECKING:
-    from database.models import Templates
 
 logger = logging.getLogger(__name__)
 

@@ -1,10 +1,7 @@
 import logging
-from typing import TYPE_CHECKING, Dict
+from typing import Dict
 
 from sqlalchemy.orm import Session
-
-if TYPE_CHECKING:
-    from database.models import Devices, Presets
 
 from database.models import Devices, Presets
 

@@ -1,4 +1,5 @@
 from utils.environ import get_env
+
 from .device_core import DeviceCore
 
 
@@ -49,9 +50,7 @@ class BaseESR(DeviceCore):
 class ESR2x(BaseESR):
     @property
     def load_boot(self):
-        return (
-            f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:boot-1"
-        )
+        return f"copy tftp://{get_env('TFTP_ADDRESS')}/firmware/{get_env('FILENAME')} system:boot-1"
 
     @property
     def load_uboot(self):

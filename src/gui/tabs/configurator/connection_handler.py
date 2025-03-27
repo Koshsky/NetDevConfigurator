@@ -1,15 +1,16 @@
 import logging
 from typing import Dict, Type
 
+from config import config
 from drivers import ConnectionManager
-from utils.environ import get_env, set_env
 from locales import get_string
+from utils.environ import get_env, set_env
 
 from ..base_tab import BaseTab
 
-logger = logging.getLogger("gui")
-from config import config
 CONNECTION_TYPES = ("COM", "SSH", "MOCK")
+
+logger = logging.getLogger("gui")
 
 
 class ConnectionHandlerFactory:
@@ -97,13 +98,13 @@ class BaseConnectionHandler:
         self.tab.create_block(
             get_string(self.lang, "CONNECTION", "TITLE"),
             {
-                get_string(self.lang, "CONNECTION", field):
-                    tuple(getattr(config.host, field.split('_')[1].lower()))
+                get_string(self.lang, "CONNECTION", field): tuple(
+                    getattr(config.host, field.split("_")[1].lower())
+                )
                 for field in self.env_vars
             },
         )
         self.fields = self.tab.fields[self.connection_title]
-
 
     def __getattr__(self, name: str):
         """Dynamically handles SSH driver methods."""

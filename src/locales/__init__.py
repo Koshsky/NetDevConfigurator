@@ -2,12 +2,13 @@
 
 import importlib
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 
 # Словарь для хранения переводов
 translations: Dict[str, Dict[str, Any]] = {}
+
 
 def load_translations(lang: str):
     """Load translations for the specified language.
@@ -22,6 +23,7 @@ def load_translations(lang: str):
     except ImportError as e:
         logger.error("Failed to load translations for language %s: %s", lang, e)
         raise
+
 
 def get_string(lang: str, section: str, key: str) -> str:
     """Get a translated string.
@@ -40,6 +42,7 @@ def get_string(lang: str, section: str, key: str) -> str:
     try:
         return getattr(translations[lang], section)[key]
     except (KeyError, AttributeError) as e:
-        logger.error("Translation not found for %s.%s in language %s: %s",
-                    section, key, lang, e)
+        logger.error(
+            "Translation not found for %s.%s in language %s: %s", section, key, lang, e
+        )
         return f"Missing translation: {section}.{key}"

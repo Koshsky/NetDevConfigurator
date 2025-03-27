@@ -4,7 +4,14 @@ from contextlib import contextmanager
 
 import yaml
 
-from .config import Config, DatabaseConfig, TFTPConfig, HostConfig, RouterConfig, AppConfig
+from .config import (
+    AppConfig,
+    Config,
+    DatabaseConfig,
+    HostConfig,
+    RouterConfig,
+    TFTPConfig,
+)
 
 LOGGING = yaml.safe_load(open("./src/config/logging_config.yaml"))
 logging.config.dictConfig(LOGGING)
@@ -21,4 +28,13 @@ def disable_logging():
     finally:
         logging.disable(logging.NOTSET)
 
-__all__ = ["config", "disable_logging", "DatabaseConfig", "TFTPConfig", "HostConfig", "RouterConfig", "AppConfig"]
+
+__all__ = [
+    "config",
+    "disable_logging",
+    "DatabaseConfig",
+    "TFTPConfig",
+    "HostConfig",
+    "RouterConfig",
+    "AppConfig",
+]

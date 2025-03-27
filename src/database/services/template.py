@@ -1,10 +1,7 @@
 import logging
-from typing import TYPE_CHECKING, Any, Dict, Tuple
+from typing import Any, Dict, Tuple
 
 from sqlalchemy.orm import Session
-
-if TYPE_CHECKING:
-    from database.models import Templates
 
 from database.models import Templates
 

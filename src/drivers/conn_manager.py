@@ -1,7 +1,6 @@
 """Connection manager for network devices."""
 
 import logging
-from typing import Any, Dict
 
 from utils.environ import get_env, set_env
 from utils.filesystem import find_most_recent_file

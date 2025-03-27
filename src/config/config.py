@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Tuple
+from typing import Tuple
 
 
 @dataclass
@@ -52,6 +52,7 @@ class TFTPConfig:
     port: int = 69
     folder: str = "/srv/tftp"
     backup_folder: str = "backups"
+
 
 @dataclass
 class HostConfig:

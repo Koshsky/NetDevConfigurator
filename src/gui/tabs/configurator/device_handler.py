@@ -1,11 +1,10 @@
 import logging
 from typing import Dict, Type
 
+from locales import get_string
 from utils.environ import env_converter, get_env, set_env
 
 from ..base_tab import BaseTab
-
-from locales import get_string
 
 logger = logging.getLogger("gui")
 
@@ -23,7 +22,6 @@ class BaseDeviceHandler:
     def create_widgets(self):
         """Create widgets for the device handler."""
         raise NotImplementedError
-
 
     def actualize_values(self):
         """Actualize values from the device handler."""
@@ -85,10 +83,7 @@ class SwitchHandler(BaseDeviceHandler):
         logger.debug("Creating device widgets for switch...")
         self.tab.create_block(
             get_string(self.lang, "SWITCH", "TITLE"),
-            {
-                field: self.app.device["roles"]
-                for field in self.env_vars.values()
-            },
+            {field: self.app.device["roles"] for field in self.env_vars.values()},
         )
         self.fields = self.tab.fields[get_string(self.app.lang, "SWITCH", "TITLE")]
 
@@ -116,7 +111,9 @@ class RouterHandler(BaseDeviceHandler):
         self.tab.create_block(
             get_string(self.lang, "ROUTER", "TITLE"),
             {
-                field: tuple(env_converter["TYPE_COMPLEX"],)
+                field: tuple(
+                    env_converter["TYPE_COMPLEX"],
+                )
                 for field in self.env_vars.values()
             },
         )
@@ -129,7 +126,9 @@ class RouterHandler(BaseDeviceHandler):
             "TYPE_COMPLEX",
             env_converter.to_machine(
                 "TYPE_COMPLEX",
-                self.fields[get_string(self.app.lang, "ROUTER", "TYPE_COMPLEX")].get().strip(),
+                self.fields[get_string(self.app.lang, "ROUTER", "TYPE_COMPLEX")]
+                .get()
+                .strip(),
             ),
         )
 

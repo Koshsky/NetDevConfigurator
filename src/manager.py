@@ -11,6 +11,7 @@ from gui.tabs.manager import (
     UpdateTab,
 )
 from locales import get_string
+
 logger = logging.getLogger(__name__)
 
 

@@ -1,15 +1,13 @@
 import argparse
 import sys
-from typing import TYPE_CHECKING, Any, Dict
+from typing import Any, Dict
 
 from config import config, disable_logging
+from database.models import Devices
 from database.services import EntityNotFoundError, init_db_connection
 from drivers import ConnectionManager, DriverError
 from utils.config import save_configuration
 from utils.environ import get_env, initialize_device_environment, set_env
-
-if TYPE_CHECKING:
-    from database.models import Devices
 
 CONNECTION_TYPE = "SSH"
 

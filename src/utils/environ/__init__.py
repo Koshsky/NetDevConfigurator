@@ -1,14 +1,10 @@
 import os
-import uuid
-from typing import TYPE_CHECKING
 
 from config import config
+from database.models import Device
 
 from .environ import del_env, get_env, set_env
 from .router_conversation import env_converter
-
-if TYPE_CHECKING:
-    from database.models import Device
 
 __all__ = ["get_env", "set_env", "del_env"]
 

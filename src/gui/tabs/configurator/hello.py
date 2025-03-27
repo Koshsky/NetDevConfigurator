@@ -2,10 +2,11 @@ import logging
 
 from config import config
 from gui import BaseTab, apply_error_handler
+from locales import get_string
 from utils.environ import set_env
 
 from .connection_handler import CONNECTION_TYPES
-from locales import get_string
+
 logger = logging.getLogger("gui")
 
 
@@ -33,8 +34,22 @@ class HelloTab(BaseTab):
         self._create_connection_buttons()
 
     def update_envs(self):
-        set_env("CERT", self.fields[get_string(self.lang, "HELLO", "COMMON_BLOCK")][get_string(self.lang, "HELLO", "CERT")].get().strip())
-        set_env("TFTP_ADDRESS", self.fields[get_string(self.lang, "HELLO", "COMMON_BLOCK")][get_string(self.lang, "HELLO", "TFTP")].get().strip())
+        set_env(
+            "CERT",
+            self.fields[get_string(self.lang, "HELLO", "COMMON_BLOCK")][
+                get_string(self.lang, "HELLO", "CERT")
+            ]
+            .get()
+            .strip(),
+        )
+        set_env(
+            "TFTP_ADDRESS",
+            self.fields[get_string(self.lang, "HELLO", "COMMON_BLOCK")][
+                get_string(self.lang, "HELLO", "TFTP")
+            ]
+            .get()
+            .strip(),
+        )
 
     def prepare(self, connection_type: str) -> None:
         """Prepares the connection by setting environment variables and registering the device.
@@ -44,7 +59,11 @@ class HelloTab(BaseTab):
         """
         set_env("CONNECTION_TYPE", connection_type)
         device = self.app.db_services["device"].get_one(
-            name=self.fields[get_string(self.lang, "HELLO", "DEVICE_BLOCK")][get_string(self.lang, "HELLO", "DEVICE_NAME")].get().strip()
+            name=self.fields[get_string(self.lang, "HELLO", "DEVICE_BLOCK")][
+                get_string(self.lang, "HELLO", "DEVICE_NAME")
+            ]
+            .get()
+            .strip()
         )
         self.app.register_device(device)
 
@@ -53,7 +72,11 @@ class HelloTab(BaseTab):
         devices = self.app.db_services["device"].get_all()
         self.create_block(
             get_string(self.lang, "HELLO", "DEVICE_BLOCK"),
-            {get_string(self.lang, "HELLO", "DEVICE_NAME"): tuple(d.name for d in devices)}
+            {
+                get_string(self.lang, "HELLO", "DEVICE_NAME"): tuple(
+                    d.name for d in devices
+                )
+            },
         )
 
     def _create_common_block(self) -> None:
@@ -62,8 +85,8 @@ class HelloTab(BaseTab):
             get_string(self.lang, "HELLO", "COMMON_BLOCK"),
             {
                 get_string(self.lang, "HELLO", "CERT"): config.default_cert,
-                get_string(self.lang, "HELLO", "TFTP"): config.tftp.address
-            }
+                get_string(self.lang, "HELLO", "TFTP"): config.tftp.address,
+            },
         )
 
     def _create_connection_buttons(self) -> None:
@@ -75,6 +98,8 @@ class HelloTab(BaseTab):
             if connection_type == "MOCK" and not self.mock_enabled:
                 continue
             self.create_button_in_line(
-                (get_string(self.lang, "HELLO", f"CONNECTION_{connection_type}"),
-                 lambda ct=connection_type: self.prepare(ct))
+                (
+                    get_string(self.lang, "HELLO", f"CONNECTION_{connection_type}"),
+                    lambda ct=connection_type: self.prepare(ct),
+                )
             )

@@ -9,15 +9,12 @@ class DriverError(Exception):
     """Base class for all driver-related exceptions."""
 
 
-
 class ConnectionError(DriverError):
     """Base class for exceptions related to connection problems."""
 
 
-
 class AuthenticationError(DriverError):
     """Base class for exceptions related to authentication problems."""
-
 
 
 class BaseDriver(ABC):

@@ -1,11 +1,8 @@
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-
-if TYPE_CHECKING:
-    from database.models import DevicePresets, Presets, Templates
 
 from database.models import DevicePresets, Presets, Templates
 

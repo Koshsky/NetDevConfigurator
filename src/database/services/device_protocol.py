@@ -1,10 +1,7 @@
 import logging
-from typing import TYPE_CHECKING, List
+from typing import List
 
 from sqlalchemy.orm import Session
-
-if TYPE_CHECKING:
-    from database.models import DeviceProtocols, Devices, Protocols
 
 from database.models import DeviceProtocols, Devices, Protocols
 

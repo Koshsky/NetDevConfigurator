@@ -1,18 +1,10 @@
 import logging
-from typing import TYPE_CHECKING
 
-from config import config
 from gui import BaseTab, apply_error_handler
-from utils.environ import env_converter, get_env
-from locales import get_string
-from .connection_handler import get_connection_handler
-from .device_handler import get_device_handler
-from .action_handler import ActionHandler
 
-if TYPE_CHECKING:
-    from .connection_handler import ConnectionHandler
-    from .device_handler import DeviceHandler
-    from .action_handler import ActionHandler
+from .action_handler import ActionHandler
+from .connection_handler import ConnectionHandler, get_connection_handler
+from .device_handler import DeviceHandler, get_device_handler
 
 logger = logging.getLogger("gui")
 
@@ -52,6 +44,7 @@ class Refresher(BaseTab):
         """Actualize values from the connection handler."""
         self.connection_handler.actualize_values()
         self.device_handler.actualize_values()
+
 
 @apply_error_handler
 class ControlTab(Refresher):

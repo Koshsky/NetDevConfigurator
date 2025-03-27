@@ -16,7 +16,6 @@ class EntityNotFoundError(Exception):
     """Raised when an entity is not found in the database."""
 
 
-
 class BaseService(Generic[ModelType]):
     """Base service for database operations."""
 

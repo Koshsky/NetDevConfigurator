@@ -23,7 +23,7 @@ HELLO = {
     "CONNECTION_COM": "COM",
     "CONNECTION_SSH": "SSH",
     "CONNECTION_TELNET": "Telnet",
-    "CONNECTION_MOCK": "Тестовое подключение"
+    "CONNECTION_MOCK": "Тестовое подключение",
 }
 
 # Connection section

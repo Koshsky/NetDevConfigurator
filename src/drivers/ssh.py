@@ -16,7 +16,6 @@ class SSHPortOpenError(ConnectionError):
     """Raised when attempting to interact with an unopened SSH connection."""
 
 
-
 def check_port_open(func: callable) -> callable:
     """Decorator to check if the SSH port is open before executing a function.
 
@@ -94,7 +93,9 @@ class SSHBaseDriver(BaseDriver):
 
         while True:
             try:
-                time.sleep(0.05)  # TODO: чтобы избежать риска преждевременного закрытия соединения
+                time.sleep(
+                    0.05
+                )  # TODO: чтобы избежать риска преждевременного закрытия соединения
                 output += self.ssh.recv(1024).decode("utf-8")
 
                 last_line = output.strip().splitlines()[-1] if output.strip() else ""

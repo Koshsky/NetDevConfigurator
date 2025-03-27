@@ -2,10 +2,11 @@ import argparse
 import logging
 import os
 import tkinter as tk
-from typing import TYPE_CHECKING
 
 from config import config
+from database.models import Device
 from gui.base_app import App
+from gui.tabs import ConnectionTab
 from gui.tabs.configurator import (
     ControlTab,
     HelloTab,
@@ -13,13 +14,10 @@ from gui.tabs.configurator import (
     RouterTab,
     TemplateTab,
 )
-from gui.tabs import ConnectionTab
 from gui.tabs.configurator.connection_handler import CONNECTION_TYPES
+from locales import get_string
 from utils.config import save_configuration
 from utils.environ import get_env, initialize_device_environment, set_env
-from locales import get_string
-if TYPE_CHECKING:
-    from database.models import Device
 
 logger = logging.getLogger("ConfiguratorApp")
 
@@ -40,7 +38,9 @@ def parse_args():
 class AppRefresher(App):
     """Refreshes the visibility of tabs based on the application state."""
 
-    def __init__(self, lang: str, mock_enabled: bool, advanced: bool, *args, **kwargs) -> None:
+    def __init__(
+        self, lang: str, mock_enabled: bool, advanced: bool, *args, **kwargs
+    ) -> None:
         """Initialize the tab refresher.
 
         Args:
@@ -60,15 +60,11 @@ class AppRefresher(App):
         super().__init__(*args, **kwargs)
         self.tabs[self.connection_name].on_button_click()
 
-
     def create_tabs(self) -> None:
         """Create and add tabs to the application."""
         # Создаем вкладку подключения
         self.create_tab(
-            ConnectionTab,
-            self.connection_name,
-            "normal",
-            self.on_connection_submit
+            ConnectionTab, self.connection_name, "normal", self.on_connection_submit
         )
 
         # Создаем остальные вкладки
@@ -139,6 +135,7 @@ class AppRefresher(App):
 
         self.notebook.select(self.tabs[self.control_name].frame)
 
+
 class ConfiguratorApp(AppRefresher):
     """Main application class for the network device configurator."""
 
@@ -169,9 +166,15 @@ class ConfiguratorApp(AppRefresher):
 
     def update_envs(self):
         if get_env("DEV_TYPE") == "router":
-            set_env("CFG_PATH", f"{config.tftp.backup_folder}/{get_env('CERT')}/{get_env('DEV_NAME')}.conf")
+            set_env(
+                "CFG_PATH",
+                f"{config.tftp.backup_folder}/{get_env('CERT')}/{get_env('DEV_NAME')}.conf",
+            )
         else:
-            set_env("CFG_PATH", f"{config.tftp.backup_folder}/{get_env('CERT')}/{get_env('DEV_ROLE')}.conf")
+            set_env(
+                "CFG_PATH",
+                f"{config.tftp.backup_folder}/{get_env('CERT')}/{get_env('DEV_ROLE')}.conf",
+            )
 
         for tab in self.tabs.values():
             if hasattr(tab, "update_envs"):
@@ -217,9 +220,7 @@ class ConfiguratorApp(AppRefresher):
 
     def _read_configuration_file(self) -> str:
         """Reads and returns the generated text configuration."""
-        config_filepath = os.path.join(
-            get_env("TFTP_FOLDER"), get_env("CFG_PATH")
-        )
+        config_filepath = os.path.join(get_env("TFTP_FOLDER"), get_env("CFG_PATH"))
         try:
             with open(config_filepath, "r") as f:
                 return f.read()

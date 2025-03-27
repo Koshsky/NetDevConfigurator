@@ -4,7 +4,6 @@ import tkinter as tk
 from tkinter import ttk
 from typing import Any, Dict, List, Optional, Tuple
 
-
 from ttkwidgets.autocomplete import AutocompleteCombobox
 
 # с AutocompleteCombobox существует ОЧЕНЬ неприятный баг.

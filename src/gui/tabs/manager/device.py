@@ -1,10 +1,8 @@
 import logging
-from typing import TYPE_CHECKING, List
+from typing import List
 
+from database.models import Devices, Ports, Protocols
 from gui import BaseTab, apply_error_handler
-
-if TYPE_CHECKING:
-    from database.models import Devices, Ports, Protocols
 
 logger = logging.getLogger(__name__)
 

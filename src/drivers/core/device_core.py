@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import List, Union
-from utils.environ import get_env
 
 
 class DeviceCore(ABC):
